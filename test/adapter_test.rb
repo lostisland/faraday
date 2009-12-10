@@ -43,19 +43,20 @@ class AdapterTest < Faraday::TestCase
       assert_equal 'hello world', @connection.get('hello_world').body
     end
 
-    it "uses parallel manager to run multiple requests" do
+    it "uses parallel manager to run multiple json requests" do
       resp1, resp2 = nil, nil
 
+      @connection.response_class = Faraday::Response::DelayedYajlResponse
       @connection.in_parallel do
-        resp1 = @connection.get('hello_world')
-        resp2 = @connection.get('hello_world')
+        resp1 = @connection.get('json')
+        resp2 = @connection.get('json')
         assert @connection.in_parallel?
         assert_nil resp1.body
         assert_nil resp2.body
       end
       assert !@connection.in_parallel?
-      assert_equal 'hello world', resp1.body
-      assert_equal 'hello world', resp2.body
+      assert_equal [1,2,3], resp1.body
+      assert_equal [1,2,3], resp2.body
     end
   end
 end
