@@ -3,13 +3,16 @@ module Faraday
   module Adapter
     module NetHttp
       def _get(uri, request_headers)
-        http = Net::HTTP.new(uri.host, uri.port)
-        resp = http.get(uri.path, request_headers)
-        headers = {}
-        resp.each_header do |key, value|
-          headers[key] = value
+        http      = Net::HTTP.new(uri.host, uri.port)
+        resp      = Response.new({})
+        http_resp = http.get(uri.path, request_headers) do |chunk|
+          resp.process(chunk)
         end
-        Faraday::Response.new(headers, resp.body)
+        resp.processed!
+        http_resp.each_header do |key, value|
+          resp.headers[key] = value
+        end
+        resp
       end
     end
   end

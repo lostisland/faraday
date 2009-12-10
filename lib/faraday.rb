@@ -10,6 +10,16 @@ module Faraday
   autoload :Connection, 'faraday/connection'
 
   class Response < Struct.new(:headers, :body)
+    def process(chunk)
+      if !body
+        self.body = []
+      end
+      body << chunk
+    end
+
+    def processed!
+      self.body = body.join
+    end
   end
 
   module Adapter
