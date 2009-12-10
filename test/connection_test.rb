@@ -12,6 +12,11 @@ class ConnectionTest < Faraday::TestCase
       assert_nil conn.port
     end
 
+    it "parses @scheme out of given url" do
+      conn = Faraday::Connection.new "http://sushi.com"
+      assert_equal 'http', conn.scheme
+    end
+
     it "parses @port out of given url" do
       conn = Faraday::Connection.new "http://sushi.com:815"
       assert_equal 815, conn.port
@@ -41,6 +46,12 @@ class ConnectionTest < Faraday::TestCase
       conn.port = 23
       uri = conn.build_uri("http://sushi.com")
       assert_equal 23, uri.port
+    end
+
+    it "uses Connection#scheme as default URI scheme" do
+      conn = Faraday::Connection.new 'http://sushi.com'
+      uri = conn.build_uri("/sake.html")
+      assert_equal 'http', uri.scheme
     end
 
     it "uses Connection#path_prefix to customize the path" do

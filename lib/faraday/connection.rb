@@ -3,7 +3,7 @@ module Faraday
   class Connection
     include Addressable
 
-    attr_accessor :host, :port
+    attr_accessor :host, :port, :scheme
     attr_reader   :path_prefix
     attr_writer   :response_class
 
@@ -11,6 +11,7 @@ module Faraday
       @response_class = nil
       if url
         uri              = URI.parse(url)
+        self.scheme      = uri.scheme
         self.host        = uri.host
         self.port        = uri.port
         self.path_prefix = uri.path
@@ -39,13 +40,15 @@ module Faraday
     end
 
     def build_uri(url, params = {})
-      uri         = URI.parse(url)
-      uri.host  ||= @host
-      uri.port  ||= @port
+      uri          = URI.parse(url)
+      uri.scheme ||= @scheme
+      uri.host   ||= @host
+      uri.port   ||= @port
       if @path_prefix && uri.path !~ /^\//
         uri.path = "#{@path_prefix.size > 1 ? @path_prefix : nil}/#{uri.path}"
       end
-      uri.query   = params_to_query(params)
+      query = params_to_query(params)
+      if !query.empty? then uri.query = query end
       uri
     end
 
