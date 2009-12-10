@@ -1,6 +1,53 @@
 = faraday
 
-Description goes here.
+experiments in a rest api lib
+
+== Usage
+
+    # uses Net/HTTP, no response parsing
+    conn = Faraday::Connection.new("http://sushi.com")
+    conn.extend Faraday::Adapter::NetHttp
+    resp = conn.get("/sake.json")
+    resp.body # => %({"name":"Sake"})
+
+    # uses Net/HTTP, Yajl parsing
+    conn = Faraday::Connection.new("http://sushi.com")
+    conn.extend Faraday::Adapter::NetHttp
+    conn.response_class = Faraday::Response::YajlResponse
+    resp = conn.get("/sake.json")
+    resp.body # => {"name": "Sake"}
+
+    # uses Typhoeus, no response parsing
+    conn = Faraday::Connection.new("http://sushi.com")
+    conn.extend Faraday::Adapter::Typhoeus
+    resp = conn.get("/sake.json")
+    resp.body # => %({"name":"Sake"})
+
+    # uses Typhoeus, performs requests in parallel
+    conn = Faraday::Connection.new("http://sushi.com")
+    conn.extend Faraday::Adapter::Typhoeus
+    conn.in_parallel do
+      resp1 = conn.get("/sake.json")
+      resp2 = conn.get("/unagi.json")
+
+      # requests have not been made yet
+      resp1.body # => nil
+      resp2.body # => nil
+    end
+    resp1.body # => %({"name":"Sake"})
+    resp2.body # => %({"name":"Unagi"})
+
+== Testing
+
+* Typhoeus and Yajl are needed for tests :(
+* Live Sinatra server is required for tests: `ruby test/live_server.rb` to start it.
+
+== TODO
+
+* gracefully skip tests for Typhoeus, Yajl, and other optional libraries if they don't exist.
+* gracefully skip live http server tests if the sinatra server is not running.
+* fix failing test regarding Typhoeus response headers.
+* lots of other crap
 
 == Note on Patches/Pull Requests
  
