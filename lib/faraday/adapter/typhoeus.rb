@@ -31,7 +31,7 @@ module Faraday
             resp.headers = Hash[response.headers.split(/\r\n/).
               tap(&:shift).                    # drop the HTTP status line
               map {|h| h.split(/:\s+/,2) }.    # split key and value
-              map {|p| [p[0].downcase, p[1]]}] # lower-case key
+              map {|k, v| [k.downcase, v]}]    # lower-case key
             resp.processed!
           end
           @parallel_manager.queue(req)
