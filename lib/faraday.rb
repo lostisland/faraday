@@ -8,4 +8,11 @@ module Faraday
   end
 
   autoload :Connection, 'faraday/connection'
+
+  class Response < Struct.new(:headers, :body)
+  end
+
+  module Adapter
+    autoload :NetHttp, 'faraday/adapter/net_http'
+  end
 end

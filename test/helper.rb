@@ -7,6 +7,8 @@ require 'faraday'
 
 module Faraday
   class TestCase < Test::Unit::TestCase
+    LIVE_SERVER = 'http://localhost:4567'
+
     class TestConnection < Faraday::Connection
       def _get(uri, headers)
         TestResponse.new(uri, nil, headers)
