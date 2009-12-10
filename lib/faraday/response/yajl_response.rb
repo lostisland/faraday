@@ -2,7 +2,8 @@ require 'yajl'
 module Faraday
   class Response
     class YajlResponse < Response
-      attr_reader :content
+      attr_reader :body
+      alias content body
 
       def initialize(headers = nil, body = nil)
         super
@@ -22,7 +23,7 @@ module Faraday
       end
 
       def object_parsed(obj)
-        @content = obj
+        @body = obj
       end
     end
   end

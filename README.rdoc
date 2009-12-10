@@ -23,9 +23,11 @@ experiments in a rest api lib
     resp = conn.get("/sake.json")
     resp.body # => %({"name":"Sake"})
 
-    # uses Typhoeus, performs requests in parallel
+    # uses Typhoeus, Yajl parsing, performs requests in parallel
     conn = Faraday::Connection.new("http://sushi.com")
     conn.extend Faraday::Adapter::Typhoeus
+    conn.response_class = Faraday::Response::DelayedYajlResponse
+    resp1, resp2 = nil, nil
     conn.in_parallel do
       resp1 = conn.get("/sake.json")
       resp2 = conn.get("/unagi.json")
@@ -34,8 +36,8 @@ experiments in a rest api lib
       resp1.body # => nil
       resp2.body # => nil
     end
-    resp1.body # => %({"name":"Sake"})
-    resp2.body # => %({"name":"Unagi"})
+    resp1.body # => {"name": "Sake"}
+    resp2.body # => {"name": "Unagi"}
 
 == Testing
 
