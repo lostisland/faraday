@@ -7,13 +7,13 @@ require 'faraday'
 
 module Faraday
   class TestCase < Test::Unit::TestCase
-    class FakeConnection < Faraday::Connection
+    class TestConnection < Faraday::Connection
       def _get(uri, headers)
-        FakeResponse.new(uri, nil, headers)
+        TestResponse.new(uri, nil, headers)
       end
     end
 
-    class FakeResponse < Struct.new(:uri, :content, :headers)
+    class TestResponse < Struct.new(:uri, :content, :headers)
     end
   end
 end
