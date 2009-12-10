@@ -2,6 +2,9 @@
 
 experiments in a rest api lib
 
+Super alpha!  Don't use it if you mind throwing away all the code when I change
+the API on a whim.
+
 == Usage
 
     # uses Net/HTTP, no response parsing
