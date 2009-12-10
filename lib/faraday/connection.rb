@@ -8,20 +8,26 @@ module Faraday
 
     def initialize(url = nil)
       if url
-        uri          = URI.parse(url)
-        @host        = uri.host
-        @port        = uri.port
-        @path_prefix = uri.path if !uri.path.empty?
+        uri              = URI.parse(url)
+        self.host        = uri.host
+        self.port        = uri.port
+        self.path_prefix = uri.path
       end
     end
 
+    
+    # Override in a subclass, or include an adapter
+    #
+    #   def _get(uri, headers)
+    #   end
+    #
     def get(url, params = {}, headers = {})
       _get(build_uri(url, params), headers)
     end
 
     def path_prefix=(value)
       if value
-        value.chomp! "/"
+        value.chomp!  "/"
         value.replace "/#{value}" if value !~ /^\//
       end
       @path_prefix = value
@@ -32,7 +38,7 @@ module Faraday
       uri.host  ||= @host
       uri.port  ||= @port
       if @path_prefix && uri.path !~ /^\//
-        uri.path = "#{@path_prefix}/#{uri.path}"
+        uri.path = "#{@path_prefix.size > 1 ? @path_prefix : nil}/#{uri.path}"
       end
       uri.query   = params_to_query(params)
       uri
@@ -42,10 +48,6 @@ module Faraday
       params.inject([]) do |memo, (key, val)|
         memo << "#{URI.escape(key)}=#{URI.escape(val)}"
       end.join("&")
-    end
-
-    def _get(uri, headers)
-      raise NotImplementedError
     end
   end
 end

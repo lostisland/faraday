@@ -19,7 +19,7 @@ class ConnectionTest < Faraday::TestCase
 
     it "parses nil @path_prefix out of given url" do
       conn = TestConnection.new "http://sushi.com"
-      assert_nil conn.path_prefix
+      assert_equal '/', conn.path_prefix
     end
 
     it "parses @path_prefix out of given url" do
@@ -48,6 +48,13 @@ class ConnectionTest < Faraday::TestCase
       conn.path_prefix = '/fish'
       uri = conn.build_uri("sake.html")
       assert_equal '/fish/sake.html', uri.path
+    end
+
+    it "uses '/' Connection#path_prefix to customize the path" do
+      conn = TestConnection.new
+      conn.path_prefix = '/'
+      uri = conn.build_uri("sake.html")
+      assert_equal '/sake.html', uri.path
     end
 
     it "forces Connection#path_prefix to be absolute" do
