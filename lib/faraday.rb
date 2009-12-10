@@ -11,6 +11,7 @@ module Faraday
   autoload :Response,   'faraday/response'
 
   module Adapter
-    autoload :NetHttp, 'faraday/adapter/net_http'
+    autoload :NetHttp,  'faraday/adapter/net_http'
+    autoload :Typhoeus, 'faraday/adapter/typhoeus'
   end
 end
