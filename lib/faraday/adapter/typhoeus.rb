@@ -1,5 +1,4 @@
 require 'typhoeus'
-require 'ruby-debug'
 module Faraday
   module Adapter
     module Typhoeus
