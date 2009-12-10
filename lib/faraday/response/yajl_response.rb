@@ -3,7 +3,6 @@ module Faraday
   class Response
     class YajlResponse < Response
       attr_reader :body
-      alias content body
 
       def initialize(headers = nil, body = nil)
         super

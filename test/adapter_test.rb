@@ -15,14 +15,9 @@ class AdapterTest < Faraday::TestCase
         assert_equal 'hello world', @connection.get('hello_world').body
       end
 
-      it "retrieves the response JSON with StringResponse" do
-        @connection.response_class = Faraday::Response::StringResponse
-        assert_equal 'hello world', @connection.get('hello_world')
-      end
-
-      it "retrieves the response JSON with YajlResponse" do
+      it "retrieves the response body with YajlResponse" do
         @connection.response_class = Faraday::Response::YajlResponse
-        assert_equal [1,2,3], @connection.get('json')
+        assert_equal [1,2,3], @connection.get('json').body
       end
 
       it "retrieves the response headers" do

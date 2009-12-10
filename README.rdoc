@@ -1,6 +1,6 @@
 = faraday
 
-experiments in a rest api lib
+Experiments in a REST API lib
 
 Super alpha!  Don't use it if you mind throwing away all the code when I change
 the API on a whim.
