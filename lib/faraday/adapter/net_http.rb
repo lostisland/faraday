@@ -4,7 +4,7 @@ module Faraday
     module NetHttp
       def _get(uri, request_headers)
         http      = Net::HTTP.new(uri.host, uri.port)
-        Response.new do |resp|
+        response_class.new do |resp|
           http_resp = http.get(uri.path, request_headers) do |chunk|
             resp.process(chunk)
           end

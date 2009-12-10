@@ -4,9 +4,11 @@ module Faraday
     include Addressable
 
     attr_accessor :host, :port
-    attr_reader :path_prefix
+    attr_reader   :path_prefix
+    attr_writer   :response_class
 
     def initialize(url = nil)
+      @response_class = nil
       if url
         uri              = URI.parse(url)
         self.host        = uri.host
@@ -21,7 +23,11 @@ module Faraday
     #   end
     #
     def get(url, params = {}, headers = {})
-      _get(build_uri(url, params), headers)
+      _get(build_uri(url, params), headers).content
+    end
+
+    def response_class
+      @response_class || Response
     end
 
     def path_prefix=(value)
