@@ -1,6 +1,33 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class TestConnection < Faraday::TestCase
+  describe "#initialize" do
+    it "parses @host out of given url" do
+      conn = FakeConnection.new "http://sushi.com"
+      assert_equal 'sushi.com', conn.host
+    end
+
+    it "parses nil @port out of given url" do
+      conn = FakeConnection.new "http://sushi.com"
+      assert_nil conn.port
+    end
+
+    it "parses @port out of given url" do
+      conn = FakeConnection.new "http://sushi.com:815"
+      assert_equal 815, conn.port
+    end
+
+    it "parses nil @path_prefix out of given url" do
+      conn = FakeConnection.new "http://sushi.com"
+      assert_nil conn.path_prefix
+    end
+
+    it "parses @path_prefix out of given url" do
+      conn = FakeConnection.new "http://sushi.com/fish"
+      assert_equal '/fish', conn.path_prefix
+    end
+  end
+
   describe "#build_uri" do
     it "uses Connection#host as default URI host" do
       conn = FakeConnection.new

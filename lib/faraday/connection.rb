@@ -6,6 +6,15 @@ module Faraday
     attr_accessor :host, :port
     attr_reader :path_prefix
 
+    def initialize(url = nil)
+      if url
+        uri          = URI.parse(url)
+        @host        = uri.host
+        @port        = uri.port
+        @path_prefix = uri.path if !uri.path.empty?
+      end
+    end
+
     def get(url, params = {}, headers = {})
       _get(build_uri(url, params), headers)
     end
