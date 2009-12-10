@@ -1,4 +1,5 @@
 require 'typhoeus'
+require 'ruby-debug'
 module Faraday
   module Adapter
     module Typhoeus
@@ -28,6 +29,10 @@ module Faraday
           req      = ::Typhoeus::Request.new(uri.to_s, :headers => request_headers, :method => :get)
           req.on_complete do |response|
             resp.process(response.body)
+            resp.headers = Hash[response.headers.split(/\r\n/).
+              tap(&:shift).                    # drop the HTTP status line
+              map {|h| h.split(/:\s+/,2) }.    # split key and value
+              map {|p| [p[0].downcase, p[1]]}] # lower-case key
             resp.processed!
           end
           @parallel_manager.queue(req)
