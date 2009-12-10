@@ -10,6 +10,14 @@ module Faraday
   autoload :Connection, 'faraday/connection'
 
   class Response < Struct.new(:headers, :body)
+    def initialize(headers = nil, body = nil)
+      super(headers || {}, body)
+      if block_given?
+        yield self
+        processed!
+      end
+    end
+
     def process(chunk)
       if !body
         self.body = []
@@ -18,7 +26,7 @@ module Faraday
     end
 
     def processed!
-      self.body = body.join
+      self.body = body.join if body.respond_to?(:join)
     end
   end
 

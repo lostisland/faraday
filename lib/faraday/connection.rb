@@ -15,7 +15,6 @@ module Faraday
       end
     end
 
-    
     # Override in a subclass, or include an adapter
     #
     #   def _get(uri, headers)
