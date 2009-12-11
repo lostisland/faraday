@@ -1,6 +1,6 @@
 module Faraday
   class Response < Struct.new(:headers, :body)
-    autoload :YajlResponse,       'faraday/response/yajl_response'
+    autoload :YajlResponse, 'faraday/response/yajl_response'
 
     def initialize(headers = nil, body = nil)
       super(headers || {}, body)
@@ -19,11 +19,6 @@ module Faraday
 
     def processed!
       self.body = body.join if body.respond_to?(:join)
-    end
-
-    # determines what Faraday::Connection#get returns
-    def content
-      self
     end
   end
 end

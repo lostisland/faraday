@@ -24,7 +24,7 @@ module Faraday
     #   end
     #
     def get(url, params = {}, headers = {})
-      _get(build_uri(url, params), headers).content
+      _get(build_uri(url, params), headers)
     end
 
     def response_class
