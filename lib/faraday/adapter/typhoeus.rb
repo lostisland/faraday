@@ -39,8 +39,7 @@ module Faraday
         Hash[*header_string.split(/\r\n/).
           tap  { |a|      a.shift           }. # drop the HTTP status line
           map! { |h|      h.split(/:\s+/,2) }. # split key and value
-          map! { |(k, v)| [k.downcase, v]   }.
-          tap  { |a|      a.flatten!        }]
+          map! { |(k, v)| [k.downcase, v]   }.flatten!]
       end
     end
   end
