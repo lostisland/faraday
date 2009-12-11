@@ -28,10 +28,11 @@ module Faraday
           req      = ::Typhoeus::Request.new(uri.to_s, :headers => request_headers, :method => :get)
           req.on_complete do |response|
             resp.process(response.body)
-            resp.headers = Hash[response.headers.split(/\r\n/).
-              tap(&:shift).                    # drop the HTTP status line
-              map {|h| h.split(/:\s+/,2) }.    # split key and value
-              map {|k, v| [k.downcase, v]}]    # lower-case key
+            resp.headers = Hash[*response.headers.split(/\r\n/).
+              tap  {|a| a.shift }.             # drop the HTTP status line
+              map! {|h| h.split(/:\s+/,2) }.   # split key and value
+              map! {|(k, v)| [k.downcase, v]}.
+              tap  {|a| a.flatten!}]
             resp.processed!
           end
           @parallel_manager.queue(req)
