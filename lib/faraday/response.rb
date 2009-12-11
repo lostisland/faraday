@@ -1,8 +1,6 @@
 module Faraday
   class Response < Struct.new(:headers, :body)
-    autoload :StringResponse,     'faraday/response/string_response'
     autoload :YajlResponse,       'faraday/response/yajl_response'
-    autoload :DelayedYajlResponse,'faraday/response/delayed_yajl_response'
 
     def initialize(headers = nil, body = nil)
       super(headers || {}, body)

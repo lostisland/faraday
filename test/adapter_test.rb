@@ -41,7 +41,7 @@ class AdapterTest < Faraday::TestCase
     it "uses parallel manager to run multiple json requests" do
       resp1, resp2 = nil, nil
 
-      @connection.response_class = Faraday::Response::DelayedYajlResponse
+      @connection.response_class = Faraday::Response::YajlResponse
       @connection.in_parallel do
         resp1 = @connection.get('json')
         resp2 = @connection.get('json')

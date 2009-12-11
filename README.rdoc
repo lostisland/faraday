@@ -29,7 +29,7 @@ the API on a whim.
     # uses Typhoeus, Yajl parsing, performs requests in parallel
     conn = Faraday::Connection.new("http://sushi.com")
     conn.extend Faraday::Adapter::Typhoeus
-    conn.response_class = Faraday::Response::DelayedYajlResponse
+    conn.response_class = Faraday::Response::YajlResponse
     resp1, resp2 = nil, nil
     conn.in_parallel do
       resp1 = conn.get("/sake.json")
@@ -51,7 +51,6 @@ the API on a whim.
 
 * gracefully skip tests for Typhoeus, Yajl, and other optional libraries if they don't exist.
 * gracefully skip live http server tests if the sinatra server is not running.
-* fix failing test regarding Typhoeus response headers.
 * lots of other crap
 
 == Note on Patches/Pull Requests
