@@ -29,10 +29,10 @@ module Faraday
           req.on_complete do |response|
             resp.process(response.body)
             resp.headers = Hash[*response.headers.split(/\r\n/).
-              tap  {|a| a.shift }.             # drop the HTTP status line
-              map! {|h| h.split(/:\s+/,2) }.   # split key and value
-              map! {|(k, v)| [k.downcase, v]}.
-              tap  {|a| a.flatten!}]
+              tap  { |a|      a.shift           }. # drop the HTTP status line
+              map! { |h|      h.split(/:\s+/,2) }. # split key and value
+              map! { |(k, v)| [k.downcase, v]   }.
+              tap  { |a|      a.flatten!        }]
             resp.processed!
           end
           @parallel_manager.queue(req)
