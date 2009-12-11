@@ -10,6 +10,8 @@ module Faraday
       end
     end
 
+    # TODO: process is a funky name.  change it
+    # processes a chunk of the streamed body.
     def process(chunk)
       if !body
         self.body = []
@@ -17,6 +19,14 @@ module Faraday
       body << chunk
     end
 
+    # Assume the given content is the full body, and not streamed.  
+    def process!(full_body)
+      process(full_body)
+      processed!
+    end
+
+    # Signals the end of streamed content.  Do whatever you need to clean up
+    # the streamed body.
     def processed!
       self.body = body.join if body.respond_to?(:join)
     end
