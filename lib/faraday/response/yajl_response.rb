@@ -5,7 +5,6 @@ module Faraday
 
       begin
         require 'yajl'
-        self.loaded = true
 
         def initialize(headers = nil, body = nil)
           super
@@ -28,7 +27,8 @@ module Faraday
           @body = obj
         end
 
-      rescue LoadError
+      rescue LoadError => e
+        self.load_error = e
       end
     end
   end
