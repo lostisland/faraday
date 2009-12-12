@@ -44,7 +44,7 @@ the API on a whim.
 
 == Testing
 
-* Yajl are needed for tests :(
+* Yajl is needed for tests :(
 * Live Sinatra server is required for tests: `ruby test/live_server.rb` to start it.
 
 === Writing tests based on faraday

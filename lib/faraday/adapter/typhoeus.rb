@@ -1,4 +1,3 @@
-
 module Faraday
   module Adapter
     module Typhoeus
