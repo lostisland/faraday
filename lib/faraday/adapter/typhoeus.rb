@@ -2,9 +2,7 @@
 module Faraday
   module Adapter
     module Typhoeus
-      class << self
-        attr_accessor :loaded
-      end
+      extend Faraday::Connection::Options
 
       begin
         require 'typhoeus'

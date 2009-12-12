@@ -1,6 +1,15 @@
 require 'addressable/uri'
 module Faraday
   class Connection
+    module Options
+      def loaded()           @loaded             end
+      def loaded=(v)         @loaded = v         end
+      def supports_async()   @supports_async     end
+      def supports_async=(v) @supports_async = v end
+      alias loaded?         loaded
+      alias supports_async? supports_async
+    end
+
     include Addressable
 
     attr_accessor :host, :port, :scheme
@@ -29,6 +38,22 @@ module Faraday
 
     def response_class
       @response_class || Response
+    end
+
+    def in_parallel?
+      !!@parallel_manager
+    end
+    
+    def in_parallel(options = {})
+      @parallel_manager = true
+      yield
+      @parallel_manager = false
+    end
+    
+    def setup_parallel_manager(options = {})
+    end
+    
+    def run_parallel_requests
     end
 
     def path_prefix=(value)

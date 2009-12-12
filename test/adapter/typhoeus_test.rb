@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'helper'))
 
-if Faraday::Adapter::Typhoeus.loaded
+if Faraday::Adapter::Typhoeus.loaded?
   class TyphoeusTest < Faraday::TestCase
     describe "#parse_response_headers" do
       before do

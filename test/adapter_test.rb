@@ -24,12 +24,10 @@ class AdapterTest < Faraday::TestCase
         assert_equal 'text/html', @connection.get('hello_world').headers['content-type']
       end
     end
-  end
 
-  if Faraday::Adapter::Typhoeus.loaded
-    describe "async Typhoeus requests" do
+    describe "async requests" do
       before do
-        @connection.extend Faraday::Adapter::Typhoeus
+        @connection.extend adapter
       end
 
       it "clears parallel manager after running a single request" do
@@ -47,8 +45,10 @@ class AdapterTest < Faraday::TestCase
           resp1 = @connection.get('json')
           resp2 = @connection.get('json')
           assert @connection.in_parallel?
-          assert_nil resp1.body
-          assert_nil resp2.body
+          if adapter.supports_async?
+            assert_nil resp1.body
+            assert_nil resp2.body
+          end
         end
         assert !@connection.in_parallel?
         assert_equal [1,2,3], resp1.body

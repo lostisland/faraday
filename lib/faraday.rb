@@ -19,7 +19,7 @@ module Faraday
     end
 
     def self.loaded_adapters
-      adapters.map { |c| const_get(c) }.select { |a| a.loaded }
+      adapters.map { |c| const_get(c) }.select { |a| a.loaded? }
     end
   end
 end
