@@ -15,6 +15,8 @@ module Faraday
             resp.headers[key] = value
           end
         end
+      rescue Errno::ECONNREFUSED
+        raise Faraday::Error::ConnectionFailed, "connection refused"
       end
     end
   end

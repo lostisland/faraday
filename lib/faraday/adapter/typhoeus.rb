@@ -39,14 +39,15 @@ module Faraday
             @parallel_manager.queue(req)
             if !is_async then run_parallel_requests end
           end
+        rescue Errno::ECONNREFUSED
+          raise Faraday::Error::ConnectionFailed, "connection refused"
         end
-        
+
         def parse_response_headers(header_string)
           Hash[*header_string.split(/\r\n/).
             tap  { |a|      a.shift           }. # drop the HTTP status line
             map! { |h|      h.split(/:\s+/,2) }. # split key and value
-            map! { |(k, v)| [k.downcase, v]   }.
-            tap  { |a|      a.flatten!        }]
+            map! { |(k, v)| [k.downcase, v]   }.flatten!]
         end
       rescue LoadError
       end

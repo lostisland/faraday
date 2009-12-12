@@ -5,12 +5,11 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "faraday"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = "HTTP/REST API client library"
+    gem.description = "HTTP/REST API client library with pluggable components"
     gem.email = "technoweenie@gmail.com"
     gem.homepage = "http://github.com/technoweenie/faraday"
     gem.authors = ["rick"]
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

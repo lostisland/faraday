@@ -9,10 +9,12 @@ module Faraday
 
   autoload :Connection, 'faraday/connection'
   autoload :Response,   'faraday/response'
+  autoload :Error,      'faraday/error'
 
   module Adapter
-    autoload :NetHttp,  'faraday/adapter/net_http'
-    autoload :Typhoeus, 'faraday/adapter/typhoeus'
+    autoload :NetHttp,     'faraday/adapter/net_http'
+    autoload :Typhoeus,    'faraday/adapter/typhoeus'
+    autoload :MockRequest, 'faraday/adapter/mock_request'
 
     # Names of available adapters.  Should not actually load them.
     def self.adapters

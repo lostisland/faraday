@@ -47,10 +47,27 @@ the API on a whim.
 * Yajl are needed for tests :(
 * Live Sinatra server is required for tests: `ruby test/live_server.rb` to start it.
 
+=== Writing tests based on faraday
+
+Using the MockRequest connection adapter you can implement your own test
+connection class:
+
+    class TestConnection < Faraday::Connection
+      extend Faraday::Adapter::MockRequest
+    end
+
+    conn = TestConnection.new do |stub|
+      stub.get('/hello.json', { 'hi world' }
+    end
+    resp = conn.get '/hello.json'
+    resp.body                     # => 'hi world'
+    resp = conn.get '/whatever'   # => <not stubbed, raises connection error>
+
 == TODO
 
 * gracefully skip tests for Yajl and other optional libraries if they don't exist.
 * gracefully skip live http server tests if the sinatra server is not running.
+* use Typhoeus' request mocking facilities in the Typhoeus adapter test
 * lots of other crap
 
 == Note on Patches/Pull Requests
