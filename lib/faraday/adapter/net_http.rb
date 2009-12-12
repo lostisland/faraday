@@ -3,7 +3,6 @@ module Faraday
   module Adapter
     module NetHttp
       extend Faraday::Connection::Options
-      self.loaded = true
 
       def _get(uri, request_headers)
         http      = Net::HTTP.new(uri.host, uri.port)

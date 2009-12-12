@@ -6,7 +6,6 @@ module Faraday
 
       begin
         require 'typhoeus'
-        self.loaded = true
 
         def in_parallel?
           !!@parallel_manager
@@ -49,7 +48,8 @@ module Faraday
             map! { |h|      h.split(/:\s+/,2) }. # split key and value
             map! { |(k, v)| [k.downcase, v]   }.flatten!]
         end
-      rescue LoadError
+      rescue LoadError => e
+        self.load_error = e
       end
     end
   end
