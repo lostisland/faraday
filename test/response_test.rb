@@ -1,6 +1,17 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class ResponseTest < Faraday::TestCase
+  describe "unloaded response class" do
+    it "is not allowed to be set" do
+      resp_class = Object.new
+      def resp_class.loaded?() false end
+      conn = Faraday::Connection.new
+      assert_raises ArgumentError do
+        conn.response_class = resp_class
+      end
+    end
+  end
+
   describe "TestConnection#get with default Faraday::Response class" do
     it "returns Faraday::Response" do
       conn = TestConnection.new do |stub|

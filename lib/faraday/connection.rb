@@ -14,7 +14,6 @@ module Faraday
 
     attr_accessor :host, :port, :scheme
     attr_reader   :path_prefix
-    attr_writer   :response_class
 
     def initialize(url = nil)
       @response_class = nil
@@ -38,6 +37,13 @@ module Faraday
 
     def response_class
       @response_class || Response
+    end
+
+    def response_class=(v)
+      if v.respond_to?(:loaded?) && !v.loaded?
+        raise ArgumentError, "The response class: #{v.inspect} does not appear to be loaded."
+      end
+      @response_class = v
     end
 
     def in_parallel?
