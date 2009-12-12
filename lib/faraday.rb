@@ -14,10 +14,12 @@ module Faraday
     autoload :NetHttp,  'faraday/adapter/net_http'
     autoload :Typhoeus, 'faraday/adapter/typhoeus'
 
+    # Names of available adapters.  Should not actually load them.
     def self.adapters
       constants
     end
 
+    # Array of Adapters.  These have been loaded and confirmed to work (right gems, etc).
     def self.loaded_adapters
       adapters.map { |c| const_get(c) }.select { |a| a.loaded? }
     end
