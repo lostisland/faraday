@@ -98,7 +98,7 @@ class ConnectionTest < Faraday::TestCase
     it "parses url/params into #query" do
       conn = Faraday::Connection.new
       uri = conn.build_uri("http://sushi.com/sake.html", 'a[b]' => '1 + 2')
-      assert_equal "a%5Bb%5D=1%20+%202", uri.query
+      assert_equal "a%5Bb%5D=1%20%2B%202", uri.query
     end
 
     it "parses url into #host" do
@@ -117,7 +117,7 @@ class ConnectionTest < Faraday::TestCase
   describe "#params_to_query" do
     it "converts hash of params to URI-escaped query string" do
       conn = Faraday::Connection.new
-      assert_equal "a%5Bb%5D=1%20+%202", conn.params_to_query('a[b]' => '1 + 2')
+      assert_equal "a%5Bb%5D=1%20%2B%202", conn.params_to_query('a[b]' => '1 + 2')
     end
   end
 end
