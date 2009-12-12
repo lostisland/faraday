@@ -54,8 +54,16 @@ module Faraday
 
     def params_to_query(params)
       params.inject([]) do |memo, (key, val)|
-        memo << "#{URI.escape(key)}=#{URI.escape(val)}"
+        memo << "#{escape_for_querystring(key)}=#{escape_for_querystring(val)}"
       end.join("&")
+    end
+
+    # Some servers convert +'s in URL query params to spaces.
+    # Go ahead and encode it.
+    def escape_for_querystring(s)
+      URI.encode_component(s, Addressable::URI::CharacterClasses::QUERY).tap do |escaped|
+        escaped.gsub! /\+/, "%2B"
+      end
     end
   end
 end
