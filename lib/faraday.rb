@@ -13,6 +13,14 @@ module Faraday
   module Adapter
     autoload :NetHttp,  'faraday/adapter/net_http'
     autoload :Typhoeus, 'faraday/adapter/typhoeus'
+
+    def self.adapters
+      constants
+    end
+
+    def self.loaded_adapters
+      adapters.map { |c| const_get(c) }.select { |a| a.loaded }
+    end
   end
 end
 

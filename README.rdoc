@@ -44,12 +44,12 @@ the API on a whim.
 
 == Testing
 
-* Typhoeus and Yajl are needed for tests :(
+* Yajl are needed for tests :(
 * Live Sinatra server is required for tests: `ruby test/live_server.rb` to start it.
 
 == TODO
 
-* gracefully skip tests for Typhoeus, Yajl, and other optional libraries if they don't exist.
+* gracefully skip tests for Yajl and other optional libraries if they don't exist.
 * gracefully skip live http server tests if the sinatra server is not running.
 * lots of other crap
 
