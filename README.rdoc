@@ -5,6 +5,8 @@ Experiments in a REST API lib
 Super alpha!  Don't use it if you mind throwing away all the code when I change
 the API on a whim.
 
+This mess is gonna get raw, like sushi. So, haters to the left.
+
 == Usage
 
     # uses Net/HTTP, no response parsing
@@ -65,6 +67,7 @@ connection class:
 
 == TODO
 
+* other HTTP methods besides just GET
 * gracefully skip tests for Yajl and other optional libraries if they don't exist.
 * gracefully skip live http server tests if the sinatra server is not running.
 * use Typhoeus' request mocking facilities in the Typhoeus adapter test
