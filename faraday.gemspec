@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{faraday}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["rick"]
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
      "lib/faraday/error.rb",
      "lib/faraday/response.rb",
      "lib/faraday/response/yajl_response.rb",
+     "lib/faraday/test_connection.rb",
      "test/adapter/typhoeus_test.rb",
      "test/adapter_test.rb",
      "test/connection_test.rb",
