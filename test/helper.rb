@@ -11,9 +11,5 @@ require 'faraday'
 module Faraday
   class TestCase < Test::Unit::TestCase
     LIVE_SERVER = 'http://localhost:4567'
-
-    class TestConnection < Faraday::Connection
-      include Faraday::Adapter::MockRequest
-    end
   end
 end

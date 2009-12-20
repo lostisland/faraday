@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "faraday.gemspec",
      "lib/faraday.rb",
      "lib/faraday/adapter/mock_request.rb",
      "lib/faraday/adapter/net_http.rb",

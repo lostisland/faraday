@@ -54,12 +54,14 @@ This mess is gonna get raw, like sushi. So, haters to the left.
 Using the MockRequest connection adapter you can implement your own test
 connection class:
 
+    # customize your own TestConnection or just use Faraday::TestConnection
     class TestConnection < Faraday::Connection
-      extend Faraday::Adapter::MockRequest
+      include Faraday::Adapter::MockRequest
     end
 
     conn = TestConnection.new do |stub|
-      stub.get('/hello.json', { 'hi world' }
+      # response mimics a rack response
+      stub.get('/hello.json') { [200, {}, 'hi world'] }
     end
     resp = conn.get '/hello.json'
     resp.body                     # => 'hi world'

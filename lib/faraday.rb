@@ -7,9 +7,10 @@ module Faraday
     end
   end
 
-  autoload :Connection, 'faraday/connection'
-  autoload :Response,   'faraday/response'
-  autoload :Error,      'faraday/error'
+  autoload :Connection,     'faraday/connection'
+  autoload :TestConnection, 'faraday/test_connection'
+  autoload :Response,       'faraday/response'
+  autoload :Error,          'faraday/error'
 
   module Adapter
     autoload :NetHttp,     'faraday/adapter/net_http'
