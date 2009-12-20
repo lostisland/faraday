@@ -7,7 +7,9 @@ module Faraday
       end
     end
 
-    autoload :YajlResponse, 'faraday/response/yajl_response'
+    extend AutoloadHelper
+    autoload_all 'faraday/response', 
+      :YajlResponse => 'yajl_response'
 
     def initialize(headers = nil, body = nil)
       super(headers || {}, body)
