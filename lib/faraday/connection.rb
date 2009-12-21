@@ -51,16 +51,16 @@ module Faraday
     def in_parallel?
       !!@parallel_manager
     end
-    
+
     def in_parallel(options = {})
       @parallel_manager = true
       yield
       @parallel_manager = false
     end
-    
+
     def setup_parallel_manager(options = {})
     end
-    
+
     def run_parallel_requests
     end
 
