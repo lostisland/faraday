@@ -17,13 +17,15 @@ module Faraday
 
     def initialize(url = nil)
       @response_class = nil
-      if url
-        uri              = URI.parse(url)
-        self.scheme      = uri.scheme
-        self.host        = uri.host
-        self.port        = uri.port
-        self.path_prefix = uri.path
-      end
+      self.url_prefix = url if url
+    end
+
+    def url_prefix=(url)
+      uri              = URI.parse(url)
+      self.scheme      = uri.scheme
+      self.host        = uri.host
+      self.port        = uri.port
+      self.path_prefix = uri.path
     end
 
     # Override in a subclass, or include an adapter
