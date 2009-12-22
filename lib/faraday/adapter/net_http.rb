@@ -2,6 +2,8 @@ require 'net/http'
 module Faraday
   module Adapter
     module NetHttp
+      extend Faraday::Connection::Options
+
       def _get(uri, request_headers)
         http      = Net::HTTP.new(uri.host, uri.port)
         response_class.new do |resp|

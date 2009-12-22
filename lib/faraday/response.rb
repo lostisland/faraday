@@ -1,6 +1,15 @@
 module Faraday
   class Response < Struct.new(:headers, :body)
-    autoload :YajlResponse, 'faraday/response/yajl_response'
+    class << self
+      attr_accessor :load_error
+      def loaded?
+        !load_error
+      end
+    end
+
+    extend AutoloadHelper
+    autoload_all 'faraday/response', 
+      :YajlResponse => 'yajl_response'
 
     def initialize(headers = nil, body = nil)
       super(headers || {}, body)

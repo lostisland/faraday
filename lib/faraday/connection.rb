@@ -1,21 +1,31 @@
 require 'addressable/uri'
 module Faraday
   class Connection
+    module Options
+      def load_error()       @load_error         end
+      def load_error=(v)     @load_error = v     end
+      def supports_async()   @supports_async     end
+      def supports_async=(v) @supports_async = v end
+      def loaded?()         !@load_error         end
+      alias supports_async? supports_async
+    end
+
     include Addressable
 
     attr_accessor :host, :port, :scheme
     attr_reader   :path_prefix
-    attr_writer   :response_class
 
     def initialize(url = nil)
       @response_class = nil
-      if url
-        uri              = URI.parse(url)
-        self.scheme      = uri.scheme
-        self.host        = uri.host
-        self.port        = uri.port
-        self.path_prefix = uri.path
-      end
+      self.url_prefix = url if url
+    end
+
+    def url_prefix=(url)
+      uri              = URI.parse(url)
+      self.scheme      = uri.scheme
+      self.host        = uri.host
+      self.port        = uri.port
+      self.path_prefix = uri.path
     end
 
     # Override in a subclass, or include an adapter
@@ -29,6 +39,29 @@ module Faraday
 
     def response_class
       @response_class || Response
+    end
+
+    def response_class=(v)
+      if v.respond_to?(:loaded?) && !v.loaded?
+        raise ArgumentError, "The response class: #{v.inspect} does not appear to be loaded."
+      end
+      @response_class = v
+    end
+
+    def in_parallel?
+      !!@parallel_manager
+    end
+
+    def in_parallel(options = {})
+      @parallel_manager = true
+      yield
+      @parallel_manager = false
+    end
+
+    def setup_parallel_manager(options = {})
+    end
+
+    def run_parallel_requests
     end
 
     def path_prefix=(value)

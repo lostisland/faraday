@@ -1,6 +1,9 @@
 module Faraday
   module Adapter
     module MockRequest
+      extend Faraday::Connection::Options
+      def self.loaded?() false end
+
       include Faraday::Error # ConnectionFailed
 
       class Stubs
@@ -42,12 +45,15 @@ module Faraday
 
       def initialize &block
         super nil
-        @stubs = Stubs.new
-        yield @stubs
+        yield stubs
+      end
+
+      def stubs
+        @stubs ||= Stubs.new
       end
 
       def _get(uri, headers)
-        raise ConnectionFailed, "no stubbed requests" if @stubs.empty?
+        raise ConnectionFailed, "no stubbed requests" if stubs.empty?
         if stub = @stubs.match(:get, uri.path, headers)
           response_class.new do |resp|
             resp.headers = stub.response_headers

@@ -1,20 +1,44 @@
 module Faraday
-  # Loads each autoloaded constant.  If thread safety is a concern, wrap
-  # this in a Mutex.
-  def self.load
-    constants.each do |const|
-      const_get(const) if autoload?(const)
+  module AutoloadHelper
+    def autoload_all(prefix, options)
+      options.each do |const_name, path|
+        autoload const_name, File.join(prefix, path)
+      end
+    end
+
+    # Loads each autoloaded constant.  If thread safety is a concern, wrap
+    # this in a Mutex.
+    def load
+      constants.each do |const|
+        const_get(const) if autoload?(const)
+      end
     end
   end
 
-  autoload :Connection, 'faraday/connection'
-  autoload :Response,   'faraday/response'
-  autoload :Error,      'faraday/error'
+  extend AutoloadHelper
+
+  autoload_all 'faraday', 
+    :Connection     => 'connection',
+    :TestConnection => 'test_connection',
+    :Response       => 'response',
+    :Error          => 'error'
 
   module Adapter
-    autoload :NetHttp,     'faraday/adapter/net_http'
-    autoload :Typhoeus,    'faraday/adapter/typhoeus'
-    autoload :MockRequest, 'faraday/adapter/mock_request'
+    extend AutoloadHelper
+    autoload_all 'faraday/adapter', 
+      :NetHttp     => 'net_http',
+      :Typhoeus    => 'typhoeus',
+      :MockRequest => 'mock_request'
+
+    # Names of available adapters.  Should not actually load them.
+    def self.adapters
+      constants
+    end
+
+    # Array of Adapters.  These have been loaded and confirmed to work (right gems, etc).
+    def self.loaded_adapters
+      adapters.map { |c| const_get(c) }.select { |a| a.loaded? }
+    end
   end
 end
 
