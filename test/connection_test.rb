@@ -31,6 +31,21 @@ class ConnectionTest < Faraday::TestCase
       conn = Faraday::Connection.new "http://sushi.com/fish"
       assert_equal '/fish', conn.path_prefix
     end
+
+    it "parses @path_prefix out of given url option" do
+      conn = Faraday::Connection.new :url => "http://sushi.com/fish"
+      assert_equal '/fish', conn.path_prefix
+    end
+
+    it "stores default params from options" do
+      conn = Faraday::Connection.new :params => {:a => 1}
+      assert_equal 1, conn.params[:a]
+    end
+
+    it "stores default headers from options" do
+      conn = Faraday::Connection.new :headers => {:a => 1}
+      assert_equal 1, conn.headers[:a]
+    end
   end
 
   describe "#build_uri" do

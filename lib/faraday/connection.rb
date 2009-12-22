@@ -12,11 +12,21 @@ module Faraday
 
     include Addressable
 
-    attr_accessor :host, :port, :scheme
+    attr_accessor :host, :port, :scheme, :params, :headers
     attr_reader   :path_prefix
 
-    def initialize(url = nil)
-      @response_class = nil
+    # :url
+    # :params
+    # :headers
+    # :response
+    def initialize(url = nil, options = {})
+      if url.is_a?(Hash)
+        options = url
+        url     = options[:url]
+      end
+      @response_class = options[:response]
+      @params         = options[:params]  || {}
+      @headers        = options[:headers] || {}
       self.url_prefix = url if url
     end
 
@@ -33,8 +43,9 @@ module Faraday
     #   def _get(uri, headers)
     #   end
     #
-    def get(url, params = {}, headers = {})
-      _get(build_uri(url, params), headers)
+    def get(url, params = nil, headers = nil)
+      uri = build_uri(url, build_params(params))
+      _get(uri, build_headers(headers))
     end
 
     def response_class
@@ -83,6 +94,18 @@ module Faraday
       query = params_to_query(params)
       if !query.empty? then uri.query = query end
       uri
+    end
+
+    def build_params(existing)
+      build_hash :params, existing
+    end
+
+    def build_headers(existing)
+      build_hash :headers, existing
+    end
+
+    def build_hash(method, existing)
+      existing ? send(method).merge(existing) : send(method)
     end
 
     def params_to_query(params)
