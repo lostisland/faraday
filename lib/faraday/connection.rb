@@ -83,7 +83,7 @@ module Faraday
       @path_prefix = value
     end
 
-    def build_uri(url, params = {})
+    def build_uri(url, params = nil)
       uri          = URI.parse(url)
       uri.scheme ||= @scheme
       uri.host   ||= @host
@@ -91,9 +91,17 @@ module Faraday
       if @path_prefix && uri.path !~ /^\//
         uri.path = "#{@path_prefix.size > 1 ? @path_prefix : nil}/#{uri.path}"
       end
-      query = params_to_query(params)
-      if !query.empty? then uri.query = query end
+      if params && !params.empty?
+        uri.query = params_to_query(params)
+      end
       uri
+    end
+
+    def path_for(uri)
+      uri.path.tap do |s|
+        s << "?#{uri.query}"    if uri.query
+        s << "##{uri.fragment}" if uri.fragment
+      end
     end
 
     def build_params(existing)
@@ -101,7 +109,11 @@ module Faraday
     end
 
     def build_headers(existing)
-      build_hash :headers, existing
+      build_hash(:headers, existing).tap do |headers|
+        headers.keys.each do |key|
+          headers[key] = headers.delete(key).to_s
+        end
+      end
     end
 
     def build_hash(method, existing)
@@ -117,7 +129,7 @@ module Faraday
     # Some servers convert +'s in URL query params to spaces.
     # Go ahead and encode it.
     def escape_for_querystring(s)
-      URI.encode_component(s, Addressable::URI::CharacterClasses::QUERY).tap do |escaped|
+      URI.encode_component(s.to_s, Addressable::URI::CharacterClasses::QUERY).tap do |escaped|
         escaped.gsub! /\+/, "%2B"
       end
     end

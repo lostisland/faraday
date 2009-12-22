@@ -5,9 +5,9 @@ module Faraday
       extend Faraday::Connection::Options
 
       def _get(uri, request_headers)
-        http      = Net::HTTP.new(uri.host, uri.port)
+        http = Net::HTTP.new(uri.host, uri.port)
         response_class.new do |resp|
-          http_resp = http.get(uri.path, request_headers) do |chunk|
+          http_resp = http.get(path_for(uri), request_headers) do |chunk|
             resp.process(chunk)
           end
           http_resp.each_header do |key, value|

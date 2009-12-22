@@ -35,16 +35,19 @@ module Faraday
       class Stub < Struct.new(:path, :request_headers, :status, :response_headers, :body)
         def matches?(request_path, headers)
           return false if request_path != path
-          return true  if request_headers.empty?
           request_headers.each do |key, value|
-            return true if headers[key] == value
-          end 
-          false
+            return false if headers[key] != value
+          end
+          true
         end
       end
 
       def initialize &block
         super nil
+        configure(&block) if block
+      end
+
+      def configure
         yield stubs
       end
 
