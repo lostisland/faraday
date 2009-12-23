@@ -60,6 +60,7 @@ module Faraday
         end
 
         def parse_response_headers(header_string)
+          return {} unless header_string # XXX
           Hash[*header_string.split(/\r\n/).
             tap  { |a|      a.shift           }. # drop the HTTP status line
             map! { |h|      h.split(/:\s+/,2) }. # split key and value
