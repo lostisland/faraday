@@ -17,34 +17,47 @@ module Faraday
           @stack.empty?
         end
 
-        def match(request_method, path, request_headers)
+        def match(request_method, path, data, request_headers)
           return false if !@stack.key?(request_method)
-          @stack[request_method].detect { |stub| stub.matches?(path, request_headers) }
+          @stack[request_method].detect { |stub| stub.matches?(path, data, request_headers) }
         end
 
         def get(path, request_headers = {}, &block)
-          (@stack[:get] ||= []) << new_stub(path, request_headers, block)
+          (@stack[:get] ||= []) << new_stub(path, {}, request_headers, block)
         end
 
-        def new_stub(path, request_headers, block)
+        def delete(path, request_headers = {}, &block)
+          (@stack[:delete] ||= []) << new_stub(path, {}, request_headers, block)
+        end
+
+        def post(path, data, request_headers = {}, &block)
+          (@stack[:post] ||= []) << new_stub(path, data, request_headers, block)
+        end
+
+        def put(path, data, request_headers = {}, &block)
+          (@stack[:put] ||= []) << new_stub(path, data, request_headers, block)
+        end
+
+        def new_stub(path, data, request_headers, block)
           status, response_headers, body = block.call
-          Stub.new(path, request_headers, status, response_headers, body)
+          Stub.new(path, request_headers, status, response_headers, body, data)
         end
       end
 
-      class Stub < Struct.new(:path, :request_headers, :status, :response_headers, :body)
-        def matches?(request_path, headers)
+      class Stub < Struct.new(:path, :request_headers, :status, :response_headers, :body, :data)
+        def matches?(request_path, params, headers)
           return false if request_path != path
+          return false if params != data
           return true  if request_headers.empty?
           request_headers.each do |key, value|
-            return true if headers[key] == value
+            return false if headers[key] != value
           end 
-          false
+          true
         end
       end
 
       def initialize &block
-        super nil
+        super
         yield stubs
       end
 
@@ -54,7 +67,41 @@ module Faraday
 
       def _get(uri, headers)
         raise ConnectionFailed, "no stubbed requests" if stubs.empty?
-        if stub = @stubs.match(:get, uri.path, headers)
+        if stub = @stubs.match(:get, uri.path, {}, headers)
+          response_class.new do |resp|
+            resp.headers = stub.response_headers
+            resp.process stub.body
+          end
+        else
+          nil
+        end
+      end
+
+      def _delete(uri, headers)
+        raise ConnectionFailed, "no stubbed requests" if stubs.empty?
+        if stub = @stubs.match(:delete, uri.path, {}, headers)
+          response_class.new do |resp|
+            resp.headers = stub.response_headers
+            resp.process stub.body
+          end
+        else
+          nil
+        end
+      end
+      def _post(uri, data, headers)
+        raise ConnectionFailed, "no stubbed requests" if stubs.empty?
+        if stub = @stubs.match(:post, uri.path, data, headers)
+          response_class.new do |resp|
+            resp.headers = stub.response_headers
+            resp.process stub.body
+          end
+        else
+          nil
+        end
+      end
+      def _put(uri, data, headers)
+        raise ConnectionFailed, "no stubbed requests" if stubs.empty?
+        if stub = @stubs.match(:put, uri.path, data, headers)
           response_class.new do |resp|
             resp.headers = stub.response_headers
             resp.process stub.body
