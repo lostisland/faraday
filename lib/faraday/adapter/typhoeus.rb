@@ -33,6 +33,14 @@ module Faraday
           _perform(:get, uri, :headers => request_headers)
         end
 
+        def _put(uri, data, request_headers)
+          _perform(:put, uri, :headers => request_headers, :params => data)
+        end
+
+        def _delete(uri, request_headers)
+          _perform(:delete, uri, :headers => request_headers)
+        end
+
         def _perform method, uri, params
           response_class.new do |resp|
             is_async = in_parallel?

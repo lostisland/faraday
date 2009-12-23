@@ -6,6 +6,34 @@ class AdapterTest < Faraday::TestCase
   end
 
   Faraday::Adapter.loaded_adapters.each do |adapter|
+    describe "#delete with #{adapter} adapter" do
+      before do
+        @connection.extend adapter
+      end
+
+      it "retrieves the response body with YajlResponse" do
+        @connection.response_class = Faraday::Response::YajlResponse
+        assert_equal({'deleted' => true},
+          @connection.delete('delete_me').body)
+      end
+    end
+
+    describe "#put with #{adapter} adapter" do
+      before do
+        @connection.extend adapter
+      end
+
+      it "sends params" do
+        assert_equal 'hello zack', @connection.put('hello', 'name' => 'zack').body
+      end
+
+      it "retrieves the response body with YajlResponse" do
+        @connection.response_class = Faraday::Response::YajlResponse
+        assert_equal({'name' => 'zack'},
+          @connection.put('echo_name', 'name' => 'zack').body)
+      end
+    end
+
     describe "#post with #{adapter} adapter" do
       before do
         @connection.extend adapter

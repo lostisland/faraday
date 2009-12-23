@@ -46,6 +46,19 @@ module Faraday
       _post build_uri(uri), params, headers
     end
 
+    # Override in a subclass, or include an adapter
+    #
+    #   def _put(uri, post_params, headers)
+    #   end
+    #
+    def put(uri, params = {}, headers = {})
+      _put build_uri(uri), params, headers
+    end
+
+    def delete(uri, params = {}, headers = {})
+      _delete build_uri(uri, params), headers
+    end
+
     def response_class
       @response_class || Response
     end
