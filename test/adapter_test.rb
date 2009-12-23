@@ -6,6 +6,22 @@ class AdapterTest < Faraday::TestCase
   end
 
   Faraday::Adapter.loaded_adapters.each do |adapter|
+    describe "#post with #{adapter} adapter" do
+      before do
+        @connection.extend adapter
+      end
+
+      it "sends params" do
+        assert_equal 'hello zack', @connection.post('hello', 'name' => 'zack').body
+      end
+
+      it "retrieves the response body with YajlResponse" do
+        @connection.response_class = Faraday::Response::YajlResponse
+        assert_equal({'name' => 'zack'},
+          @connection.post('echo_name', 'name' => 'zack').body)
+      end
+    end
+
     describe "#get with #{adapter} adapter" do
       before do
         @connection.extend adapter

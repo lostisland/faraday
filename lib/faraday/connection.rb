@@ -33,8 +33,17 @@ module Faraday
     #   def _get(uri, headers)
     #   end
     #
-    def get(url, params = {}, headers = {})
-      _get(build_uri(url, params), headers)
+    def get(uri, params = {}, headers = {})
+      _get build_uri(uri, params), headers
+    end
+
+    # Override in a subclass, or include an adapter
+    #
+    #   def _post(uri, post_params, headers)
+    #   end
+    #
+    def post(uri, params = {}, headers = {})
+      _post build_uri(uri), params, headers
     end
 
     def response_class

@@ -25,11 +25,20 @@ module Faraday
           @parallel_manager = nil
         end
         
+        def _post(uri, data, request_headers)
+          _perform(:post, uri, :headers => request_headers, :params => data)
+        end
+
         def _get(uri, request_headers)
+          _perform(:get, uri, :headers => request_headers)
+        end
+
+        def _perform method, uri, params
           response_class.new do |resp|
             is_async = in_parallel?
             setup_parallel_manager
-            req      = ::Typhoeus::Request.new(uri.to_s, :headers => request_headers, :method => :get)
+            params[:method] = method
+            req      = ::Typhoeus::Request.new(uri.to_s, params)
             req.on_complete do |response|
               resp.process!(response.body)
               resp.headers = parse_response_headers(response.headers)
