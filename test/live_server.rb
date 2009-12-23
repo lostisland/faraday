@@ -13,6 +13,10 @@ post '/hello' do
   "hello #{params[:name]}"
 end
 
+get '/hello' do
+  "hello #{params[:name]}"
+end
+
 put '/hello' do
   "hello #{params[:name]}"
 end
@@ -25,6 +29,10 @@ put '/echo_name' do
   %/{"name":#{params[:name].inspect}}/
 end
 
-delete '/delete_me' do
+delete '/delete_with_json' do
   %/{"deleted":true}/
+end
+
+delete '/delete_with_params' do
+  params[:deleted]
 end

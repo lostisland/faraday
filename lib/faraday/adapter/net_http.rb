@@ -27,11 +27,11 @@ module Faraday
       end
 
       def _get(uri, request_headers)
-        _perform('GET', uri, nil, request_headers)
+        _perform('GET', uri, uri.query, request_headers)
       end
 
       def _delete(uri, request_headers)
-        _perform('DELETE', uri, nil, request_headers)
+        _perform('DELETE', uri, uri.query, request_headers)
       end
 
       def post_encode data

@@ -6,66 +6,64 @@ class AdapterTest < Faraday::TestCase
   end
 
   Faraday::Adapter.loaded_adapters.each do |adapter|
-    describe "#delete with #{adapter} adapter" do
+    describe "with #{adapter} adapter" do
       before do
         @connection.extend adapter
       end
 
-      it "retrieves the response body with YajlResponse" do
-        @connection.response_class = Faraday::Response::YajlResponse
-        assert_equal({'deleted' => true},
-          @connection.delete('delete_me').body)
-      end
-    end
-
-    describe "#put with #{adapter} adapter" do
-      before do
-        @connection.extend adapter
-      end
-
-      it "sends params" do
-        assert_equal 'hello zack', @connection.put('hello', 'name' => 'zack').body
+      describe "#delete" do
+        it "retrieves the response body with YajlResponse" do
+          @connection.response_class = Faraday::Response::YajlResponse
+          assert_equal({'deleted' => true},
+            @connection.delete('delete_with_json').body)
+        end
+        
+        it "send url-encoded params" do
+          assert_equal('foobar', @connection.delete('delete_with_params', 'deleted' => 'foobar').body)
+        end
       end
 
-      it "retrieves the response body with YajlResponse" do
-        @connection.response_class = Faraday::Response::YajlResponse
-        assert_equal({'name' => 'zack'},
-          @connection.put('echo_name', 'name' => 'zack').body)
-      end
-    end
+      describe "#put" do
+        it "sends params" do
+          assert_equal 'hello zack', @connection.put('hello', 'name' => 'zack').body
+        end
 
-    describe "#post with #{adapter} adapter" do
-      before do
-        @connection.extend adapter
-      end
-
-      it "sends params" do
-        assert_equal 'hello zack', @connection.post('hello', 'name' => 'zack').body
+        it "retrieves the response body with YajlResponse" do
+          @connection.response_class = Faraday::Response::YajlResponse
+          assert_equal({'name' => 'zack'},
+            @connection.put('echo_name', 'name' => 'zack').body)
+        end
       end
 
-      it "retrieves the response body with YajlResponse" do
-        @connection.response_class = Faraday::Response::YajlResponse
-        assert_equal({'name' => 'zack'},
-          @connection.post('echo_name', 'name' => 'zack').body)
-      end
-    end
+      describe "#post" do
+        it "sends params" do
+          assert_equal 'hello zack', @connection.post('hello', 'name' => 'zack').body
+        end
 
-    describe "#get with #{adapter} adapter" do
-      before do
-        @connection.extend adapter
-      end
-
-      it "retrieves the response body" do
-        assert_equal 'hello world', @connection.get('hello_world').body
+        it "retrieves the response body with YajlResponse" do
+          @connection.response_class = Faraday::Response::YajlResponse
+          assert_equal({'name' => 'zack'},
+            @connection.post('echo_name', 'name' => 'zack').body)
+        end
       end
 
-      it "retrieves the response body with YajlResponse" do
-        @connection.response_class = Faraday::Response::YajlResponse
-        assert_equal [1,2,3], @connection.get('json').body
-      end
+      describe "#get" do
+        it "retrieves the response body" do
+          assert_equal 'hello world', @connection.get('hello_world').body
+        end
 
-      it "retrieves the response headers" do
-        assert_equal 'text/html', @connection.get('hello_world').headers['content-type']
+        it "send url-encoded params" do
+          assert_equal('hello zack', @connection.get('hello', 'name' => 'zack').body)
+        end
+
+        it "retrieves the response body with YajlResponse" do
+          @connection.response_class = Faraday::Response::YajlResponse
+          assert_equal [1,2,3], @connection.get('json').body
+        end
+
+        it "retrieves the response headers" do
+          assert_equal 'text/html', @connection.get('hello_world').headers['content-type']
+        end
       end
     end
 
