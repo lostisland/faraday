@@ -9,6 +9,7 @@ module Faraday
         http = Net::HTTP.new(uri.host, uri.port)
         response_class.new do |resp|
           http_resp = http.send_request(method, uri.path, data, request_headers)
+          raise Faraday::Error::ResourceNotFound if http_resp.code == '404'
           resp.process http_resp.body
           http_resp.each_header do |key, value|
             resp.headers[key] = value

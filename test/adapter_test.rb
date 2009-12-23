@@ -48,6 +48,9 @@ class AdapterTest < Faraday::TestCase
       end
 
       describe "#get" do
+        it "raises on 404" do
+          assert_raise(Faraday::Error::ResourceNotFound) { @connection.get('/nothing') }
+        end
         it "retrieves the response body" do
           assert_equal 'hello world', @connection.get('hello_world').body
         end

@@ -48,6 +48,7 @@ module Faraday
             params[:method] = method
             req      = ::Typhoeus::Request.new(uri.to_s, params)
             req.on_complete do |response|
+              raise Faraday::Error::ResourceNotFound if response.code == 404
               resp.process!(response.body)
               resp.headers = parse_response_headers(response.headers)
             end
