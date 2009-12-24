@@ -19,7 +19,8 @@ module Faraday
 
         def match(request_method, path, data, request_headers)
           return false if !@stack.key?(request_method)
-          @stack[request_method].detect { |stub| stub.matches?(path, data, request_headers) }
+          stub = @stack[request_method].detect { |stub| stub.matches?(path, data, request_headers) }
+          @stack[request_method].delete(stub) if stub
         end
 
         def get(path, request_headers = {}, &block)
