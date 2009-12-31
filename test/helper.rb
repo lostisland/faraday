@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'context'
+require 'ruby-debug'
 if ENV['LEFTRIGHT']
   require 'leftright'
 end

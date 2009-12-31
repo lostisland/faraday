@@ -1,11 +1,6 @@
 module Faraday
   class Response < Struct.new(:headers, :body)
-    class << self
-      attr_accessor :load_error
-      def loaded?
-        !load_error
-      end
-    end
+    extend Loadable
 
     extend AutoloadHelper
     autoload_all 'faraday/response', 

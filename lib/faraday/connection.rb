@@ -17,6 +17,7 @@ module Faraday
 
     def initialize(url = nil)
       @response_class = nil
+      @request_class  = nil
       self.url_prefix = url if url
     end
 
@@ -26,6 +27,10 @@ module Faraday
       self.host        = uri.host
       self.port        = uri.port
       self.path_prefix = uri.path
+    end
+
+    def encode_params data
+      request_class.new(data).encode
     end
 
     # Override in a subclass, or include an adapter
@@ -59,6 +64,10 @@ module Faraday
       _delete build_uri(uri, params), headers
     end
 
+    def request_class
+      @request_class || Request::PostRequest
+    end
+
     def response_class
       @response_class || Response
     end
@@ -68,6 +77,13 @@ module Faraday
         raise ArgumentError, "The response class: #{v.inspect} does not appear to be loaded."
       end
       @response_class = v
+    end
+
+    def request_class=(v)
+      if v.respond_to?(:loaded?) && !v.loaded?
+        raise ArgumentError, "The request class: #{v.inspect} does not appear to be loaded."
+      end
+      @request_class = v
     end
 
     def in_parallel?

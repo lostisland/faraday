@@ -20,11 +20,11 @@ module Faraday
       end
 
       def _put(uri, data, request_headers)
-        _perform('PUT', uri, post_encode(data), request_headers)
+        _perform('PUT', uri, encode_params(data), request_headers)
       end
 
       def _post(uri, data, request_headers)
-        _perform('POST', uri, post_encode(data), request_headers)
+        _perform('POST', uri, encode_params(data), request_headers)
       end
 
       def _get(uri, request_headers)
@@ -35,19 +35,6 @@ module Faraday
         _perform('DELETE', uri, uri.query, request_headers)
       end
 
-      def post_encode data
-        create_post_params data
-      end
-    
-     private
-      def create_post_params(params, base = "")
-        [].tap do |toreturn|
-          params.each_key do |key|
-            keystring = base == '' ? key : "#{base}[#{key}]"
-            toreturn << (params[key].kind_of?(Hash) ? create_post_params(params[key], keystring) : "#{keystring}=#{CGI.escape(params[key].to_s)}")
-          end
-        end.join('&')
-      end
     end
   end
 end

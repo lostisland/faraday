@@ -21,7 +21,15 @@ module Faraday
     :Connection     => 'connection',
     :TestConnection => 'test_connection',
     :Response       => 'response',
-    :Error          => 'error'
+    :Error          => 'error',
+    :Loadable       => 'loadable'
+
+  module Request
+    extend AutoloadHelper
+    autoload_all 'faraday/request',
+      :YajlRequest => 'yajl_request',
+      :PostRequest => 'post_request'
+  end
 
   module Adapter
     extend AutoloadHelper
