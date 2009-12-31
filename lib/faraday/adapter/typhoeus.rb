@@ -26,7 +26,8 @@ module Faraday
         end
         
         def _post(uri, data, request_headers)
-          _perform(:post, uri, :headers => request_headers, :body => encode_params(data))
+          request = request_class.new(data, request_headers)
+          _perform(:post, uri, :headers => request.headers, :body => request.body)
         end
 
         def _get(uri, request_headers)
@@ -34,7 +35,8 @@ module Faraday
         end
 
         def _put(uri, data, request_headers)
-          _perform(:put, uri, :headers => request_headers, :body => encode_params(data))
+          request = request_class.new(data, request_headers)
+          _perform(:put, uri, :headers => request.headers, :body => request.body)
         end
 
         def _delete(uri, request_headers)

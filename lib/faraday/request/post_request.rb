@@ -3,11 +3,16 @@ module Faraday
     class PostRequest
       extend Loadable
 
-      def initialize params
+      def initialize params, headers={}
         @params = params
+        @headers = headers
       end
 
-      def encode
+      def headers
+        @headers.merge('Content-Type' => 'application/x-www-form-urlencoded')
+      end
+
+      def body
         create_post_params @params
       end
     

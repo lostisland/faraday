@@ -6,12 +6,17 @@ module Faraday
       begin
         require 'yajl'
 
-        def initialize params
+        def initialize params, headers={}
           @params = params
+          @headers = headers
+        end
+
+        def headers
+          @headers.merge('Content-Type' => 'text/json')
         end
 
         # TODO streaming
-        def encode
+        def body
           Yajl::Encoder.encode @params
         end
       rescue LoadError => e

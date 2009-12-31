@@ -20,11 +20,13 @@ module Faraday
       end
 
       def _put(uri, data, request_headers)
-        _perform('PUT', uri, encode_params(data), request_headers)
+        request = request_class.new(data, request_headers)
+        _perform('PUT', uri, request.body, request.headers)
       end
 
       def _post(uri, data, request_headers)
-        _perform('POST', uri, encode_params(data), request_headers)
+        request = request_class.new(data, request_headers)
+        _perform('POST', uri, request.body, request.headers)
       end
 
       def _get(uri, request_headers)

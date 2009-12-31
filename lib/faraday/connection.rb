@@ -29,10 +29,6 @@ module Faraday
       self.path_prefix = uri.path
     end
 
-    def encode_params data
-      request_class.new(data).encode
-    end
-
     # Override in a subclass, or include an adapter
     #
     #   def _get(uri, headers)
