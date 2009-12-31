@@ -12,7 +12,7 @@ module Faraday
         end
 
         def headers
-          @headers.merge('Content-Type' => 'text/json')
+          @headers.merge('Content-Type' => 'application/json')
         end
 
         # TODO streaming
