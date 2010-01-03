@@ -7,7 +7,9 @@ module Faraday
       def _get(uri, request_headers)
         http      = Net::HTTP.new(uri.host, uri.port)
         response_class.new do |resp|
-          http_resp = http.get(uri.path, request_headers) do |chunk|
+          path      = uri.path.dup
+          path     << "?" << uri.query if uri.query
+          http_resp = http.get(path, request_headers) do |chunk|
             resp.process(chunk)
           end
           http_resp.each_header do |key, value|
