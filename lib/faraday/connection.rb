@@ -13,10 +13,20 @@ module Faraday
     include Addressable
 
     attr_accessor :host, :port, :scheme
+    attr_reader   :headers
     attr_reader   :path_prefix
 
-    def initialize(url = nil)
-      @response_class = nil
+    # :url
+    # :response
+    # :headers
+    def initialize(url = nil, options = {})
+      if url.is_a?(Hash)
+        options = url
+        url     = options[:url]
+      end
+
+      @headers        = options[:headers] || {}
+      @response_class = options[:response]
       self.url_prefix = url if url
     end
 
@@ -34,7 +44,7 @@ module Faraday
     #   end
     #
     def get(url, params = {}, headers = {})
-      _get(build_uri(url, params), headers)
+      _get(build_uri(url, params), build_headers(headers))
     end
 
     def response_class
@@ -80,9 +90,13 @@ module Faraday
       if @path_prefix && uri.path !~ /^\//
         uri.path = "#{@path_prefix.size > 1 ? @path_prefix : nil}/#{uri.path}"
       end
-      query = params_to_query(params)
+      query = params_to_query(params) if params
       if !query.empty? then uri.query = query end
       uri
+    end
+
+    def build_headers(headers = {})
+      headers ? @headers.merge(headers) : @headers.dup
     end
 
     def params_to_query(params)
