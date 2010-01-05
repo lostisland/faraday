@@ -58,7 +58,11 @@ module Faraday
       end
 
       def initialize &block
-        super
+        super nil
+        configure(&block) if block
+      end
+
+      def configure
         yield stubs
       end
 

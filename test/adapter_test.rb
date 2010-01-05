@@ -23,6 +23,20 @@ class AdapterTest < Faraday::TestCase
         end
       end
 
+      it "passes params" do
+        @connection.params = {:a => 1}
+        assert_equal "params[:a] == 1", @connection.get('params').body
+      end
+
+      it "passes headers" do
+        @connection.headers = {"X-Test" => 1}
+        assert_equal "env[HTTP_X_TEST] == 1", @connection.get('headers').body
+      end
+
+      it "retrieves the response body" do
+        assert_equal 'hello world', @connection.get('hello_world').body
+      end
+
       describe "#put" do
         it "sends params" do
           assert_equal 'hello zack', @connection.put('hello', 'name' => 'zack').body
