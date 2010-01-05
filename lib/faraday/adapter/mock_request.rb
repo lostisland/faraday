@@ -58,7 +58,7 @@ module Faraday
       end
 
       def initialize &block
-        super nil
+        super
         configure(&block) if block
       end
 
