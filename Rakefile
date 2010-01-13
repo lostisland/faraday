@@ -10,6 +10,8 @@ begin
     gem.email = "technoweenie@gmail.com"
     gem.homepage = "http://github.com/technoweenie/faraday"
     gem.authors = ["rick"]
+    gem.add_dependency "rack"
+    gem.add_dependency "addressable"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
@@ -27,7 +29,7 @@ begin
   require 'rcov/rcovtask'
   Rcov::RcovTask.new do |test|
     test.libs << 'test'
-    test.pattern = 'test/**/test_*.rb'
+    test.pattern = 'test/**/*_test.rb'
     test.verbose = true
   end
 rescue LoadError
