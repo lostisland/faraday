@@ -1,75 +1,59 @@
 module Faraday
   module Adapter
-    module Typhoeus
-      extend Faraday::Connection::Options
+    class Typhoeus < Middleware
+      self.supports_parallel_requests = true
+
+      def self.setup_parallel_manager(options = {})
+        options.empty? ? ::Typhoeus::Hydra.hydra : ::Typhoeus::Hydra.new(options)
+      end
 
       begin
         require 'typhoeus'
-
-        def in_parallel?
-          !!@parallel_manager
-        end
-        
-        def in_parallel(options = {})
-          setup_parallel_manager(options)
-          yield
-          run_parallel_requests
-        end
-        
-        def setup_parallel_manager(options = {})
-          @parallel_manager ||= ::Typhoeus::Hydra.new(options)
-        end
-        
-        def run_parallel_requests
-          @parallel_manager.run
-          @parallel_manager = nil
-        end
-        
-        def _post(uri, data, request_headers)
-          request = request_class.new(data, request_headers)
-          _perform(:post, uri, :headers => request.headers, :body => request.body)
-        end
-
-        def _get(uri, request_headers)
-          _perform(:get, uri, :headers => request_headers)
-        end
-
-        def _put(uri, data, request_headers)
-          request = request_class.new(data, request_headers)
-          _perform(:put, uri, :headers => request.headers, :body => request.body)
-        end
-
-        def _delete(uri, request_headers)
-          _perform(:delete, uri, :headers => request_headers)
-        end
-
-        def _perform method, uri, params
-          response_class.new do |resp|
-            is_async = in_parallel?
-            setup_parallel_manager
-            params[:method] = method
-            req      = ::Typhoeus::Request.new(uri.to_s, params)
-            req.on_complete do |response|
-              raise Faraday::Error::ResourceNotFound if response.code == 404
-              resp.process!(response.body)
-              resp.headers = parse_response_headers(response.headers)
-            end
-            @parallel_manager.queue(req)
-            if !is_async then run_parallel_requests end
-          end
-        rescue Errno::ECONNREFUSED
-          raise Faraday::Error::ConnectionFailed, "connection refused"
-        end
-
-        def parse_response_headers(header_string)
-          return {} unless header_string # XXX
-          Hash[*header_string.split(/\r\n/).
-            tap  { |a|      a.shift           }. # drop the HTTP status line
-            map! { |h|      h.split(/:\s+/,2) }. # split key and value
-            map! { |(k, v)| [k.downcase, v]   }.flatten!]
-        end
       rescue LoadError => e
         self.load_error = e
+      end
+
+      def call(env)
+        process_body_for_request(env)
+
+        hydra = env[:parallel_manager] || self.class.setup_parallel_manager
+        req   = ::Typhoeus::Request.new env[:url].to_s, 
+          :method  => env[:method],
+          :body    => env[:body],
+          :headers => env[:request_headers]
+
+        req.on_complete do |resp|
+          env.update \
+            :status           => resp.code,
+            :response_headers => parse_response_headers(resp.headers),
+            :body             => resp.body
+          env[:response].finish(env)
+        end
+
+        hydra.queue req
+
+        if !env[:parallel_manager]
+          hydra.run
+        end
+
+        @app.call env
+      rescue Errno::ECONNREFUSED
+        raise Error::ConnectionFailed, "connection refused"
+      end
+
+      def in_parallel(options = {})
+        @hydra = ::Typhoeus::Hydra.new(options)
+        yield
+        @hydra.run
+        @hydra = nil
+      end
+
+      def parse_response_headers(header_string)
+        return {} unless header_string && !header_string.empty?
+        Hash[*header_string.split(/\r\n/).
+          tap  { |a|      a.shift           }. # drop the HTTP status line
+          map! { |h|      h.split(/:\s+/,2) }. # split key and value
+          map! { |(k, v)| [k.downcase, v]   }.flatten!]
       end
     end
   end

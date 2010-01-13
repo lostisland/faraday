@@ -1,79 +1,66 @@
 = faraday
 
-Experiments in a REST API lib
-
-Super alpha!  Don't use it if you mind throwing away all the code when I change
-the API on a whim.
+Modular HTTP client library using middleware heavily inspired by Rack.
 
 This mess is gonna get raw, like sushi. So, haters to the left.
 
 == Usage
 
-    # uses Net/HTTP, no response parsing
-    conn = Faraday::Connection.new("http://sushi.com")
-    conn.extend Faraday::Adapter::NetHttp
-    resp = conn.get("/sake.json")
-    resp.body # => %({"name":"Sake"})
+  conn = Alice::Connection.new(:url => 'http://sushi.com') do |builder|
+    builder.use Alice::Request::Yajl     # convert body to json with Yajl lib
+    builder.use Alice::Adapter::Logger   # log the request somewhere?
+    builder.use Alice::Adapter::Typhoeus # make http request with typhoeus
+    builder.use Alice::Response::Yajl    # # parse body with yajl
 
-    # uses Net/HTTP, Yajl parsing
-    conn = Faraday::Connection.new("http://sushi.com")
-    conn.extend Faraday::Adapter::NetHttp
-    conn.response_class = Faraday::Response::YajlResponse
-    resp = conn.get("/sake.json")
-    resp.body # => {"name": "Sake"}
+    # or use shortcuts
+    builder.request  :yajl     # Alice::Request::Yajl
+    builder.adapter  :logger   # Alice::Adapter::Logger
+    builder.adapter  :typhoeus # Alice::Adapter::Typhoeus
+    builder.response :yajl     # Alice::Response::Yajl
+  end
 
-    # uses Typhoeus, no response parsing
-    conn = Faraday::Connection.new("http://sushi.com")
-    conn.extend Faraday::Adapter::Typhoeus
-    resp = conn.get("/sake.json")
-    resp.body # => %({"name":"Sake"})
-
-    # uses Typhoeus, Yajl parsing, performs requests in parallel
-    conn = Faraday::Connection.new("http://sushi.com")
-    conn.extend Faraday::Adapter::Typhoeus
-    conn.response_class = Faraday::Response::YajlResponse
-    resp1, resp2 = nil, nil
-    conn.in_parallel do
-      resp1 = conn.get("/sake.json")
-      resp2 = conn.get("/unagi.json")
-
-      # requests have not been made yet
-      resp1.body # => nil
-      resp2.body # => nil
-    end
-    resp1.body # => {"name": "Sake"}
-    resp2.body # => {"name": "Unagi"}
+  resp1 = conn.get '/nigiri/sake.json'
+  resp2 = conn.post do |req|
+    req.url  "/nigiri.json", :page => 2
+    req[:content_type] = 'application/json'
+    req.body = {:name => 'Unagi'}
+  end
 
 == Testing
 
-* Yajl is needed for tests :(
-* Live Sinatra server is required for tests: `ruby test/live_server.rb` to start it.
+  # It's possible to define stubbed request outside a test adapter block.
+  stubs = Alice::Test::Stubs.new do |stub|
+    stub.get('/tamago') { [200, 'egg', {} }
+  end
 
-=== Writing tests based on faraday
-
-Using the MockRequest connection adapter you can implement your own test
-connection class:
-
-    # customize your own TestConnection or just use Faraday::TestConnection
-    class TestConnection < Faraday::Connection
-      include Faraday::Adapter::MockRequest
+  # You can pass stubbed request to the test adapter or define them in a block
+  # or a combination of the two.
+  test = Alice::Connection.new do |builder|
+    builder.adapter :test, stubs do |stub|
+      stub.get('/ebi') {[ 200, 'shrimp', {} ]}
     end
+  end
 
-    conn = TestConnection.new do |stub|
-      # response mimics a rack response
-      stub.get('/hello.json') { [200, {}, 'hi world'] }
-    end
-    resp = conn.get '/hello.json'
-    resp.body                     # => 'hi world'
-    resp = conn.get '/whatever'   # => <not stubbed, raises connection error>
+  # It's also possible to stub additional requests after the connection has
+  # been initialized. This is useful for testing.
+  stubs.get('/uni') {[ 200, 'urchin', {} ]}
+
+  resp = test.get '/tamago'
+  resp.body # => 'egg'
+  resp = test.get '/ebi'
+  resp.body # => 'shrimp'
+  resp = test.get '/uni'
+  resp.body # => 'urchin'
+  resp = test.get '/else' #=> raises "no such stub" error
 
 == TODO
 
-* other HTTP methods besides just GET
-* gracefully skip tests for Yajl and other optional libraries if they don't exist.
-* gracefully skip live http server tests if the sinatra server is not running.
-* use Typhoeus' request mocking facilities in the Typhoeus adapter test
-* lots of other crap
+* Add curb/em-http support
+* Add xml parsing
+* Support timeouts, proxy servers, ssl options
+* Add streaming requests and responses
+* Add default middleware load out for common cases
+* Add symbol => string index for mime types (:json => 'application/json')
 
 == Note on Patches/Pull Requests
  
@@ -87,4 +74,4 @@ connection class:
 
 == Copyright
 
-Copyright (c) 2009 rick. See LICENSE for details.
+Copyright (c) 2009-2010 rick, hobson. See LICENSE for details.

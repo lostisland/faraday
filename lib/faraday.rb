@@ -1,5 +1,16 @@
+require 'rack/utils'
+
 module Faraday
   module AutoloadHelper
+    def register_lookup_modules(mods)
+      (@lookup_module_index ||= {}).update(mods)
+    end
+
+    def lookup_module(key)
+      return if !@lookup_module_index
+      const_get @lookup_module_index[key] || key
+    end
+
     def autoload_all(prefix, options)
       options.each do |const_name, path|
         autoload const_name, File.join(prefix, path)
@@ -8,45 +19,41 @@ module Faraday
 
     # Loads each autoloaded constant.  If thread safety is a concern, wrap
     # this in a Mutex.
-    def load
+    def load_autoloaded_constants
       constants.each do |const|
         const_get(const) if autoload?(const)
       end
+    end
+
+    def all_loaded_constants
+      constants.map { |c| const_get(c) }.select { |a| a.loaded? }
     end
   end
 
   extend AutoloadHelper
 
   autoload_all 'faraday', 
-    :Connection     => 'connection',
-    :TestConnection => 'test_connection',
-    :Response       => 'response',
-    :Error          => 'error',
-    :Loadable       => 'loadable'
-
-  module Request
-    extend AutoloadHelper
-    autoload_all 'faraday/request',
-      :YajlRequest => 'yajl_request',
-      :PostRequest => 'post_request'
-  end
+    :Connection => 'connection',
+    :Middleware => 'middleware',
+    :Builder    => 'builder',
+    :Request    => 'request',
+    :Response   => 'response',
+    :Error      => 'error'
 
   module Adapter
     extend AutoloadHelper
-    autoload_all 'faraday/adapter', 
-      :NetHttp     => 'net_http',
-      :Typhoeus    => 'typhoeus',
-      :MockRequest => 'mock_request'
+    autoload_all 'faraday/adapter',
+      :NetHttp  => 'net_http',
+      :Typhoeus => 'typhoeus',
+      :Patron   => 'patron',
+      :Test     => 'test'
 
-    # Names of available adapters.  Should not actually load them.
-    def self.adapters
-      constants
-    end
-
-    # Array of Adapters.  These have been loaded and confirmed to work (right gems, etc).
-    def self.loaded_adapters
-      adapters.map { |c| const_get(c) }.select { |a| a.loaded? }
-    end
+    register_lookup_modules \
+      :test     => :Test,
+      :net_http => :NetHttp,
+      :typhoeus => :Typhoeus,
+      :patron   => :patron,
+      :net_http => :NetHttp
   end
 end
 

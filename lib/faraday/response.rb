@@ -1,38 +1,53 @@
 module Faraday
-  class Response < Struct.new(:headers, :body)
-    extend Loadable
+  class Response
+    class Middleware < Faraday::Middleware
+      self.load_error = :abstract
+
+      # Use a response callback in case the request is parallelized.
+      #
+      #   env[:response].on_complete do |finished_env|
+      #     finished_env[:body] = do_stuff_to(finished_env[:body])
+      #   end
+      #
+      def self.register_on_complete(env)
+      end
+
+      def call(env)
+        self.class.register_on_complete(env)
+        @app.call env
+      end
+    end
 
     extend AutoloadHelper
-    autoload_all 'faraday/response', 
-      :YajlResponse => 'yajl_response'
 
-    def initialize(headers = nil, body = nil)
-      super(headers || {}, body)
-      if block_given?
-        yield self
-        processed!
-      end
+    autoload_all 'faraday/response',
+      :Yajl              => 'yajl',
+      :ActiveSupportJson => 'active_support_json'
+
+    register_lookup_modules \
+      :yajl                => :Yajl,
+      :activesupport_json  => :ActiveSupportJson,
+      :rails_json          => :ActiveSupportJson,
+      :active_support_json => :ActiveSupportJson
+    attr_accessor :status, :headers, :body
+
+    def initialize
+      @status, @headers, @body = nil, nil, nil
+      @on_complete_callbacks = []
     end
 
-    # TODO: process is a funky name.  change it
-    # processes a chunk of the streamed body.
-    def process(chunk)
-      if !body
-        self.body = []
-      end
-      body << chunk
+    def on_complete(&block)
+      @on_complete_callbacks << block
     end
 
-    # Assume the given content is the full body, and not streamed.  
-    def process!(full_body)
-      process(full_body)
-      processed!
+    def finish(env)
+      @on_complete_callbacks.each { |c| c.call(env) }
+      @status, @headers, @body = env[:status], env[:response_headers], env[:body]
+      self
     end
 
-    # Signals the end of streamed content.  Do whatever you need to clean up
-    # the streamed body.
-    def processed!
-      self.body = body.join if body.respond_to?(:join)
+    def success?
+      status == 200
     end
   end
 end

@@ -17,16 +17,12 @@ get '/hello' do
   "hello #{params[:name]}"
 end
 
-put '/hello' do
-  "hello #{params[:name]}"
-end
-
 post '/echo_name' do
-  %/{"name":#{params[:name].inspect}}/
+  params[:name].inspect
 end
 
 put '/echo_name' do
-  %/{"name":#{params[:name].inspect}}/
+  params[:name].inspect
 end
 
 delete '/delete_with_json' do
@@ -36,12 +32,3 @@ end
 delete '/delete_with_params' do
   params[:deleted]
 end
-
-get '/params' do
-  %(params[:a] == #{params[:a]})
-end
-
-get "/headers" do
-  %(env[HTTP_X_TEST] == #{env["HTTP_X_TEST"]})
-end
-

@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'context'
-require 'ruby-debug'
 if ENV['LEFTRIGHT']
   require 'leftright'
 end
@@ -17,6 +16,10 @@ end
 
 module Faraday
   class TestCase < Test::Unit::TestCase
-    LIVE_SERVER = 'http://localhost:4567'
+    LIVE_SERVER = case ENV['LIVE']
+      when /^http/ then ENV['LIVE']
+      when nil     then nil
+      else 'http://localhost:4567'
+    end
   end
 end
