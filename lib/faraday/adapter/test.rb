@@ -56,11 +56,28 @@ module Faraday
         def new_stub(request_method, path, body=nil, &block)
           (@stack[request_method] ||= []) << Stub.new(path, body, block)
         end
+
+        # Raises an error if any of the stubbed calls have not been made.
+        def verify_stubbed_calls
+          failed_stubs = []
+          @stack.each do |method, stubs|
+            unless stubs.size == 0
+              failed_stubs.concat(stubs.map {|stub|
+                "Expected #{method} #{stub}."
+              })
+            end
+          end
+          raise failed_stubs.join(" ") unless failed_stubs.size == 0
+        end
       end
 
       class Stub < Struct.new(:path, :body, :block)
         def matches?(request_path, request_body)
           request_path == path && request_body == body
+        end
+
+        def to_s
+          "#{path} #{body}"
         end
       end
 
