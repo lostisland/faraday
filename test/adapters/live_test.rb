@@ -6,16 +6,12 @@ if Faraday::TestCase::LIVE_SERVER
       Faraday::Adapter.all_loaded_constants.each do |adapter|
         describe "with #{adapter} adapter" do
           before do
-            @connection = Faraday::Connection.new LIVE_SERVER do
-              use adapter
+            @connection = Faraday::Connection.new LIVE_SERVER do |b|
+              b.use adapter
             end
           end
 
           describe "#get" do
-            it "raises on 404" do
-              assert_raise(Faraday::Error::ResourceNotFound) { @connection.get('/nothing') }
-            end
-
             it "retrieves the response body" do
               assert_equal 'hello world', @connection.get('hello_world').body
             end
@@ -33,10 +29,6 @@ if Faraday::TestCase::LIVE_SERVER
           end
 
           describe "#post" do
-            it "raises on 404" do
-              assert_raise(Faraday::Error::ResourceNotFound) { @connection.post('/nothing') }
-            end
-
             it "send url-encoded params" do
               resp = @connection.post do |req|
                 req.url 'echo_name'
@@ -61,10 +53,6 @@ if Faraday::TestCase::LIVE_SERVER
           # http://github.com/toland/patron/issues/#issue/9
           if ENV['FORCE'] || adapter != Faraday::Adapter::Patron
             describe "#put" do
-              it "raises on 404" do
-                assert_raise(Faraday::Error::ResourceNotFound) { @connection.put('/nothing') }
-              end
-
               it "send url-encoded params" do
                 resp = @connection.put do |req|
                   req.url 'echo_name'
@@ -90,10 +78,6 @@ if Faraday::TestCase::LIVE_SERVER
           # http://github.com/pauldix/typhoeus/issues#issue/7
           if ENV['FORCE'] || adapter != Faraday::Adapter::Typhoeus
             describe "#head" do
-              it "raises on 404" do
-                assert_raise(Faraday::Error::ResourceNotFound) { @connection.head('/nothing') }
-              end
-
               it "send url-encoded params" do
                 resp = @connection.head do |req|
                   req.url 'hello', 'name' => 'zack'
@@ -112,10 +96,6 @@ if Faraday::TestCase::LIVE_SERVER
           end
 
           describe "#delete" do
-            it "raises on 404" do
-              assert_raise(Faraday::Error::ResourceNotFound) { @connection.delete('/nothing') }
-            end
-
             it "retrieves the response headers" do
               assert_equal 'text/html', @connection.delete('delete_with_json').headers['content-type']
             end
