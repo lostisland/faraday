@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 class TestEnv < Faraday::TestCase
   describe "Request#create" do
     before :all do
-      @conn = Faraday::Connection.new :url => 'http://sushi.com/api'
+      @conn = Faraday::Connection.new :url => 'http://sushi.com/api', :headers => {'Mime-Version' => '1.0'}
       @input = {
         :body    => 'abc',
         :headers => {'Server' => 'Faraday'}}
@@ -25,7 +25,7 @@ class TestEnv < Faraday::TestCase
 
     it "stores headers in :headers" do
       assert_kind_of Rack::Utils::HeaderHash, @env[:request_headers]
-      assert_equal @input[:headers], @env[:request_headers]
+      assert_equal @input[:headers].merge('Mime-Version' => '1.0'), @env[:request_headers]
     end
 
     it "stores body in :body" do
