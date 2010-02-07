@@ -9,7 +9,7 @@ module Faraday
 
       begin
         require 'typhoeus'
-      rescue LoadError => e
+      rescue LoadError, NameError => e
         self.load_error = e
       end
 

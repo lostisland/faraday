@@ -3,7 +3,7 @@ module Faraday
     class Patron < Middleware
       begin
         require 'patron'
-      rescue LoadError => e
+      rescue LoadError, NameError => e
         self.load_error = e
       end
 

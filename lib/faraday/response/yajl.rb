@@ -8,7 +8,7 @@ module Faraday
           finished_env[:body] = Yajl::Parser.parse(finished_env[:body])
         end
       end
-    rescue LoadError => e
+    rescue LoadError, NameError => e
       self.load_error = e
     end
     

@@ -3,6 +3,7 @@ module Faraday
     begin
       if !defined?(ActiveSupport::JSON)
         require 'active_support'
+        ActiveSupport::JSON
       end
 
       def self.register_on_complete(env)
@@ -10,7 +11,7 @@ module Faraday
           finished_env[:body] = ActiveSupport::JSON.decode(finished_env[:body])
         end
       end
-    rescue LoadError => e
+    rescue LoadError, NameError => e
       self.load_error = e
     end
     

@@ -3,9 +3,10 @@ module Faraday
     begin
       if !defined?(ActiveSupport::JSON)
         require 'active_support'
+        ActiveSupport::JSON
       end
 
-    rescue LoadError => e
+    rescue LoadError, NameError => e
       self.load_error = e
     end
 
