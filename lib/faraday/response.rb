@@ -41,6 +41,7 @@ module Faraday
     end
 
     def finish(env)
+      env[:body] ||= ''
       @on_complete_callbacks.each { |c| c.call(env) }
       @status, @headers, @body = env[:status], env[:response_headers], env[:body]
       self
