@@ -26,7 +26,7 @@ class ResponseMiddlewareTest < Faraday::TestCase
         end
         response = @connection.get('blank')
         assert response.success?
-        assert_equal nil, response.body
+        assert !response.body
       end
 
       it "uses #{parser} to skip nil content" do
@@ -38,7 +38,7 @@ class ResponseMiddlewareTest < Faraday::TestCase
         end
         response = @connection.get('nil')
         assert response.success?
-        assert_equal nil, response.body
+        assert !response.body
       end
     end
   end
