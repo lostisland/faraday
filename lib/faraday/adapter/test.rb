@@ -73,7 +73,7 @@ module Faraday
 
       class Stub < Struct.new(:path, :body, :block)
         def matches?(request_path, request_body)
-          request_path == path && request_body == body
+          request_path == path && (body.to_s.size.zero? || request_body == body)
         end
 
         def to_s
