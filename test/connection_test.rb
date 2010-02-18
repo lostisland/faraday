@@ -1,167 +1,161 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class TestConnection < Faraday::TestCase
-  describe "#initialize" do
-    it "parses @host out of given url" do
-      conn = Faraday::Connection.new "http://sushi.com"
-      assert_equal 'sushi.com', conn.host
-    end
-
-    it "parses nil @port out of given url" do
-      conn = Faraday::Connection.new "http://sushi.com"
-      assert_nil conn.port
-    end
-
-    it "parses @scheme out of given url" do
-      conn = Faraday::Connection.new "http://sushi.com"
-      assert_equal 'http', conn.scheme
-    end
-
-    it "parses @port out of given url" do
-      conn = Faraday::Connection.new "http://sushi.com:815"
-      assert_equal 815, conn.port
-    end
-
-    it "parses nil @path_prefix out of given url" do
-      conn = Faraday::Connection.new "http://sushi.com"
-      assert_equal '/', conn.path_prefix
-    end
-
-    it "parses @path_prefix out of given url" do
-      conn = Faraday::Connection.new "http://sushi.com/fish"
-      assert_equal '/fish', conn.path_prefix
-    end
-
-    it "parses @path_prefix out of given url option" do
-      conn = Faraday::Connection.new :url => "http://sushi.com/fish"
-      assert_equal '/fish', conn.path_prefix
-    end
-
-    it "stores default params from options" do
-      conn = Faraday::Connection.new :params => {:a => 1}
-      assert_equal 1, conn.params['a']
-    end
-
-    it "stores default params from uri" do
-      conn = Faraday::Connection.new "http://sushi.com/fish?a=1", :params => {'b' => '2'}
-      assert_equal '1', conn.params['a']
-      assert_equal '2', conn.params['b']
-    end
-
-    it "stores default headers from options" do
-      conn = Faraday::Connection.new :headers => {:a => 1}
-      assert_equal '1', conn.headers['A']
-    end
+  def test_initialize_parses_host_out_of_given_url
+    conn = Faraday::Connection.new "http://sushi.com"
+    assert_equal 'sushi.com', conn.host
   end
 
-  describe "#build_url" do
-    it "uses Connection#host as default URI host" do
-      conn = Faraday::Connection.new
-      conn.host = 'sushi.com'
-      uri = conn.build_url("/sake.html")
-      assert_equal 'sushi.com', uri.host
-    end
-
-    it "uses Connection#port as default URI port" do
-      conn = Faraday::Connection.new
-      conn.port = 23
-      uri = conn.build_url("http://sushi.com")
-      assert_equal 23, uri.port
-    end
-
-    it "uses Connection#scheme as default URI scheme" do
-      conn = Faraday::Connection.new 'http://sushi.com'
-      uri = conn.build_url("/sake.html")
-      assert_equal 'http', uri.scheme
-    end
-
-    it "uses Connection#path_prefix to customize the path" do
-      conn = Faraday::Connection.new
-      conn.path_prefix = '/fish'
-      uri = conn.build_url("sake.html")
-      assert_equal '/fish/sake.html', uri.path
-    end
-
-    it "uses '/' Connection#path_prefix to customize the path" do
-      conn = Faraday::Connection.new
-      conn.path_prefix = '/'
-      uri = conn.build_url("sake.html")
-      assert_equal '/sake.html', uri.path
-    end
-
-    it "forces Connection#path_prefix to be absolute" do
-      conn = Faraday::Connection.new
-      conn.path_prefix = 'fish'
-      uri = conn.build_url("sake.html")
-      assert_equal '/fish/sake.html', uri.path
-    end
-
-    it "ignores Connection#path_prefix trailing slash" do
-      conn = Faraday::Connection.new
-      conn.path_prefix = '/fish/'
-      uri = conn.build_url("sake.html")
-      assert_equal '/fish/sake.html', uri.path
-    end
-
-    it "allows absolute URI to ignore Connection#path_prefix" do
-      conn = Faraday::Connection.new
-      conn.path_prefix = '/fish'
-      uri = conn.build_url("/sake.html")
-      assert_equal '/sake.html', uri.path
-    end
-
-    it "parses url/params into #path" do
-      conn = Faraday::Connection.new
-      uri = conn.build_url("http://sushi.com/sake.html")
-      assert_equal '/sake.html', uri.path
-    end
-
-    it "parses url/params into #query" do
-      conn = Faraday::Connection.new
-      uri = conn.build_url("http://sushi.com/sake.html", 'a[b]' => '1 + 2')
-      assert_equal "a%5Bb%5D=1%20%2B%202", uri.query
-    end
-
-    it "mashes default params and given params together" do
-      conn = Faraday::Connection.new 'http://sushi.com/api?token=abc', :params => {'format' => 'json'}
-      url = conn.build_url("nigiri?page=1", :limit => 5)
-      assert_match /limit=5/,      url.query
-      assert_match /page=1/,       url.query
-      assert_match /format=json/,  url.query
-      assert_match /token=abc/,    url.query
-    end
-
-    it "overrides default params with given params" do
-      conn = Faraday::Connection.new 'http://sushi.com/api?token=abc', :params => {'format' => 'json'}
-      url = conn.build_url("nigiri?page=1", :limit => 5, :token => 'def', :format => 'xml')
-      assert_match /limit=5/,        url.query
-      assert_match /page=1/,         url.query
-      assert_match /format=xml/,     url.query
-      assert_match /token=def/,      url.query
-      assert_no_match /format=json/, url.query
-      assert_no_match /token=abc/,   url.query
-    end
-
-    it "parses url into #host" do
-      conn = Faraday::Connection.new
-      uri = conn.build_url("http://sushi.com/sake.html")
-      assert_equal "sushi.com", uri.host
-    end
-
-    it "parses url into #port" do
-      conn = Faraday::Connection.new
-      uri = conn.build_url("http://sushi.com/sake.html")
-      assert_nil uri.port
-    end
+  def test_initialize_parses_nil_port_out_of_given_url
+    conn = Faraday::Connection.new "http://sushi.com"
+    assert_nil conn.port
   end
 
-  describe "#params_to_query" do
-    it "converts hash of params to URI-escaped query string" do
-      conn = Faraday::Connection.new
-      class << conn
-        public :build_query
-      end
-      assert_equal "a%5Bb%5D=1%20%2B%202", conn.build_query('a[b]' => '1 + 2')
+  def test_initialize_parses_scheme_out_of_given_url
+    conn = Faraday::Connection.new "http://sushi.com"
+    assert_equal 'http', conn.scheme
+  end
+
+  def test_initialize_parses_port_out_of_given_url
+    conn = Faraday::Connection.new "http://sushi.com:815"
+    assert_equal 815, conn.port
+  end
+
+  def test_initialize_parses_nil_path_prefix_out_of_given_url
+    conn = Faraday::Connection.new "http://sushi.com"
+    assert_equal '/', conn.path_prefix
+  end
+
+  def test_initialize_parses_path_prefix_out_of_given_url
+    conn = Faraday::Connection.new "http://sushi.com/fish"
+    assert_equal '/fish', conn.path_prefix
+  end
+
+  def test_initialize_parses_path_prefix_out_of_given_url_option
+    conn = Faraday::Connection.new :url => "http://sushi.com/fish"
+    assert_equal '/fish', conn.path_prefix
+  end
+
+  def test_initialize_stores_default_params_from_options
+    conn = Faraday::Connection.new :params => {:a => 1}
+    assert_equal 1, conn.params['a']
+  end
+
+  def test_initialize_stores_default_params_from_uri
+    conn = Faraday::Connection.new "http://sushi.com/fish?a=1", :params => {'b' => '2'}
+    assert_equal '1', conn.params['a']
+    assert_equal '2', conn.params['b']
+  end
+
+  def test_initialize_stores_default_headers_from_options
+    conn = Faraday::Connection.new :headers => {:a => 1}
+    assert_equal '1', conn.headers['A']
+  end
+
+  def test_build_url_uses_connection_host_as_default_uri_host
+    conn = Faraday::Connection.new
+    conn.host = 'sushi.com'
+    uri = conn.build_url("/sake.html")
+    assert_equal 'sushi.com', uri.host
+  end
+
+  def test_build_url_uses_connection_port_as_default_uri_port
+    conn = Faraday::Connection.new
+    conn.port = 23
+    uri = conn.build_url("http://sushi.com")
+    assert_equal 23, uri.port
+  end
+
+  def test_build_url_uses_connection_scheme_as_default_uri_scheme
+    conn = Faraday::Connection.new 'http://sushi.com'
+    uri = conn.build_url("/sake.html")
+    assert_equal 'http', uri.scheme
+  end
+
+  def test_build_url_uses_connection_path_prefix_to_customize_path
+    conn = Faraday::Connection.new
+    conn.path_prefix = '/fish'
+    uri = conn.build_url("sake.html")
+    assert_equal '/fish/sake.html', uri.path
+  end
+
+  def test_build_url_uses_root_connection_path_prefix_to_customize_path
+    conn = Faraday::Connection.new
+    conn.path_prefix = '/'
+    uri = conn.build_url("sake.html")
+    assert_equal '/sake.html', uri.path
+  end
+
+  def test_build_url_forces_connection_path_prefix_to_be_absolute
+    conn = Faraday::Connection.new
+    conn.path_prefix = 'fish'
+    uri = conn.build_url("sake.html")
+    assert_equal '/fish/sake.html', uri.path
+  end
+
+  def test_build_url_ignores_connection_path_prefix_trailing_slash
+    conn = Faraday::Connection.new
+    conn.path_prefix = '/fish/'
+    uri = conn.build_url("sake.html")
+    assert_equal '/fish/sake.html', uri.path
+  end
+
+  def test_build_url_allows_absolute_uri_to_ignore_connection_path_prefix
+    conn = Faraday::Connection.new
+    conn.path_prefix = '/fish'
+    uri = conn.build_url("/sake.html")
+    assert_equal '/sake.html', uri.path
+  end
+
+  def test_build_url_parses_url_params_into_path
+    conn = Faraday::Connection.new
+    uri = conn.build_url("http://sushi.com/sake.html")
+    assert_equal '/sake.html', uri.path
+  end
+
+  def test_build_url_parses_url_params_into_query
+    conn = Faraday::Connection.new
+    uri = conn.build_url("http://sushi.com/sake.html", 'a[b]' => '1 + 2')
+    assert_equal "a%5Bb%5D=1%20%2B%202", uri.query
+  end
+
+  def test_build_url_mashes_default_and_given_params_together
+    conn = Faraday::Connection.new 'http://sushi.com/api?token=abc', :params => {'format' => 'json'}
+    url = conn.build_url("nigiri?page=1", :limit => 5)
+    assert_match /limit=5/,      url.query
+    assert_match /page=1/,       url.query
+    assert_match /format=json/,  url.query
+    assert_match /token=abc/,    url.query
+  end
+
+  def test_build_url_overrides_default_params_with_given_params
+    conn = Faraday::Connection.new 'http://sushi.com/api?token=abc', :params => {'format' => 'json'}
+    url = conn.build_url("nigiri?page=1", :limit => 5, :token => 'def', :format => 'xml')
+    assert_match /limit=5/,        url.query
+    assert_match /page=1/,         url.query
+    assert_match /format=xml/,     url.query
+    assert_match /token=def/,      url.query
+    assert_no_match /format=json/, url.query
+    assert_no_match /token=abc/,   url.query
+  end
+
+  def test_build_url_parses_url_into_host
+    conn = Faraday::Connection.new
+    uri = conn.build_url("http://sushi.com/sake.html")
+    assert_equal "sushi.com", uri.host
+  end
+
+  def test_build_url_parses_url_into_port
+    conn = Faraday::Connection.new
+    uri = conn.build_url("http://sushi.com/sake.html")
+    assert_nil uri.port
+  end
+
+  def test_params_to_query_converts_hash_of_params_to_uri_escaped_query_string
+    conn = Faraday::Connection.new
+    class << conn
+      public :build_query
     end
+    assert_equal "a%5Bb%5D=1%20%2B%202", conn.build_query('a[b]' => '1 + 2')
   end
 end

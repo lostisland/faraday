@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'context'
+require 'test/unit'
 if ENV['LEFTRIGHT']
   require 'leftright'
 end
@@ -20,6 +20,10 @@ module Faraday
       when /^http/ then ENV['LIVE']
       when nil     then nil
       else 'http://localhost:4567'
+    end
+
+    def test_default
+      assert true
     end
   end
 end
