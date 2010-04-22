@@ -1,10 +1,10 @@
 module Faraday
   # Possibly going to extend this a bit.
   #
-  # Faraday::Connection.new(:url => 'http://sushi.com') do
-  #   request  :yajl     # Faraday::Request::Yajl
-  #   adapter  :logger   # Faraday::Adapter::Logger
-  #   response :yajl     # Faraday::Response::Yajl
+  # Faraday::Connection.new(:url => 'http://sushi.com') do |b|
+  #   b.request  :yajl     # Faraday::Request::Yajl
+  #   b.adapter  :logger   # Faraday::Adapter::Logger
+  #   b.response :yajl     # Faraday::Response::Yajl
   # end
   class Builder
     attr_accessor :handlers
@@ -34,7 +34,7 @@ module Faraday
       @handlers[1..-1].inject(inner_app) { |app, middleware| middleware.call(app) }
     end
 
-    def use klass, *args, &block
+    def use(klass, *args, &block)
       @handlers.unshift(lambda { |app| klass.new(app, *args, &block) })
     end
 
