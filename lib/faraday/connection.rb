@@ -33,10 +33,14 @@ module Faraday
       merge_params  @params,  options[:params]  if options[:params]
       merge_headers @headers, options[:headers] if options[:headers]
       if block
-        @builder = Builder.create_with_inner_app(&block)
+        @builder = Builder.create(&block)
       else
         @builder = options[:builder] || Builder.new
       end
+    end
+
+    def build(&block)
+      @builder.build(&block)
     end
 
     def get(url = nil, headers = nil, &block)

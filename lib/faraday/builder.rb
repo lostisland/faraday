@@ -9,20 +9,29 @@ module Faraday
   class Builder
     attr_accessor :handlers
 
-    def self.create_with_inner_app(&block)
-      inner = lambda do |env| 
-        if !env[:parallel_manager]
-          env[:response].finish(env)
-        else
-          env[:response]
-        end
-      end
-      Builder.new(&block).tap { |builder| builder.run(inner) }
+    def self.create(&block)
+      Builder.new(&block)
     end
 
-    def initialize(handlers = [])
+    def self.inner_app
+      lambda do |env| 
+        env[:parallel_manager] ? env[:response] : env[:response].finish(env)
+      end
+    end
+
+    def initialize(handlers = [], &block)
       @handlers = handlers
-      yield self if block_given?
+      build(&block) if block_given?
+    end
+
+    def build(&block)
+      block.call(self)
+      run(self.class.inner_app)
+    end
+
+    def [](index)
+      # @handlers are stored in reverse order
+      @handlers[-(index+1)]
     end
 
     def run(app)
@@ -35,7 +44,7 @@ module Faraday
     end
 
     def use(klass, *args, &block)
-      @handlers.unshift(lambda { |app| klass.new(app, *args, &block) })
+      run(lambda { |app| klass.new(app, *args, &block) })
     end
 
     def request(key, *args, &block)
