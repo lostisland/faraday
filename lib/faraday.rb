@@ -52,7 +52,7 @@ module Faraday
       :test     => :Test,
       :net_http => :NetHttp,
       :typhoeus => :Typhoeus,
-      :patron   => :patron,
+      :patron   => :Patron,
       :net_http => :NetHttp
   end
 end
