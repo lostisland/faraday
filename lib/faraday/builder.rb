@@ -20,12 +20,12 @@ module Faraday
       Builder.new(&block).tap { |builder| builder.run(inner) }
     end
 
-    def initialize
-      @handlers = []
-      yield self
+    def initialize(handlers = [])
+      @handlers = handlers
+      yield self if block_given?
     end
 
-    def run app
+    def run(app)
       @handlers.unshift app
     end
 
@@ -52,6 +52,14 @@ module Faraday
 
     def use_symbol(mod, key, *args, &block)
       use mod.lookup_module(key), *args, &block
+    end
+
+    def ==(other)
+      other.is_a?(self.class) && @handlers == other.handlers
+    end
+
+    def dup
+      self.class.new @handlers.dup
     end
   end
 end

@@ -158,4 +158,19 @@ class TestConnection < Faraday::TestCase
     end
     assert_equal "a%5Bb%5D=1%20%2B%202", conn.build_query('a[b]' => '1 + 2')
   end
+
+  def test_dups_connection_object
+    conn = Faraday::Connection.new 'http://sushi.com/foo' do |b|
+      b.adapter :net_http
+    end
+    conn.headers['content-type'] = 'text/plain'
+    conn.params['a'] = '1'
+
+    duped = conn.dup
+    assert_equal conn.build_url(''), duped.build_url('')
+    [:headers, :params, :builder].each do |attr|
+      assert_equal     conn.send(attr),           duped.send(attr)
+      assert_not_equal conn.send(attr).object_id, duped.send(attr).object_id
+    end
+  end
 end

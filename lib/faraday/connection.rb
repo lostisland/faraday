@@ -34,6 +34,8 @@ module Faraday
       merge_headers @headers, options[:headers] if options[:headers]
       if block
         @builder = Builder.create_with_inner_app(&block)
+      else
+        @builder = options[:builder] || Builder.new
       end
     end
 
@@ -139,6 +141,10 @@ module Faraday
       end
       replace_query(uri, params)
       uri
+    end
+
+    def dup
+      self.class.new(build_url(''), :headers => headers.dup, :params => params.dup, :builder => builder.dup)
     end
 
     def replace_query(uri, params)
