@@ -25,11 +25,12 @@ module Faraday
     end
 
     def build(options = {}, &block)
-      if options[:reset]
+      inner = @handlers.shift
+      if !options[:keep]
         @handlers.clear
       end
       block.call(self)
-      run(self.class.inner_app)
+      run(inner || self.class.inner_app)
     end
 
     def [](index)

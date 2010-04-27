@@ -219,6 +219,36 @@ class TestConnection < Faraday::TestCase
     end
   end
 
+  def test_allows_rebuilding_of_connection_handlers
+    conn  = Faraday::Connection.new
+    conn.to_app
+    inner = conn.builder.handlers[0]
+    mware = conn.builder.handlers[1].call({})
+    assert_kind_of Faraday::Adapter::NetHttp, mware
+
+    conn.build do |b|
+      b.adapter :test
+    end
+    mware = conn.builder.handlers[1].call({})
+    assert_kind_of Faraday::Adapter::Test, mware
+    assert_equal   inner,                  conn.builder.handlers[0]
+  end
+
+  def test_allows_extending_of_existing_connection_handlers
+    conn  = Faraday::Connection.new
+    conn.to_app
+    mware = conn.builder.handlers[1].call({})
+    assert_kind_of Faraday::Adapter::NetHttp, mware
+    assert_equal   2,                         conn.builder.handlers.size
+
+    conn.build :keep => true do |b|
+      b.adapter :test
+    end
+    mware = conn.builder.handlers[1].call({})
+    assert_kind_of Faraday::Adapter::Test, mware
+    assert_equal   3,                      conn.builder.handlers.size
+  end
+
   def test_sets_default_adapter_if_none_set
     conn  = Faraday::Connection.new
     assert_equal 0, conn.builder.handlers.size
