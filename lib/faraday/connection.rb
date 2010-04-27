@@ -1,5 +1,6 @@
 require 'addressable/uri'
 require 'set'
+require 'base64'
 
 module Faraday
   class Connection
@@ -66,6 +67,20 @@ module Faraday
 
     def delete(url = nil, headers = nil, &block)
       run_request :delete, url, nil, headers, &block
+    end
+
+    def basic_auth(login, pass)
+      @headers['authorization'] = "Basic #{Base64.encode64("#{login}:#{pass}").strip}"
+    end
+
+    def token_auth(token, options = {})
+      values = ["token=#{token.to_s.inspect}"]
+      options.each do |key, value|
+        values << "#{key}=#{value.to_s.inspect}"
+      end
+      # 21 = "Authorization: Token ".size
+      comma = ",\n#{' ' * 21}"
+      @headers['authorization'] = "Token #{values * comma}"
     end
 
     def in_parallel?

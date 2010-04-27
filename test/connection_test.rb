@@ -52,6 +52,25 @@ class TestConnection < Faraday::TestCase
     assert_equal '1', conn.headers['A']
   end
 
+  def test_basic_auth_sets_authorization_header
+    conn = Faraday::Connection.new
+    conn.basic_auth 'Aladdin', 'open sesame'
+    assert_equal 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==', conn.headers['Authorization']
+  end
+
+  def test_token_auth_sets_authorization_header
+    conn = Faraday::Connection.new
+    conn.token_auth 'abcdef'
+    assert_equal 'Token token="abcdef"', conn.headers['Authorization']
+  end
+
+  def test_token_auth_with_options_sets_authorization_header
+    conn = Faraday::Connection.new
+    conn.token_auth 'abcdef', :nonce => 'abc'
+    assert_equal 'Token token="abcdef",
+                     nonce="abc"', conn.headers['Authorization']
+  end
+
   def test_build_url_uses_connection_host_as_default_uri_host
     conn = Faraday::Connection.new
     conn.host = 'sushi.com'

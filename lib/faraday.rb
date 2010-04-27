@@ -4,57 +4,17 @@ module Faraday
   class << self
     attr_accessor :default_adapter
     attr_writer   :default_connection
+
+  private
+    def method_missing(name, *args, &block)
+      default_connection.send(name, *args, &block)
+    end
   end
 
   self.default_adapter = :net_http
 
   def self.default_connection
     @default_connection ||= Connection.new
-  end
-
-  # use the method signature from Faraday::Connection
-  def self.build(options = {}, &block)
-    default_connection.build(options, &block)
-  end
-
-  def self.get(url = nil, headers = nil, &block)
-    default_connection.get(url, headers, &block)
-  end
-
-  def self.post(url = nil, body = nil, headers = nil, &block)
-    default_connection.post(url, body, headers, &block)
-  end
-
-  def self.put(url = nil, body = nil, headers = nil, &block)
-    default_connection.put(url, body, headers, &block)
-  end
-
-  def self.head(url = nil, headers = nil, &block)
-    default_connection.head(url, headers, &block)
-  end
-
-  def self.delete(url = nil, headers = nil, &block)
-    default_connection.delete(url, headers, &block)
-  end
-
-  def self.in_parallel?
-    default_connection.in_parallel?
-  end
-
-  def self.in_parallel(manager)
-    default_connection.in_parallel(manager)
-  end
-
-  def self.proxy(arg = nil)
-    default_connection.proxy(arg)
-  end
-
-  def self.url_prefix=(url)
-    default_connection.url_prefix = url
-  end
-
-  def self.path_prefix=(value)
-    default_connection.path_prefix = value
   end
 
   module AutoloadHelper
