@@ -68,19 +68,6 @@ module Faraday
       run_request :delete, url, nil, headers, &block
     end
 
-    def run_request(method, url, body, headers)
-      if !METHODS.include?(method)
-        raise ArgumentError, "unknown http method: #{method}"
-      end
-
-      Request.run(self, method) do |req|
-        req.url(url)                if url
-        req.headers.update(headers) if headers
-        req.body = body             if body
-        yield req if block_given?
-      end
-    end
-
     def in_parallel?
       !!@parallel_manager
     end
@@ -107,11 +94,6 @@ module Faraday
               raise ArgumentError, "no :uri option."
             end
         end
-    end
-
-    # return the assembled Rack application for this instance.
-    def to_app
-      @builder.to_app
     end
 
     # Parses the giving url with Addressable::URI and stores the individual
@@ -143,6 +125,24 @@ module Faraday
         value.replace "/#{value}" if value !~ /^\//
       end
       @path_prefix = value
+    end
+
+    # return the assembled Rack application for this instance.
+    def to_app
+      @builder.to_app
+    end
+
+    def run_request(method, url, body, headers)
+      if !METHODS.include?(method)
+        raise ArgumentError, "unknown http method: #{method}"
+      end
+
+      Request.run(self, method) do |req|
+        req.url(url)                if url
+        req.headers.update(headers) if headers
+        req.body = body             if body
+        yield req if block_given?
+      end
     end
 
     # Takes a relative url for a request and combines it with the defaults 

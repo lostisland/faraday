@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'helper'))
 if Faraday::TestCase::LIVE_SERVER
   module Adapters
     class LiveTest < Faraday::TestCase
-      Faraday::Adapter.all_loaded_constants.each do |adapter|
+      (Faraday::Adapter.all_loaded_constants + [:default]).each do |adapter|
         define_method "test_#{adapter}_GET_retrieves_the_response_body" do
           assert_equal 'hello world', create_connection(adapter).get('hello_world').body
         end
@@ -100,6 +100,7 @@ if Faraday::TestCase::LIVE_SERVER
           resp1, resp2 = nil, nil
 
           connection = create_connection(adapter)
+          adapter    = real_adapter_for(adapter)
 
           connection.in_parallel(adapter.setup_parallel_manager) do
             resp1 = connection.get('json')
@@ -117,8 +118,22 @@ if Faraday::TestCase::LIVE_SERVER
       end
 
       def create_connection(adapter)
-        Faraday::Connection.new LIVE_SERVER do |b|
-          b.use adapter
+        if adapter == :default
+          conn = Faraday.default_connection
+          conn.url_prefix = LIVE_SERVER
+          conn
+        else
+          Faraday::Connection.new LIVE_SERVER do |b|
+            b.use adapter
+          end
+        end
+      end
+
+      def real_adapter_for(adapter)
+        if adapter == :default
+          Faraday::Adapter.lookup_module(Faraday.default_adapter)
+        else
+          adapter
         end
       end
     end
