@@ -139,16 +139,20 @@ class TestConnection < Faraday::TestCase
     assert_no_match /token=abc/,   url.query
   end
 
-  def test_build_url_parses_url_into_host
+  def test_build_url_parses_url
     conn = Faraday::Connection.new
     uri = conn.build_url("http://sushi.com/sake.html")
-    assert_equal "sushi.com", uri.host
+    assert_equal "http",             uri.scheme
+    assert_equal "sushi.com",        uri.host
+    assert_equal '/sake.html', uri.path
+    assert_nil uri.port
   end
 
-  def test_build_url_parses_url_into_port
-    conn = Faraday::Connection.new
-    uri = conn.build_url("http://sushi.com/sake.html")
-    assert_nil uri.port
+  def test_build_url_parses_url_and_changes_scheme
+    conn = Faraday::Connection.new :url => "http://sushi.com/sushi"
+    conn.scheme = 'https'
+    uri = conn.build_url("sake.html")
+    assert_equal 'https://sushi.com/sushi/sake.html', uri.to_s
   end
 
   def test_params_to_query_converts_hash_of_params_to_uri_escaped_query_string
