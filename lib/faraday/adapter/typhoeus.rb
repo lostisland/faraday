@@ -20,7 +20,8 @@ module Faraday
         req   = ::Typhoeus::Request.new env[:url].to_s, 
           :method  => env[:method],
           :body    => env[:body],
-          :headers => env[:request_headers]
+          :headers => env[:request_headers],
+          :disable_ssl_peer_verification => (env[:ssl][:verify] == false)
 
         req.on_complete do |resp|
           env.update \

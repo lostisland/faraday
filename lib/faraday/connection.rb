@@ -16,11 +16,13 @@ module Faraday
     METHODS_WITH_BODIES = Set.new [:post, :put]
 
     attr_accessor :host, :port, :scheme, :params, :headers, :parallel_manager
-    attr_reader   :path_prefix, :builder
+    attr_reader   :path_prefix, :builder, :options, :ssl
 
     # :url
     # :params
     # :headers
+    # :request
+    # :ssl
     def initialize(url = nil, options = {}, &block)
       if url.is_a?(Hash)
         options = url
@@ -28,6 +30,8 @@ module Faraday
       end
       @headers          = HeaderHash.new
       @params           = {}
+      @options          = options[:request] || {}
+      @ssl              = options[:ssl]     || {}
       @parallel_manager = options[:parallel]
       self.url_prefix = url if url
       merge_params  @params,  options[:params]  if options[:params]

@@ -54,6 +54,10 @@ module Faraday
     # :response_headers - Hash of HTTP headers from the server
     # :parallel_manager - sent if the connection is in parallel mode
     # :response         - the actual response object that stores the rack response
+    # :request - Hash of options for configuring the request.
+    #   :timeout      - open/read timeout Integer in seconds
+    #   :open_timeout - read timeout Integer in seconds
+    # :ssl - Hash of options for configuring SSL requests.
     def to_env_hash(connection, request_method)
       env_headers = connection.headers.dup
       env_params  = connection.params.dup
@@ -65,7 +69,9 @@ module Faraday
         :url              => connection.build_url(path, env_params),
         :request_headers  => env_headers.update(headers),
         :parallel_manager => connection.parallel_manager,
-        :response         => Response.new}
+        :response         => Response.new,
+        :request          => connection.options,
+        :ssl              => connection.ssl}
     end
 
     def run(connection, request_method)
