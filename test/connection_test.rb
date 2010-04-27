@@ -218,4 +218,13 @@ class TestConnection < Faraday::TestCase
       assert_not_equal conn.send(attr).object_id, duped.send(attr).object_id
     end
   end
+
+  def test_sets_default_adapter_if_none_set
+    conn  = Faraday::Connection.new
+    assert_equal 0, conn.builder.handlers.size
+
+    app   = conn.to_app
+    mware = conn.builder.handlers[1].call({})
+    assert_kind_of Faraday::Adapter::NetHttp, mware
+  end
 end

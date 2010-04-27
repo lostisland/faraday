@@ -24,7 +24,10 @@ module Faraday
       build(&block) if block_given?
     end
 
-    def build(&block)
+    def build(options = {}, &block)
+      if options[:reset]
+        @handlers.clear
+      end
       block.call(self)
       run(self.class.inner_app)
     end
@@ -39,6 +42,10 @@ module Faraday
     end
 
     def to_app
+      if @handlers.empty?
+        build { |b| b.adapter Faraday.default_adapter }
+      end
+
       inner_app = @handlers.first
       @handlers[1..-1].inject(inner_app) { |app, middleware| middleware.call(app) }
     end

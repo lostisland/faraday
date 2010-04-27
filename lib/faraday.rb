@@ -1,6 +1,12 @@
 require 'rack/utils'
 
 module Faraday
+  class << self
+    attr_accessor :default_adapter
+  end
+
+  self.default_adapter = :net_http
+
   module AutoloadHelper
     def register_lookup_modules(mods)
       (@lookup_module_index ||= {}).update(mods)

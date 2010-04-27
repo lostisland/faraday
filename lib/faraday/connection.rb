@@ -44,8 +44,8 @@ module Faraday
       end
     end
 
-    def build(&block)
-      @builder.build(&block)
+    def build(options = {}, &block)
+      @builder.build(options, &block)
     end
 
     def get(url = nil, headers = nil, &block)
