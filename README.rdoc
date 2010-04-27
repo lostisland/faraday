@@ -26,6 +26,9 @@ This mess is gonna get raw, like sushi. So, haters to the left.
     req.body = {:name => 'Unagi'}
   end
 
+  # If you're ready to roll with just the bare minimum (net/http):
+  resp1 = Faraday.get 'http://sushi.com/nigiri/sake.json'
+
 == Testing
 
   # It's possible to define stubbed request outside a test adapter block.
@@ -63,7 +66,7 @@ This mess is gonna get raw, like sushi. So, haters to the left.
 
 * Add curb/em-http support
 * Add xml parsing
-* Support timeouts, proxy servers, ssl options
+* Support timeouts, proxy servers, ssl options on Typhoeus/Patron
 * Add streaming requests and responses
 * Add default middleware load out for common cases
 * Add symbol => string index for mime types (:json => 'application/json')
