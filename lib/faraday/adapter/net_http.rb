@@ -13,7 +13,7 @@ module Faraday
 
         is_ssl = env[:url].scheme == 'https'
 
-        http      = Net::HTTP.new(env[:url].host, env[:url].port || (is_ssl ? 443 : 80))
+        http = net_http_class(env).new(env[:url].host, env[:url].port || (is_ssl ? 443 : 80))
         if http.use_ssl = is_ssl
           ssl = env[:ssl]
           if ssl[:verify] == false
@@ -45,6 +45,14 @@ module Faraday
         @app.call env
       rescue Errno::ECONNREFUSED
         raise Error::ConnectionFailed, "connection refused"
+      end
+
+      def net_http_class(env)
+        if proxy = env[:request][:proxy]
+          Net::HTTP::Proxy(proxy[:uri].host, proxy[:uri].port, proxy[:user], proxy[:password])
+        else
+          Net::HTTP
+        end
       end
     end
   end

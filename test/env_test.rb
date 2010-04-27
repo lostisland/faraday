@@ -6,15 +6,15 @@ class TestEnv < Faraday::TestCase
     @conn.options[:timeout]      = 3
     @conn.options[:open_timeout] = 5
     @conn.ssl[:verify]           = false
+    @conn.proxy 'http://proxy.com'
     @input = {
       :body    => 'abc',
       :headers => {'Server' => 'Faraday'}}
-    @env_setup = Faraday::Request.create do |req|
+    @env = env_for @conn do |req|
       req.url 'foo.json', 'a' => 1
       req['Server'] = 'Faraday'
       req.body = @input[:body]
     end
-    @env  = @env_setup.to_env_hash(@conn, :get)
   end
 
   def test_request_create_stores_method
@@ -41,5 +41,16 @@ class TestEnv < Faraday::TestCase
 
   def test_request_create_stores_ssl_options
     assert_equal false, @env[:ssl][:verify]
+  end
+
+  def test_request_create_stores_proxy_options
+    assert_equal 'proxy.com', @env[:request][:proxy][:uri].host
+  end
+
+  def env_for(connection)
+    env_setup = Faraday::Request.create do |req|
+      yield req
+    end
+    env_setup.to_env_hash(connection, :get)
   end
 end

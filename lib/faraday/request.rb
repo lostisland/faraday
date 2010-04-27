@@ -57,6 +57,10 @@ module Faraday
     # :request - Hash of options for configuring the request.
     #   :timeout      - open/read timeout Integer in seconds
     #   :open_timeout - read timeout Integer in seconds
+    #   :proxy        - Hash of proxy options
+    #     :uri        - Proxy Server URI
+    #     :user       - Proxy server username
+    #     :password   - Proxy server password
     # :ssl - Hash of options for configuring SSL requests.
     def to_env_hash(connection, request_method)
       env_headers = connection.headers.dup
@@ -70,7 +74,7 @@ module Faraday
         :request_headers  => env_headers.update(headers),
         :parallel_manager => connection.parallel_manager,
         :response         => Response.new,
-        :request          => connection.options,
+        :request          => connection.options.merge(:proxy => connection.proxy),
         :ssl              => connection.ssl}
     end
 

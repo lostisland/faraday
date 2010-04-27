@@ -34,6 +34,7 @@ module Faraday
       @ssl              = options[:ssl]     || {}
       @parallel_manager = options[:parallel]
       self.url_prefix = url if url
+      proxy(options[:proxy])
       merge_params  @params,  options[:params]  if options[:params]
       merge_headers @headers, options[:headers] if options[:headers]
       if block
@@ -90,6 +91,22 @@ module Faraday
       @parallel_manager && @parallel_manager.run
     ensure
       @parallel_manager = nil
+    end
+
+    def proxy(arg = nil)
+      return @proxy if arg.nil?
+
+      @proxy = 
+        case arg
+          when String then {:uri => proxy_arg_to_uri(arg)}
+          when URI    then {:uri => arg}
+          when Hash   then arg
+            if arg[:uri] = proxy_arg_to_uri(arg[:uri])
+              arg
+            else
+              raise ArgumentError, "no :uri option."
+            end
+        end
     end
 
     # return the assembled Rack application for this instance.
@@ -191,6 +208,13 @@ module Faraday
     def escape(s)
       s.to_s.gsub(/([^a-zA-Z0-9_.-]+)/n) do
         '%' << $1.unpack('H2'*bytesize($1)).join('%').tap { |c| c.upcase! }
+      end
+    end
+
+    def proxy_arg_to_uri(arg)
+      case arg
+        when String then URI.parse(arg)
+        when URI    then arg
       end
     end
   end

@@ -155,6 +155,47 @@ class TestConnection < Faraday::TestCase
     assert_equal 'https://sushi.com/sushi/sake.html', uri.to_s
   end
 
+  def test_proxy_accepts_string
+    conn = Faraday::Connection.new
+    conn.proxy 'http://proxy.com'
+    assert_equal 'proxy.com', conn.proxy.host
+  end
+
+  def test_proxy_accepts_string
+    conn = Faraday::Connection.new
+    conn.proxy 'http://proxy.com'
+    assert_equal 'proxy.com', conn.proxy[:uri].host
+    assert_equal [:uri],      conn.proxy.keys
+  end
+
+  def test_proxy_accepts_uri
+    conn = Faraday::Connection.new
+    conn.proxy Addressable::URI.parse('http://proxy.com')
+    assert_equal 'proxy.com', conn.proxy[:uri].host
+    assert_equal [:uri],      conn.proxy.keys
+  end
+
+  def test_proxy_accepts_hash_with_string_uri
+    conn = Faraday::Connection.new
+    conn.proxy :uri => 'http://proxy.com', :user => 'rick'
+    assert_equal 'proxy.com', conn.proxy[:uri].host
+    assert_equal 'rick',      conn.proxy[:user]
+  end
+
+  def test_proxy_accepts_hash
+    conn = Faraday::Connection.new
+    conn.proxy :uri => Addressable::URI.parse('http://proxy.com'), :user => 'rick'
+    assert_equal 'proxy.com', conn.proxy[:uri].host
+    assert_equal 'rick',      conn.proxy[:user]
+  end
+
+  def test_proxy_requires_uri
+    conn = Faraday::Connection.new
+    assert_raises ArgumentError do
+      conn.proxy :uri => :bad_uri, :user => 'rick'
+    end
+  end
+
   def test_params_to_query_converts_hash_of_params_to_uri_escaped_query_string
     conn = Faraday::Connection.new
     class << conn
