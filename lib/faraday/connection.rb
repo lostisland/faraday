@@ -173,12 +173,12 @@ module Faraday
     #
     def build_url(url, params = nil)
       uri          = URI.parse(url.to_s)
-      uri.host   ||= @host
-      uri.port   ||= @port
-      uri.scheme ||= @scheme
       if @path_prefix && uri.path !~ /^\//
         uri.path = "#{@path_prefix.size > 1 ? @path_prefix : nil}/#{uri.path}"
       end
+      uri.host   ||= @host
+      uri.port   ||= @port
+      uri.scheme ||= @scheme
       replace_query(uri, params)
       uri
     end
