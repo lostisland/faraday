@@ -10,8 +10,8 @@ begin
     gem.email = "technoweenie@gmail.com"
     gem.homepage = "http://github.com/technoweenie/faraday"
     gem.authors = ["rick"]
-    gem.add_dependency "rack"
-    gem.add_dependency "addressable"
+    gem.add_dependency "rack",        "~> 1.1.0"
+    gem.add_dependency "addressable", "2.1.1"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
