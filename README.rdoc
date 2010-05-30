@@ -56,20 +56,18 @@ This mess is gonna get raw, like sushi. So, haters to the left.
   resp.body # => 'urchin'
   resp = test.get '/else' #=> raises "no such stub" error
 
-  # If you like, you can treat your stubs as mocks by verifying that all of the
-  # stubbed calls were made. NOTE that this feature is still fairly
+  # If you like, you can treat your stubs as mocks by verifying that all of 
+  # the stubbed calls were made. NOTE that this feature is still fairly
   # experimental: It will not verify the order or count of any stub, only that
   # it was called once during the course of the test.
   stubs.verify_stubbed_calls
 
 == TODO
 
-* Add curb/em-http support
-* Add xml parsing
-* Support timeouts, proxy servers, ssl options on Typhoeus/Patron
-* Add streaming requests and responses
-* Add default middleware load out for common cases
-* Add symbol => string index for mime types (:json => 'application/json')
+* support streaming requests/responses
+* better stubbing API
+* Support timeouts
+* Add curb, em-http, fast_http
 
 == Note on Patches/Pull Requests
  

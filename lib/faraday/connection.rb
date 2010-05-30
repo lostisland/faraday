@@ -6,11 +6,17 @@ module Faraday
   class Connection
     include Addressable, Rack::Utils
 
-    HEADERS = Hash.new { |h, k| k.respond_to?(:to_str) ? k : k.to_s.capitalize }.update \
-      :content_type    => "Content-Type",
-      :content_length  => "Content-Length",
-      :accept_charset  => "Accept-Charset",
-      :accept_encoding => "Accept-Encoding"
+    HEADERS = Hash.new do |h, k|
+      if k.respond_to?(:to_str)
+        k
+      else 
+        k.to_s.split('_').            # :user_agent => %w(user agent)
+          each { |w| w.capitalize! }. # => %w(User Agent)
+          join('-')                   # => "User-Agent"
+      end
+    end
+    HEADERS.update \
+      :etag => "ETag"
     HEADERS.values.each { |v| v.freeze }
 
     METHODS = Set.new [:get, :post, :put, :delete, :head]
