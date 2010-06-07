@@ -59,17 +59,19 @@ module Faraday
   module Adapter
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
-      :NetHttp  => 'net_http',
-      :Typhoeus => 'typhoeus',
-      :Patron   => 'patron',
-      :Test     => 'test'
+      :ActionDispatch => 'action_dispatch',
+      :NetHttp        => 'net_http',
+      :Typhoeus       => 'typhoeus',
+      :Patron         => 'patron',
+      :Test           => 'test'
 
     register_lookup_modules \
-      :test     => :Test,
-      :net_http => :NetHttp,
-      :typhoeus => :Typhoeus,
-      :patron   => :Patron,
-      :net_http => :NetHttp
+      :action_dispatch => :ActionDispatch,
+      :test            => :Test,
+      :net_http        => :NetHttp,
+      :typhoeus        => :Typhoeus,
+      :patron          => :Patron,
+      :net_http        => :NetHttp
   end
 end
 
