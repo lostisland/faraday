@@ -14,6 +14,7 @@ module Faraday
       def initialize(app, session)
         super(app)
         @session = session
+        @session.reset!
       end
 
       def call(env)
