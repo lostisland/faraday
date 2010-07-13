@@ -1,6 +1,6 @@
 require 'rubygems'
 gem 'rack',        '>= 1.0.1'
-gem 'addressable', '2.1.1'
+gem 'addressable', '>= 2.1.1'
 
 require 'test/unit'
 if ENV['LEFTRIGHT']
