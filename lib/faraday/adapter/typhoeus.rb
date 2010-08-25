@@ -52,9 +52,10 @@ module Faraday
       def parse_response_headers(header_string)
         return {} unless header_string && !header_string.empty?
         Hash[*header_string.split(/\r\n/).
-          tap  { |a|      a.shift           }. # drop the HTTP status line
-          map! { |h|      h.split(/:\s+/,2) }. # split key and value
-          map! { |(k, v)| [k.downcase, v]   }.flatten!]
+          tap    { |a|      a.shift           }. # drop the HTTP status line
+          map    { |h|      h.split(/:\s+/,2) }. # split key and value
+          reject { |(k, v)| k.nil?            }. # Ignore blank lines
+          map    { |(k, v)| [k.downcase, v]   }.flatten]
       end
     end
   end
