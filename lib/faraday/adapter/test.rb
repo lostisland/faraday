@@ -93,7 +93,11 @@ module Faraday
 
       def request_uri url
         (url.path != "" ? url.path : "/") +
-        (url.query ? "?#{url.query}" : "")
+        (url.query ? "?#{sort_query_params(url.query)}" : "")
+      end
+
+      def sort_query_params query
+        query.split('&').sort.join('&')
       end
 
       def call(env)
