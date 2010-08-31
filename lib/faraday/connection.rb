@@ -137,6 +137,9 @@ module Faraday
       if uri.query && !uri.query.empty?
         merge_params @params, parse_query(uri.query)
       end
+      if uri.user && uri.password
+        basic_auth(uri.user, uri.password)
+      end
     end
 
     # Ensures that the path prefix always has a leading / and no trailing /

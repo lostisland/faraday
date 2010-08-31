@@ -58,6 +58,11 @@ class TestConnection < Faraday::TestCase
     assert_equal 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==', conn.headers['Authorization']
   end
 
+  def test_auto_parses_basic_auth_from_url
+    conn = Faraday::Connection.new :url => "http://aladdin:opensesame@sushi.com/fish"
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', conn.headers['Authorization']
+  end
+
   def test_token_auth_sets_authorization_header
     conn = Faraday::Connection.new
     conn.token_auth 'abcdef'
