@@ -44,11 +44,29 @@ module Faraday
       proxy(options[:proxy])
       merge_params  @params,  options[:params]  if options[:params]
       merge_headers @headers, options[:headers] if options[:headers]
+
       if block
-        @builder = Builder.create(&block)
+        @builder = Builder.new
+        @builder.build { block.call(self) }
       else
         @builder = options[:builder] || Builder.new
       end
+    end
+
+    def use(klass, *args, &block)
+      @builder.use(klass, *args, &block)
+    end
+
+    def request(key, *args, &block)
+      @builder.request(key, *args, &block)
+    end
+
+    def response(key, *args, &block)
+      @builder.response(key, *args, &block)
+    end
+
+    def adapter(key, *args, &block)
+      @builder.adapter(key, *args, &block)
     end
 
     def build(options = {}, &block)
