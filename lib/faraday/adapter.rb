@@ -46,7 +46,11 @@ module Faraday
       else
         type = headers[CONTENT_TYPE]
         headers[CONTENT_TYPE] = FORM_TYPE if type.nil? || type.empty?
-        env[:body] = create_form_params(body)
+        parts = []
+        process_to_params(parts, env[:body]) do |key, value|
+          "#{key}=#{escape(value.to_s)}"
+        end
+        env[:body] = parts * "&"
       end
     end
 
@@ -64,32 +68,23 @@ module Faraday
     def create_multipart(env, params, boundary = nil)
       boundary ||= env[:request][:boundary]
       parts      = []
-      add_parts_to(boundary, parts, params)
+      process_to_params(parts, params) do |key, value|
+        Faraday::Parts::Part.new(boundary, key, value)
+      end
       parts     << Faraday::Parts::EpiloguePart.new(boundary)
       env[:request_headers]['Content-Length'] = parts.inject(0) {|sum,i| sum + i.length }.to_s
       Faraday::CompositeReadIO.new(*parts.map{|p| p.to_io })
     end
 
-    def add_parts_to(boundary, parts, params, base = nil)
+    def process_to_params(pieces, params, base = nil, &block)
       params.each do |key, value|
         key_str = base ? "#{base}[#{key}]" : key
         if value.kind_of?(Hash)
-          add_parts_to(boundary, parts, value, key_str)
+          process_to_params(pieces, value, key_str, &block)
         else
-          parts << Faraday::Parts::Part.new(boundary, key_str, value)
+          pieces << block.call(key_str, value)
         end
       end
-    end
-
-    def create_form_params(params, base = nil)
-      [].tap do |result|
-        params.each_key do |key|
-          key_str = base ? "#{base}[#{key}]" : key
-          value   = params[key]
-          wee = (value.kind_of?(Hash) ? create_form_params(value, key_str) : "#{key_str}=#{escape(value.to_s)}")
-          result << wee
-        end
-      end.join("&")
     end
 
     # assume that query and fragment are already encoded properly
