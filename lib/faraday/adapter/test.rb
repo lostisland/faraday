@@ -81,7 +81,7 @@ module Faraday
         end
       end
 
-      def initialize app, stubs=nil, &block
+      def initialize(app, stubs=nil, &block)
         super(app)
         @stubs = stubs || Stubs.new
         configure(&block) if block
@@ -91,12 +91,12 @@ module Faraday
         yield stubs
       end
 
-      def request_uri url
+      def request_uri(url)
         (url.path != "" ? url.path : "/") +
         (url.query ? "?#{sort_query_params(url.query)}" : "")
       end
 
-      def sort_query_params query
+      def sort_query_params(query)
         query.split('&').sort.join('&')
       end
 
