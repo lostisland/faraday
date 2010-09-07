@@ -38,7 +38,7 @@ module Faraday
     # environment for you.
     def process_body_for_request(env, body = env[:body], headers = env[:request_headers])
       return if body.nil? || body.empty? || !body.respond_to?(:each_key)
-      if body.values.any? { |v| v.respond_to?(:content_type) }
+      if has_multipart?(body)
         env[:request]            ||= {}
         env[:request][:boundary] ||= DEFAULT_BOUNDARY
         headers[CONTENT_TYPE]      = MULTIPART_TYPE + ";boundary=#{env[:request][:boundary]}"
@@ -50,12 +50,35 @@ module Faraday
       end
     end
 
+    def has_multipart?(body)
+      body.values.each do |v|
+        if v.respond_to?(:content_type)
+          return true
+        elsif v.respond_to?(:values)
+          return true if has_multipart?(v)
+        end
+      end
+      false
+    end
+
     def create_multipart(env, params, boundary = nil)
       boundary ||= env[:request][:boundary]
-      parts      = params.map {|k,v| Faraday::Parts::Part.new(boundary, k, v)}
+      parts      = []
+      add_parts_to(boundary, parts, params)
       parts     << Faraday::Parts::EpiloguePart.new(boundary)
       env[:request_headers]['Content-Length'] = parts.inject(0) {|sum,i| sum + i.length }.to_s
       Faraday::CompositeReadIO.new(*parts.map{|p| p.to_io })
+    end
+
+    def add_parts_to(boundary, parts, params, base = nil)
+      params.each do |key, value|
+        key_str = base ? "#{base}[#{key}]" : key
+        if value.kind_of?(Hash)
+          add_parts_to(boundary, parts, value, key_str)
+        else
+          parts << Faraday::Parts::Part.new(boundary, key_str, value)
+        end
+      end
     end
 
     def create_form_params(params, base = nil)

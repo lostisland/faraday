@@ -1,5 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
+Faraday::CompositeReadIO.send :attr_reader, :ios
+
 class MultipartTest < Faraday::TestCase
   def setup
     @app = Faraday::Adapter.new nil
@@ -7,8 +9,19 @@ class MultipartTest < Faraday::TestCase
   end
 
   def test_processes_nested_body
-    @env[:body] = {:a => 1, :b => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
+    # assume params are out of order
+    regexes = [
+      /name\=\"a\"/, 
+      /name=\"b\[c\]\"\; filename\=\"multipart_test\.rb\"/, 
+      /name=\"b\[d\]\"/]
+    @env[:body] = {:a => 1, :b => {:c => Faraday::UploadIO.new(__FILE__, 'text/x-ruby'), :d => 2}}
     @app.process_body_for_request @env
+    @env[:body].send(:ios).map(&:read).each do |io|
+      if re = regexes.detect { |r| io =~ r }
+        regexes.delete re
+      end
+    end
+    assert_equal [], regexes
     assert_kind_of CompositeReadIO, @env[:body]
     assert_equal "%s;boundary=%s" %
       [Faraday::Adapter::MULTIPART_TYPE, Faraday::Adapter::DEFAULT_BOUNDARY], 
