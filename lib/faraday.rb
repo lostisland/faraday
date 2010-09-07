@@ -49,30 +49,13 @@ module Faraday
   extend AutoloadHelper
 
   autoload_all 'faraday', 
+    :Adapter    => 'adapter',
     :Connection => 'connection',
     :Middleware => 'middleware',
     :Builder    => 'builder',
     :Request    => 'request',
     :Response   => 'response',
     :Error      => 'error'
-
-  module Adapter
-    extend AutoloadHelper
-    autoload_all 'faraday/adapter',
-      :ActionDispatch => 'action_dispatch',
-      :NetHttp        => 'net_http',
-      :Typhoeus       => 'typhoeus',
-      :Patron         => 'patron',
-      :Test           => 'test'
-
-    register_lookup_modules \
-      :action_dispatch => :ActionDispatch,
-      :test            => :Test,
-      :net_http        => :NetHttp,
-      :typhoeus        => :Typhoeus,
-      :patron          => :Patron,
-      :net_http        => :NetHttp
-  end
 end
 
 # not pulling in active-support JUST for this method.

@@ -1,6 +1,6 @@
 module Faraday
-  module Adapter
-    class Typhoeus < Middleware
+  class Adapter
+    class Typhoeus < Adapter
       self.supports_parallel_requests = true
 
       def self.setup_parallel_manager(options = {})
@@ -14,7 +14,7 @@ module Faraday
       end
 
       def call(env)
-        process_body_for_request(env)
+        super
 
         hydra = env[:parallel_manager] || self.class.setup_parallel_manager
         req   = ::Typhoeus::Request.new env[:url].to_s, 

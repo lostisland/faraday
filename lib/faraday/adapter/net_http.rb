@@ -6,10 +6,10 @@ rescue LoadError
 end
 
 module Faraday
-  module Adapter
-    class NetHttp < Middleware
+  class Adapter
+    class NetHttp < Adapter
       def call(env)
-        process_body_for_request(env)
+        super
 
         is_ssl = env[:url].scheme == 'https'
 

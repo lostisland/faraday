@@ -1,5 +1,5 @@
 module Faraday
-  module Adapter
+  class Adapter
     # test = Faraday::Connection.new do
     #   use Faraday::Adapter::Test do |stub|
     #     stub.get '/nigiri/sake.json' do

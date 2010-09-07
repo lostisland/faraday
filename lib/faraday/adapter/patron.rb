@@ -1,6 +1,6 @@
 module Faraday
-  module Adapter
-    class Patron < Middleware
+  class Adapter
+    class Patron < Adapter
       begin
         require 'patron'
       rescue LoadError, NameError => e
@@ -8,7 +8,7 @@ module Faraday
       end
 
       def call(env)
-        process_body_for_request(env)
+        super
 
         sess = ::Patron::Session.new
         args = [env[:method], env[:url].to_s, env[:request_headers]]

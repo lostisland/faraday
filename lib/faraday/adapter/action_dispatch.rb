@@ -1,6 +1,6 @@
 module Faraday
-  module Adapter
-    class ActionDispatch < Middleware
+  class Adapter
+    class ActionDispatch < Adapter
       attr_reader :session
 
       # Initializes a new middleware instance for each request.  Instead of 
@@ -18,7 +18,7 @@ module Faraday
       end
 
       def call(env)
-        process_body_for_request(env)
+        super
         full_path = full_path_for(env[:url].path, env[:url].query, env[:url].fragment)
         @session.__send__(env[:method], full_path, env[:body], env[:request_headers])
         resp = @session.response
