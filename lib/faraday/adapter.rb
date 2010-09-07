@@ -1,5 +1,8 @@
 module Faraday
   class Adapter < Middleware
+    FORM_TYPE      = 'application/x-www-form-urlencoded'.freeze
+    MULTIPART_TYPE = 'multipart/form-data'.freeze
+
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
       :ActionDispatch => 'action_dispatch',
@@ -20,10 +23,22 @@ module Faraday
       process_body_for_request(env)
     end
 
-    def process_body_for_request(env)
-      return if env[:body].nil? || env[:body].empty? || !env[:body].respond_to?(:each_key)
-      env[:request_headers]['Content-Type'] ||= 'application/x-www-form-urlencoded'
-      env[:body] = create_form_params(env[:body])
+    # Converts a body hash into encoded form params.  This is done as late
+    # as possible in the request cycle in case some other middleware wants to
+    # act on the request before sending it out.
+    #
+    # env     - The current request environment Hash.
+    # body    - A Hash of keys/values.  Strings and empty values will be
+    #           ignored.  Default: env[:body]
+    # headers - The Hash of request headers.  Default: env[:request_headers]
+    #
+    # Returns nothing.  If the body is processed, it is replaced in the 
+    # environment for you.
+    def process_body_for_request(env, body = env[:body], headers = env[:request_headers])
+      return if body.nil? || body.empty? || !body.respond_to?(:each_key)
+      type = headers['Content-Type'].to_s
+      headers['Content-Type'] ||= FORM_TYPE
+      env[:body] = create_form_params(body)
     end
 
     def create_form_params(params, base = nil)
