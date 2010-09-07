@@ -42,7 +42,8 @@ module Faraday
     end
 
     def all_loaded_constants
-      constants.map { |c| const_get(c) }.select { |a| a.loaded? }
+      constants.map { |c| const_get(c) }.
+        select { |a| a.respond_to?(:loaded?) && a.loaded? }
     end
   end
 

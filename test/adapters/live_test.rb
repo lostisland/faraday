@@ -3,7 +3,10 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'helper'))
 if Faraday::TestCase::LIVE_SERVER
   module Adapters
     class LiveTest < Faraday::TestCase
-      (Faraday::Adapter.all_loaded_constants + [:default]).each do |adapter|
+      loaded_adapters  = Faraday::Adapter.all_loaded_constants
+      loaded_adapters -= [Faraday::Adapter::ActionDispatch]
+      loaded_adapters << :default
+      loaded_adapters.each do |adapter|
         define_method "test_#{adapter}_GET_retrieves_the_response_body" do
           assert_equal 'hello world', create_connection(adapter).get('hello_world').body
         end
