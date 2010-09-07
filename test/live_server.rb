@@ -9,6 +9,12 @@ get '/json' do
   "[1,2,3]"
 end
 
+post '/file' do
+  "file %s %s" % [
+    params[:uploaded_file][:filename],
+    params[:uploaded_file][:type]]
+end
+
 post '/hello' do
   "hello #{params[:name]}"
 end

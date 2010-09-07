@@ -42,6 +42,15 @@ if Faraday::TestCase::LIVE_SERVER
           assert_equal 'text/html', create_connection(adapter).post('echo_name').headers['content-type']
         end
 
+        define_method "test_#{adapter}_POST_sends_files" do
+          name = File.join(File.dirname(__FILE__), '..', 'live_server.rb')
+          resp = create_connection(adapter).post do |req|
+            req.url 'file'
+            req.body = {'uploaded_file' => Faraday::UploadIO.new(name, 'text/x-ruby')}
+          end
+          assert_equal "file live_server.rb text/x-ruby", resp.body
+        end
+
         # http://github.com/toland/patron/issues/#issue/9
         if ENV['FORCE'] || adapter != Faraday::Adapter::Patron
           define_method "test_#{adapter}_PUT_send_url_encoded_params" do
