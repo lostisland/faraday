@@ -54,7 +54,7 @@ module Faraday
       boundary ||= env[:request][:boundary]
       parts      = params.map {|k,v| Faraday::Parts::Part.new(boundary, k, v)}
       parts     << Faraday::Parts::EpiloguePart.new(boundary)
-      env[:request_headers]['Content-Length'] = parts.inject(0) {|sum,i| sum + i.length }
+      env[:request_headers]['Content-Length'] = parts.inject(0) {|sum,i| sum + i.length }.to_s
       Faraday::CompositeReadIO.new(*parts.map{|p| p.to_io })
     end
 
