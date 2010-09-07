@@ -7,6 +7,7 @@ rescue LoadError
   raise
 end
 
+# Auto-load multipart-post gem on first request.
 module Faraday
   CompositeReadIO = ::CompositeReadIO
   UploadIO        = ::UploadIO

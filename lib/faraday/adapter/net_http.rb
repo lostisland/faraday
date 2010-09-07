@@ -30,7 +30,19 @@ module Faraday
         http.open_timeout = req[:open_timeout]               if req[:open_timeout]
         
         full_path = full_path_for(env[:url].path, env[:url].query, env[:url].fragment)
-        http_resp = http.send_request(env[:method].to_s.upcase, full_path, env[:body], env[:request_headers])
+        http_req  = Net::HTTPGenericRequest.new(
+          env[:method].to_s.upcase,    # request method
+          (env[:body] ? true : false), # is there data
+          true,                        # does net/http love you, true or false?
+          full_path,                   # request uri path
+          env[:request_headers])       # request headers
+
+        if env[:body].respond_to?(:read)
+          http_req.body_stream = env[:body]
+          env[:body] = nil
+        end
+
+        http_resp = http.request http_req, env[:body]
 
         resp_headers = {}
         http_resp.each_header do |key, value|
@@ -53,12 +65,6 @@ module Faraday
         else
           Net::HTTP
         end
-      end
-
-      # TODO: build in support for multipart streaming
-      def create_multipart(env, params, boundary = nil)
-        stream = super
-        stream.read
       end
     end
   end
