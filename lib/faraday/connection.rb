@@ -74,23 +74,23 @@ module Faraday
     end
 
     def get(url = nil, headers = nil, &block)
-      run_request :get, url, nil, headers, &block
+      run_request(:get, url, nil, headers, &block)
     end
 
     def post(url = nil, body = nil, headers = nil, &block)
-      run_request :post, url, body, headers, &block
+      run_request(:post, url, body, headers, &block)
     end
 
     def put(url = nil, body = nil, headers = nil, &block)
-      run_request :put, url, body, headers, &block
+      run_request(:put, url, body, headers, &block)
     end
 
     def head(url = nil, headers = nil, &block)
-      run_request :head, url, nil, headers, &block
+      run_request(:head, url, nil, headers, &block)
     end
 
     def delete(url = nil, headers = nil, &block)
-      run_request :delete, url, nil, headers, &block
+      run_request(:delete, url, nil, headers, &block)
     end
 
     def basic_auth(login, pass)
@@ -217,10 +217,10 @@ module Faraday
     def replace_query(uri, params)
       url_params = @params.dup
       if uri.query && !uri.query.empty?
-        merge_params url_params, parse_query(uri.query)
+        merge_params(url_params, parse_query(uri.query))
       end
       if params && !params.empty?
-        merge_params url_params, params
+        merge_params(url_params, params)
       end
       uri.query = url_params.empty? ? nil : build_query(url_params)
       uri

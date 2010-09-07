@@ -65,8 +65,8 @@ module Faraday
     def to_env_hash(connection, request_method)
       env_headers = connection.headers.dup
       env_params  = connection.params.dup
-      connection.merge_headers env_headers, headers
-      connection.merge_params  env_params,  params
+      connection.merge_headers(env_headers, headers)
+      connection.merge_params(env_params,  params)
 
       { :method           => request_method, 
         :body             => body, 

@@ -13,7 +13,7 @@ module Faraday
     def call(env)
       env[:request_headers]['Content-Type'] = 'application/json'
       if env[:body] && !env[:body].respond_to?(:to_str)
-        env[:body] = ActiveSupport::JSON.encode env[:body]
+        env[:body] = ActiveSupport::JSON.encode(env[:body])
       end
       @app.call env
     end

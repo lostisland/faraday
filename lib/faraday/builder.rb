@@ -56,19 +56,19 @@ module Faraday
     end
 
     def request(key, *args, &block)
-      use_symbol Faraday::Request, key, *args, &block
+      use_symbol(Faraday::Request, key, *args, &block)
     end
 
     def response(key, *args, &block)
-      use_symbol Faraday::Response, key, *args, &block
+      use_symbol(Faraday::Response, key, *args, &block)
     end
 
     def adapter(key, *args, &block)
-      use_symbol Faraday::Adapter, key, *args, &block
+      use_symbol(Faraday::Adapter, key, *args, &block)
     end
 
     def use_symbol(mod, key, *args, &block)
-      use mod.lookup_module(key), *args, &block
+      use(mod.lookup_module(key), *args, &block)
     end
 
     def ==(other)
@@ -76,7 +76,7 @@ module Faraday
     end
 
     def dup
-      self.class.new @handlers.dup
+      self.class.new(@handlers.dup)
     end
   end
 end
