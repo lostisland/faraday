@@ -49,13 +49,16 @@ module Faraday
   extend AutoloadHelper
 
   autoload_all 'faraday', 
-    :Adapter    => 'adapter',
-    :Connection => 'connection',
-    :Middleware => 'middleware',
-    :Builder    => 'builder',
-    :Request    => 'request',
-    :Response   => 'response',
-    :Error      => 'error'
+    :Adapter         => 'adapter',
+    :Connection      => 'connection',
+    :Middleware      => 'middleware',
+    :Builder         => 'builder',
+    :Request         => 'request',
+    :Response        => 'response',
+    :CompositeReadIO => 'upload_io',
+    :UploadIO        => 'upload_io',
+    :Parts           => 'upload_io',
+    :Error           => 'error'
 end
 
 # not pulling in active-support JUST for this method.

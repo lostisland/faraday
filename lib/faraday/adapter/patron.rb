@@ -28,6 +28,12 @@ module Faraday
       rescue Errno::ECONNREFUSED
         raise Error::ConnectionFailed, "connection refused"
       end
+
+      # TODO: build in support for multipart streaming if patron supports it.
+      def create_multipart(env, params, boundary = nil)
+        stream = super
+        stream.read
+      end
     end
   end
 end

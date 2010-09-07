@@ -20,6 +20,7 @@ module Faraday
       def call(env)
         super
         full_path = full_path_for(env[:url].path, env[:url].query, env[:url].fragment)
+        body = env[:body].respond_to?(:read) ? env[:body] 
         @session.__send__(env[:method], full_path, env[:body], env[:request_headers])
         resp = @session.response
         env.update \
@@ -27,6 +28,12 @@ module Faraday
           :response_headers => resp.headers,
           :body             => resp.body
         @app.call env
+      end
+
+      # TODO: build in support for multipart streaming if action dispatch supports it.
+      def create_multipart(env, params, boundary = nil)
+        stream = super
+        stream.read
       end
     end
   end

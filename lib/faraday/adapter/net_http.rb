@@ -54,6 +54,12 @@ module Faraday
           Net::HTTP
         end
       end
+
+      # TODO: build in support for multipart streaming
+      def create_multipart(env, params, boundary = nil)
+        stream = super
+        stream.read
+      end
     end
   end
 end

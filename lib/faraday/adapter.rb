@@ -1,7 +1,9 @@
 module Faraday
   class Adapter < Middleware
-    FORM_TYPE      = 'application/x-www-form-urlencoded'.freeze
-    MULTIPART_TYPE = 'multipart/form-data'.freeze
+    FORM_TYPE        = 'application/x-www-form-urlencoded'.freeze
+    MULTIPART_TYPE   = 'multipart/form-data'.freeze
+    CONTENT_TYPE     = 'Content-Type'.freeze
+    DEFAULT_BOUNDARY = "-----------RubyMultipartPost".freeze
 
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
@@ -36,9 +38,24 @@ module Faraday
     # environment for you.
     def process_body_for_request(env, body = env[:body], headers = env[:request_headers])
       return if body.nil? || body.empty? || !body.respond_to?(:each_key)
-      type = headers['Content-Type'].to_s
-      headers['Content-Type'] ||= FORM_TYPE
-      env[:body] = create_form_params(body)
+      if body.values.any? { |v| v.respond_to?(:content_type) }
+        env[:request]            ||= {}
+        env[:request][:boundary] ||= DEFAULT_BOUNDARY
+        headers[CONTENT_TYPE]      = MULTIPART_TYPE + ";boundary=#{env[:request][:boundary]}"
+        env[:body] = create_multipart(env, body)
+      else
+        type = headers[CONTENT_TYPE]
+        headers[CONTENT_TYPE] = FORM_TYPE if type.nil? || type.empty?
+        env[:body] = create_form_params(body)
+      end
+    end
+
+    def create_multipart(env, params, boundary = nil)
+      boundary ||= env[:request][:boundary]
+      parts      = params.map {|k,v| Faraday::Parts::Part.new(boundary, k, v)}
+      parts     << Faraday::Parts::EpiloguePart.new(boundary)
+      env[:request_headers]['Content-Length'] = parts.inject(0) {|sum,i| sum + i.length }
+      Faraday::CompositeReadIO.new(*parts.map{|p| p.to_io })
     end
 
     def create_form_params(params, base = nil)

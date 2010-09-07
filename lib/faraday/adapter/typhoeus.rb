@@ -60,6 +60,12 @@ module Faraday
           map! { |h|      h.split(/:\s+/,2) }. # split key and value
           map! { |(k, v)| [k.downcase, v]   }.flatten!]
       end
+
+      # TODO: build in support for multipart streaming if typhoeus supports it.
+      def create_multipart(env, params, boundary = nil)
+        stream = super
+        stream.read
+      end
     end
   end
 end
