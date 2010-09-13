@@ -22,10 +22,12 @@ module Faraday
 
     autoload_all 'faraday/response',
       :Yajl              => 'yajl',
+      :Nokogiri          => 'nokogiri',
       :ActiveSupportJson => 'active_support_json'
 
     register_lookup_modules \
       :yajl                => :Yajl,
+      :nokogiri            => :Nokogiri,
       :activesupport_json  => :ActiveSupportJson,
       :rails_json          => :ActiveSupportJson,
       :active_support_json => :ActiveSupportJson
