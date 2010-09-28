@@ -74,22 +74,19 @@ if Faraday::TestCase::LIVE_SERVER
           end
         end
 
-        # http://github.com/pauldix/typhoeus/issues#issue/7
-        if ENV['FORCE'] || adapter != Faraday::Adapter::Typhoeus
-          define_method "test_#{adapter}_HEAD_send_url_encoded_params" do
-            resp = create_connection(adapter).head do |req|
-              req.url 'hello', 'name' => 'zack'
-            end
-            assert_equal 'text/html', resp.headers['content-type']
+        define_method "test_#{adapter}_HEAD_send_url_encoded_params" do
+          resp = create_connection(adapter).head do |req|
+            req.url 'hello', 'name' => 'zack'
           end
+          assert_equal 'text/html', resp.headers['content-type']
+        end
 
-          define_method "test_#{adapter}_HEAD_retrieves_no_response_body" do
-            assert_equal '', create_connection(adapter).head('hello_world').body.to_s
-          end
+        define_method "test_#{adapter}_HEAD_retrieves_no_response_body" do
+          assert_equal '', create_connection(adapter).head('hello_world').body.to_s
+        end
 
-          define_method "test_#{adapter}_HEAD_retrieves_the_response_headers" do
-            assert_equal 'text/html', create_connection(adapter).head('hello_world').headers['content-type']
-          end
+        define_method "test_#{adapter}_HEAD_retrieves_the_response_headers" do
+          assert_equal 'text/html', create_connection(adapter).head('hello_world').headers['content-type']
         end
 
         define_method "test_#{adapter}_DELETE_retrieves_the_response_headers" do
