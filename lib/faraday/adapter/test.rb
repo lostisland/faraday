@@ -91,17 +91,8 @@ module Faraday
         yield stubs
       end
 
-      def request_uri(url)
-        (url.path != "" ? url.path : "/") +
-        (url.query ? "?#{sort_query_params(url.query)}" : "")
-      end
-
-      def sort_query_params(query)
-        query.split('&').sort.join('&')
-      end
-
       def call(env)
-        if stub = stubs.match(env[:method], request_uri(env[:url]), env[:body])
+        if stub = stubs.match(env[:method], Faraday::Utils.normalize_path(env[:url]), env[:body])
           status, headers, body = stub.block.call(env)
           env.update \
             :status           => status,

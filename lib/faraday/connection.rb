@@ -4,20 +4,7 @@ require 'base64'
 
 module Faraday
   class Connection
-    include Addressable, Rack::Utils
-
-    HEADERS = Hash.new do |h, k|
-      if k.respond_to?(:to_str)
-        k
-      else 
-        k.to_s.split('_').            # :user_agent => %w(user agent)
-          each { |w| w.capitalize! }. # => %w(User Agent)
-          join('-')                   # => "User-Agent"
-      end
-    end
-    HEADERS.update \
-      :etag => "ETag"
-    HEADERS.values.each { |v| v.freeze }
+    include Addressable, Faraday::Utils
 
     METHODS = Set.new [:get, :post, :put, :delete, :head]
     METHODS_WITH_BODIES = Set.new [:post, :put]
@@ -224,33 +211,6 @@ module Faraday
       end
       uri.query = url_params.empty? ? nil : build_query(url_params)
       uri
-    end
-
-    # turns param keys into strings
-    def merge_params(existing_params, new_params)
-      new_params.each do |key, value|
-        existing_params[key.to_s] = value
-      end
-    end
-
-    # turns headers keys and values into strings.  Look up symbol keys in the 
-    # the HEADERS hash.  
-    #
-    #   h = merge_headers(HeaderHash.new, :content_type => 'text/plain')
-    #   h['Content-Type'] # = 'text/plain'
-    #
-    def merge_headers(existing_headers, new_headers)
-      new_headers.each do |key, value|
-        existing_headers[HEADERS[key]] = value.to_s
-      end
-    end
-
-    # Be sure to URI escape '+' symbols to %2B.  Otherwise, they get interpreted
-    # as spaces.
-    def escape(s)
-      s.to_s.gsub(/([^a-zA-Z0-9_.-]+)/n) do
-        '%' << $1.unpack('H2'*bytesize($1)).join('%').tap { |c| c.upcase! }
-      end
     end
 
     def proxy_arg_to_uri(arg)
