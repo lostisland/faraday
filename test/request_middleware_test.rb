@@ -6,9 +6,11 @@ class RequestMiddlewareTest < Faraday::TestCase
     next if !encoder.loaded?
 
     define_method "test_encodes_json_with_#{key}" do
-      raw_json = create_json_connection(encoder).post('echo_body', :a => 1).body
+      resp = create_json_connection(encoder).post('echo_body', :a => 1)
+      raw_json = resp.body
       raw_json.gsub! /: 1/, ':1' # sometimes rails_json adds a space
       assert_equal %({"a":1}), raw_json
+      assert_match /json/, resp.headers['Content-Type']
     end
   end
 
@@ -17,7 +19,12 @@ private
     Faraday::Connection.new do |b|
       b.use encoder
       b.adapter :test do |stub|
-        stub.post('echo_body') { |env| [200, {'Content-Type' => 'text/html'}, env[:body]] }
+        stub.post('echo_body') do |env| 
+          [200, 
+            {'Content-Type' => env[:request_headers]['Content-Type']}, 
+            env[:body]
+          ]
+        end
       end
     end
   end
