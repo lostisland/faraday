@@ -7,7 +7,7 @@ end
 
 module Faraday
   class Adapter
-    class NetHttp < Adapter
+    class NetHttp < Faraday::Adapter
       def call(env)
         super
 

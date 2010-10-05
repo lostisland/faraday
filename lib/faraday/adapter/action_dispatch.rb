@@ -1,6 +1,6 @@
 module Faraday
   class Adapter
-    class ActionDispatch < Adapter
+    class ActionDispatch < Faraday::Adapter
       attr_reader :session
 
       # Initializes a new middleware instance for each request.  Instead of 

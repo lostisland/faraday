@@ -1,6 +1,6 @@
 module Faraday
   class Adapter
-    class Patron < Adapter
+    class Patron < Faraday::Adapter
       begin
         require 'patron'
       rescue LoadError, NameError => e
