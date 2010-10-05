@@ -1,5 +1,3 @@
-require 'rack/utils'
-
 module Faraday
   class << self
     attr_accessor :default_adapter
@@ -49,18 +47,20 @@ module Faraday
 
   extend AutoloadHelper
 
-  autoload_all 'faraday', 
-    :Adapter         => 'adapter',
-    :Connection      => 'connection',
+  autoload_all 'faraday',
     :Middleware      => 'middleware',
     :Builder         => 'builder',
     :Request         => 'request',
     :Response        => 'response',
     :CompositeReadIO => 'upload_io',
     :UploadIO        => 'upload_io',
-    :Parts           => 'upload_io',
-    :Error           => 'error'
+    :Parts           => 'upload_io'
 end
+
+require 'faraday/utils'
+require 'faraday/connection'
+require 'faraday/adapter'
+require 'faraday/error'
 
 # not pulling in active-support JUST for this method.
 class Object

@@ -26,7 +26,7 @@ module Faraday
 
         @app.call env
       rescue Errno::ECONNREFUSED
-        raise Error::ConnectionFailed, "connection refused"
+        raise Error::ConnectionFailed.new(Errno::ECONNREFUSED)
       end
 
       # TODO: build in support for multipart streaming if patron supports it.

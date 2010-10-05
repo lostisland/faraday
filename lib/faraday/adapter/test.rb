@@ -19,7 +19,7 @@ module Faraday
       class Stubs
         def initialize
           # {:get => [Stub, Stub]}
-          @stack = {}
+          @stack, @consumed = {}, {}
           yield self if block_given?
         end
 
@@ -29,8 +29,15 @@ module Faraday
 
         def match(request_method, path, body)
           return false if !@stack.key?(request_method)
-          stub = @stack[request_method].detect { |stub| stub.matches?(path, body) }
-          @stack[request_method].delete stub
+          stack = @stack[request_method]
+          consumed = (@consumed[request_method] ||= [])
+
+          if stub = matches?(stack, path, body)
+            consumed << stack.delete(stub)
+            stub
+          else
+            matches?(consumed, path, body)
+          end
         end
 
         def get(path, &block)
@@ -53,10 +60,6 @@ module Faraday
           new_stub(:delete, path, &block)
         end
 
-        def new_stub(request_method, path, body=nil, &block)
-          (@stack[request_method] ||= []) << Stub.new(path, body, block)
-        end
-
         # Raises an error if any of the stubbed calls have not been made.
         def verify_stubbed_calls
           failed_stubs = []
@@ -68,6 +71,16 @@ module Faraday
             end
           end
           raise failed_stubs.join(" ") unless failed_stubs.size == 0
+        end
+
+        protected
+
+        def new_stub(request_method, path, body=nil, &block)
+          (@stack[request_method] ||= []) << Stub.new(path, body, block)
+        end
+
+        def matches?(stack, path, body)
+          stack.detect { |stub| stub.matches?(path, body) }
         end
       end
 
@@ -91,17 +104,8 @@ module Faraday
         yield stubs
       end
 
-      def request_uri(url)
-        (url.path != "" ? url.path : "/") +
-        (url.query ? "?#{sort_query_params(url.query)}" : "")
-      end
-
-      def sort_query_params(query)
-        query.split('&').sort.join('&')
-      end
-
       def call(env)
-        if stub = stubs.match(env[:method], request_uri(env[:url]), env[:body])
+        if stub = stubs.match(env[:method], Faraday::Utils.normalize_path(env[:url]), env[:body])
           status, headers, body = stub.block.call(env)
           env.update \
             :status           => status,
