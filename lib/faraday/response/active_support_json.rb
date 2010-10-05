@@ -23,9 +23,8 @@ module Faraday
 
     def self.parse(body)
       ActiveSupport::JSON.decode(body)
-    # TODO:  Maybe rescue Exception can be better ...
-    rescue Yajl::ParseError => e
-      raise Faraday::Error::ParsingError
+    rescue Object => err
+      raise Faraday::Error::ParsingError.new(err)
     end
   end
 end
