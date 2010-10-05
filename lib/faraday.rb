@@ -54,7 +54,8 @@ module Faraday
     :Builder    => 'builder',
     :Request    => 'request',
     :Response   => 'response',
-    :Error      => 'error'
+    :Error      => 'error',
+    :Utils      => 'utils'
 
   module Adapter
     extend AutoloadHelper
