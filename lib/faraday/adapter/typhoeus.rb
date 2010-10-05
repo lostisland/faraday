@@ -16,13 +16,13 @@ module Faraday
       def call(env)
         super
 
-        hydra = env[:parallel_manager] || self.class.setup_parallel_manager
+        
         req   = ::Typhoeus::Request.new env[:url].to_s, 
           :method  => env[:method],
           :body    => env[:body],
           :headers => env[:request_headers],
           :disable_ssl_peer_verification => (env[:ssl][:verify] == false)
-        
+
         env_req = env[:request]
         req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
         req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
@@ -35,6 +35,7 @@ module Faraday
           env[:response].finish(env)
         end
 
+        hydra = env[:parallel_manager] || self.class.setup_parallel_manager
         hydra.queue req
 
         if !env[:parallel_manager]

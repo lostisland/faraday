@@ -104,7 +104,7 @@ if Faraday::TestCase::LIVE_SERVER
           assert !connection.in_parallel?
           assert_equal 'hello world', connection.get('hello_world').body
         end
-      
+
         define_method "test_#{adapter}_async_requests_uses_parallel_manager_to_run_multiple_json_requests" do
           resp1, resp2 = nil, nil
 
