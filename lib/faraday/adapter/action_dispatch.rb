@@ -3,7 +3,7 @@ module Faraday
     class ActionDispatch < Faraday::Adapter
       attr_reader :session
 
-      # Initializes a new middleware instance for each request.  Instead of 
+      # Initializes a new middleware instance for each request.  Instead of
       # initiating an HTTP request with a web server, this adapter calls
       # a Rails 3 app using integration tests.
       #

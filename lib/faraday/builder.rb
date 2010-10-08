@@ -14,7 +14,7 @@ module Faraday
     end
 
     def self.inner_app
-      lambda do |env| 
+      lambda do |env|
         env[:parallel_manager] ? env[:response] : env[:response].finish(env)
       end
     end

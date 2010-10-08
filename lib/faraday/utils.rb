@@ -9,7 +9,7 @@ module Faraday
     HEADERS = Hash.new do |h, k|
       if k.respond_to?(:to_str)
         k
-      else 
+      else
         k.to_s.split('_').            # :user_agent => %w(user agent)
           each { |w| w.capitalize! }. # => %w(User Agent)
           join('-')                   # => "User-Agent"
@@ -37,8 +37,8 @@ module Faraday
       end
     end
 
-    # Turns headers keys and values into strings.  Look up symbol keys in the 
-    # the HEADERS hash.  
+    # Turns headers keys and values into strings.  Look up symbol keys in the
+    # the HEADERS hash.
     #
     #   h = merge_headers(HeaderHash.new, :content_type => 'text/plain')
     #   h['Content-Type'] # = 'text/plain'

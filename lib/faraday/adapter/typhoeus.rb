@@ -16,8 +16,7 @@ module Faraday
       def call(env)
         super
 
-        
-        req   = ::Typhoeus::Request.new env[:url].to_s, 
+        req   = ::Typhoeus::Request.new env[:url].to_s,
           :method  => env[:method],
           :body    => env[:body],
           :headers => env[:request_headers],

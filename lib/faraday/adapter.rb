@@ -34,7 +34,7 @@ module Faraday
     #           ignored.  Default: env[:body]
     # headers - The Hash of request headers.  Default: env[:request_headers]
     #
-    # Returns nothing.  If the body is processed, it is replaced in the 
+    # Returns nothing.  If the body is processed, it is replaced in the
     # environment for you.
     def process_body_for_request(env, body = env[:body], headers = env[:request_headers])
       return if body.nil? || body.empty? || !body.respond_to?(:each_key)

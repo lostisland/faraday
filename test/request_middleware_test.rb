@@ -19,9 +19,9 @@ private
     Faraday::Connection.new do |b|
       b.use encoder
       b.adapter :test do |stub|
-        stub.post('echo_body') do |env| 
-          [200, 
-            {'Content-Type' => env[:request_headers]['Content-Type']}, 
+        stub.post('echo_body') do |env|
+          [200,
+            {'Content-Type' => env[:request_headers]['Content-Type']},
             env[:body]
           ]
         end

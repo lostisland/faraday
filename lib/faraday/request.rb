@@ -68,8 +68,8 @@ module Faraday
       connection.merge_headers(env_headers, headers)
       connection.merge_params(env_params,  params)
 
-      { :method           => request_method, 
-        :body             => body, 
+      { :method           => request_method,
+        :body             => body,
         :url              => connection.build_url(path, env_params),
         :request_headers  => env_headers.update(headers),
         :parallel_manager => connection.parallel_manager,

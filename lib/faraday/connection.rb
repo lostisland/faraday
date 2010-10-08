@@ -109,7 +109,7 @@ module Faraday
     def proxy(arg = nil)
       return @proxy if arg.nil?
 
-      @proxy = 
+      @proxy =
         case arg
           when String then {:uri => proxy_arg_to_uri(arg)}
           when URI    then {:uri => arg}
@@ -123,7 +123,7 @@ module Faraday
     end
 
     # Parses the giving url with Addressable::URI and stores the individual
-    # components in this connection.  These components serve as defaults for 
+    # components in this connection.  These components serve as defaults for
     # requests made by this connection.
     #
     #   conn = Faraday::Connection.new { ... }
@@ -174,7 +174,7 @@ module Faraday
       end
     end
 
-    # Takes a relative url for a request and combines it with the defaults 
+    # Takes a relative url for a request and combines it with the defaults
     # set on the connection instance.
     #
     #   conn = Faraday::Connection.new { ... }

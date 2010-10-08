@@ -11,8 +11,8 @@ class MultipartTest < Faraday::TestCase
   def test_processes_nested_body
     # assume params are out of order
     regexes = [
-      /name\=\"a\"/, 
-      /name=\"b\[c\]\"\; filename\=\"multipart_test\.rb\"/, 
+      /name\=\"a\"/,
+      /name=\"b\[c\]\"\; filename\=\"multipart_test\.rb\"/,
       /name=\"b\[d\]\"/]
     @env[:body] = {:a => 1, :b => {:c => Faraday::UploadIO.new(__FILE__, 'text/x-ruby'), :d => 2}}
     @app.process_body_for_request @env
@@ -24,7 +24,7 @@ class MultipartTest < Faraday::TestCase
     assert_equal [], regexes
     assert_kind_of CompositeReadIO, @env[:body]
     assert_equal "%s;boundary=%s" %
-      [Faraday::Adapter::MULTIPART_TYPE, Faraday::Adapter::DEFAULT_BOUNDARY], 
+      [Faraday::Adapter::MULTIPART_TYPE, Faraday::Adapter::DEFAULT_BOUNDARY],
       @env[:request_headers]['Content-Type']
   end
 
