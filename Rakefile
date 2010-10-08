@@ -10,6 +10,10 @@ begin
     gem.email = "technoweenie@gmail.com"
     gem.homepage = "http://github.com/technoweenie/faraday"
     gem.authors = ["rick"]
+    gem.add_development_dependency "jeweler", "~> 1.4.0"
+    gem.add_development_dependency "rake", "~> 0.8.7"
+    gem.add_development_dependency "ruby-debug", "~> 0.10.3"
+    gem.add_development_dependency "test-unit", "~> 2.1.1"
     gem.add_dependency "rack",           "~> 1.0.1"
     gem.add_dependency "multipart-post", "~> 1.0.1"
     gem.add_dependency "addressable",    "~> 2.1.1"
