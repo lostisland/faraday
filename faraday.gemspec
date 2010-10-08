@@ -1,24 +1,95 @@
-# -*- encoding: utf-8 -*-
-require File.expand_path('../lib/faraday/version', __FILE__)
-
+## This is the rakegem gemspec template. Make sure you read and understand
+## all of the comments. Some sections require modification, and others can
+## be deleted if you don't need them. Once you understand the contents of
+## this file, feel free to delete any comments that begin with two hash marks.
+## You can find comprehensive Gem::Specification documentation, at
+## http://docs.rubygems.org/read/chapter/20
 Gem::Specification.new do |s|
+  s.specification_version = 2 if s.respond_to? :specification_version=
+  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.rubygems_version = '1.3.5'
+
+  ## Leave these as is they will be modified for you by the rake gemspec task.
+  ## If your rubyforge_project name is different, then edit it and comment out
+  ## the sub! line in the Rakefile
+  s.name              = 'faraday'
+  s.version           = '0.4.6'
+  s.date              = '2010-10-08'
+  s.rubyforge_project = 'faraday'
+
+  ## Make sure your summary is short. The description may be as long
+  ## as you like.
+  s.summary     = "HTTP/REST API client library."
+  s.description = "HTTP/REST API client library."
+
+  ## List the primary authors. If there are a bunch of authors, it's probably
+  ## better to set the email to an email list or something. If you don't have
+  ## a custom homepage, consider using your GitHub URL or the like.
+  s.authors  = ["Rick Olson"]
+  s.email    = 'technoweenie@gmail.com'
+  s.homepage = 'http://github.com/technoweenie/faraday'
+
+  ## This gets added to the $LOAD_PATH so that 'lib/NAME.rb' can be required as
+  ## require 'NAME.rb' or'/lib/NAME/file.rb' can be as require 'NAME/file.rb'
+  s.require_paths = %w[lib]
+
+  ## Specify any RDoc options here. You'll want to add your README and
+  ## LICENSE files to the extra_rdoc_files list.
+  s.rdoc_options = ["--charset=UTF-8"]
+  s.extra_rdoc_files = %w[README LICENSE]
+
   s.add_development_dependency('rake', ['~> 0.8.7'])
   s.add_development_dependency('sinatra', ['~> 1.0.0'])
   s.add_runtime_dependency('addressable', ['~> 2.1.1'])
   s.add_runtime_dependency('multipart-post', ['~> 1.0.1'])
   s.add_runtime_dependency('rack', ['~> 1.0.1'])
-  s.name = 'faraday'
-  s.version = Faraday::VERSION
-  s.required_rubygems_version = Gem::Requirement.new('>= 1.3.6') if s.respond_to? :required_rubygems_version=
-  s.authors = ["rick"]
-  s.summary = %q{HTTP/REST API client library}
-  s.description = %q{HTTP/REST API client library with pluggable components}
-  s.email = ['technoweenie@gmail.com']
-  s.executables = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  s.files = `git ls-files`.split("\n")
-  s.test_files = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.homepage = "http://github.com/technoweenie/faraday"
-  s.extra_rdoc_files = ['LICENSE', 'README.rdoc']
-  s.rdoc_options = ['--charset=UTF-8']
-  s.require_paths = ['lib']
+
+  ## Leave this section as-is. It will be automatically generated from the
+  ## contents of your Git repository via the gemspec task. DO NOT REMOVE
+  ## THE MANIFEST COMMENTS, they are used as delimiters by the task.
+  # = MANIFEST =
+  s.files = %w[
+    Gemfile
+    Gemfile.lock
+    LICENSE
+    README.rdoc
+    Rakefile
+    faraday.gemspec
+    lib/faraday.rb
+    lib/faraday/adapter.rb
+    lib/faraday/adapter/action_dispatch.rb
+    lib/faraday/adapter/net_http.rb
+    lib/faraday/adapter/patron.rb
+    lib/faraday/adapter/test.rb
+    lib/faraday/adapter/typhoeus.rb
+    lib/faraday/builder.rb
+    lib/faraday/connection.rb
+    lib/faraday/error.rb
+    lib/faraday/middleware.rb
+    lib/faraday/request.rb
+    lib/faraday/request/active_support_json.rb
+    lib/faraday/request/yajl.rb
+    lib/faraday/response.rb
+    lib/faraday/response/active_support_json.rb
+    lib/faraday/response/yajl.rb
+    lib/faraday/upload_io.rb
+    lib/faraday/utils.rb
+    test/adapters/live_test.rb
+    test/adapters/test_middleware_test.rb
+    test/adapters/typhoeus_test.rb
+    test/connection_app_test.rb
+    test/connection_test.rb
+    test/env_test.rb
+    test/form_post_test.rb
+    test/helper.rb
+    test/live_server.rb
+    test/multipart_test.rb
+    test/request_middleware_test.rb
+    test/response_middleware_test.rb
+  ]
+  # = MANIFEST =
+
+  ## Test files will be grabbed from the file list. Make sure the path glob
+  ## matches what you actually use.
+  s.test_files = s.files.select { |path| path =~ /^test\/.*_test\.rb/ }
 end

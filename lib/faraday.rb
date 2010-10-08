@@ -1,4 +1,6 @@
 module Faraday
+  VERSION = "0.4.6"
+
   class << self
     attr_accessor :default_adapter
     attr_writer   :default_connection
