@@ -5,10 +5,11 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rake', ['~> 0.8.7'])
   s.add_development_dependency('ruby-debug', ['~> 0.10.3'])
   s.add_development_dependency('sinatra', ['~> 1.0.0'])
-  s.add_development_dependency('test-unit', ['~> 2.1.1'])
-  s.add_runtime_dependency('rack', ['~> 1.0.1'])
-  s.add_runtime_dependency('multipart-post', ['~> 1.0.1'])
+  # s.add_development_dependency('test-unit', ['~> 2.1.1'])
+  s.add_development_dependency('leftright', ['~> 0.9.0'])
   s.add_runtime_dependency('addressable', ['~> 2.1.1'])
+  s.add_runtime_dependency('multipart-post', ['~> 1.0.1'])
+  s.add_runtime_dependency('rack', ['~> 1.0.1'])
   s.name = 'faraday'
   s.version = Faraday::VERSION
   s.required_rubygems_version = Gem::Requirement.new('>= 1.3.6') if s.respond_to? :required_rubygems_version=

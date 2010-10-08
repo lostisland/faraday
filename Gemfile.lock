@@ -11,6 +11,7 @@ GEM
   specs:
     addressable (2.1.2)
     columnize (0.3.1)
+    leftright (0.9.0)
     linecache (0.43)
     multipart-post (1.0.1)
     rack (1.0.1)
@@ -22,7 +23,6 @@ GEM
       linecache (>= 0.3)
     sinatra (1.0)
       rack (>= 1.0)
-    test-unit (2.1.1)
 
 PLATFORMS
   ruby
@@ -30,9 +30,9 @@ PLATFORMS
 DEPENDENCIES
   addressable (~> 2.1.1)
   faraday!
+  leftright (~> 0.9.0)
   multipart-post (~> 1.0.1)
   rack (~> 1.0.1)
   rake (~> 0.8.7)
   ruby-debug (~> 0.10.3)
   sinatra (~> 1.0.0)
-  test-unit (~> 2.1.1)
