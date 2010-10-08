@@ -1,29 +1,7 @@
-require 'rubygems'
 require 'rake'
+require 'bundler'
 
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "faraday"
-    gem.summary = "HTTP/REST API client library"
-    gem.description = "HTTP/REST API client library with pluggable components"
-    gem.email = "technoweenie@gmail.com"
-    gem.homepage = "http://github.com/technoweenie/faraday"
-    gem.authors = ["rick"]
-    gem.add_development_dependency "jeweler", "~> 1.4.0"
-    gem.add_development_dependency "rake", "~> 0.8.7"
-    gem.add_development_dependency "ruby-debug", "~> 0.10.3"
-    gem.add_development_dependency "test-unit", "~> 2.1.1"
-    gem.add_dependency "rack",           "~> 1.0.1"
-    gem.add_dependency "multipart-post", "~> 1.0.1"
-    gem.add_dependency "addressable",    "~> 2.1.1"
-  end
-  Jeweler::GemcutterTasks.new
-
-  task :test => :check_dependencies
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
-end
+Bundler::GemHelper.install_tasks
 
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
@@ -48,11 +26,10 @@ end
 task :default => :test
 
 require 'rake/rdoctask'
+require File.expand_path("../lib/faraday/version", __FILE__)
 Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "faraday #{version}"
+  rdoc.title = "faraday #{Faraday::VERSION}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
