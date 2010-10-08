@@ -34,7 +34,7 @@ class TestEnv < Faraday::TestCase
     assert_equal @input[:body], @env[:body]
   end
 
-  def test_request_create_stores_ssl_options
+  def test_request_create_stores_timeout_options
     assert_equal 3, @env[:request][:timeout]
     assert_equal 5, @env[:request][:open_timeout]
   end

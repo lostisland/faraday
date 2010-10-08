@@ -182,12 +182,6 @@ class TestConnection < Faraday::TestCase
   def test_proxy_accepts_string
     conn = Faraday::Connection.new
     conn.proxy 'http://proxy.com'
-    assert_equal 'proxy.com', conn.proxy.host
-  end
-
-  def test_proxy_accepts_string
-    conn = Faraday::Connection.new
-    conn.proxy 'http://proxy.com'
     assert_equal 'proxy.com', conn.proxy[:uri].host
     assert_equal [:uri],      conn.proxy.keys
   end
