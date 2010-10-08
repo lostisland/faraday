@@ -4,7 +4,11 @@ gem 'addressable', '>= 2.1.1'
 
 require 'test/unit'
 if ENV['LEFTRIGHT']
-  require 'leftright'
+  begin
+    require 'leftright'
+  rescue LoadError
+    puts "Run `gem install leftright` to install leftright."
+  end
 end
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
