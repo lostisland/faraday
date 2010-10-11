@@ -33,11 +33,6 @@ Gem::Specification.new do |s|
   ## require 'NAME.rb' or'/lib/NAME/file.rb' can be as require 'NAME/file.rb'
   s.require_paths = %w[lib]
 
-  ## Specify any RDoc options here. You'll want to add your README and
-  ## LICENSE files to the extra_rdoc_files list.
-  s.rdoc_options = ["--charset=UTF-8"]
-  s.extra_rdoc_files = %w[README LICENSE]
-
   s.add_development_dependency('rake', ['~> 0.8.7'])
   s.add_development_dependency('sinatra', ['~> 1.0.0'])
   s.add_runtime_dependency('addressable', ['~> 2.1.1'])
@@ -52,7 +47,7 @@ Gem::Specification.new do |s|
     Gemfile
     Gemfile.lock
     LICENSE
-    README.rdoc
+    README.md
     Rakefile
     faraday.gemspec
     lib/faraday.rb
