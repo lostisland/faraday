@@ -71,6 +71,7 @@ end
 #
 #############################################################################
 
+desc "Create tag v#{version} and build and push #{gem_file} to Rubygems"
 task :release => :build do
   unless `git branch` =~ /^\* master$/
     puts "You must be on the master branch to release!"
@@ -80,8 +81,10 @@ task :release => :build do
   sh "git tag v#{version}"
   sh "git push origin master"
   sh "git push origin v#{version}"
-  sh "gem push pkg/#{name}-#{version}.gem"
+  sh "gem push pkg/#{gem_file}"
 end
+
+desc "Build #{gem_file} into the pkg directory"
 
 task :build => :gemspec do
   sh "mkdir -p pkg"
@@ -89,6 +92,7 @@ task :build => :gemspec do
   sh "mv #{gem_file} pkg"
 end
 
+desc "Generate #{gemspec_file}"
 task :gemspec => :validate do
   # read spec file and split out manifest section
   spec = File.read(gemspec_file)
@@ -117,6 +121,7 @@ task :gemspec => :validate do
   puts "Updated #{gemspec_file}"
 end
 
+desc "Validate #{gemspec_file}"
 task :validate do
   libfiles = Dir['lib/*'] - ["lib/#{name}.rb", "lib/#{name}"]
   unless libfiles.empty?
