@@ -69,6 +69,12 @@ This mess is gonna get raw, like sushi. So, haters to the left.
 * Support timeouts
 * Add curb, em-http, fast_http
 
+## Projects using Faraday
+
+* [Twitter gem](http://github.com/jnunemaker/twitter) as of 1.0.0 preview 
+* [Faraday Middleware](http://github.com/pengwynn/faraday_middleware) includes generic middleware for [multi_json](http://github.com/intridea/multi_json), [multi_xml](http://github.com/sferik/multi_xml), and [Hashie](http://github.com/intridea/hashie)
+* [OAuth2 gem](http://github.com/intridea/oauth2) - wrapper for OAuth2 APIs
+
 ## Note on Patches/Pull Requests
  
 * Fork the project.
