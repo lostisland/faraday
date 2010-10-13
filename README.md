@@ -22,7 +22,7 @@ This mess is gonna get raw, like sushi. So, haters to the left.
     resp1 = conn.get '/nigiri/sake.json'
     resp2 = conn.post do |req|
       req.url  "/nigiri.json", :page => 2
-      req[:content_type] = 'application/json'
+      req["Content-Type"] = 'application/json'
       req.body = {:name => 'Unagi'}
     end
 
