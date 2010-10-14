@@ -105,14 +105,16 @@ module Faraday
       end
 
       def call(env)
-        if stub = stubs.match(env[:method], Faraday::Utils.normalize_path(env[:url]), env[:body])
+        normalized_path = Faraday::Utils.normalize_path(env[:url])
+
+        if stub = stubs.match(env[:method], normalized_path, env[:body])
           status, headers, body = stub.block.call(env)
           env.update \
             :status           => status,
             :response_headers => headers,
             :body             => body
         else
-          raise "no stubbed request for #{env[:method]} #{request_uri(env[:url])} #{env[:body]}"
+          raise "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"
         end
         @app.call(env)
       end

@@ -33,5 +33,11 @@ module Adapters
       assert_equal 'hello', @conn.get("/hello").body
       assert_equal 'world', @conn.get("/hello").body
     end
+
+    def test_raises_an_error_if_no_stub_is_found_for_request
+      assert_raise RuntimeError do
+        @conn.get('/invalid'){ [200, {}, []] }
+      end
+    end
   end
 end
