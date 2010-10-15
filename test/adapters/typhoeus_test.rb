@@ -21,6 +21,11 @@ if Faraday::Adapter::Typhoeus.loaded?
         headers = @adapter.parse_response_headers("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nLocation: http://sushi.com/\r\n\r\n")
         assert_equal 'http://sushi.com/', headers['location']
       end
+
+      def test_parse_response_headers_parses_blank_lines
+        headers = @adapter.parse_response_headers("HTTP/1.1 200 OK\r\n\r\nContent-Type: text/html\r\n\r\n")
+        assert_equal 'text/html', headers['content-type']
+      end
     end
   end
 end
