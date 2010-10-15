@@ -32,7 +32,7 @@ This mess is gonna get raw, like sushi. So, haters to the left.
 ## Testing
 
     # It's possible to define stubbed request outside a test adapter block.
-    stubs = Faraday::Test::Stubs.new do |stub|
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
       stub.get('/tamago') { [200, {}, 'egg'] }
     end
 
