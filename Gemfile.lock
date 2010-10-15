@@ -1,17 +1,17 @@
 PATH
   remote: .
   specs:
-    faraday (0.4.6)
-      addressable (~> 2.1.1)
+    faraday (0.5.0)
+      addressable (~> 2.2.2)
       multipart-post (~> 1.0.1)
-      rack (~> 1.0.1)
+      rack (~> 1.2.1)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    addressable (2.1.2)
+    addressable (2.2.2)
     multipart-post (1.0.1)
-    rack (1.0.1)
+    rack (1.2.1)
     rake (0.8.7)
     sinatra (1.0)
       rack (>= 1.0)
@@ -20,9 +20,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  addressable (~> 2.1.1)
+  addressable (~> 2.2.2)
   faraday!
   multipart-post (~> 1.0.1)
-  rack (~> 1.0.1)
+  rack (~> 1.2.1)
   rake (~> 0.8.7)
   sinatra (~> 1.0.0)
