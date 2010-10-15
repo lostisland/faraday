@@ -19,7 +19,7 @@ if Faraday::TestCase::LIVE_SERVER
         end
 
         define_method "test_#{adapter}_GET_retrieves_the_response_headers" do
-          assert_equal 'text/html', create_connection(adapter).get('hello_world').headers['content-type']
+          assert_match /text\/html/, create_connection(adapter).get('hello_world').headers['content-type']
         end
 
         define_method "test_#{adapter}_POST_send_url_encoded_params" do
@@ -39,7 +39,7 @@ if Faraday::TestCase::LIVE_SERVER
         end
 
         define_method "test_#{adapter}_POST_retrieves_the_response_headers" do
-          assert_equal 'text/html', create_connection(adapter).post('echo_name').headers['content-type']
+          assert_match /text\/html/, create_connection(adapter).post('echo_name').headers['content-type']
         end
 
         define_method "test_#{adapter}_POST_sends_files" do
@@ -70,7 +70,7 @@ if Faraday::TestCase::LIVE_SERVER
           end
 
           define_method "test_#{adapter}_PUT_retrieves_the_response_headers" do
-            assert_equal 'text/html', create_connection(adapter).put('echo_name').headers['content-type']
+            assert_match /text\/html/, create_connection(adapter).put('echo_name').headers['content-type']
           end
         end
 
@@ -78,7 +78,7 @@ if Faraday::TestCase::LIVE_SERVER
           resp = create_connection(adapter).head do |req|
             req.url 'hello', 'name' => 'zack'
           end
-          assert_equal 'text/html', resp.headers['content-type']
+          assert_match /text\/html/, resp.headers['content-type']
         end
 
         define_method "test_#{adapter}_HEAD_retrieves_no_response_body" do
@@ -86,11 +86,11 @@ if Faraday::TestCase::LIVE_SERVER
         end
 
         define_method "test_#{adapter}_HEAD_retrieves_the_response_headers" do
-          assert_equal 'text/html', create_connection(adapter).head('hello_world').headers['content-type']
+          assert_match /text\/html/, create_connection(adapter).head('hello_world').headers['content-type']
         end
 
         define_method "test_#{adapter}_DELETE_retrieves_the_response_headers" do
-          assert_equal 'text/html', create_connection(adapter).delete('delete_with_json').headers['content-type']
+          assert_match /text\/html/, create_connection(adapter).delete('delete_with_json').headers['content-type']
         end
 
         define_method "test_#{adapter}_DELETE_retrieves_the_body" do
