@@ -11,10 +11,13 @@ GEM
   specs:
     addressable (2.2.2)
     multipart-post (1.0.1)
+    patron (0.4.9)
     rack (1.2.1)
     rake (0.8.7)
     sinatra (1.0)
       rack (>= 1.0)
+    typhoeus (0.1.31)
+      rack
 
 PLATFORMS
   ruby
@@ -23,6 +26,8 @@ DEPENDENCIES
   addressable (~> 2.2.2)
   faraday!
   multipart-post (~> 1.0.1)
+  patron (~> 0.4)
   rack (~> 1.2.1)
-  rake (~> 0.8.7)
-  sinatra (~> 1.0.0)
+  rake (~> 0.8)
+  sinatra (~> 1.0)
+  typhoeus (~> 0.1)
