@@ -5,7 +5,7 @@ source "http://rubygems.org"
 # and rake tasks are available in development mode:
 group :development, :test do
   gem 'patron', '~> 0.4'
-  gem 'sinatra', '~> 1.0'
+  gem 'sinatra', '~> 1.1'
   gem 'typhoeus', '~> 0.1'
 end
 

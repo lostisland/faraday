@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rake', '~> 0.8')
   s.add_runtime_dependency('addressable', '~> 2.2.2')
   s.add_runtime_dependency('multipart-post', '~> 1.0.1')
-  s.add_runtime_dependency('rack', '~> 1.2.1')
+  s.add_runtime_dependency('rack', ['>= 1.1.0', "< 2"])
 
   ## Leave this section as-is. It will be automatically generated from the
   ## contents of your Git repository via the gemspec task. DO NOT REMOVE
