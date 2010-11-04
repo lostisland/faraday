@@ -55,6 +55,7 @@ Gem::Specification.new do |s|
     lib/faraday/adapter/patron.rb
     lib/faraday/adapter/test.rb
     lib/faraday/adapter/typhoeus.rb
+    lib/faraday/adapter/em_synchrony.rb
     lib/faraday/builder.rb
     lib/faraday/connection.rb
     lib/faraday/error.rb

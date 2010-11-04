@@ -10,6 +10,12 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.2.2)
+    em-http-request (0.2.14)
+      addressable (>= 2.0.0)
+      eventmachine (>= 0.12.9)
+    em-synchrony (0.2.0)
+      eventmachine (>= 0.12.9)
+    eventmachine (0.12.10)
     multipart-post (1.0.1)
     patron (0.4.9)
     rack (1.2.1)
@@ -26,6 +32,9 @@ PLATFORMS
 
 DEPENDENCIES
   addressable (~> 2.2.2)
+  em-http-request (~> 0.2)
+  em-synchrony (~> 0.2)
+  eventmachine (~> 0.12)
   faraday!
   multipart-post (~> 1.0.1)
   patron (~> 0.4)
