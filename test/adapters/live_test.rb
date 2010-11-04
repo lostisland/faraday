@@ -124,6 +124,21 @@ if Faraday::TestCase::LIVE_SERVER
           assert_equal '[1,2,3]', resp1.body
           assert_equal '[1,2,3]', resp2.body
         end
+
+        if adapter.to_s == "Faraday::Adapter::EMSynchrony"
+          instance_methods.grep(%r{Faraday::Adapter::EMSynchrony}).each do |method|
+            em = method.to_s.sub %r{^test_}, "test_under_em_"
+            define_method em do
+              EM.run do
+                Fiber.new do
+                  self.send method
+                  EM.stop
+                end.resume
+              end          
+            end
+          end
+          
+        end
       end
 
       def create_connection(adapter)

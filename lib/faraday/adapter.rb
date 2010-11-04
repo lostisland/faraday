@@ -10,6 +10,7 @@ module Faraday
       :ActionDispatch => 'action_dispatch',
       :NetHttp        => 'net_http',
       :Typhoeus       => 'typhoeus',
+      :EMSynchrony   => 'em_synchrony',
       :Patron         => 'patron',
       :Test           => 'test'
 
@@ -19,7 +20,7 @@ module Faraday
       :net_http        => :NetHttp,
       :typhoeus        => :Typhoeus,
       :patron          => :Patron,
-      :net_http        => :NetHttp
+      :em_synchrnoy    => :EMSynchrony
 
     def call(env)
       process_body_for_request(env)

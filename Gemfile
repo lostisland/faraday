@@ -7,6 +7,9 @@ group :development, :test do
   gem 'patron', '~> 0.4'
   gem 'sinatra', '~> 1.1'
   gem 'typhoeus', '~> 0.1'
+  gem 'eventmachine', '~> 0.12'
+  gem 'em-http-request', '~> 0.2', :require => 'em-http'
+  gem 'em-synchrony', '~> 0.2', :require => ['em-synchrony', 'em-synchrony/em-http']
 end
 
 gemspec
