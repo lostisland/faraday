@@ -39,4 +39,20 @@ class FormPostTest < Faraday::TestCase
     @app.process_body_for_request @env
     assert_equal 'abc', @env[:body]
   end
+
+  def test_processes_array_values
+    @env[:body] = {:a => [:b, 1]}
+    @app.process_body_for_request @env
+    assert_equal 'a[]=b&a[]=1', @env[:body]
+  end
+
+  def test_processes_nested_array_values
+    @env[:body] = {:a => [:b, {:c => :d}, [:e]]}
+    @app.process_body_for_request @env
+
+    # a[]=b&a[][c]=d&a[][]=e
+    assert_match /a\[\]=b/,      @env[:body]
+    assert_match /a\[\]\[c\]=d/, @env[:body]
+    assert_match /a\[\]\[\]=e/,  @env[:body]
+  end
 end

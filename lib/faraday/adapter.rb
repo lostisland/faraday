@@ -77,9 +77,14 @@ module Faraday
     end
 
     def process_to_params(pieces, params, base = nil, &block)
-      params.each do |key, value|
+      params.to_a.each do |key, value|
         key_str = base ? "#{base}[#{key}]" : key
-        if value.kind_of?(Hash)
+
+        case value
+        when Array
+          values = value.inject([]) { |a,v| a << [nil, v] }
+          process_to_params(pieces, values, key_str, &block)
+        when Hash
           process_to_params(pieces, value, key_str, &block)
         else
           pieces << block.call(key_str, value)
