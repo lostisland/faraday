@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    faraday (0.5.2)
+    faraday (0.5.3)
       addressable (~> 2.2.2)
       multipart-post (~> 1.0.1)
       rack (>= 1.1.0, < 2)
