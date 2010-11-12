@@ -81,7 +81,9 @@ module Faraday
     end
 
     def basic_auth(login, pass)
-      @headers['authorization'] = "Basic #{Base64.encode64("#{login}:#{pass}").strip}"
+      auth = Base64.encode64("#{login}:#{pass}")
+      auth.gsub!("\n", "")
+      @headers['authorization'] = "Basic #{auth}"
     end
 
     def token_auth(token, options = {})

@@ -58,6 +58,12 @@ class TestConnection < Faraday::TestCase
     assert_equal 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==', conn.headers['Authorization']
   end
 
+  def test_long_basic_auth_sets_authorization_header_without_new_lines
+    conn = Faraday::Connection.new
+    conn.basic_auth "A" * 255, ""
+    assert_equal "Basic #{'QUFB' * 85}Og==", conn.headers['Authorization']
+  end
+
   def test_auto_parses_basic_auth_from_url
     conn = Faraday::Connection.new :url => "http://aladdin:opensesame@sushi.com/fish"
     assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', conn.headers['Authorization']
