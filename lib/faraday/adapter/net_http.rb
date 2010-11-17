@@ -26,7 +26,7 @@ module Faraday
           http.ca_file = ssl[:ca_file]     if ssl[:ca_file]
         end
         req = env[:request]
-        http.read_timeout = net.open_timeout = req[:timeout] if req[:timeout]
+        http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
         http.open_timeout = req[:open_timeout]               if req[:open_timeout]
 
         full_path = full_path_for(env[:url].path, env[:url].query, env[:url].fragment)
