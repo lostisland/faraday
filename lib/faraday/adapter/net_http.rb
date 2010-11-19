@@ -55,8 +55,8 @@ module Faraday
           :body             => http_resp.body
 
         @app.call env
-      rescue Errno::ECONNREFUSED
-        raise Error::ConnectionFailed.new(Errno::ECONNREFUSED)
+      rescue Errno::ECONNREFUSED => e
+        raise Error::ConnectionFailed.new(e)
       end
 
       def net_http_class(env)
