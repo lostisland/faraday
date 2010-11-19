@@ -6,7 +6,9 @@ module Faraday
       end
 
       def message
-        @inner_exception.message
+        @inner_exception.respond_to?(:message) ? 
+          @inner_exception.message             :
+          @inner_exception.to_s
       end
 
       def backtrace
