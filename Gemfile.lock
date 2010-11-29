@@ -10,7 +10,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.2.2)
-    em-http-request (0.2.14)
+    em-http-request (0.2.15)
       addressable (>= 2.0.0)
       eventmachine (>= 0.12.9)
     em-synchrony (0.2.0)
@@ -24,8 +24,7 @@ GEM
       rack (~> 1.1)
       tilt (~> 1.1)
     tilt (1.1)
-    typhoeus (0.1.31)
-      rack
+    typhoeus (0.2.0)
 
 PLATFORMS
   ruby
