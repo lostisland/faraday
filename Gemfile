@@ -9,7 +9,10 @@ group :development, :test do
   gem 'typhoeus', '~> 0.2'
   gem 'eventmachine', '~> 0.12'
   gem 'em-http-request', '~> 0.2', :require => 'em-http'
-  gem 'em-synchrony', '~> 0.2', :require => ['em-synchrony', 'em-synchrony/em-http']
+  major, minor, patch = RUBY_VERSION.split('.')
+  if major.to_i >= 1 && minor.to_i >= 9
+    gem 'em-synchrony', '~> 0.2', :require => ['em-synchrony', 'em-synchrony/em-http']
+  end
 end
 
 gemspec

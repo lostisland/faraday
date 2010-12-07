@@ -40,4 +40,4 @@ DEPENDENCIES
   rack (>= 1.1.0, < 2)
   rake (~> 0.8)
   sinatra (~> 1.1)
-  typhoeus (~> 0.1)
+  typhoeus (~> 0.2)
