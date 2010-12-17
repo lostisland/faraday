@@ -23,5 +23,6 @@ pkg/*
 .bundle
 doc
 log
+Gemfile.lock
 
 ## PROJECT::SPECIFIC
