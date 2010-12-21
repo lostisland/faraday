@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   ## the sub! line in the Rakefile
   s.name              = 'faraday'
   s.version           = '0.5.3'
-  s.date              = '2010-11-09'
+  s.date              = '2010-12-20'
   s.rubyforge_project = 'faraday'
 
   ## Make sure your summary is short. The description may be as long
@@ -43,7 +43,6 @@ Gem::Specification.new do |s|
   # = MANIFEST =
   s.files = %w[
     Gemfile
-    Gemfile.lock
     LICENSE
     README.md
     Rakefile
