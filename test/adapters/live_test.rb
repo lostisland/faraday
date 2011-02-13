@@ -134,10 +134,9 @@ if Faraday::TestCase::LIVE_SERVER
                   self.send method
                   EM.stop
                 end.resume
-              end          
+              end
             end
           end
-          
         end
       end
 
