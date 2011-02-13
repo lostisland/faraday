@@ -1,9 +1,12 @@
-require 'em-synchrony/em-http'
-require 'fiber'
-
 module Faraday
   class Adapter
     class EMSynchrony < Faraday::Adapter
+      begin
+        require 'em-synchrony/em-http'
+        require 'fiber'
+      rescue LoadError, NameError => e
+        self.load_error = e
+      end
 
       class Header
         include Net::HTTPHeader
@@ -21,9 +24,7 @@ module Faraday
 
       def call(env)
         process_body_for_request(env)
-        
         request = EventMachine::HttpRequest.new(URI::parse(env[:url].to_s))
-        
         options = {:head => env[:request_headers]}
 
         if env[:body]
