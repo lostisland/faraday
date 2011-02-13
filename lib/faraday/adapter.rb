@@ -12,6 +12,7 @@ module Faraday
       :Typhoeus       => 'typhoeus',
       :EMSynchrony    => 'em_synchrony',
       :Patron         => 'patron',
+      :Excon          => 'excon',
       :Test           => 'test'
 
     register_lookup_modules \
@@ -20,7 +21,8 @@ module Faraday
       :net_http        => :NetHttp,
       :typhoeus        => :Typhoeus,
       :patron          => :Patron,
-      :em_synchrony    => :EMSynchrony
+      :em_synchrony    => :EMSynchrony,
+      :excon           => :Excon
 
     def call(env)
       process_body_for_request(env)
