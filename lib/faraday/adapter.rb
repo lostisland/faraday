@@ -13,7 +13,8 @@ module Faraday
       :EMSynchrony    => 'em_synchrony',
       :Patron         => 'patron',
       :Excon          => 'excon',
-      :Test           => 'test'
+      :Test           => 'test',
+      :Logger         => 'logger'
 
     register_lookup_modules \
       :action_dispatch => :ActionDispatch,
@@ -22,7 +23,8 @@ module Faraday
       :typhoeus        => :Typhoeus,
       :patron          => :Patron,
       :em_synchrony    => :EMSynchrony,
-      :excon           => :Excon
+      :excon           => :Excon,
+      :logger          => :Logger
 
     def call(env)
       process_body_for_request(env)
