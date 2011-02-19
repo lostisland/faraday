@@ -7,7 +7,7 @@ module Faraday
     #     end
     #   end
     # end
-    # 
+    #
     # resp = test.get '/nigiri/sake.json'
     # resp.body # => 'hi world'
     #

@@ -3,8 +3,9 @@ module Faraday
   #
   #   @connection.post do |req|
   #     req.url 'http://localhost', 'a' => '1' # 'http://localhost?a=1'
-  #     req.headers['b'] = '2' # header
-  #     req['b']         = '2' # header
+  #     req.headers['b'] = '2' # Header
+  #     req.params['c']  = '3' # GET Param
+  #     req['b']         = '2' # also Header
   #     req.body = 'abc'
   #   end
   #

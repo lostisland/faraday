@@ -22,7 +22,6 @@ module Faraday
           :response_headers => resp.headers.
             inject({}) { |memo, (k, v)| memo.update(k.downcase => v) },
           :body             => resp.body
-        env[:response].finish(env)
 
         @app.call env
       rescue Errno::ECONNREFUSED

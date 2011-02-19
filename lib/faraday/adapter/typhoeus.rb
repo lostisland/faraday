@@ -26,18 +26,19 @@ module Faraday
         req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
         req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
 
+        is_parallel = !!env[:parallel_manager]
         req.on_complete do |resp|
           env.update \
             :status           => resp.code,
             :response_headers => parse_response_headers(resp.headers),
             :body             => resp.body
-          env[:response].finish(env)
+          env[:response].finish(env) if !is_parallel
         end
 
         hydra = env[:parallel_manager] || self.class.setup_parallel_manager
         hydra.queue req
 
-        if !env[:parallel_manager]
+        if !is_parallel
           hydra.run
         end
 
