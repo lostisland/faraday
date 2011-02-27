@@ -1,5 +1,16 @@
 module Faraday
   class Response
+    # Used for simple response middleware that parse the incoming body into 
+    # a ruby object.  Expects a #parse instance method.
+    class Middleware < Faraday::Middleware
+      def call(env)
+        env[:response].on_complete do |finished_env|
+          finished_env[:body] = parse(finished_env[:body])
+        end
+        @app.call(env)
+      end
+    end
+
     extend AutoloadHelper
 
     autoload_all 'faraday/response',

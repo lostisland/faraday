@@ -27,7 +27,7 @@ module Faraday
         request = EventMachine::HttpRequest.new(URI::parse(env[:url].to_s))
         options = {:head => env[:request_headers]}
         options[:ssl] = env[:ssl] if env[:ssl]
-        
+
         if env[:body]
           if env[:body].respond_to? :read
             options[:body] = env[:body].read
