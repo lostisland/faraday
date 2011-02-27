@@ -9,10 +9,10 @@ group :development, :test do
   gem 'typhoeus', '~> 0.2'
   gem 'eventmachine', '~> 0.12'
   gem 'em-http-request', '~> 0.3', :require => 'em-http'
-  major, minor, patch = RUBY_VERSION.split('.')
-  if major.to_i >= 1 && minor.to_i >= 9
-    gem 'em-synchrony', '~> 0.2', :require => ['em-synchrony', 'em-synchrony/em-http']
-  end
+  gem 'em-synchrony', '~> 0.2', :require => ['em-synchrony', 'em-synchrony/em-http'], :platforms => :ruby_19
+  # ActiveSupport::JSON will be used in ruby 1.8 and Yajl in 1.9; this is to test against both adapters
+  gem 'activesupport', '~> 2.3.8', :require => nil, :platforms => :ruby_18
+  gem 'yajl-ruby', :require => 'yajl', :platforms => :ruby_19
 end
 
 gemspec
