@@ -1,18 +1,12 @@
 module Faraday
   class Response::ActiveSupportJson < Response::Middleware
-    begin
-      if !defined?(ActiveSupport::JSON)
-        require 'active_support'
-        ActiveSupport::JSON
-      end
-    rescue LoadError, NameError => e
-      self.load_error = e
+    dependency do
+      require 'active_support/json/decoding'
+      ActiveSupport::JSON
     end
-
-    def parse(body)
+    
+    define_parser do |body|
       ActiveSupport::JSON.decode(body)
-    rescue Object
-      raise Faraday::Error::ParsingError, $!
     end
   end
 end

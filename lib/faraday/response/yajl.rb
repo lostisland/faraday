@@ -1,15 +1,12 @@
 module Faraday
   class Response::Yajl < Response::Middleware
-    begin
+    dependency do
       require 'yajl'
-    rescue LoadError, NameError => e
-      self.load_error = e
+      Yajl::Parser
     end
-
-    def parse(body)
+    
+    define_parser do |body|
       Yajl::Parser.parse(body)
-    rescue Object
-      raise Faraday::Error::ParsingError, $!
     end
   end
 end
