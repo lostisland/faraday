@@ -5,6 +5,11 @@ module Faraday
     attr_accessor :default_adapter
     attr_writer   :default_connection
 
+    def new(url = nil, options = {})
+      block = block_given? ? Proc.new : nil
+      Faraday::Connection.new(url, options, &block)
+    end
+
   private
     def method_missing(name, *args, &block)
       default_connection.send(name, *args, &block)

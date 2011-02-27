@@ -23,7 +23,7 @@ class TestConnectionApps < Faraday::TestCase
   end
 
   def setup
-    @conn = Faraday::Connection.new do |b|
+    @conn = Faraday.new do |b|
       b.use TestMiddleWare
       b.use TestAdapter
     end

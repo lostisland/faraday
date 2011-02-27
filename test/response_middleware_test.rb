@@ -31,7 +31,7 @@ class ResponseMiddlewareTest < Faraday::TestCase
   end
 
   def create_json_connection(encoder)
-    Faraday::Connection.new do |b|
+    Faraday.new do |b|
       b.adapter :test do |stub|
         stub.get('json')  { [200, {'Content-Type' => 'text/html'}, "[1,2,3]"] }
         stub.get('blank') { [200, {'Content-Type' => 'text/html'}, ''] }

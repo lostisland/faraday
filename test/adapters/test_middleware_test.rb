@@ -4,7 +4,7 @@ module Adapters
   class TestMiddleware < Faraday::TestCase
     def setup
       @stubs = Faraday::Adapter::Test::Stubs.new
-      @conn  = Faraday::Connection.new do |builder|
+      @conn  = Faraday.new do |builder|
         builder.adapter :test, @stubs
       end
       @stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }

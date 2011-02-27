@@ -16,7 +16,7 @@ class RequestMiddlewareTest < Faraday::TestCase
 
 private
   def create_json_connection(encoder)
-    Faraday::Connection.new do |b|
+    Faraday.new do |b|
       b.use encoder
       b.adapter :test do |stub|
         stub.post('echo_body') do |env|

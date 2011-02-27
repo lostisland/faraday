@@ -6,7 +6,7 @@ This mess is gonna get raw, like sushi. So, haters to the left.
 
 ## Usage
 
-    conn = Faraday::Connection.new(:url => 'http://sushi.com') do |builder|
+    conn = Faraday.new(:url => 'http://sushi.com') do |builder|
       builder.use Faraday::Request::Yajl        # convert body to json with Yajl lib
       builder.use Faraday::Adapter::Logger      # log the request somewhere?
       builder.use Faraday::Adapter::Typhoeus    # make http request with typhoeus
@@ -41,7 +41,7 @@ This mess is gonna get raw, like sushi. So, haters to the left.
 
     # You can pass stubbed request to the test adapter or define them in a block
     # or a combination of the two.
-    test = Faraday::Connection.new do |builder|
+    test = Faraday.new do |builder|
       builder.adapter :test, stubs do |stub|
         stub.get('/ebi') {[ 200, {}, 'shrimp' ]}
       end

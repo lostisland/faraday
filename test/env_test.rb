@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class TestEnv < Faraday::TestCase
   def setup
-    @conn = Faraday::Connection.new :url => 'http://sushi.com/api', :headers => {'Mime-Version' => '1.0'}
+    @conn = Faraday.new :url => 'http://sushi.com/api', :headers => {'Mime-Version' => '1.0'}
     @conn.options[:timeout]      = 3
     @conn.options[:open_timeout] = 5
     @conn.ssl[:verify]           = false
