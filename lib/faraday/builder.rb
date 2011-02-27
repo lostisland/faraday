@@ -9,7 +9,8 @@ module Faraday
   class Builder
     attr_accessor :handlers
 
-    def self.create(&block)
+    def self.create
+      block = block_given? ? Proc.new : nil
       Builder.new(&block)
     end
 
@@ -19,17 +20,17 @@ module Faraday
       end
     end
 
-    def initialize(handlers = [], &block)
+    def initialize(handlers = [])
       @handlers = handlers
-      build(&block) if block_given?
+      build(Proc.new) if block_given?
     end
 
-    def build(options = {}, &block)
+    def build(options = {})
       inner = @handlers.shift
       if !options[:keep]
         @handlers.clear
       end
-      block.call(self)
+      yield self if block_given?
       run(inner || self.class.inner_app)
     end
 
@@ -51,23 +52,28 @@ module Faraday
       @handlers[1..-1].inject(inner_app) { |app, middleware| middleware.call(app) }
     end
 
-    def use(klass, *args, &block)
+    def use(klass, *args)
+      block = block_given? ? Proc.new : nil
       run(lambda { |app| klass.new(app, *args, &block) })
     end
 
-    def request(key, *args, &block)
+    def request(key, *args)
+      block = block_given? ? Proc.new : nil
       use_symbol(Faraday::Request, key, *args, &block)
     end
 
-    def response(key, *args, &block)
+    def response(key, *args)
+      block = block_given? ? Proc.new : nil
       use_symbol(Faraday::Response, key, *args, &block)
     end
 
-    def adapter(key, *args, &block)
+    def adapter(key, *args)
+      block = block_given? ? Proc.new : nil
       use_symbol(Faraday::Adapter, key, *args, &block)
     end
 
-    def use_symbol(mod, key, *args, &block)
+    def use_symbol(mod, key, *args)
+      block = block_given? ? Proc.new : nil
       use(mod.lookup_module(key), *args, &block)
     end
 

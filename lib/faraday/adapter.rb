@@ -81,10 +81,11 @@ module Faraday
       Faraday::CompositeReadIO.new(*parts.map{|p| p.to_io })
     end
 
-    def process_to_params(pieces, params, base = nil, &block)
+    def process_to_params(pieces, params, base = nil)
       params.to_a.each do |key, value|
         key_str = base ? "#{base}[#{key}]" : key
 
+        block = block_given? ? Proc.new : nil
         case value
         when Array
           values = value.inject([]) { |a,v| a << [nil, v] }

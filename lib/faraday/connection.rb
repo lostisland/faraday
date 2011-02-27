@@ -17,7 +17,7 @@ module Faraday
     # :headers
     # :request
     # :ssl
-    def initialize(url = nil, options = {}, &block)
+    def initialize(url = nil, options = {})
       if url.is_a?(Hash)
         options = url
         url     = options[:url]
@@ -32,7 +32,8 @@ module Faraday
       merge_params  @params,  options[:params]  if options[:params]
       merge_headers @headers, options[:headers] if options[:headers]
 
-      if block
+      if block_given?
+        block    = Proc.new
         @builder = Builder.new
         @builder.build { block.call(self) }
       else
@@ -60,23 +61,28 @@ module Faraday
       @builder.build(options, &block)
     end
 
-    def get(url = nil, headers = nil, &block)
+    def get(url = nil, headers = nil)
+      block = block_given? ? Proc.new : nil
       run_request(:get, url, nil, headers, &block)
     end
 
-    def post(url = nil, body = nil, headers = nil, &block)
+    def post(url = nil, body = nil, headers = nil)
+      block = block_given? ? Proc.new : nil
       run_request(:post, url, body, headers, &block)
     end
 
-    def put(url = nil, body = nil, headers = nil, &block)
+    def put(url = nil, body = nil, headers = nil)
+      block = block_given? ? Proc.new : nil
       run_request(:put, url, body, headers, &block)
     end
 
-    def head(url = nil, headers = nil, &block)
+    def head(url = nil, headers = nil)
+      block = block_given? ? Proc.new : nil
       run_request(:head, url, nil, headers, &block)
     end
 
-    def delete(url = nil, headers = nil, &block)
+    def delete(url = nil, headers = nil)
+      block = block_given? ? Proc.new : nil
       run_request(:delete, url, nil, headers, &block)
     end
 
