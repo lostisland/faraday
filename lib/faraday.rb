@@ -1,5 +1,5 @@
 module Faraday
-  VERSION = "0.5.6"
+  VERSION = "0.5.7"
 
   class << self
     attr_accessor :default_adapter

@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'faraday'
-  s.version           = '0.5.6'
-  s.date              = '2011-02-15'
+  s.version           = '0.5.7'
+  s.date              = '2011-02-27'
   s.rubyforge_project = 'faraday'
 
   ## Make sure your summary is short. The description may be as long
@@ -52,6 +52,7 @@ Gem::Specification.new do |s|
     lib/faraday/adapter/action_dispatch.rb
     lib/faraday/adapter/em_synchrony.rb
     lib/faraday/adapter/excon.rb
+    lib/faraday/adapter/logger.rb
     lib/faraday/adapter/net_http.rb
     lib/faraday/adapter/patron.rb
     lib/faraday/adapter/test.rb
@@ -69,6 +70,7 @@ Gem::Specification.new do |s|
     lib/faraday/upload_io.rb
     lib/faraday/utils.rb
     test/adapters/live_test.rb
+    test/adapters/logger_test.rb
     test/adapters/test_middleware_test.rb
     test/adapters/typhoeus_test.rb
     test/connection_app_test.rb
