@@ -1,8 +1,6 @@
 require 'rubygems'
-gem 'rack',        '>= 1.2.1'
-gem 'addressable', '>= 2.2.2'
-
 require 'test/unit'
+
 if ENV['LEFTRIGHT']
   begin
     require 'leftright'
@@ -11,14 +9,18 @@ if ENV['LEFTRIGHT']
   end
 end
 
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+unless $LOAD_PATH.include? 'lib'
+  $LOAD_PATH.unshift(File.dirname(__FILE__))
+  $LOAD_PATH.unshift(File.join($LOAD_PATH.first, '..', 'lib'))
+end
 require 'faraday'
 
 begin
   require 'ruby-debug'
-  Debugger.start
 rescue LoadError
+  # ignore
+else
+  Debugger.start
 end
 
 module Faraday

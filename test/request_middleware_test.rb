@@ -3,7 +3,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 class RequestMiddlewareTest < Faraday::TestCase
   [:yajl, :rails_json].each do |key|
     encoder = Faraday::Request.lookup_module(key)
-    next if !encoder.loaded?
+
+    unless encoder.loaded?
+      warn "warning: skipping #{encoder} tests"
+      next
+    end
 
     define_method "test_encodes_json_with_#{key}" do
       resp = create_json_connection(encoder).post('echo_body', :a => 1)

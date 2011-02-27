@@ -1,6 +1,8 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'helper'))
 
-if Faraday::TestCase::LIVE_SERVER
+if !Faraday::TestCase::LIVE_SERVER
+  warn "warning: test server is not up; skipping live server tests"
+else
   module Adapters
     class LiveTest < Faraday::TestCase
       loaded_adapters  = Faraday::Adapter.all_loaded_constants
