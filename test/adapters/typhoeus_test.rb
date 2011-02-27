@@ -1,6 +1,8 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'helper'))
 
-if Faraday::Adapter::Typhoeus.loaded?
+if !Faraday::Adapter::Typhoeus.loaded?
+  warn "warning: Typhoeus failed to load; skipping tests for Typhoeus adapter"
+else
   module Adapters
     class TestTyphoeus < Faraday::TestCase
       def setup
