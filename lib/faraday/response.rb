@@ -5,9 +5,14 @@ module Faraday
     class Middleware < Faraday::Middleware
       def call(env)
         env[:response].on_complete do |finished_env|
-          finished_env[:body] = parse(finished_env[:body])
+          on_complete(finished_env)
         end
         @app.call(env)
+      end
+
+      # Override this to modify the environment after the response has finished.
+      def on_complete(env)
+        env[:body] = parse(env[:body])
       end
     end
 
