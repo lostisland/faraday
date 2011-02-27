@@ -13,13 +13,13 @@ module Faraday
         super
         @logger.info "#{env[:method]} #{env[:url].to_s}"
         @logger.debug("request") do
-          env[:request_headers].map { |(k, v)| "#{k}: #{v.inspect}" }.join("\n")
+          env[:request_headers].map { |k, v| "#{k}: #{v.inspect}" }.join("\n")
         end
 
         env[:response].on_complete do |resp_env|
           @logger.info("Status") { env[:status].to_s }
           @logger.debug("response") do
-            resp_env[:response_headers].map { |(k, v)| "#{k}: #{v.inspect}" }.join("\n")
+            resp_env[:response_headers].map { |k, v| "#{k}: #{v.inspect}" }.join("\n")
           end
         end
 
