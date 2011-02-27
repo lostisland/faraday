@@ -24,7 +24,8 @@ This mess is gonna get raw, like sushi. So, haters to the left.
     resp1 = conn.get '/nigiri/sake.json'
     resp2 = conn.post do |req|
       req.url  "/nigiri.json", :page => 2
-      req["Content-Type"] = 'application/json'
+      req.params['limit'] = 100 # &limit=100
+      req.headers["Content-Type"] = 'application/json'
       req.body = {:name => 'Unagi'}
     end
 
@@ -72,7 +73,7 @@ This mess is gonna get raw, like sushi. So, haters to the left.
 * Add curb, em-http, fast_http
 
 ## Note on Patches/Pull Requests
- 
+
 * Fork the project.
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
@@ -83,4 +84,4 @@ This mess is gonna get raw, like sushi. So, haters to the left.
 
 ## Copyright
 
-Copyright (c) 2009-2010 rick, hobson. See LICENSE for details.
+Copyright (c) 2009-2011 rick, hobson. See LICENSE for details.
