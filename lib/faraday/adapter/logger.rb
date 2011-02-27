@@ -1,11 +1,13 @@
 module Faraday
   class Adapter
     class Logger < Faraday::Adapter
+      def self.loaded?() false end
+
       def initialize(app = nil, logger = nil)
         super(app)
         @logger = logger || begin
           require 'logger'
-          Logger.new(STDOUT)
+          ::Logger.new(STDOUT)
         end
       end
 

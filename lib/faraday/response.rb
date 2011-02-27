@@ -42,7 +42,8 @@ module Faraday
 
     def finish(env)
       return self if @status
-      env[:body] ||= ''
+      env[:body]             ||= ''
+      env[:response_headers] ||= {}
       @on_complete_callbacks.each { |c| c.call(env) }
       @status, @headers, @body = env[:status], env[:response_headers], env[:body]
       self
