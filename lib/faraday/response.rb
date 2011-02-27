@@ -1,23 +1,5 @@
 module Faraday
   class Response
-    class Middleware < Faraday::Middleware
-      self.load_error = :abstract
-
-      # Use a response callback in case the request is parallelized.
-      #
-      #   env[:response].on_complete do |finished_env|
-      #     finished_env[:body] = do_stuff_to(finished_env[:body])
-      #   end
-      #
-      def self.register_on_complete(env)
-      end
-
-      def call(env)
-        self.class.register_on_complete(env)
-        @app.call env
-      end
-    end
-
     extend AutoloadHelper
 
     autoload_all 'faraday/response',
