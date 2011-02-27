@@ -23,8 +23,8 @@ module Faraday
 
     def self.parse(body)
       ActiveSupport::JSON.decode(body)
-    rescue Object => err
-      raise Faraday::Error::ParsingError.new(err)
+    rescue Object
+      raise Faraday::Error::ParsingError, $!
     end
   end
 end

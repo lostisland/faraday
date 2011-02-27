@@ -19,8 +19,8 @@ module Faraday
 
     def self.parse(body)
       Yajl::Parser.parse(body)
-    rescue Object => err
-      raise Faraday::Error::ParsingError.new(err)
+    rescue Object
+      raise Faraday::Error::ParsingError, $!
     end
   end
 end

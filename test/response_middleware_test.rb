@@ -25,7 +25,7 @@ class ResponseMiddlewareTest < Faraday::TestCase
 
     define_method "test_use_#{key}_to_raise_Faraday_Error_Parsing_with_no_json_content" do
       assert_raises Faraday::Error::ParsingError do
-        response = create_json_connection(encoder).get('bad_json')
+        create_json_connection(encoder).get('bad_json')
       end
     end
   end
