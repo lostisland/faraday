@@ -1,7 +1,7 @@
 begin
   require 'net/https'
 rescue LoadError
-  puts "no such file to load -- net/https. Make sure openssl is installed if you want ssl support"
+  warn "Warning: no such file to load -- net/https. Make sure openssl is installed if you want ssl support"
   require 'net/http'
 end
 
@@ -10,53 +10,62 @@ module Faraday
     class NetHttp < Faraday::Adapter
       def call(env)
         super
+        url = env[:url]
+        req = env[:request]
 
-        is_ssl = env[:url].scheme == 'https'
+        http = net_http_class(env).new(url.host, url.port)
 
-        http = net_http_class(env).new(env[:url].host, env[:url].port || (is_ssl ? 443 : 80))
-        if http.use_ssl = is_ssl
+        if http.use_ssl = url.scheme == 'https'
           ssl = env[:ssl]
-          if ssl[:verify] == false
-            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-          else
-            http.verify_mode = ssl[:verify]
+          http.verify_mode = case ssl[:verify]
+          when false then OpenSSL::SSL::VERIFY_NONE
+          when true  then OpenSSL::SSL::VERIFY_PEER
+          else ssl[:verify]
           end
           http.cert    = ssl[:client_cert] if ssl[:client_cert]
           http.key     = ssl[:client_key]  if ssl[:client_key]
           http.ca_file = ssl[:ca_file]     if ssl[:ca_file]
         end
-        req = env[:request]
+
         http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
-        http.open_timeout = req[:open_timeout]               if req[:open_timeout]
+        http.open_timeout = req[:open_timeout]                if req[:open_timeout]
 
-        full_path = full_path_for(env[:url].path, env[:url].query, env[:url].fragment)
-        http_req  = Net::HTTPGenericRequest.new(
-          env[:method].to_s.upcase,    # request method
-          (env[:body] ? true : false), # is there data
-          true,                        # does net/http love you, true or false?
-          full_path,                   # request uri path
-          env[:request_headers])       # request headers
+        if :get != env[:method]
+          http_request = Net::HTTPGenericRequest.new \
+            env[:method].to_s.upcase,    # request method
+            !!env[:body],                # is there data
+            true,                        # does net/http love you, true or false?
+            url.request_uri,             # request uri path
+            env[:request_headers]        # request headers
 
-        if env[:body].respond_to?(:read)
-          http_req.body_stream = env[:body]
-          env[:body] = nil
+          if env[:body].respond_to?(:read)
+            http_request.body_stream = env[:body]
+            env[:body] = nil
+          end
         end
 
-        http_resp = http.request http_req, env[:body]
+        begin
+          http_response = if :get == env[:method]
+            # prefer `get` to `request` because the former handles gzip (ruby 1.9)
+            http.get url.request_uri, env[:request_headers]
+          else
+            http.request http_request, env[:body]
+          end
+        rescue Errno::ECONNREFUSED => e
+          raise Error::ConnectionFailed.new(e)
+        end
 
-        resp_headers = {}
-        http_resp.each_header do |key, value|
-          resp_headers[key] = value
+        response_headers = {}
+        http_response.each_header do |key, value|
+          response_headers[key] = value
         end
 
         env.update \
-          :status           => http_resp.code.to_i,
-          :response_headers => resp_headers,
-          :body             => http_resp.body
+          :status           => http_response.code.to_i,
+          :response_headers => response_headers,
+          :body             => http_response.body
 
         @app.call env
-      rescue Errno::ECONNREFUSED => e
-        raise Error::ConnectionFailed.new(e)
       end
 
       def net_http_class(env)
