@@ -73,7 +73,7 @@ module Faraday
 
         @app.call env
       rescue Errno::ECONNREFUSED
-        raise Error::ConnectionFailed, "connection refused"
+        raise Error::ConnectionFailed, $!
       end
     end
   end

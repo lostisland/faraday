@@ -33,8 +33,8 @@ module Faraday
         end
 
         @app.call env
-      rescue ::Excon::Errors::SocketError => e
-        raise Error::ConnectionFailed.new(e)
+      rescue ::Excon::Errors::SocketError
+        raise Error::ConnectionFailed, $!
       end
     end
   end
