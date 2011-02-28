@@ -44,7 +44,7 @@ module Faraday
 
         @app.call env
       rescue Errno::ECONNREFUSED
-        raise Error::ConnectionFailed.new(Errno::ECONNREFUSED)
+        raise Error::ConnectionFailed, $!
       end
 
       def in_parallel(options = {})

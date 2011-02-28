@@ -51,8 +51,8 @@ module Faraday
           else
             http.request http_request, env[:body]
           end
-        rescue Errno::ECONNREFUSED => e
-          raise Error::ConnectionFailed.new(e)
+        rescue Errno::ECONNREFUSED
+          raise Error::ConnectionFailed, $!
         end
 
         response_headers = {}

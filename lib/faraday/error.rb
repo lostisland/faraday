@@ -1,28 +1,23 @@
 module Faraday
   module Error
     class ClientError < StandardError
-      def initialize(exception)
-        @inner_exception = exception
-      end
-
-      def message
-        @inner_exception.respond_to?(:message) ?
-          @inner_exception.message             :
-          @inner_exception.to_s
+      def initialize(ex)
+        super(ex.respond_to?(:message) ? ex.message : ex.to_s)
+        @wrapped_exception = ex
       end
 
       def backtrace
-        @inner_exception.backtrace
+        @wrapped_exception.backtrace
       end
 
       alias to_str message
 
       def to_s
-        @inner_exception.to_s
+        @wrapped_exception.to_s
       end
 
       def inspect
-        @inner_exception.inspect
+        %(#<#{self.class}>)
       end
     end
 
