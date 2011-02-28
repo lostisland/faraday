@@ -33,6 +33,6 @@ module Faraday
 
     def test_default
       assert true
-    end
+    end unless defined? ::MiniTest
   end
 end

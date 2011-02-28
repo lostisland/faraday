@@ -97,17 +97,5 @@ module Faraday
         end
       end
     end
-
-    # assume that query and fragment are already encoded properly
-    def full_path_for(path, query = nil, fragment = nil)
-      full_path = path.dup
-      if query && !query.empty?
-        full_path << "?#{query}"
-      end
-      if fragment && !fragment.empty?
-        full_path << "##{fragment}"
-      end
-      full_path
-    end
   end
 end
