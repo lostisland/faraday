@@ -53,7 +53,7 @@ module Faraday
     def initialize(handlers = [])
       @handlers = handlers
       @inner_app = self.class.inner_app
-      build(Proc.new) if block_given?
+      build(&Proc.new) if block_given?
     end
 
     def build(options = {})

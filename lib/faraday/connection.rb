@@ -33,9 +33,7 @@ module Faraday
       merge_headers @headers, options[:headers] if options[:headers]
 
       if block_given?
-        block    = Proc.new
-        @builder = Builder.new
-        @builder.build { block.call(self) }
+        @builder = Builder.create { |b| yield b }
       else
         @builder = options[:builder] || Builder.new
       end
