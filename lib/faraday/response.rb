@@ -17,6 +17,12 @@ module Faraday
 
     extend AutoloadHelper
 
+    autoload_all 'faraday/response',
+      :RaiseError => 'raise_error'
+
+    register_lookup_modules \
+      :raise_error => :RaiseError
+
     attr_accessor :status, :headers, :body
 
     def initialize
