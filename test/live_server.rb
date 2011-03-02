@@ -1,4 +1,5 @@
 require 'sinatra'
+set :logging, false
 
 get '/hello_world' do
   'hello world'
