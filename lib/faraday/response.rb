@@ -85,5 +85,14 @@ module Faraday
     def success?
       status == 200
     end
+
+    # because @on_complete_callbacks cannot be marshalled
+    def marshal_dump
+      [@status, @headers, @body]
+    end
+
+    def marshal_load(data)
+      @status, @headers, @body = data
+    end
   end
 end
