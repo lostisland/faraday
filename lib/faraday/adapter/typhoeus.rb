@@ -35,15 +35,12 @@ module Faraday
             :status           => resp.code,
             :response_headers => parse_response_headers(resp.headers),
             :body             => resp.body
-          env[:response].finish(env) if !is_parallel
+          env[:response].finish(env) if is_parallel
         end
 
         hydra = env[:parallel_manager] || self.class.setup_parallel_manager
         hydra.queue req
-
-        if !is_parallel
-          hydra.run
-        end
+        hydra.run unless is_parallel
 
         @app.call env
       rescue Errno::ECONNREFUSED
