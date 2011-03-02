@@ -9,9 +9,13 @@ get '/json' do
 end
 
 post '/file' do
-  "file %s %s" % [
-    params[:uploaded_file][:filename],
-    params[:uploaded_file][:type]]
+  if params[:uploaded_file].respond_to? :each_key
+    "file %s %s" % [
+      params[:uploaded_file][:filename],
+      params[:uploaded_file][:type]]
+  else
+    status 400
+  end
 end
 
 post '/hello' do

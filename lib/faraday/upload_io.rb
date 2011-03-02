@@ -3,13 +3,21 @@ begin
   require 'parts'
   require 'stringio'
 rescue LoadError
-  puts "Install the multipart-post gem."
+  $stderr.puts "Install the multipart-post gem."
   raise
 end
 
-# Auto-load multipart-post gem on first request.
 module Faraday
-  CompositeReadIO = ::CompositeReadIO
-  UploadIO        = ::UploadIO
-  Parts           = ::Parts
+  class CompositeReadIO < ::CompositeReadIO
+    attr_reader :length
+    
+    def initialize(parts)
+      @length = parts.inject(0) { |sum, part| sum + part.length }
+      ios = parts.map{ |part| part.to_io }
+      super(*ios)
+    end
+  end
+
+  UploadIO = ::UploadIO
+  Parts = ::Parts
 end

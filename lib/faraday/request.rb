@@ -14,11 +14,13 @@ module Faraday
 
     autoload_all 'faraday/request',
       :JSON       => 'json',
-      :UrlEncoded => 'url_encoded'
+      :UrlEncoded => 'url_encoded',
+      :Multipart  => 'multipart'
 
     register_lookup_modules \
       :json        => :JSON,
-      :url_encoded => :UrlEncoded
+      :url_encoded => :UrlEncoded,
+      :multipart   => :Multipart
 
     def self.run(connection, request_method)
       req = create

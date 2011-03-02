@@ -1,5 +1,4 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'helper'))
-require 'webmock/test_unit'
 
 module Adapters
   class NetHttpTest < Faraday::TestCase

@@ -118,11 +118,6 @@ module Faraday
         end
         @app.call(env)
       end
-
-      def create_multipart(env, params, boundary = nil)
-        stream = super
-        stream.read
-      end
     end
   end
 end

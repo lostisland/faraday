@@ -16,7 +16,10 @@ module Faraday
       def call(env)
         super
 
-        req   = ::Typhoeus::Request.new env[:url].to_s,
+        # TODO: support streaming requests
+        env[:body] = env[:body].read if env[:body].respond_to? :read
+
+        req = ::Typhoeus::Request.new env[:url].to_s,
           :method  => env[:method],
           :body    => env[:body],
           :headers => env[:request_headers],
@@ -61,12 +64,6 @@ module Faraday
           map    { |h|      h.split(/:\s+/,2) }. # split key and value
           reject { |(k, v)| k.nil?            }. # Ignore blank lines
           map    { |(k, v)| [k.downcase, v]   }.flatten]
-      end
-
-      # TODO: build in support for multipart streaming if typhoeus supports it.
-      def create_multipart(env, params, boundary = nil)
-        stream = super
-        stream.read
       end
     end
   end

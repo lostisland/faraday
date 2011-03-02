@@ -1,9 +1,12 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 require 'rack/utils'
 
+Faraday::CompositeReadIO.send :attr_reader, :ios
+
 class RequestMiddlewareTest < Faraday::TestCase
   def setup
     @conn = Faraday.new do |b|
+      b.request :multipart
       b.request :url_encoded
       b.request :json
       b.adapter :test do |stub|
@@ -56,5 +59,27 @@ class RequestMiddlewareTest < Faraday::TestCase
     assert_equal 'application/x-www-form-urlencoded', response.headers['Content-Type']
     expected = { 'user' => {'name' => 'Mislav', 'web' => 'mislav.net'} }
     assert_equal expected, Rack::Utils.parse_nested_query(response.body)
+  end
+
+  def test_multipart
+    # assume params are out of order
+    regexes = [
+      /name\=\"a\"/,
+      /name=\"b\[c\]\"\; filename\=\"request_middleware_test\.rb\"/,
+      /name=\"b\[d\]\"/]
+
+    payload = {:a => 1, :b => {:c => Faraday::UploadIO.new(__FILE__, 'text/x-ruby'), :d => 2}}
+    response = @conn.post('/echo', payload)
+
+    assert_kind_of Faraday::CompositeReadIO, response.body
+    assert_equal "multipart/form-data;boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
+      response.headers['Content-Type']
+    
+    response.body.send(:ios).map(&:read).each do |io|
+      if re = regexes.detect { |r| io =~ r }
+        regexes.delete re
+      end
+    end
+    assert_equal [], regexes
   end
 end

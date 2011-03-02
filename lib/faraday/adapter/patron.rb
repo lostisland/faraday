@@ -10,6 +10,9 @@ module Faraday
       def call(env)
         super
 
+        # TODO: support streaming requests
+        env[:body] = env[:body].read if env[:body].respond_to? :read
+
         sess = ::Patron::Session.new
         args = [env[:method], env[:url].to_s, env[:request_headers]]
         if Faraday::Connection::METHODS_WITH_BODIES.include?(env[:method])
@@ -26,12 +29,6 @@ module Faraday
         @app.call env
       rescue Errno::ECONNREFUSED
         raise Error::ConnectionFailed, $!
-      end
-
-      # TODO: build in support for multipart streaming if patron supports it.
-      def create_multipart(env, params, boundary = nil)
-        stream = super
-        stream.read
       end
     end
   end

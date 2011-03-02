@@ -77,8 +77,11 @@ module Faraday
     end
 
     def to_app
-      # use at least an adapter so the stack isn't a no-op
-      self.adapter Faraday.default_adapter if @handlers.empty?
+      # default stack, if nothing else is configured
+      if @handlers.empty?
+        self.request :url_encoded
+        self.adapter Faraday.default_adapter
+      end
       # last added handler should be the deepest, closest to the inner app
       @handlers.reverse.inject(@inner_app) { |app, handler| handler.build(app) }
     end
