@@ -1,9 +1,11 @@
 module Faraday
-  class Request::JSON < Faraday::Middleware
+  class Request::JSON < Request::UrlEncoded
+    self.mime_type = 'application/json'.freeze
+
     class << self
       attr_accessor :adapter
     end
-    
+
     # loads the JSON encoder either from yajl-ruby or activesupport
     begin
       begin
@@ -21,12 +23,9 @@ module Faraday
     end
 
     def call(env)
-      if data = env[:body]
-        env[:request_headers]['Content-Type'] = 'application/json'
-
-        unless data.respond_to?(:to_str)
-          env[:body] = self.class.adapter.encode data
-        end
+      match_content_type(env) do |data|
+        # encode with the first successfully loaded adapter
+        env[:body] = self.class.adapter.encode data
       end
       @app.call env
     end
