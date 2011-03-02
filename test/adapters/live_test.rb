@@ -154,6 +154,9 @@ else
             b.request :url_encoded
             b.use adapter
           end
+        end.tap do |conn|
+          target = conn.builder.handlers.last
+          conn.builder.insert_before target, Faraday::Response::RaiseError
         end
       end
 

@@ -1,5 +1,7 @@
 module Faraday
   class Adapter < Middleware
+    CONTENT_LENGTH = 'Content-Length'.freeze
+
     extend AutoloadHelper
 
     autoload_all 'faraday/adapter',
@@ -23,7 +25,12 @@ module Faraday
       :logger          => :Logger
 
     def call(env)
-      # do nothing
+      if !env[:body] and Connection::METHODS_WITH_BODIES.include? env[:method]
+        # play nice and indicate we're sending an empty body
+        env[:request_headers][CONTENT_LENGTH] = "0"
+        # Typhoeus hangs on PUT requests if body is nil
+        env[:body] = ''
+      end
     end
   end
 end
