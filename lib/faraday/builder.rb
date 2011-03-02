@@ -2,9 +2,9 @@ module Faraday
   # Possibly going to extend this a bit.
   #
   # Faraday::Connection.new(:url => 'http://sushi.com') do |builder|
-  #   builder.request  :json     # Faraday::Request::JSON
-  #   builder.response :json     # Faraday::Response::JSON
-  #   builder.adapter  :logger   # Faraday::Adapter::Logger
+  #   builder.request  :url_encoded  # Faraday::Request::UrlEncoded
+  #   builder.response :json         # Faraday::Response::JSON
+  #   builder.adapter  :logger       # Faraday::Adapter::Logger
   # end
   class Builder
     attr_accessor :handlers

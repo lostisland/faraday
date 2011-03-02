@@ -30,4 +30,12 @@ class RequestMiddlewareTest < Faraday::TestCase
     assert_equal 'application/json', response.headers['Content-Type']
     assert_equal '{"a":"b"}', response.body
   end
+  
+  def test_url_encoded
+    @conn.builder.swap Faraday::Request::JSON, Faraday::Request::UrlEncoded
+    
+    response = @conn.post('/echo', { :fruit => %w[apples oranges] })
+    assert_equal 'application/x-www-form-urlencoded', response.headers['Content-Type']
+    assert_equal 'fruit[]=apples&fruit[]=oranges', response.body
+  end
 end

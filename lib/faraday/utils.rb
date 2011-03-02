@@ -22,6 +22,23 @@ module Faraday
     # Make Rack::Utils build_query method public.
     public :build_query
 
+    # Override Rack's version since it doesn't handle non-String values
+    def build_nested_query(value, prefix = nil)
+      case value
+      when Array
+        value.map { |v| build_nested_query(v, "#{prefix}[]") }.join("&")
+      when Hash
+        value.map { |k, v|
+          build_nested_query(v, prefix ? "#{prefix}[#{escape(k)}]" : escape(k))
+        }.join("&")
+      when NilClass
+        prefix
+      else
+        raise ArgumentError, "value must be a Hash" if prefix.nil?
+        "#{prefix}=#{escape(value)}"
+      end
+    end
+
     # Be sure to URI escape '+' symbols to %2B. Otherwise, they get interpreted
     # as spaces.
     def escape(s)
