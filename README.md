@@ -7,30 +7,48 @@ This mess is gonna get raw, like sushi. So, haters to the left.
 ## Usage
 
     conn = Faraday.new(:url => 'http://sushi.com') do |builder|
-      builder.use Faraday::Request::JSON        # convert request body to json
-      builder.use Faraday::Response::JSON       # parse response body as json
-      builder.use Faraday::Adapter::Logger      # log the request somewhere?
-      builder.use Faraday::Adapter::Typhoeus    # make http request with typhoeus
-      builder.use Faraday::Adapter::EMSynchrony # make http request with eventmachine and synchrony
+      builder.use Faraday::Request::UrlEncoded  # convert request params as "www-form-urlencoded"
+      builder.use Faraday::Request::JSON        # encode request params as json
+      builder.use Faraday::Adapter::Logger      # log the request to STDOUT
+      builder.use Faraday::Adapter::NetHttp     # make http requests with Net::HTTP
 
-      # or use shortcuts
-      builder.request  :json         # Faraday::Request::JSON
-      builder.response :json         # Faraday::Response::JSON
-      builder.adapter  :logger       # Faraday::Adapter::Logger
-      builder.adapter  :typhoeus     # Faraday::Adapter::Typhoeus
-      builder.adapter  :em_synchrony # Faraday::Adapter::EMSynchrony
+      # or, use shortcuts:
+      builder.request  :url_encoded
+      builder.request  :json
+      builder.adapter  :logger
+      builder.adapter  :net_http
+    end
+    
+    ## GET ##
+
+    response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
+    response.body
+
+    conn.get '/nigiri', 'X-Awesome' => true     # custom request header
+    
+    conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
+      req.url '/search', :page => 2
+      req.params['limit'] = 100
+    end
+    
+    ## POST ##
+    
+    conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi.com/nigiri
+    
+    # post payload as JSON instead of "www-form-urlencoded" encoding:
+    conn.post '/nigiri', payload, 'Content-Type' => 'application/json'
+
+    # a more verbose way:
+    conn.post do |req|
+      req.url '/nigiri'
+      req.headers['Content-Type'] = 'application/json'
+      req.body = { :name => 'Unagi' }
     end
 
-    resp1 = conn.get '/nigiri/sake.json'
-    resp2 = conn.post do |req|
-      req.url  "/nigiri.json", :page => 2
-      req.params['limit'] = 100 # &limit=100
-      req.headers["Content-Type"] = 'application/json'
-      req.body = {:name => 'Unagi'}
-    end
+If you're ready to roll with just the bare minimum:
 
-    # If you're ready to roll with just the bare minimum (net/http):
-    resp1 = Faraday.get 'http://sushi.com/nigiri/sake.json'
+    # default stack (net/http), no extra middleware:
+    response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 
 ## Testing
 
