@@ -27,12 +27,6 @@ module Faraday
           :body             => resp.body
         @app.call env
       end
-
-      # TODO: build in support for multipart streaming if action dispatch supports it.
-      def create_multipart(env, params, boundary = nil)
-        stream = super
-        stream.read
-      end
     end
   end
 end

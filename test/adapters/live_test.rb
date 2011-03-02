@@ -45,13 +45,12 @@ else
         end
 
         define_method "test_#{adapter}_POST_sends_files" do
-          name = File.join(File.dirname(__FILE__), '..', 'live_server.rb')
           resp = create_connection(adapter).post do |req|
             req.url 'file'
-            req.body = {'uploaded_file' => Faraday::UploadIO.new(name, 'text/x-ruby')}
+            req.body = {'uploaded_file' => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
           end
-          assert_equal "file live_server.rb text/x-ruby", resp.body
-        end
+          assert_equal "file live_test.rb text/x-ruby", resp.body
+        end unless :default == adapter # isn't configured for multipart
 
         # http://github.com/toland/patron/issues/#issue/9
         if ENV['FORCE'] || adapter != Faraday::Adapter::Patron
@@ -144,11 +143,15 @@ else
 
       def create_connection(adapter)
         if adapter == :default
-          conn = Faraday.default_connection
-          conn.url_prefix = LIVE_SERVER
-          conn
+          Faraday.default_connection.tap do |conn|
+            conn.builder.to_app # trigger default stack
+            conn.url_prefix = LIVE_SERVER
+            conn.headers['X-Faraday-Adapter'] = adapter.to_s
+          end
         else
-          Faraday::Connection.new LIVE_SERVER do |b|
+          Faraday::Connection.new LIVE_SERVER, :headers => {'X-Faraday-Adapter' => adapter.to_s} do |b|
+            b.request :multipart
+            b.request :url_encoded
             b.use adapter
           end
         end

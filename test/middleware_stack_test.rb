@@ -19,8 +19,10 @@ class MiddlewareStackTest < Faraday::TestCase
 
   def test_sets_default_adapter_if_none_set
     @conn.to_app
+    default_middleware = Faraday::Request.lookup_module :url_encoded
     default_adapter_klass = Faraday::Adapter.lookup_module Faraday.default_adapter
-    assert @builder[0] == default_adapter_klass
+    assert @builder[0] == default_middleware
+    assert @builder[1] == default_adapter_klass
   end
 
   def test_allows_rebuilding
