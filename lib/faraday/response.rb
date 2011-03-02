@@ -17,7 +17,7 @@ module Faraday
     end
 
     def on_complete(&block)
-      @on_complete_callbacks << block
+      @on_complete_callbacks.unshift block
     end
 
     def finish(env)
