@@ -11,15 +11,12 @@ module Faraday
   #
   class Request < Struct.new(:path, :params, :headers, :body)
     extend AutoloadHelper
+
     autoload_all 'faraday/request',
-      :Yajl              => 'yajl',
-      :ActiveSupportJson => 'active_support_json'
+      :JSON => 'json'
 
     register_lookup_modules \
-      :yajl                => :Yajl,
-      :activesupport_json  => :ActiveSupportJson,
-      :rails_json          => :ActiveSupportJson,
-      :active_support_json => :ActiveSupportJson
+      :json => :JSON
 
     def self.run(connection, request_method)
       req = create

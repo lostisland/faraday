@@ -1,9 +1,9 @@
 module Faraday
   # Possibly going to extend this a bit.
   #
-  # Faraday::Connection.new(:url => 'http://sushi.com') do |b|
-  #   b.request  :yajl     # Faraday::Request::Yajl
-  #   b.adapter  :logger   # Faraday::Adapter::Logger
+  # Faraday::Connection.new(:url => 'http://sushi.com') do |builder|
+  #   builder.request  :json     # Faraday::Request::JSON
+  #   builder.adapter  :logger   # Faraday::Adapter::Logger
   # end
   class Builder
     attr_accessor :handlers

@@ -7,13 +7,15 @@ This mess is gonna get raw, like sushi. So, haters to the left.
 ## Usage
 
     conn = Faraday.new(:url => 'http://sushi.com') do |builder|
-      builder.use Faraday::Request::Yajl        # convert body to json with Yajl lib
+      builder.use Faraday::Request::JSON        # convert request body to json
+      builder.use Faraday::Response::JSON       # parse response body as json
       builder.use Faraday::Adapter::Logger      # log the request somewhere?
       builder.use Faraday::Adapter::Typhoeus    # make http request with typhoeus
       builder.use Faraday::Adapter::EMSynchrony # make http request with eventmachine and synchrony
 
       # or use shortcuts
-      builder.request  :yajl         # Faraday::Request::Yajl
+      builder.request  :json         # Faraday::Request::JSON
+      builder.response :json         # Faraday::Response::JSON
       builder.adapter  :logger       # Faraday::Adapter::Logger
       builder.adapter  :typhoeus     # Faraday::Adapter::Typhoeus
       builder.adapter  :em_synchrony # Faraday::Adapter::EMSynchrony
