@@ -21,9 +21,10 @@ module Faraday
           else
             http.verify_mode = ssl[:verify]
           end
-          http.cert    = ssl[:client_cert] if ssl[:client_cert]
-          http.key     = ssl[:client_key]  if ssl[:client_key]
-          http.ca_file = ssl[:ca_file]     if ssl[:ca_file]
+          http.cert       = ssl[:client_cert] if ssl[:client_cert]
+          http.key        = ssl[:client_key]  if ssl[:client_key]
+          http.ca_file    = ssl[:ca_file]     if ssl[:ca_file]
+          http.cert_store = ssl[:cert_store]  if ssl[:cert_store]
         end
         req = env[:request]
         http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
