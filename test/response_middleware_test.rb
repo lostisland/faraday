@@ -6,12 +6,13 @@ class ResponseMiddlewareTest < Faraday::TestCase
       b.response :json
       b.response :raise_error
       b.adapter :test do |stub|
-        stub.get('json')  { [200, {'Content-Type' => 'text/html'}, "[1,2,3]"] }
-        stub.get('blank') { [200, {'Content-Type' => 'text/html'}, ''] }
-        stub.get('nil')   { [200, {'Content-Type' => 'text/html'}, nil] }
-        stub.get("bad_json") {[200, {'Content-Type' => 'text/html'}, '<body></body>']}
+        stub.get('json')      { [200, {'Content-Type' => 'application/json; charset=utf-8'}, "[1,2,3]"] }
+        stub.get('blank')     { [200, {'Content-Type' => 'application/json'}, ''] }
+        stub.get('nil')       { [200, {'Content-Type' => 'application/json'}, nil] }
+        stub.get('bad_json')  { [200, {'Content-Type' => 'application/json'}, '<body></body>']}
+        stub.get('not_json')  { [200, {'Content-Type' => 'text/html'}, '<body></body>']}
         stub.get('not-found') { [404, {'X-Reason' => 'because'}, 'keep looking']}
-        stub.get('error') { [500, {'X-Error' => 'bailout'}, 'fail']}
+        stub.get('error')     { [500, {'X-Error' => 'bailout'}, 'fail']}
       end
     end
   end
@@ -40,6 +41,12 @@ class ResponseMiddlewareTest < Faraday::TestCase
     end
   end
   
+  def test_non_json_response
+    response = @conn.get('not_json')
+    assert_equal 'text/html', response.headers['Content-Type']
+    assert_equal '<body></body>', response.body
+  end
+
   def test_raises_error
     begin
       @conn.get('not-found')

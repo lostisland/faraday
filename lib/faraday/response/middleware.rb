@@ -1,6 +1,8 @@
 module Faraday
   # A base class for middleware that parses responses
   class Response::Middleware < Faraday::Middleware
+    CONTENT_TYPE = 'Content-Type'.freeze
+
     # Executes a block which should try to require and reference dependent libraries
     def self.dependency
       yield
@@ -47,6 +49,12 @@ module Faraday
       else
         body
       end
+    end
+
+    def response_type(env)
+      type = env[:response_headers][CONTENT_TYPE].to_s
+      type = type.split(';', 2).first if type.index(';')
+      type
     end
   end
 end
