@@ -19,9 +19,10 @@ module Faraday
           ssl = env[:ssl]
           http.verify_mode = ssl[:verify_mode] || ssl.fetch(:verify, true) ?
                                OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
-          http.cert    = ssl[:client_cert] if ssl[:client_cert]
-          http.key     = ssl[:client_key]  if ssl[:client_key]
-          http.ca_file = ssl[:ca_file]     if ssl[:ca_file]
+          http.cert        = ssl[:client_cert] if ssl[:client_cert]
+          http.key         = ssl[:client_key]  if ssl[:client_key]
+          http.ca_file     = ssl[:ca_file]     if ssl[:ca_file]
+          http.cert_store  = ssl[:cert_store]  if ssl[:cert_store]
         end
 
         http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
