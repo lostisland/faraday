@@ -5,10 +5,15 @@ if !Faraday::TestCase::LIVE_SERVER
 else
   module Adapters
     class LiveTest < Faraday::TestCase
-      loaded_adapters  = Faraday::Adapter.all_loaded_constants
-      loaded_adapters -= [Faraday::Adapter::ActionDispatch]
-      loaded_adapters << :default
-      loaded_adapters.each do |adapter|
+      adapters = if ENV['ADAPTER']
+        ENV['ADAPTER'].split(':').map { |name| Faraday::Adapter.lookup_module name.to_sym }
+      else
+        loaded_adapters  = Faraday::Adapter.all_loaded_constants
+        loaded_adapters -= [Faraday::Adapter::ActionDispatch]
+        loaded_adapters << :default
+      end
+
+      adapters.each do |adapter|
         define_method "test_#{adapter}_GET_retrieves_the_response_body" do
           assert_equal 'hello world', create_connection(adapter).get('hello_world').body
         end
