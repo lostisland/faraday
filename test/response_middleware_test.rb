@@ -4,11 +4,14 @@ class ResponseMiddlewareTest < Faraday::TestCase
   def setup
     @conn = Faraday.new do |b|
       b.response :json
+      b.response :raise_error
       b.adapter :test do |stub|
         stub.get('json')  { [200, {'Content-Type' => 'text/html'}, "[1,2,3]"] }
         stub.get('blank') { [200, {'Content-Type' => 'text/html'}, ''] }
         stub.get('nil')   { [200, {'Content-Type' => 'text/html'}, nil] }
         stub.get("bad_json") {[200, {'Content-Type' => 'text/html'}, '<body></body>']}
+        stub.get('not-found') { [404, {'X-Reason' => 'because'}, 'keep looking']}
+        stub.get('error') { [500, {'X-Error' => 'bailout'}, 'fail']}
       end
     end
   end
@@ -34,6 +37,22 @@ class ResponseMiddlewareTest < Faraday::TestCase
   def test_uses_json_to_raise_Faraday_Error_Parsing_with_no_json_content
     assert_raises Faraday::Error::ParsingError do
       @conn.get('bad_json')
+    end
+  end
+  
+  def test_raises_error
+    begin
+      @conn.get('not-found')
+    rescue Faraday::Error::ResourceNotFound => error
+      assert_equal 'the server responded with status 404', error.message
+      assert_equal 'because', error.response[:headers]['X-Reason']
+    end
+
+    begin
+      @conn.get('error')
+    rescue Faraday::Error::ClientError => error
+      assert_equal 'the server responded with status 500', error.message
+      assert_equal 'bailout', error.response[:headers]['X-Error']
     end
   end
 end

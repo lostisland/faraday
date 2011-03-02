@@ -4,10 +4,12 @@ module Faraday
 
     autoload_all 'faraday/response',
       :JSON       => 'json',
-      :Middleware => 'middleware'
+      :Middleware => 'middleware',
+      :RaiseError => 'raise_error'
 
     register_lookup_modules \
-      :json => :JSON
+      :json        => :JSON,
+      :raise_error => :RaiseError
 
     attr_accessor :status, :headers, :body
 
