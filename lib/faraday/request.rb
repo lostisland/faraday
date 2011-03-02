@@ -13,10 +13,12 @@ module Faraday
     extend AutoloadHelper
 
     autoload_all 'faraday/request',
-      :JSON => 'json'
+      :JSON       => 'json',
+      :UrlEncoded => 'url_encoded'
 
     register_lookup_modules \
-      :json => :JSON
+      :json        => :JSON,
+      :url_encoded => :UrlEncoded
 
     def self.run(connection, request_method)
       req = create
