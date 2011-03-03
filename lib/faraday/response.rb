@@ -5,11 +5,13 @@ module Faraday
     autoload_all 'faraday/response',
       :JSON       => 'json',
       :Middleware => 'middleware',
-      :RaiseError => 'raise_error'
+      :RaiseError => 'raise_error',
+      :Logger     => 'logger'
 
     register_lookup_modules \
       :json        => :JSON,
-      :raise_error => :RaiseError
+      :raise_error => :RaiseError,
+      :logger      => :Logger
 
     def initialize(env = nil)
       @finished_env = env

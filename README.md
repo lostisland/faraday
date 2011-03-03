@@ -10,14 +10,14 @@ This mess is gonna get raw, like sushi. So, haters to the left.
       builder.use Faraday::Request::UrlEncoded  # convert request params as "www-form-urlencoded"
       builder.use Faraday::Request::JSON        # encode request params as json
       builder.use Faraday::Response::JSON       # parse response body as json
-      builder.use Faraday::Adapter::Logger      # log the request to STDOUT
+      builder.use Faraday::Response::Logger     # log the request to STDOUT
       builder.use Faraday::Adapter::NetHttp     # make http requests with Net::HTTP
 
       # or, use shortcuts:
       builder.request  :url_encoded
       builder.request  :json
       builder.response :json
-      builder.adapter  :logger
+      builder.response :logger
       builder.adapter  :net_http
     end
     

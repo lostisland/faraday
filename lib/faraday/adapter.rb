@@ -11,8 +11,7 @@ module Faraday
       :EMSynchrony    => 'em_synchrony',
       :Patron         => 'patron',
       :Excon          => 'excon',
-      :Test           => 'test',
-      :Logger         => 'logger'
+      :Test           => 'test'
 
     register_lookup_modules \
       :action_dispatch => :ActionDispatch,
@@ -21,8 +20,7 @@ module Faraday
       :typhoeus        => :Typhoeus,
       :patron          => :Patron,
       :em_synchrony    => :EMSynchrony,
-      :excon           => :Excon,
-      :logger          => :Logger
+      :excon           => :Excon
 
     def call(env)
       if !env[:body] and Connection::METHODS_WITH_BODIES.include? env[:method]
