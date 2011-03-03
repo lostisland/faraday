@@ -149,7 +149,6 @@ else
       def create_connection(adapter)
         if adapter == :default
           Faraday.default_connection.tap do |conn|
-            conn.builder.to_app # trigger default stack
             conn.url_prefix = LIVE_SERVER
             conn.headers['X-Faraday-Adapter'] = adapter.to_s
           end

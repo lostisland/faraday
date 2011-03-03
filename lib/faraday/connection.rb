@@ -162,11 +162,6 @@ module Faraday
       @path_prefix = value
     end
 
-    # return the assembled Rack application for this instance.
-    def to_app
-      @builder.to_app
-    end
-
     def run_request(method, url, body, headers)
       if !METHODS.include?(method)
         raise ArgumentError, "unknown http method: #{method}"

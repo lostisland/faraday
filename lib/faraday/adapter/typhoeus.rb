@@ -47,13 +47,6 @@ module Faraday
         raise Error::ConnectionFailed, $!
       end
 
-      def in_parallel(options = {})
-        @hydra = ::Typhoeus::Hydra.new(options)
-        yield
-        @hydra.run
-        @hydra = nil
-      end
-
       def parse_response_headers(header_string)
         return {} unless header_string && !header_string.empty?
         Hash[*header_string.split(/\r\n/).

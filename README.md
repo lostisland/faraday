@@ -50,6 +50,33 @@ If you're ready to roll with just the bare minimum:
     # default stack (net/http), no extra middleware:
     response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 
+## Writing middleware
+
+Middleware are classes that respond to `call()`. They wrap the request/response cycle.
+
+    def call(env)
+      # do something with the request
+      
+      @app.call(env).on_complete do
+        # do something with the response
+      end
+    end
+
+It's important to do all processing of the response only in the `on_complete` block. This enables middleware to work in parallel mode where requests are asynchronous.
+
+The `env` is a hash with symbol keys that contains info about the request and, later, response. Some keys are:
+
+    # request phase
+    :method - :get, :post, ...
+    :url    - URI for the current request; also contains GET parameters
+    :body   - POST parameters for :post/:put requests
+    :request_headers
+
+    # response phase
+    :status - HTTP response status code, such as 200
+    :body   - the response body
+    :response_headers
+
 ## Testing
 
     # It's possible to define stubbed request outside a test adapter block.
