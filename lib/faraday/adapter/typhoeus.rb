@@ -23,7 +23,7 @@ module Faraday
           :method  => env[:method],
           :body    => env[:body],
           :headers => env[:request_headers],
-          :disable_ssl_peer_verification => (env[:ssl][:verify] == false)
+          :disable_ssl_peer_verification => (env[:ssl] && !env[:ssl].fetch(:verify, true))
 
         env_req = env[:request]
         req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]

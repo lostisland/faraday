@@ -15,13 +15,10 @@ module Faraday
 
         http = net_http_class(env).new(url.host, url.port)
 
-        if http.use_ssl = url.scheme == 'https'
+        if http.use_ssl = (url.scheme == 'https' && env[:ssl])
           ssl = env[:ssl]
-          http.verify_mode = case ssl[:verify]
-          when false then OpenSSL::SSL::VERIFY_NONE
-          when true  then OpenSSL::SSL::VERIFY_PEER
-          else ssl[:verify]
-          end
+          http.verify_mode = ssl[:verify_mode] || ssl.fetch(:verify, true) ?
+                               OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
           http.cert    = ssl[:client_cert] if ssl[:client_cert]
           http.key     = ssl[:client_key]  if ssl[:client_key]
           http.ca_file = ssl[:ca_file]     if ssl[:ca_file]
