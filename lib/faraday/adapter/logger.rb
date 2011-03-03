@@ -18,14 +18,12 @@ module Faraday
           env[:request_headers].map { |k, v| "#{k}: #{v.inspect}" }.join("\n")
         end
 
-        env[:response].on_complete do |resp_env|
+        @app.call(env).on_complete do
           @logger.info("Status") { env[:status].to_s }
           @logger.debug("response") do
-            resp_env[:response_headers].map { |k, v| "#{k}: #{v.inspect}" }.join("\n")
+            env[:response_headers].map { |k, v| "#{k}: #{v.inspect}" }.join("\n")
           end
         end
-
-        @app.call(env)
       end
     end
   end

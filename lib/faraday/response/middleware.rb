@@ -26,10 +26,9 @@ module Faraday
     end
 
     def call(env)
-      env[:response].on_complete do |finished_env|
-        on_complete(finished_env)
+      @app.call(env).on_complete do |env|
+        on_complete(env)
       end
-      @app.call(env)
     end
 
     # Override this to modify the environment after the response has finished.

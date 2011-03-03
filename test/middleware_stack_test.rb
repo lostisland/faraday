@@ -18,7 +18,6 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_sets_default_adapter_if_none_set
-    @conn.to_app
     default_middleware = Faraday::Request.lookup_module :url_encoded
     default_adapter_klass = Faraday::Adapter.lookup_module Faraday.default_adapter
     assert @builder[0] == default_middleware
@@ -42,28 +41,6 @@ class MiddlewareStackTest < Faraday::TestCase
   def test_builder_is_passed_to_new_faraday_connection
     new_conn = Faraday::Connection.new :builder => @builder
     assert_equal @builder, new_conn.builder
-  end
-
-  def test_run_sets_inner_app
-    response = Object.new
-    app = lambda { |env| response }
-
-    @builder.build { |b| b.use Apple; b.run app }
-    assert response === @conn.get('/')
-  end
-
-  def test_run_with_block
-    response = Object.new
-    @builder.build do |b|
-      b.use Apple
-      b.run { |env| response }
-    end
-    assert response === @conn.get('/')
-  end
-
-  def test_resulting_app_is_callable
-    @builder.build { |b| b.use Apple }
-    assert @conn.to_app.respond_to?(:call)
   end
 
   def test_insert_before

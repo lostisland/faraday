@@ -13,12 +13,6 @@ module Faraday
       new { |builder| yield builder }
     end
 
-    def self.inner_app
-      lambda do |env|
-        env[:parallel_manager] ? env[:response] : env[:response].finish(env)
-      end
-    end
-
     # borrowed from ActiveSupport::Dependencies::Reference &
     # ActionDispatch::MiddlewareStack::Middleware
     class Handler
@@ -52,17 +46,18 @@ module Faraday
 
     def initialize(handlers = [])
       @handlers = handlers
-      @inner_app = self.class.inner_app
-      build(&Proc.new) if block_given?
+      if block_given?
+        build(&Proc.new)
+      elsif @handlers.empty?
+        # default stack, if nothing else is configured
+        self.request :url_encoded
+        self.adapter Faraday.default_adapter
+      end
     end
 
     def build(options = {})
       @handlers.clear unless options[:keep]
       yield self if block_given?
-    end
-
-    def run(app = nil)
-      @inner_app = app || Proc.new
     end
 
     def [](idx)
@@ -77,14 +72,9 @@ module Faraday
       self.class.new(@handlers.dup)
     end
 
-    def to_app
-      # default stack, if nothing else is configured
-      if @handlers.empty?
-        self.request :url_encoded
-        self.adapter Faraday.default_adapter
-      end
-      # last added handler should be the deepest, closest to the inner app
-      @handlers.reverse.inject(@inner_app) { |app, handler| handler.build(app) }
+    def to_app(inner_app)
+      # last added handler is the deepest and thus closest to the inner app
+      @handlers.reverse.inject(inner_app) { |app, handler| handler.build(app) }
     end
 
     def use(klass, *args)
