@@ -13,22 +13,24 @@ module Faraday
         # TODO: support streaming requests
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
-        sess = ::Patron::Session.new
-        args = [env[:method], env[:url].to_s, env[:request_headers]]
-        if Faraday::Connection::METHODS_WITH_BODIES.include?(env[:method])
-          args.insert(2, env[:body].to_s)
+        session = ::Patron::Session.new
+
+        response = begin
+          if Connection::METHODS_WITH_BODIES.include? env[:method]
+            session.send(env[:method], env[:url].to_s, env[:body].to_s, env[:request_headers])
+          else
+            session.send(env[:method], env[:url].to_s, env[:request_headers])
+          end
+        rescue Errno::ECONNREFUSED
+          raise Error::ConnectionFailed, $!
         end
-        resp = sess.send *args
 
         env.update \
-          :status           => resp.status,
-          :response_headers => resp.headers.
-            inject({}) { |memo, (k, v)| memo.update(k.downcase => v) },
-          :body             => resp.body
+          :status           => response.status,
+          :response_headers => response.headers.inject({}) { |memo, (k, v)| memo[k.downcase] = v; memo },
+          :body             => response.body
 
         @app.call env
-      rescue Errno::ECONNREFUSED
-        raise Error::ConnectionFailed, $!
       end
     end
   end
