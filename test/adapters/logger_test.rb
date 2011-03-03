@@ -10,7 +10,7 @@ module Adapters
       @logger.level = Logger::DEBUG
 
       @conn = Faraday.new do |b|
-        b.adapter :logger, @logger
+        b.response :logger, @logger
         b.adapter :test do |stubs|
           stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
         end

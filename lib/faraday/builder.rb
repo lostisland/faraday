@@ -3,7 +3,7 @@ module Faraday
   #
   # Faraday::Connection.new(:url => 'http://sushi.com') do |builder|
   #   builder.request  :url_encoded  # Faraday::Request::UrlEncoded
-  #   builder.adapter  :logger       # Faraday::Adapter::Logger
+  #   builder.adapter  :net_http     # Faraday::Adapter::NetHttp
   # end
   class Builder
     attr_accessor :handlers

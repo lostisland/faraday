@@ -17,10 +17,12 @@ module Faraday
     extend AutoloadHelper
 
     autoload_all 'faraday/response',
-      :RaiseError => 'raise_error'
+      :RaiseError => 'raise_error',
+      :Logger     => 'logger'
 
     register_lookup_modules \
-      :raise_error => :RaiseError
+      :raise_error => :RaiseError,
+      :logger      => :Logger
 
     def initialize(env = nil)
       @finished_env = env
