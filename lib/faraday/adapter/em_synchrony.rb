@@ -41,7 +41,7 @@ module Faraday
             uri = Addressable::URI.parse(proxy[:uri])
             options[:proxy] = {
               :host => uri.host,
-              :port => uri.port
+              :port => uri.inferred_port
             }
             if proxy[:username] && proxy[:password]
               options[:proxy][:authorization] = [proxy[:username], proxy[:password]]
