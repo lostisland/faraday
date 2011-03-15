@@ -119,7 +119,7 @@ module Faraday
         case arg
           when String then {:uri => proxy_arg_to_uri(arg)}
           when URI    then {:uri => arg}
-          when Hash   then arg
+          when Hash
             if arg[:uri] = proxy_arg_to_uri(arg[:uri])
               arg
             else
