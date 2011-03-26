@@ -1,7 +1,11 @@
-require 'rubygems'
 require 'test/unit'
-require 'webmock/test_unit'
+unless ENV['BUNDLE_GEMFILE']
+  require 'rubygems'
+  require 'bundler'
+  Bundler.setup
+end
 
+require 'webmock/test_unit'
 WebMock.disable_net_connect!(:allow_localhost => true)
 
 if ENV['LEFTRIGHT']
