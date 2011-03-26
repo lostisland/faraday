@@ -99,7 +99,7 @@ module Faraday
     ## methods to push onto the various positions in the stack:
 
     def insert(index, *args, &block)
-      index = assert_index(index, :before)
+      index = assert_index(index)
       handler = self.class::Handler.new(*args, &block)
       @handlers.insert(index, handler)
     end
@@ -107,13 +107,14 @@ module Faraday
     alias_method :insert_before, :insert
 
     def insert_after(index, *args, &block)
-      index = assert_index(index, :after)
+      index = assert_index(index)
       insert(index + 1, *args, &block)
     end
 
-    def swap(target, *args, &block)
-      insert_before(target, *args, &block)
-      delete(target)
+    def swap(index, *args, &block)
+      index = assert_index(index)
+      @handlers.delete_at(index)
+      insert(index, *args, &block)
     end
 
     def delete(handler)
@@ -127,9 +128,9 @@ module Faraday
       use(mod.lookup_module(key), *args, &block)
     end
 
-    def assert_index(index, where)
+    def assert_index(index)
       idx = index.is_a?(Integer) ? index : @handlers.index(index)
-      raise "No such handler to insert #{where}: #{index.inspect}" unless idx
+      raise "No such handler: #{index.inspect}" unless idx
       idx
     end
   end
