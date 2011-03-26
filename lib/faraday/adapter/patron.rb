@@ -25,10 +25,8 @@ module Faraday
           raise Error::ConnectionFailed, $!
         end
 
-        env.update \
-          :status           => response.status,
-          :response_headers => response.headers.inject({}) { |memo, (k, v)| memo[k.downcase] = v; memo },
-          :body             => response.body
+        env.update :status => response.status, :body => response.body
+        env[:response_headers].update response.headers
 
         @app.call env
       end

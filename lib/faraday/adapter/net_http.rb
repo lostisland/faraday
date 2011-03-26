@@ -53,15 +53,10 @@ module Faraday
           raise Error::ConnectionFailed, $!
         end
 
-        response_headers = {}
         http_response.each_header do |key, value|
-          response_headers[key] = value
+          env[:response_headers][key] = value
         end
-
-        env.update \
-          :status           => http_response.code.to_i,
-          :response_headers => response_headers,
-          :body             => http_response.body
+        env.update :status => http_response.code.to_i, :body => http_response.body
 
         @app.call env
       end

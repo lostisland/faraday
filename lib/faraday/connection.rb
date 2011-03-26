@@ -22,7 +22,7 @@ module Faraday
         options = url
         url     = options[:url]
       end
-      @headers          = HeaderHash.new
+      @headers          = Headers.new
       @params           = {}
       @options          = options[:request] || {}
       @ssl              = options[:ssl]     || {}

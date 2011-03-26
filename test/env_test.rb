@@ -1,15 +1,13 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
-class TestEnv < Faraday::TestCase
+class EnvTest < Faraday::TestCase
   def setup
     @conn = Faraday.new :url => 'http://sushi.com/api', :headers => {'Mime-Version' => '1.0'}
     @conn.options[:timeout]      = 3
     @conn.options[:open_timeout] = 5
     @conn.ssl[:verify]           = false
     @conn.proxy 'http://proxy.com'
-    @input = {
-      :body    => 'abc',
-      :headers => {'Server' => 'Faraday'}}
+    @input = { :body => 'abc' }
     @env = env_for @conn do |req|
       req.url 'foo.json', 'a' => 1
       req['Server'] = 'Faraday'
@@ -26,8 +24,15 @@ class TestEnv < Faraday::TestCase
   end
 
   def test_request_create_stores_headers
-    assert_kind_of Rack::Utils::HeaderHash, @env[:request_headers]
-    assert_equal @input[:headers].merge('Mime-Version' => '1.0'), @env[:request_headers]
+    headers = @env[:request_headers]
+    assert_equal '1.0', headers['mime-version']
+    assert_equal 'Faraday', headers['server']
+  end
+
+  def test_response_headers_case_insensitive
+    headers = @env[:response_headers]
+    headers['Content-Type'] = 'application/json'
+    assert_equal 'application/json', headers['content-type']
   end
 
   def test_request_create_stores_body
@@ -52,5 +57,31 @@ class TestEnv < Faraday::TestCase
       yield req
     end
     env_setup.to_env_hash(connection, :get)
+  end
+end
+
+class HeadersTest < Faraday::TestCase
+  def setup
+    @headers = Faraday::Utils::Headers.new
+  end
+
+  def test_parse_response_headers_leaves_http_status_line_out
+    @headers.parse("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n")
+    assert_equal %w(Content-Type), @headers.keys
+  end
+
+  def test_parse_response_headers_parses_lower_cased_header_name_and_value
+    @headers.parse("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n")
+    assert_equal 'text/html', @headers['content-type']
+  end
+
+  def test_parse_response_headers_parses_lower_cased_header_name_and_value_with_colon
+    @headers.parse("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nLocation: http://sushi.com/\r\n\r\n")
+    assert_equal 'http://sushi.com/', @headers['location']
+  end
+
+  def test_parse_response_headers_parses_blank_lines
+    @headers.parse("HTTP/1.1 200 OK\r\n\r\nContent-Type: text/html\r\n\r\n")
+    assert_equal 'text/html', @headers['content-type']
   end
 end

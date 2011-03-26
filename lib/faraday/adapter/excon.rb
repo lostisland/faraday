@@ -21,14 +21,8 @@ module Faraday
           :headers => env[:request_headers],
           :body    => env[:body]
 
-        env.update \
-          :status => resp.status.to_i,
-          :response_headers => {},
-          :body => resp.body
-
-        resp.headers.each do |key, value|
-          env[:response_headers][key.downcase] = value
-        end
+        env.update :status => resp.status.to_i, :body => resp.body
+        env[:response_headers].update resp.headers
 
         @app.call env
       rescue ::Excon::Errors::SocketError

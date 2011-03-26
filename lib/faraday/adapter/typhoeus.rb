@@ -31,10 +31,8 @@ module Faraday
 
         is_parallel = !!env[:parallel_manager]
         req.on_complete do |resp|
-          env.update \
-            :status           => resp.code,
-            :response_headers => parse_response_headers(resp.headers),
-            :body             => resp.body
+          env.update :status => resp.code, :body => resp.body
+          env[:response_headers].parse resp.headers
           env[:response].finish(env) if is_parallel
         end
 
@@ -45,15 +43,6 @@ module Faraday
         @app.call env
       rescue Errno::ECONNREFUSED
         raise Error::ConnectionFailed, $!
-      end
-
-      def parse_response_headers(header_string)
-        return {} unless header_string && !header_string.empty?
-        Hash[*header_string.split(/\r\n/).
-          tap    { |a|      a.shift           }. # drop the HTTP status line
-          map    { |h|      h.split(/:\s+/,2) }. # split key and value
-          reject { |(k, v)| k.nil?            }. # Ignore blank lines
-          map    { |(k, v)| [k.downcase, v]   }.flatten]
       end
     end
   end

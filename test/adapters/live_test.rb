@@ -26,7 +26,9 @@ else
         end
 
         define_method "test_#{adapter}_GET_retrieves_the_response_headers" do
-          assert_match /text\/html/, create_connection(adapter).get('hello_world').headers['content-type']
+          response = create_connection(adapter).get('hello_world')
+          assert_match /text\/html/, response.headers['Content-Type'], 'original case fail'
+          assert_match /text\/html/, response.headers['content-type'], 'lowercase fail'
         end
 
         define_method "test_#{adapter}_POST_send_url_encoded_params" do
