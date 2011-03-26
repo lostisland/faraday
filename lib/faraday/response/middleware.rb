@@ -25,6 +25,11 @@ module Faraday
       subclass.parser = self.parser
     end
 
+    def initialize(app = nil, options = {})
+      super(app)
+      @content_types = Array(options[:content_type])
+    end
+
     def call(env)
       @app.call(env).on_complete do |env|
         on_complete(env)
@@ -33,7 +38,9 @@ module Faraday
 
     # Override this to modify the environment after the response has finished.
     def on_complete(env)
-      env[:body] = parse(env[:body])
+      if process_response_type?(response_type(env))
+        env[:body] = parse(env[:body])
+      end
     end
 
     # Parses the response body and returns the result.
@@ -54,6 +61,12 @@ module Faraday
       type = env[:response_headers][CONTENT_TYPE].to_s
       type = type.split(';', 2).first if type.index(';')
       type
+    end
+    
+    def process_response_type?(type)
+      @content_types.empty? or @content_types.any? { |pattern|
+        Regexp === pattern ? type =~ pattern : type == pattern
+      }
     end
   end
 end

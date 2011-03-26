@@ -13,10 +13,6 @@ module Faraday
       adapter_name = ActiveSupport::JSON.name
     end unless loaded?
 
-    def on_complete(env)
-      super if response_type(env) == 'application/json'
-    end
-
     # defines a parser block depending on which adapter has loaded
     case adapter_name
     when 'Yajl::Parser'
