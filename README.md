@@ -50,6 +50,40 @@ If you're ready to roll with just the bare minimum:
     # default stack (net/http), no extra middleware:
     response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 
+## Advanced middleware usage
+
+The order in which middleware is stacked is important. Like with Rack, the first middleware on the list wraps all others, while the last middleware is the innermost one, so that's usually the adapter.
+
+    conn = Faraday.new(:url => 'http://sushi.com') do |builder|
+      # POST/PUT params encoders:
+      builder.request  :multipart
+      builder.request  :url_encoded
+      builder.request  :json
+      
+      builder.adapter  :net_http
+    end
+
+This request middleware setup affects POST/PUT requests in the following way:
+
+1. `Request::Multipart` checks for files in the payload, otherwise leaves everything untouched;
+2. `Request::UrlEncoded` encodes as "application/x-www-form-urlencoded" if not already encoded or of another type
+2. `Request::JSON` encodes as "application/x-www-form-urlencoded" if not already encoded or of another type
+
+Because "UrlEncoded" is higher on the stack than JSON encoder, it will get to process the request first. Swapping them means giving the other priority. Specifying the "Content-Type" for the request is explicitly stating which middleware should process it.
+
+Examples:
+
+    payload = { :name => 'Maguro' }
+    
+    # post payload as JSON instead of urlencoded:
+    conn.post '/nigiri', payload, 'Content-Type' => 'application/json'
+    
+    # uploading a file:
+    payload = { :profile_pic => Faraday::UploadIO.new('avatar.jpg', 'image/jpeg') }
+    
+    # "Multipart" middleware detects files and encodes with "multipart/form-data":
+    conn.put '/profile', payload
+
 ## Writing middleware
 
 Middleware are classes that respond to `call()`. They wrap the request/response cycle.
