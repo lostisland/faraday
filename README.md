@@ -11,14 +11,12 @@ This mess is gonna get raw, like sushi. So, haters to the left.
       builder.use Faraday::Adapter::Logger      # log the request somewhere?
       builder.use Faraday::Adapter::Typhoeus    # make http request with typhoeus
       builder.use Faraday::Adapter::EMSynchrony # make http request with eventmachine and synchrony
-      builder.use Faraday::Response::Yajl       # parse body with yajl
 
       # or use shortcuts
       builder.request  :yajl         # Faraday::Request::Yajl
       builder.adapter  :logger       # Faraday::Adapter::Logger
       builder.adapter  :typhoeus     # Faraday::Adapter::Typhoeus
       builder.adapter  :em_synchrony # Faraday::Adapter::EMSynchrony
-      builder.response :yajl         # Faraday::Response::Yajl
     end
 
     resp1 = conn.get '/nigiri/sake.json'

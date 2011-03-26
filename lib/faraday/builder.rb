@@ -4,7 +4,6 @@ module Faraday
   # Faraday::Connection.new(:url => 'http://sushi.com') do |b|
   #   b.request  :yajl     # Faraday::Request::Yajl
   #   b.adapter  :logger   # Faraday::Adapter::Logger
-  #   b.response :yajl     # Faraday::Response::Yajl
   # end
   class Builder
     attr_accessor :handlers
