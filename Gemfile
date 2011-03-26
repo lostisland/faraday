@@ -7,6 +7,7 @@ group :development, :test do
   gem 'patron', '~> 0.4', :platforms => :ruby
   gem 'sinatra', '~> 1.1'
   gem 'typhoeus', '~> 0.2', :platforms => :ruby
+  gem 'excon', '~> 0.5.8'
   gem 'em-http-request', '~> 0.3', :require => 'em-http', :platforms => :ruby
   gem 'em-synchrony', '~> 0.2', :require => ['em-synchrony', 'em-synchrony/em-http'], :platforms => :ruby_19
   gem 'webmock'
