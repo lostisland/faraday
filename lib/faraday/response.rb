@@ -1,3 +1,5 @@
+require 'forwardable'
+
 module Faraday
   class Response
     # Used for simple response middleware.
@@ -17,6 +19,7 @@ module Faraday
       end
     end
 
+    extend Forwardable
     extend AutoloadHelper
 
     autoload_all 'faraday/response',
@@ -28,40 +31,42 @@ module Faraday
       :logger      => :Logger
 
     def initialize(env = nil)
-      @finished_env = env
+      @env = env
       @on_complete_callbacks = []
     end
 
+    attr_reader :env
+    alias_method :to_hash, :env
+
     def status
-      @finished_env ? @finished_env[:status] : nil
+      finished? ? env[:status] : nil
     end
 
     def headers
-      @finished_env ? @finished_env[:response_headers] : nil
+      finished? ? env[:response_headers] : {}
     end
+    def_delegator :headers, :[]
 
     def body
-      @finished_env ? @finished_env[:body] : nil
+      finished? ? env[:body] : nil
     end
 
     def finished?
-      !!@finished_env
+      !!env
     end
 
     def on_complete
       if not finished?
         @on_complete_callbacks << Proc.new
       else
-        yield @finished_env
+        yield env
       end
       return self
     end
 
     def finish(env)
       raise "response already finished" if finished?
-      @finished_env = env
-      env[:body] ||= ''
-      env[:response_headers] ||= {}
+      @env = env
       @on_complete_callbacks.each { |callback| callback.call(env) }
       return self
     end
@@ -72,15 +77,22 @@ module Faraday
 
     # because @on_complete_callbacks cannot be marshalled
     def marshal_dump
-      @finished_env.nil? ? nil : {
-        :status           => @finished_env[:status],
-        :response_headers => @finished_env[:response_headers],
-        :body             => @finished_env[:body]
+      !finished? ? nil : {
+        :status => @env[:status], :body => @env[:body],
+        :response_headers => @env[:response_headers]
       }
     end
 
     def marshal_load(env)
-      @finished_env = env
+      @env = env
+    end
+
+    # Expand the env with more properties, without overriding existing ones.
+    # Useful for applying request params after restoring a marshalled Response.
+    def apply_request(request_env)
+      raise "response didn't finish yet" unless finished?
+      @env = request_env.merge @env
+      return self
     end
   end
 end
