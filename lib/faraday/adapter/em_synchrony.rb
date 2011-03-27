@@ -8,20 +8,6 @@ module Faraday
         self.load_error = e
       end
 
-      class Header
-        include Net::HTTPHeader
-        def initialize response
-          @header = {}
-          response.response_header.each do |key, value|
-            case key
-            when "CONTENT_TYPE"; self.content_type = value
-            when "CONTENT_LENGTH"; self.content_length = value
-            else; self[key] = value
-            end
-          end
-        end
-      end
-
       def call(env)
         super
         request = EventMachine::HttpRequest.new(URI::parse(env[:url].to_s))
@@ -67,9 +53,10 @@ module Faraday
           client = block.call
         end
 
-        env.update(:status           => client.response_header.http_status.to_i,
-                   :response_headers => Header.new(client),
-                   :body             => client.response)
+        client.response_header.each do |name, value|
+          response_headers(env)[name.to_sym] = value
+        end
+        env.update :status => client.response_header.status, :body => client.response
 
         @app.call env
       rescue Errno::ECONNREFUSED

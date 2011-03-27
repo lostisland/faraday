@@ -54,7 +54,7 @@ module Faraday
         end
 
         http_response.each_header do |key, value|
-          env[:response_headers][key] = value
+          response_headers(env)[key] = value
         end
         env.update :status => http_response.code.to_i, :body => http_response.body
 

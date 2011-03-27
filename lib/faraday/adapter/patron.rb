@@ -26,7 +26,7 @@ module Faraday
         end
 
         env.update :status => response.status, :body => response.body
-        env[:response_headers].update response.headers
+        response_headers(env).update response.headers
 
         @app.call env
       end

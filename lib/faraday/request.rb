@@ -73,7 +73,6 @@ module Faraday
         :body             => body,
         :url              => connection.build_url(path, env_params),
         :request_headers  => env_headers,
-        :response_headers => Utils::Headers.new,
         :parallel_manager => connection.parallel_manager,
         :request          => connection.options.merge(:proxy => connection.proxy),
         :ssl              => connection.ssl}

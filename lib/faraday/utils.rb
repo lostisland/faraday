@@ -23,6 +23,8 @@ module Faraday
       end
 
       def []=(k, v)
+        # join multiple values with a comma
+        v = v.to_ary.join(', ') if v.respond_to? :to_ary
         super(KeyMap[k], v)
       end
       
@@ -33,7 +35,12 @@ module Faraday
         header_string.split(/\r\n/).
           tap  { |a| a.shift if a.first.index('HTTP/') == 0 }. # drop the HTTP status line
           map  { |h| h.split(/:\s+/, 2) }.reject { |(k, v)| k.nil? }. # split key and value, ignore blank lines
-          each { |(k, v)| self[k] = v }
+          each { |key, value|
+            # join multiple values with a comma
+            if self[key] then self[key] << ', ' << value
+            else self[key] = value
+            end
+          }
       end
     end
 

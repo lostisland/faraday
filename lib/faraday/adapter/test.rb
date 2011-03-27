@@ -11,7 +11,7 @@ module Faraday
     # resp = test.get '/nigiri/sake.json'
     # resp.body # => 'hi world'
     #
-    class Test < Middleware
+    class Test < Faraday::Adapter
       attr_accessor :stubs
 
       def self.loaded?() false end
@@ -105,14 +105,13 @@ module Faraday
       end
 
       def call(env)
+        super
         normalized_path = Faraday::Utils.normalize_path(env[:url])
 
         if stub = stubs.match(env[:method], normalized_path, env[:body])
           status, headers, body = stub.block.call(env)
-          env.update \
-            :status           => status,
-            :response_headers => headers,
-            :body             => body
+          env.update :status => status, :body => body
+          response_headers(env).update headers
         else
           raise "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"
         end

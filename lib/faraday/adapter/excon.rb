@@ -22,7 +22,7 @@ module Faraday
           :body    => env[:body]
 
         env.update :status => resp.status.to_i, :body => resp.body
-        env[:response_headers].update resp.headers
+        response_headers(env).update resp.headers
 
         @app.call env
       rescue ::Excon::Errors::SocketError

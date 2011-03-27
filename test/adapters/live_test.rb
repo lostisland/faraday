@@ -31,6 +31,14 @@ else
           assert_match /text\/html/, response.headers['content-type'], 'lowercase fail'
         end
 
+        # https://github.com/geemus/excon/issues/10
+        unless %[Faraday::Adapter::Excon] == adapter.to_s
+          define_method "test_#{adapter}_GET_handles_headers_with_multiple_values" do
+            response = create_connection(adapter).get('multi')
+            assert_equal 'one, two', response.headers['set-cookie']
+          end
+        end
+
         define_method "test_#{adapter}_POST_send_url_encoded_params" do
           resp = create_connection(adapter).post do |req|
             req.url 'echo_name'

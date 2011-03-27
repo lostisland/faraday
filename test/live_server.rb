@@ -6,6 +6,7 @@ get '/hello_world' do
 end
 
 get '/json' do
+  content_type 'application/json'
   "[1,2,3]"
 end
 
@@ -19,26 +20,22 @@ post '/file' do
   end
 end
 
-post '/hello' do
-  "hello #{params[:name]}"
+%w[get post].each do |method|
+  send(method, '/hello') do
+    "hello #{params[:name]}"
+  end
 end
 
-get '/hello' do
-  "hello #{params[:name]}"
-end
-
-post '/echo_name' do
-  params[:name].inspect
-end
-
-put '/echo_name' do
-  params[:name].inspect
+%w[post put].each do |method|
+  send(method, '/echo_name') do
+    params[:name].inspect
+  end
 end
 
 delete '/delete_with_json' do
   %/{"deleted":true}/
 end
 
-delete '/delete_with_params' do
-  params[:deleted]
+get '/multi' do
+  [200, { 'Set-Cookie' => %w[ one two ] }, '']
 end

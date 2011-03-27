@@ -29,12 +29,6 @@ class EnvTest < Faraday::TestCase
     assert_equal 'Faraday', headers['server']
   end
 
-  def test_response_headers_case_insensitive
-    headers = @env[:response_headers]
-    headers['Content-Type'] = 'application/json'
-    assert_equal 'application/json', headers['content-type']
-  end
-
   def test_request_create_stores_body
     assert_equal @input[:body], @env[:body]
   end

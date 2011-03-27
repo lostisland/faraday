@@ -30,5 +30,9 @@ module Faraday
         env[:body] = ''
       end
     end
+
+    def response_headers(env)
+      env[:response_headers] ||= Utils::Headers.new
+    end
   end
 end
