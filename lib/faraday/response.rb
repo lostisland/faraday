@@ -9,8 +9,11 @@ module Faraday
       end
 
       # Override this to modify the environment after the response has finished.
+      # Calls the `parse` method if defined
       def on_complete(env)
-        # env[:body]
+        if respond_to? :parse
+          env[:body] = parse(env[:body])
+        end
       end
     end
 

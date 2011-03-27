@@ -12,6 +12,12 @@ class ResponseMiddlewareTest < Faraday::TestCase
     end
   end
 
+  class ResponseUpcaser < Faraday::Response::Middleware
+    def parse(body)
+      body.upcase
+    end
+  end
+
   def test_success
     response = @conn.get('ok')
     assert response.success?
@@ -31,5 +37,10 @@ class ResponseMiddlewareTest < Faraday::TestCase
     end
     assert_equal 'the server responded with status 500', error.message
     assert_equal 'bailout', error.response[:headers]['X-Error']
+  end
+  
+  def test_upcase
+    @conn.builder.insert(0, ResponseUpcaser)
+    assert_equal '<BODY></BODY>', @conn.get('ok').body
   end
 end
