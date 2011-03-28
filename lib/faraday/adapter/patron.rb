@@ -1,11 +1,7 @@
 module Faraday
   class Adapter
     class Patron < Faraday::Adapter
-      begin
-        require 'patron'
-      rescue LoadError, NameError => e
-        self.load_error = e
-      end
+      dependency 'patron'
 
       def call(env)
         super

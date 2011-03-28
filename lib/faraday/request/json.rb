@@ -7,7 +7,7 @@ module Faraday
     end
 
     # loads the JSON encoder either from yajl-ruby or activesupport
-    begin
+    dependency do
       begin
         require 'yajl'
         self.adapter = Yajl::Encoder
@@ -18,8 +18,6 @@ module Faraday
         require 'active_support/ordered_hash' # AS 3.0.4
         self.adapter = ActiveSupport::JSON
       end
-    rescue LoadError, NameError => error
-      self.load_error = error
     end
 
     def call(env)

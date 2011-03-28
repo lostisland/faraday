@@ -1,11 +1,7 @@
 module Faraday
   class Adapter
     class Excon < Faraday::Adapter
-      begin
-        require 'excon'
-      rescue LoadError, NameError => e
-        self.load_error = e
-      end
+      dependency 'excon'
 
       def call(env)
         super

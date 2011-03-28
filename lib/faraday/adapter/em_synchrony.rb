@@ -1,11 +1,9 @@
 module Faraday
   class Adapter
     class EMSynchrony < Faraday::Adapter
-      begin
+      dependency do
         require 'em-synchrony/em-http'
         require 'fiber'
-      rescue LoadError, NameError => e
-        self.load_error = e
       end
 
       def call(env)

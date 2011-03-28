@@ -11,6 +11,13 @@ module Faraday
       end
     end
 
+    # Executes a block which should try to require and reference dependent libraries
+    def self.dependency(lib = nil)
+      lib ? require(lib) : yield
+    rescue LoadError, NameError => error
+      self.load_error = error
+    end
+
     def self.loaded?
       @load_error.nil?
     end

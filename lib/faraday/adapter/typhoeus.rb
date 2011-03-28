@@ -7,11 +7,7 @@ module Faraday
         options.empty? ? ::Typhoeus::Hydra.hydra : ::Typhoeus::Hydra.new(options)
       end
 
-      begin
-        require 'typhoeus'
-      rescue LoadError, NameError => e
-        self.load_error = e
-      end
+      dependency 'typhoeus'
 
       def call(env)
         super
