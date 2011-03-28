@@ -67,7 +67,7 @@ This request middleware setup affects POST/PUT requests in the following way:
 
 1. `Request::Multipart` checks for files in the payload, otherwise leaves everything untouched;
 2. `Request::UrlEncoded` encodes as "application/x-www-form-urlencoded" if not already encoded or of another type
-2. `Request::JSON` encodes as "application/x-www-form-urlencoded" if not already encoded or of another type
+2. `Request::JSON` encodes as "application/json" if not already encoded or of another type
 
 Because "UrlEncoded" is higher on the stack than JSON encoder, it will get to process the request first. Swapping them means giving the other priority. Specifying the "Content-Type" for the request is explicitly stating which middleware should process it.
 
