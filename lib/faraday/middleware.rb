@@ -1,7 +1,5 @@
 module Faraday
   class Middleware
-    include Rack::Utils
-
     class << self
       attr_accessor :load_error, :supports_parallel_requests
       alias supports_parallel_requests? supports_parallel_requests
