@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'faraday'
-  s.version           = '0.5.7'
-  s.date              = '2011-02-27'
+  s.version           = '0.6.0'
+  s.date              = '2011-03-31'
   s.rubyforge_project = 'faraday'
 
   ## Make sure your summary is short. The description may be as long
@@ -52,7 +52,6 @@ Gem::Specification.new do |s|
     lib/faraday/adapter/action_dispatch.rb
     lib/faraday/adapter/em_synchrony.rb
     lib/faraday/adapter/excon.rb
-    lib/faraday/adapter/logger.rb
     lib/faraday/adapter/net_http.rb
     lib/faraday/adapter/patron.rb
     lib/faraday/adapter/test.rb
@@ -62,24 +61,23 @@ Gem::Specification.new do |s|
     lib/faraday/error.rb
     lib/faraday/middleware.rb
     lib/faraday/request.rb
-    lib/faraday/request/active_support_json.rb
-    lib/faraday/request/yajl.rb
+    lib/faraday/request/json.rb
+    lib/faraday/request/multipart.rb
+    lib/faraday/request/url_encoded.rb
     lib/faraday/response.rb
-    lib/faraday/response/active_support_json.rb
-    lib/faraday/response/yajl.rb
+    lib/faraday/response/logger.rb
+    lib/faraday/response/raise_error.rb
     lib/faraday/upload_io.rb
     lib/faraday/utils.rb
     test/adapters/live_test.rb
     test/adapters/logger_test.rb
+    test/adapters/net_http_test.rb
     test/adapters/test_middleware_test.rb
-    test/adapters/typhoeus_test.rb
-    test/connection_app_test.rb
     test/connection_test.rb
     test/env_test.rb
-    test/form_post_test.rb
     test/helper.rb
     test/live_server.rb
-    test/multipart_test.rb
+    test/middleware_stack_test.rb
     test/request_middleware_test.rb
     test/response_middleware_test.rb
   ]
