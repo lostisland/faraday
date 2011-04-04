@@ -51,10 +51,11 @@ module Faraday
           client = block.call
         end
 
-        client.response_header.each do |name, value|
-          response_headers(env)[name.to_sym] = value
+        save_response(env, client.response_header.status, client.response) do |response_headers|
+          client.response_header.each do |name, value|
+            response_headers[name.to_sym] = value
+          end
         end
-        env.update :status => client.response_header.status, :body => client.response
 
         @app.call env
       rescue Errno::ECONNREFUSED

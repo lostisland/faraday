@@ -27,8 +27,10 @@ module Faraday
 
         is_parallel = !!env[:parallel_manager]
         req.on_complete do |resp|
-          env.update :status => resp.code, :body => resp.body
-          response_headers(env).parse resp.headers
+          save_response(env, resp.code, resp.body) do |response_headers|
+            response_headers.parse resp.headers
+          end
+          # in async mode, :response is initialized at this point
           env[:response].finish(env) if is_parallel
         end
 

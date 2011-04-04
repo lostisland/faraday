@@ -21,8 +21,7 @@ module Faraday
         super
         @session.__send__(env[:method], env[:url].request_uri, env[:body], env[:request_headers])
         resp = @session.response
-        env.update :status => resp.status, :body => resp.body
-        response_headers(env).update resp.headers
+        save_response(env, resp.status, resp.body, resp.headers)
         @app.call env
       end
     end

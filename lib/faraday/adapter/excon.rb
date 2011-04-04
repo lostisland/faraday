@@ -17,8 +17,7 @@ module Faraday
           :headers => env[:request_headers],
           :body    => env[:body]
 
-        env.update :status => resp.status.to_i, :body => resp.body
-        response_headers(env).update resp.headers
+        save_response(env, resp.status.to_i, resp.body, resp.headers)
 
         @app.call env
       rescue ::Excon::Errors::SocketError

@@ -21,8 +21,7 @@ module Faraday
           raise Error::ConnectionFailed, $!
         end
 
-        env.update :status => response.status, :body => response.body
-        response_headers(env).update response.headers
+        save_response(env, response.status, response.body, response.headers)
 
         @app.call env
       end

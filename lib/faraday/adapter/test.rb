@@ -110,8 +110,7 @@ module Faraday
 
         if stub = stubs.match(env[:method], normalized_path, env[:body])
           status, headers, body = stub.block.call(env)
-          env.update :status => status, :body => body
-          response_headers(env).update headers
+          save_response(env, status, body, headers)
         else
           raise "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"
         end
