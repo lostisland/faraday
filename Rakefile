@@ -1,5 +1,5 @@
-require 'rubygems'
-require 'rake'
+#!/usr/bin/env rake
+
 require 'date'
 
 #############################################################################
