@@ -64,10 +64,8 @@ module Faraday
     #     :password   - Proxy server password
     # :ssl - Hash of options for configuring SSL requests.
     def to_env_hash(connection, request_method)
-      env_headers = connection.headers.dup
-      env_params  = connection.params.dup
-      connection.merge_headers(env_headers, headers)
-      connection.merge_params(env_params,  params)
+      env_params  = connection.params.merge(params)
+      env_headers = connection.headers.merge(headers)
 
       { :method           => request_method,
         :body             => body,

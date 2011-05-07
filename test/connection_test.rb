@@ -38,18 +38,22 @@ class TestConnection < Faraday::TestCase
 
   def test_initialize_stores_default_params_from_options
     conn = Faraday::Connection.new :params => {:a => 1}
-    assert_equal 1, conn.params['a']
+    assert_equal({'a' => 1}, conn.params)
   end
 
   def test_initialize_stores_default_params_from_uri
-    conn = Faraday::Connection.new "http://sushi.com/fish?a=1", :params => {'b' => '2'}
-    assert_equal '1', conn.params['a']
-    assert_equal '2', conn.params['b']
+    conn = Faraday::Connection.new "http://sushi.com/fish?a=1"
+    assert_equal({'a' => '1'}, conn.params)
+  end
+
+  def test_initialize_stores_default_params_from_uri_and_options
+    conn = Faraday::Connection.new "http://sushi.com/fish?a=1&b=2", :params => {'a' => 3}
+    assert_equal({'a' => 3, 'b' => '2'}, conn.params)
   end
 
   def test_initialize_stores_default_headers_from_options
-    conn = Faraday::Connection.new :headers => {:a => 1}
-    assert_equal '1', conn.headers['A']
+    conn = Faraday::Connection.new :headers => {:user_agent => 'Faraday'}
+    assert_equal 'Faraday', conn.headers['User-agent']
   end
 
   def test_basic_auth_sets_authorization_header
@@ -152,21 +156,21 @@ class TestConnection < Faraday::TestCase
   def test_build_url_mashes_default_and_given_params_together
     conn = Faraday::Connection.new 'http://sushi.com/api?token=abc', :params => {'format' => 'json'}
     url = conn.build_url("nigiri?page=1", :limit => 5)
-    assert_match /limit=5/,      url.query
-    assert_match /page=1/,       url.query
-    assert_match /format=json/,  url.query
-    assert_match /token=abc/,    url.query
+    assert_equal %w[format=json limit=5 page=1 token=abc], url.query.split('&').sort
   end
 
   def test_build_url_overrides_default_params_with_given_params
     conn = Faraday::Connection.new 'http://sushi.com/api?token=abc', :params => {'format' => 'json'}
     url = conn.build_url("nigiri?page=1", :limit => 5, :token => 'def', :format => 'xml')
-    assert_match /limit=5/,        url.query
-    assert_match /page=1/,         url.query
-    assert_match /format=xml/,     url.query
-    assert_match /token=def/,      url.query
-    assert_no_match /format=json/, url.query
-    assert_no_match /token=abc/,   url.query
+    assert_equal %w[format=xml limit=5 page=1 token=def], url.query.split('&').sort
+  end
+
+  def test_default_params_hash_has_indifferent_access
+    conn = Faraday::Connection.new :params => {'format' => 'json'}
+    assert conn.params.has_key?(:format)
+    conn.params[:format] = 'xml'
+    url = conn.build_url("")
+    assert_equal %w[format=xml], url.query.split('&').sort
   end
 
   def test_build_url_parses_url
@@ -222,10 +226,8 @@ class TestConnection < Faraday::TestCase
 
   def test_params_to_query_converts_hash_of_params_to_uri_escaped_query_string
     conn = Faraday::Connection.new
-    class << conn
-      public :build_query
-    end
-    assert_equal "a%5Bb%5D=1%20%2B%202", conn.build_query('a[b]' => '1 + 2')
+    url = conn.build_url('', 'a[b]' => '1 + 2')
+    assert_equal "a%5Bb%5D=1%20%2B%202", url.query
   end
 
   def test_dups_connection_object

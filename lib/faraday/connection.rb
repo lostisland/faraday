@@ -4,7 +4,7 @@ require 'base64'
 
 module Faraday
   class Connection
-    include Addressable, Faraday::Utils
+    include Addressable
 
     METHODS = Set.new [:get, :post, :put, :delete, :head]
     METHODS_WITH_BODIES = Set.new [:post, :put]
@@ -22,15 +22,17 @@ module Faraday
         options = url
         url     = options[:url]
       end
-      @headers          = Headers.new
-      @params           = {}
+      @headers          = Utils::Headers.new
+      @params           = Utils::ParamsHash.new
       @options          = options[:request] || {}
       @ssl              = options[:ssl]     || {}
       @parallel_manager = options[:parallel]
+
       self.url_prefix = url if url
       proxy(options[:proxy])
-      merge_params  @params,  options[:params]  if options[:params]
-      merge_headers @headers, options[:headers] if options[:headers]
+
+      @params.update options[:params]   if options[:params]
+      @headers.update options[:headers] if options[:headers]
 
       if block_given?
         @builder = Builder.create { |b| yield b }
@@ -145,12 +147,11 @@ module Faraday
       self.host        = uri.host
       self.port        = uri.port
       self.path_prefix = uri.path
-      if uri.query && !uri.query.empty?
-        merge_params @params, parse_query(uri.query)
-      end
-      if uri.user && uri.password
-        basic_auth(uri.user, uri.password)
-      end
+
+      @params.merge_query(uri.query)
+      basic_auth(uri.user, uri.password) if uri.user && uri.password
+
+      uri
     end
 
     # Ensures that the path prefix always has a leading / and no trailing /
@@ -186,7 +187,7 @@ module Faraday
     #   conn.build_url("nigiri?page=2")      # => https://sushi.com/api/nigiri?token=abc&page=2
     #   conn.build_url("nigiri", :page => 2) # => https://sushi.com/api/nigiri?token=abc&page=2
     #
-    def build_url(url, params = nil)
+    def build_url(url, extra_params = nil)
       uri          = URI.parse(url.to_s)
       if @path_prefix && uri.path !~ /^\//
         uri.path = "#{@path_prefix.size > 1 ? @path_prefix : nil}/#{uri.path}"
@@ -194,24 +195,16 @@ module Faraday
       uri.host   ||= @host
       uri.port   ||= @port
       uri.scheme ||= @scheme
-      replace_query(uri, params)
+
+      params = @params.dup.merge_query(uri.query)
+      params.update extra_params if extra_params
+      uri.query = params.empty? ? nil : params.to_query
+
       uri
     end
 
     def dup
       self.class.new(build_url(''), :headers => headers.dup, :params => params.dup, :builder => builder.dup)
-    end
-
-    def replace_query(uri, params)
-      url_params = @params.dup
-      if uri.query && !uri.query.empty?
-        merge_params(url_params, parse_query(uri.query))
-      end
-      if params && !params.empty?
-        merge_params(url_params, params)
-      end
-      uri.query = url_params.empty? ? nil : build_query(url_params)
-      uri
     end
 
     def proxy_arg_to_uri(arg)

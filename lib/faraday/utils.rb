@@ -1,4 +1,5 @@
 require 'rack/utils'
+
 module Faraday
   module Utils
     include Rack::Utils
@@ -44,8 +45,65 @@ module Faraday
       end
     end
 
-    # Make Rack::Utils build_query method public.
-    public :build_query
+    # hash with stringified keys
+    class ParamsHash < Hash
+      def [](key)
+        super(convert_key(key))
+      end
+
+      def []=(key, value)
+        super(convert_key(key), value)
+      end
+
+      def delete(key)
+        super(convert_key(key))
+      end
+
+      def include?(key)
+        super(convert_key(key))
+      end
+
+      alias_method :has_key?, :include?
+      alias_method :member?, :include?
+      alias_method :key?, :include?
+
+      def update(params)
+        params.each do |key, value|
+          self[key] = value
+        end
+        self
+      end
+      alias_method :merge!, :update
+
+      def merge(params)
+        dup.update(params)
+      end
+
+      def replace(other)
+        clear
+        update(other)
+      end
+
+      def merge_query(query)
+        if query && !query.empty?
+          update Utils.parse_query(query)
+        end
+        self
+      end
+
+      def to_query
+        Utils.build_query(self)
+      end
+
+      private
+
+      def convert_key(key)
+        key.to_s
+      end
+    end
+
+    # Make Rack::Utils methods public.
+    public :build_query, :parse_query
 
     # Override Rack's version since it doesn't handle non-String values
     def build_nested_query(value, prefix = nil)
@@ -69,20 +127,6 @@ module Faraday
     def escape(s)
       s.to_s.gsub(/([^a-zA-Z0-9_.-]+)/n) do
         '%' << $1.unpack('H2'*bytesize($1)).join('%').tap { |c| c.upcase! }
-      end
-    end
-
-    # Turns param keys into strings
-    def merge_params(existing_params, new_params)
-      new_params.each do |key, value|
-        existing_params[key.to_s] = value
-      end
-    end
-
-    # Turns headers keys and values into strings
-    def merge_headers(existing_headers, new_headers)
-      new_headers.each do |key, value|
-        existing_headers[key] = value.to_s
       end
     end
 
