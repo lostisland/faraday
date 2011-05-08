@@ -12,6 +12,9 @@ module Faraday
       new { |builder| yield builder }
     end
 
+    # Error raised when trying to modify the stack after calling `lock!`
+    class StackLocked < RuntimeError; end
+
     # borrowed from ActiveSupport::Dependencies::Reference &
     # ActionDispatch::MiddlewareStack::Middleware
     class Handler
@@ -55,6 +58,7 @@ module Faraday
     end
 
     def build(options = {})
+      raise_if_locked
       @handlers.clear unless options[:keep]
       yield self if block_given?
     end
@@ -76,7 +80,17 @@ module Faraday
       @handlers.reverse.inject(inner_app) { |app, handler| handler.build(app) }
     end
 
+    # Locks the middleware stack to ensure no further modifications are possible.
+    def lock!
+      @handlers.freeze
+    end
+
+    def locked?
+      @handlers.frozen?
+    end
+
     def use(klass, *args)
+      raise_if_locked
       block = block_given? ? Proc.new : nil
       @handlers << self.class::Handler.new(klass, *args, &block)
     end
@@ -99,6 +113,7 @@ module Faraday
     ## methods to push onto the various positions in the stack:
 
     def insert(index, *args, &block)
+      raise_if_locked
       index = assert_index(index)
       handler = self.class::Handler.new(*args, &block)
       @handlers.insert(index, handler)
@@ -112,16 +127,22 @@ module Faraday
     end
 
     def swap(index, *args, &block)
+      raise_if_locked
       index = assert_index(index)
       @handlers.delete_at(index)
       insert(index, *args, &block)
     end
 
     def delete(handler)
+      raise_if_locked
       @handlers.delete(handler)
     end
 
     private
+
+    def raise_if_locked
+      raise StackLocked, "can't modify middleware stack after making a request" if locked?
+    end
 
     def use_symbol(mod, key, *args)
       block = block_given? ? Proc.new : nil

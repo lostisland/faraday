@@ -61,6 +61,25 @@ module Faraday
       @builder.build(options, &block)
     end
 
+    # The "rack app" wrapped in middleware. All requests are sent here.
+    #
+    # The builder is responsible for creating the app object. After this,
+    # the builder gets locked to ensure no further modifications are made
+    # to the middleware stack.
+    #
+    # Returns an object that responds to `call` and returns a Response.
+    def app
+      @app ||= begin
+        builder.lock!
+        builder.to_app(lambda { |env|
+          # the inner app that creates and returns the Response object
+          response = Response.new
+          response.finish(env) unless env[:parallel_manager]
+          env[:response] = response
+        })
+      end
+    end
+
     def get(url = nil, headers = nil)
       block = block_given? ? Proc.new : nil
       run_request(:get, url, nil, headers, &block)

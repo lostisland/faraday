@@ -158,19 +158,19 @@ else
 
       def create_connection(adapter)
         if adapter == :default
-          Faraday.default_connection.tap do |conn|
-            conn.url_prefix = LIVE_SERVER
-            conn.headers['X-Faraday-Adapter'] = adapter.to_s
-          end
+          builder_block = nil
         else
-          Faraday::Connection.new LIVE_SERVER, :headers => {'X-Faraday-Adapter' => adapter.to_s} do |b|
+          builder_block = Proc.new do |b|
             b.request :multipart
             b.request :url_encoded
             b.use adapter
           end
-        end.tap do |conn|
-          target = conn.builder.handlers.last
-          conn.builder.insert_before target, Faraday::Response::RaiseError
+        end
+        
+        Faraday::Connection.new(LIVE_SERVER, &builder_block).tap do |conn|
+          conn.headers['X-Faraday-Adapter'] = adapter.to_s
+          adapter_handler = conn.builder.handlers.last
+          conn.builder.insert_before adapter_handler, Faraday::Response::RaiseError
         end
       end
 

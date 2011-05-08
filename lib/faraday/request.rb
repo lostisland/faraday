@@ -77,13 +77,8 @@ module Faraday
     end
 
     def run(connection, request_method)
-      app = lambda { |env|
-        response = Response.new
-        response.finish(env) unless env[:parallel_manager]
-        env[:response] = response
-      }
       env = to_env_hash(connection, request_method)
-      connection.builder.to_app(app).call(env)
+      connection.app.call(env)
     end
   end
 end

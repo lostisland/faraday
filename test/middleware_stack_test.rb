@@ -26,8 +26,6 @@ class MiddlewareStackTest < Faraday::TestCase
 
   def test_allows_rebuilding
     build_stack Apple
-    assert_handlers %w[Apple]
-
     build_stack Orange
     assert_handlers %w[Orange]
   end
@@ -65,6 +63,28 @@ class MiddlewareStackTest < Faraday::TestCase
     build_stack Apple, Orange
     @builder.delete Apple
     assert_handlers %w[Orange]
+  end
+
+  def test_stack_is_locked_after_making_requests
+    build_stack Apple
+    assert !@builder.locked?
+    @conn.get('/')
+    assert @builder.locked?
+
+    assert_raises Faraday::Builder::StackLocked do
+      @conn.use Orange
+    end
+  end
+
+  def test_duped_stack_is_unlocked
+    build_stack Apple
+    assert !@builder.locked?
+    @builder.lock!
+    assert @builder.locked?
+
+    duped_connection = @conn.dup
+    assert_equal @builder, duped_connection.builder
+    assert !duped_connection.builder.locked?
   end
 
   private
