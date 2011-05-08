@@ -187,12 +187,15 @@ module Faraday
         raise ArgumentError, "unknown http method: #{method}"
       end
 
-      Request.run(self, method) do |req|
+      request = Request.create(method) do |req|
         req.url(url)                if url
         req.headers.update(headers) if headers
         req.body = body             if body
         yield req if block_given?
       end
+
+      env = request.to_env(self)
+      self.app.call(env)
     end
 
     # Takes a relative url for a request and combines it with the defaults
