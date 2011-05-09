@@ -67,8 +67,8 @@ else
           assert_equal "file live_test.rb text/x-ruby", resp.body
         end unless :default == adapter # isn't configured for multipart
 
-        # http://github.com/toland/patron/issues/#issue/9
-        if ENV['FORCE'] || adapter != Faraday::Adapter::Patron
+        # https://github.com/toland/patron/issues/9
+        if ENV['FORCE'] || %[Faraday::Adapter::Patron] != adapter.to_s
           define_method "test_#{adapter}_PUT_send_url_encoded_params" do
             resp = create_connection(adapter).put do |req|
               req.url 'echo_name'
@@ -87,6 +87,21 @@ else
 
           define_method "test_#{adapter}_PUT_retrieves_the_response_headers" do
             assert_match /text\/html/, create_connection(adapter).put('echo_name').headers['content-type']
+          end
+        end
+
+        # https://github.com/toland/patron/issues/34
+        unless %w[Faraday::Adapter::Patron Faraday::Adapter::EMSynchrony].include? adapter.to_s
+          define_method "test_#{adapter}_PATCH_send_url_encoded_params" do
+            resp = create_connection(adapter).patch('echo_name', 'name' => 'zack')
+            assert_equal %("zack"), resp.body
+          end
+        end
+
+        unless %[Faraday::Adapter::EMSynchrony] == adapter.to_s
+          define_method "test_#{adapter}_OPTIONS" do
+            resp = create_connection(adapter).run_request(:options, '/options', nil, {})
+            assert_equal "hi", resp.body
           end
         end
 

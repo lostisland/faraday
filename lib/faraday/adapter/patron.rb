@@ -12,11 +12,8 @@ module Faraday
         session = ::Patron::Session.new
 
         response = begin
-          if Connection::METHODS_WITH_BODIES.include? env[:method]
-            session.send(env[:method], env[:url].to_s, env[:body].to_s, env[:request_headers])
-          else
-            session.send(env[:method], env[:url].to_s, env[:request_headers])
-          end
+          data = Connection::METHODS_WITH_BODIES.include?(env[:method]) ? env[:body].to_s : nil
+          session.request(env[:method], env[:url].to_s, env[:request_headers], :data => data)
         rescue Errno::ECONNREFUSED
           raise Error::ConnectionFailed, $!
         end
@@ -26,5 +23,11 @@ module Faraday
         @app.call env
       end
     end
+
+    # HAX: helps but doesn't work completely
+    # https://github.com/toland/patron/issues/34
+    valid_actions = ::Patron::Request::VALID_ACTIONS
+    valid_actions << :patch unless valid_actions.include? :patch
+    valid_actions << :options unless valid_actions.include? :options
   end
 end

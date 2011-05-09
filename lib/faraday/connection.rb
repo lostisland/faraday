@@ -6,8 +6,8 @@ module Faraday
   class Connection
     include Addressable
 
-    METHODS = Set.new [:get, :post, :put, :delete, :head]
-    METHODS_WITH_BODIES = Set.new [:post, :put]
+    METHODS = Set.new [:get, :post, :put, :delete, :head, :patch, :options]
+    METHODS_WITH_BODIES = Set.new [:post, :put, :patch, :options]
 
     attr_accessor :host, :port, :scheme, :params, :headers, :parallel_manager
     attr_reader   :path_prefix, :builder, :options, :ssl
@@ -74,6 +74,11 @@ module Faraday
     def put(url = nil, body = nil, headers = nil)
       block = block_given? ? Proc.new : nil
       run_request(:put, url, body, headers, &block)
+    end
+
+    def patch(url = nil, body = nil, headers = nil)
+      block = block_given? ? Proc.new : nil
+      run_request(:patch, url, body, headers, &block)
     end
 
     def head(url = nil, headers = nil)

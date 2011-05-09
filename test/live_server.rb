@@ -20,16 +20,20 @@ post '/file' do
   end
 end
 
-%w[get post].each do |method|
+[:get, :post].each do |method|
   send(method, '/hello') do
     "hello #{params[:name]}"
   end
 end
 
-%w[post put].each do |method|
-  send(method, '/echo_name') do
+%w[POST PUT PATCH].each do |http_method|
+  settings.send(:route, http_method, '/echo_name') do
     params[:name].inspect
   end
+end
+
+options '/options' do
+  'hi'
 end
 
 delete '/delete_with_json' do
