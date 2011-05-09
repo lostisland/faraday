@@ -22,16 +22,18 @@ module Faraday
       :url_encoded => :UrlEncoded,
       :multipart   => :Multipart
 
-    def self.run(connection, request_method)
-      req = create
-      yield req if block_given?
-      req.run(connection, request_method)
+    attr_reader :method
+
+    def self.create(request_method)
+      new(request_method).tap do |request|
+        yield request if block_given?
+      end
     end
 
-    def self.create
-      req = new(nil, {}, {}, nil)
-      yield req if block_given?
-      req
+    def initialize(request_method)
+      @method = request_method
+      self.params = {}
+      self.headers = {}
     end
 
     def url(path, params = {})
@@ -63,27 +65,17 @@ module Faraday
     #     :user       - Proxy server username
     #     :password   - Proxy server password
     # :ssl - Hash of options for configuring SSL requests.
-    def to_env_hash(connection, request_method)
+    def to_env(connection)
       env_params  = connection.params.merge(params)
       env_headers = connection.headers.merge(headers)
 
-      { :method           => request_method,
+      { :method           => method,
         :body             => body,
         :url              => connection.build_url(path, env_params),
         :request_headers  => env_headers,
         :parallel_manager => connection.parallel_manager,
         :request          => connection.options.merge(:proxy => connection.proxy),
         :ssl              => connection.ssl}
-    end
-
-    def run(connection, request_method)
-      app = lambda { |env|
-        response = Response.new
-        response.finish(env) unless env[:parallel_manager]
-        env[:response] = response
-      }
-      env = to_env_hash(connection, request_method)
-      connection.builder.to_app(app).call(env)
     end
   end
 end

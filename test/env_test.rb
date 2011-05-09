@@ -47,10 +47,10 @@ class EnvTest < Faraday::TestCase
   end
 
   def env_for(connection)
-    env_setup = Faraday::Request.create do |req|
+    env_setup = Faraday::Request.create(:get) do |req|
       yield req
     end
-    env_setup.to_env_hash(connection, :get)
+    env_setup.to_env(connection)
   end
 end
 
