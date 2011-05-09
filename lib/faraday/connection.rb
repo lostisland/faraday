@@ -61,6 +61,25 @@ module Faraday
       @builder.build(options, &block)
     end
 
+    # The "rack app" wrapped in middleware. All requests are sent here.
+    #
+    # The builder is responsible for creating the app object. After this,
+    # the builder gets locked to ensure no further modifications are made
+    # to the middleware stack.
+    #
+    # Returns an object that responds to `call` and returns a Response.
+    def app
+      @app ||= begin
+        builder.lock!
+        builder.to_app(lambda { |env|
+          # the inner app that creates and returns the Response object
+          response = Response.new
+          response.finish(env) unless env[:parallel_manager]
+          env[:response] = response
+        })
+      end
+    end
+
     def get(url = nil, headers = nil)
       block = block_given? ? Proc.new : nil
       run_request(:get, url, nil, headers, &block)
@@ -173,12 +192,15 @@ module Faraday
         raise ArgumentError, "unknown http method: #{method}"
       end
 
-      Request.run(self, method) do |req|
+      request = Request.create(method) do |req|
         req.url(url)                if url
         req.headers.update(headers) if headers
         req.body = body             if body
         yield req if block_given?
       end
+
+      env = request.to_env(self)
+      self.app.call(env)
     end
 
     # Takes a relative url for a request and combines it with the defaults
