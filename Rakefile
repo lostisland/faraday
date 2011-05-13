@@ -52,6 +52,14 @@ Rake::TestTask.new(:test) do |test|
   test.verbose = true
 end
 
+TEST_SERVER = 'http://faradaylive.heroku.com'
+
+desc "Run tests including live tests against #{TEST_SERVER}"
+task :"test:live" do
+  ENV['LIVE'] = TEST_SERVER
+  Rake::Task[:test].invoke
+end
+
 desc "Open an irb session preloaded with this library"
 task :console do
   sh "irb -rubygems -r ./lib/#{name}.rb"
