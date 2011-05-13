@@ -1,6 +1,5 @@
 script: "rake test:live"
 rvm:
-  - 1.8.6
   - 1.8.7
   - 1.9.1
   - 1.9.2
