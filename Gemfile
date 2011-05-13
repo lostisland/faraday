@@ -1,4 +1,8 @@
-source "http://rubygems.org"
+source 'http://rubygems.org'
+
+group :development do
+  gem 'sinatra', '~> 1.2'
+end
 
 group :test do
   gem 'patron', '~> 0.4', :platforms => :ruby
@@ -12,6 +16,8 @@ group :test do
   gem 'yajl-ruby', :require => 'yajl', :platforms => :ruby_19
 end
 
-gem 'sinatra', '~> 1.2', :group => :development
+platforms :jruby do
+  gem 'jruby-openssl', '~> 0.7'
+end
 
 gemspec
