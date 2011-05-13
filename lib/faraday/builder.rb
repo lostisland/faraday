@@ -34,7 +34,9 @@ module Faraday
       def inspect() @name end
 
       def ==(other)
-        if other.respond_to? :name
+        if other.is_a? Handler
+          self.name == other.name
+        elsif other.respond_to? :name
           klass == other
         else
           @name == other.to_s

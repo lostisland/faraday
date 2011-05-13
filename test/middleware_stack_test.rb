@@ -87,6 +87,13 @@ class MiddlewareStackTest < Faraday::TestCase
     assert !duped_connection.builder.locked?
   end
 
+  def test_handler_comparison
+    build_stack Apple
+    assert_equal @builder.handlers.first, Apple
+    assert_equal @builder.handlers[0,1], [Apple]
+    assert_equal @builder.handlers.first, Faraday::Builder::Handler.new(Apple)
+  end
+
   private
 
   # make a stack with test adapter that reflects the order of middleware
