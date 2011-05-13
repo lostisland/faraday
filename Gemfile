@@ -1,11 +1,7 @@
 source "http://rubygems.org"
 
-# Bundle gems for the local environment. Make sure to
-# put test-only gems in this group so their generators
-# and rake tasks are available in development mode:
-group :development, :test do
+group :test do
   gem 'patron', '~> 0.4', :platforms => :ruby
-  gem 'sinatra', '~> 1.2'
   gem 'typhoeus', '~> 0.2', :platforms => :ruby
   gem 'excon', '~> 0.6'
   gem 'em-http-request', '~> 0.3', :require => 'em-http', :platforms => :ruby
@@ -15,5 +11,7 @@ group :development, :test do
   gem 'activesupport', '~> 2.3', :require => nil, :platforms => [:ruby_18, :jruby]
   gem 'yajl-ruby', :require => 'yajl', :platforms => :ruby_19
 end
+
+gem 'sinatra', '~> 1.2', :group => :development
 
 gemspec
