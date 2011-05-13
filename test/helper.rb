@@ -5,9 +5,6 @@ unless ENV['BUNDLE_GEMFILE']
   Bundler.setup
 end
 
-require 'webmock/test_unit'
-WebMock.disable_net_connect!(:allow_localhost => true)
-
 if ENV['LEFTRIGHT']
   begin
     require 'leftright'
@@ -43,3 +40,6 @@ module Faraday
     end unless defined? ::MiniTest
   end
 end
+
+require 'webmock/test_unit'
+WebMock.disable_net_connect!(:allow => Faraday::TestCase::LIVE_SERVER)
