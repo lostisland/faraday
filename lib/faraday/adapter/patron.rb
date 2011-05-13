@@ -22,12 +22,15 @@ module Faraday
 
         @app.call env
       end
-    end
 
-    # HAX: helps but doesn't work completely
-    # https://github.com/toland/patron/issues/34
-    valid_actions = ::Patron::Request::VALID_ACTIONS
-    valid_actions << :patch unless valid_actions.include? :patch
-    valid_actions << :options unless valid_actions.include? :options
+      if loaded? && defined?(::Patron::Request::VALID_ACTIONS)
+        # HAX: helps but doesn't work completely
+        # https://github.com/toland/patron/issues/34
+        ::Patron::Request::VALID_ACTIONS.tap do |actions|
+          actions << :patch unless actions.include? :patch
+          actions << :options unless actions.include? :options
+        end
+      end
+    end
   end
 end
