@@ -18,7 +18,7 @@ module Faraday
         end
       end
       KeyMap[:etag] = "ETag"
-      
+
       def [](k)
         super(KeyMap[k])
       end
@@ -28,9 +28,9 @@ module Faraday
         v = v.to_ary.join(', ') if v.respond_to? :to_ary
         super(KeyMap[k], v)
       end
-      
+
       alias_method :update, :merge!
-      
+
       def parse(header_string)
         return unless header_string && !header_string.empty?
         header_string.split(/\r\n/).

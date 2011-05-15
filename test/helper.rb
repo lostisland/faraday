@@ -1,17 +1,6 @@
-unless ENV['BUNDLE_GEMFILE']
-  require 'bundler'
-  Bundler.setup
-end
-
+require 'rubygems'
 require 'test/unit'
-
-if ENV['LEFTRIGHT']
-  begin
-    require 'leftright'
-  rescue LoadError
-    puts "Run `gem install leftright` to install leftright."
-  end
-end
+require 'turn'
 
 unless $LOAD_PATH.include? 'lib'
   $LOAD_PATH.unshift(File.dirname(__FILE__))
