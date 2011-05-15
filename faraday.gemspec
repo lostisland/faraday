@@ -33,6 +33,8 @@ Gem::Specification.new do |s|
   s.require_paths = %w[lib]
 
   s.add_development_dependency 'rake', '~> 0.8'
+  s.add_development_dependency 'test-unit', '~> 2.3'
+  s.add_development_dependency 'webmock', '~> 1.6'
   s.add_runtime_dependency 'addressable', '~> 2.2.6'
   s.add_runtime_dependency 'multipart-post', '~> 1.1.0'
   s.add_runtime_dependency 'rack', ['>= 1.1.0', '<= 1.2.0']
