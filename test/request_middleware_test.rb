@@ -74,8 +74,8 @@ class RequestMiddlewareTest < Faraday::TestCase
     assert_kind_of Faraday::CompositeReadIO, response.body
     assert_equal "multipart/form-data;boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
       response.headers['Content-Type']
-    
-    response.body.send(:ios).map(&:read).each do |io|
+
+    response.body.send(:ios).map{|io| io.read}.each do |io|
       if re = regexes.detect { |r| io =~ r }
         regexes.delete re
       end
