@@ -4,9 +4,9 @@ module Faraday
 
     class << self
       attr_writer :adapter
-      
+
       def adapter
-        @adapter or raise "No JSON adapter available. Install either activesupport or yajl-ruby."
+        @adapter or raise Error::MissingDependency, "No JSON adapter available. Install either activesupport or yajl-ruby."
       end
     end
 

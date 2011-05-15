@@ -48,8 +48,8 @@ class RequestMiddlewareTest < Faraday::TestCase
       # assert_raise doesn't work to check the message (at least on 1.8.7)
       begin
         @conn.post('/echo', { :fruit => %w[apples oranges] }, 'content-type' => 'application/json')
-        fail "Exception not thrown"
-      rescue RuntimeError => e
+        fail "Exception not raised"
+      rescue Faraday::Error::MissingDependency => e
         assert_equal expected_msg, e.message
       end
     end
