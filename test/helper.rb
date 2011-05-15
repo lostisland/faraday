@@ -1,9 +1,9 @@
-require 'test/unit'
 unless ENV['BUNDLE_GEMFILE']
-  require 'rubygems'
   require 'bundler'
   Bundler.setup
 end
+
+require 'test/unit'
 
 if ENV['LEFTRIGHT']
   begin
