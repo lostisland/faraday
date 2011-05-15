@@ -1,6 +1,13 @@
 require 'rubygems'
 require 'test/unit'
-require 'turn'
+
+if ENV['LEFTRIGHT']
+  begin
+    require 'leftright'
+  rescue LoadError
+    puts "Run `gem install leftright` to install leftright."
+  end
+end
 
 unless $LOAD_PATH.include? 'lib'
   $LOAD_PATH.unshift(File.dirname(__FILE__))
