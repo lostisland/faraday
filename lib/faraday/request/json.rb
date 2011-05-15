@@ -3,7 +3,11 @@ module Faraday
     self.mime_type = 'application/json'.freeze
 
     class << self
-      attr_accessor :adapter
+      attr_writer :adapter
+
+      def adapter
+        @adapter or raise Error::MissingDependency, "No JSON adapter available. Install either activesupport or yajl-ruby."
+      end
     end
 
     # loads the JSON encoder either from yajl-ruby or activesupport

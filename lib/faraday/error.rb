@@ -34,5 +34,7 @@ module Faraday
     class ConnectionFailed < ClientError;   end
     class ResourceNotFound < ClientError;   end
     class ParsingError     < ClientError;   end
+
+    class MissingDependency < StandardError; end
   end
 end
