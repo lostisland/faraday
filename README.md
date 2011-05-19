@@ -120,7 +120,7 @@ The `env` is a hash with symbol keys that contains info about the request and, l
 
     # You can pass stubbed request to the test adapter or define them in a block
     # or a combination of the two.
-    test = Faraday.new do |builder|
+    test = Faraday::Connection.new do |builder|
       builder.adapter :test, stubs do |stub|
         stub.get('/ebi') {[ 200, {}, 'shrimp' ]}
       end
