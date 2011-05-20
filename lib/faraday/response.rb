@@ -72,7 +72,7 @@ module Faraday
     end
 
     def success?
-      status == 200
+      (200..299).include?(status)
     end
 
     # because @on_complete_callbacks cannot be marshalled
