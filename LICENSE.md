@@ -1,4 +1,4 @@
-Copyright (c) 2009-* rick olson, zack hobson
+Copyright (c) 2009 rick olson, zack hobson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

@@ -1,11 +1,11 @@
-# faraday
-
+faraday
+=======
 Modular HTTP client library using middleware heavily inspired by Rack.
 
 This mess is gonna get raw, like sushi. So, haters to the left.
 
-## Usage
-
+Usage
+-----
     conn = Faraday.new(:url => 'http://sushi.com') do |builder|
       builder.use Faraday::Request::UrlEncoded  # convert request params as "www-form-urlencoded"
       builder.use Faraday::Request::JSON        # encode request params as json
@@ -18,23 +18,23 @@ This mess is gonna get raw, like sushi. So, haters to the left.
       builder.response :logger
       builder.adapter  :net_http
     end
-    
+
     ## GET ##
 
     response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
     response.body
 
     conn.get '/nigiri', 'X-Awesome' => true     # custom request header
-    
+
     conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
       req.url '/search', :page => 2
       req.params['limit'] = 100
     end
-    
+
     ## POST ##
-    
+
     conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi.com/nigiri
-    
+
     # post payload as JSON instead of "www-form-urlencoded" encoding:
     conn.post '/nigiri', payload, 'Content-Type' => 'application/json'
 
@@ -50,8 +50,8 @@ If you're ready to roll with just the bare minimum:
     # default stack (net/http), no extra middleware:
     response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 
-## Advanced middleware usage
-
+Advanced middleware usage
+-------------------------
 The order in which middleware is stacked is important. Like with Rack, the first middleware on the list wraps all others, while the last middleware is the innermost one, so that's usually the adapter.
 
     conn = Faraday.new(:url => 'http://sushi.com') do |builder|
@@ -59,7 +59,7 @@ The order in which middleware is stacked is important. Like with Rack, the first
       builder.request  :multipart
       builder.request  :url_encoded
       builder.request  :json
-      
+
       builder.adapter  :net_http
     end
 
@@ -74,23 +74,23 @@ Because "UrlEncoded" is higher on the stack than JSON encoder, it will get to pr
 Examples:
 
     payload = { :name => 'Maguro' }
-    
+
     # post payload as JSON instead of urlencoded:
     conn.post '/nigiri', payload, 'Content-Type' => 'application/json'
-    
+
     # uploading a file:
     payload = { :profile_pic => Faraday::UploadIO.new('avatar.jpg', 'image/jpeg') }
-    
+
     # "Multipart" middleware detects files and encodes with "multipart/form-data":
     conn.put '/profile', payload
 
-## Writing middleware
-
+Writing middleware
+------------------
 Middleware are classes that respond to `call()`. They wrap the request/response cycle.
 
     def call(env)
       # do something with the request
-      
+
       @app.call(env).on_complete do
         # do something with the response
       end
@@ -111,8 +111,8 @@ The `env` is a hash with symbol keys that contains info about the request and, l
     :body   - the response body
     :response_headers
 
-## Testing
-
+Testing
+-------
     # It's possible to define stubbed request outside a test adapter block.
     stubs = Faraday::Adapter::Test::Stubs.new do |stub|
       stub.get('/tamago') { [200, {}, 'egg'] }
@@ -138,21 +138,21 @@ The `env` is a hash with symbol keys that contains info about the request and, l
     resp.body # => 'urchin'
     resp = test.get '/else' #=> raises "no such stub" error
 
-    # If you like, you can treat your stubs as mocks by verifying that all of 
+    # If you like, you can treat your stubs as mocks by verifying that all of
     # the stubbed calls were made. NOTE that this feature is still fairly
     # experimental: It will not verify the order or count of any stub, only that
     # it was called once during the course of the test.
     stubs.verify_stubbed_calls
 
-## TODO
-
+TODO
+----
 * support streaming requests/responses
 * better stubbing API
 * Support timeouts
 * Add curb, em-http, fast_http
 
-## Note on Patches/Pull Requests
-
+Note on Patches/Pull Requests
+-----------------------------
 * Fork the project.
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
@@ -161,6 +161,8 @@ The `env` is a hash with symbol keys that contains info about the request and, l
   (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
-## Copyright
+Copyright
+---------
+Copyright (c) 2009-2011 rick, hobson. See [LICENSE][license] for details.
 
-Copyright (c) 2009-2011 rick, hobson. See LICENSE for details.
+[license]: https://github.com/technoweenie/faraday/blob/master/LICENSE.md
