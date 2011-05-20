@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   ## require 'NAME.rb' or'/lib/NAME/file.rb' can be as require 'NAME/file.rb'
   s.require_paths = %w[lib]
 
-  s.add_development_dependency 'rake', '~> 0.8'
+  s.add_development_dependency 'rake', '~> 0.9'
   s.add_development_dependency 'test-unit', '~> 2.3'
   s.add_development_dependency 'webmock', '~> 1.6'
   s.add_runtime_dependency 'addressable', '~> 2.2.6'
