@@ -13,14 +13,18 @@ module Faraday
     extend AutoloadHelper
 
     autoload_all 'faraday/request',
-      :JSON       => 'json',
-      :UrlEncoded => 'url_encoded',
-      :Multipart  => 'multipart'
+      :JSON                => 'json',
+      :UrlEncoded          => 'url_encoded',
+      :Multipart           => 'multipart',
+      :BasicAuthentication => 'basic_authentication',
+      :TokenAuthentication => 'token_authentication'
 
     register_lookup_modules \
-      :json        => :JSON,
-      :url_encoded => :UrlEncoded,
-      :multipart   => :Multipart
+      :json                 => :JSON,
+      :url_encoded          => :UrlEncoded,
+      :multipart            => :Multipart,
+      :basic_authentication => :BasicAuthentication,
+      :token_authentication => :TokenAuthentication
 
     attr_reader :method
 
