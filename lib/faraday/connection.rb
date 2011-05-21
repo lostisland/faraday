@@ -28,17 +28,17 @@ module Faraday
       @ssl              = options[:ssl]     || {}
       @parallel_manager = options[:parallel]
 
-      self.url_prefix = url if url
-      proxy(options[:proxy])
-
-      @params.update options[:params]   if options[:params]
-      @headers.update options[:headers] if options[:headers]
-
       if block_given?
         @builder = Builder.create { |b| yield b }
       else
         @builder = options[:builder] || Builder.new
       end
+
+      self.url_prefix = url if url
+      proxy(options[:proxy])
+
+      @params.update options[:params]   if options[:params]
+      @headers.update options[:headers] if options[:headers]
     end
 
     def use(klass, *args, &block)
@@ -111,19 +111,11 @@ module Faraday
     end
 
     def basic_auth(login, pass)
-      auth = Base64.encode64("#{login}:#{pass}")
-      auth.gsub!("\n", "")
-      @headers['authorization'] = "Basic #{auth}"
+      builder.insert(0, Faraday::Request::BasicAuthentication, login, pass)
     end
 
     def token_auth(token, options = {})
-      values = ["token=#{token.to_s.inspect}"]
-      options.each do |key, value|
-        values << "#{key}=#{value.to_s.inspect}"
-      end
-      # 21 = "Authorization: Token ".size
-      comma = ",\n#{' ' * 21}"
-      @headers['authorization'] = "Token #{values * comma}"
+      builder.insert(0, Faraday::Request::TokenAuthentication, token, options)
     end
 
     def in_parallel?
