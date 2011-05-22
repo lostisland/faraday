@@ -8,7 +8,9 @@ module Faraday
     end
 
     def call(env)
-      env[:request_headers]['Authorization'] = @header_value
+      unless env[:request_headers]['Authorization']
+        env[:request_headers]['Authorization'] = @header_value
+      end
       @app.call(env)
     end
   end
