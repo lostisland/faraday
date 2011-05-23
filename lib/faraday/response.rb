@@ -14,7 +14,7 @@ module Faraday
       # Calls the `parse` method if defined
       def on_complete(env)
         if respond_to? :parse
-          env[:body] = parse(env[:body])
+          env[:body] = parse(env[:body]) unless [204,304].index env[:status]
         end
       end
     end
