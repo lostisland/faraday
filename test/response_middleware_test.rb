@@ -45,3 +45,30 @@ class ResponseMiddlewareTest < Faraday::TestCase
     assert_equal '<BODY></BODY>', @conn.get('ok').body
   end
 end
+
+class ResponseNoBodyMiddleWareTest < Faraday::TestCase
+  def setup
+    @conn = Faraday.new do |b|
+      b.response :raise_error
+      b.adapter :test do |stub|
+        stub.get('not modified') { [304, nil, nil] }
+        stub.get('no content') { [204, nil, nil] }
+      end
+    end
+    @conn.builder.insert(0, NotCalled)
+  end
+
+  class NotCalled < Faraday::Response::Middleware
+    def parse(body)
+      raise "this should not be called"
+    end
+  end
+
+  def test_204
+    assert_equal nil, @conn.get('no content').body
+  end
+
+  def test_304
+    assert_equal nil, @conn.get('not modified').body
+  end
+end
