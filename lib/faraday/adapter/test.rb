@@ -17,6 +17,9 @@ module Faraday
       def self.loaded?() false end
 
       class Stubs
+        class NotFound < StandardError
+        end
+
         def initialize
           # {:get => [Stub, Stub]}
           @stack, @consumed = {}, {}
@@ -84,9 +87,29 @@ module Faraday
         end
       end
 
-      class Stub < Struct.new(:path, :body, :block)
-        def matches?(request_path, request_body)
-          request_path == path && (body.to_s.size.zero? || request_body == body)
+      class Stub < Struct.new(:path, :params, :body, :block)
+        def initialize(full, body, block)
+          path, query = full.split('?')
+          params = query ?
+            Rack::Utils.parse_nested_query(query) :
+            {}
+          super path, params, body, block
+        end
+
+        def matches?(request_uri, request_body)
+          request_path, request_query = request_uri.split('?')
+          request_params = request_query ?
+            Rack::Utils.parse_nested_query(request_query) :
+            {}
+          request_path == path &&
+            params_match?(request_params) &&
+            (body.to_s.size.zero? || request_body == body)
+        end
+
+        def params_match?(request_params)
+          params.keys.all? do |key|
+            request_params[key] == params[key]
+          end
         end
 
         def to_s
@@ -109,10 +132,13 @@ module Faraday
         normalized_path = Faraday::Utils.normalize_path(env[:url])
 
         if stub = stubs.match(env[:method], normalized_path, env[:body])
+          env[:params] = (query = env[:url].query) ?
+            Rack::Utils.parse_nested_query(query)  :
+            {}
           status, headers, body = stub.block.call(env)
           save_response(env, status, body, headers)
         else
-          raise "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"
+          raise Stubs::NotFound, "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"
         end
         @app.call(env)
       end
