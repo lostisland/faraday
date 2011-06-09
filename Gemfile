@@ -19,7 +19,7 @@ group :test do
   gem 'typhoeus', '~> 0.2'
   gem 'webmock', '~> 1.6'
   # ActiveSupport::JSON will be used in ruby 1.8 and Yajl in 1.9; this is to test against both adapters
-  gem 'activesupport', '~> 3.0', :require => nil, :platforms => [:ruby_18, :jruby]
+  gem 'activesupport', '~> 2.3', :require => nil, :platforms => [:ruby_18, :jruby]
   gem 'yajl-ruby', '~> 0.8', :require => 'yajl', :platforms => :ruby_19
 end
 
