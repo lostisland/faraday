@@ -15,15 +15,15 @@ module Faraday
 
         http = net_http_class(env).new(url.host, url.inferred_port)
 
-        if http.use_ssl = (url.scheme == 'https' && env[:ssl])
-          ssl = env[:ssl]
+        if http.use_ssl = (url.scheme == 'https' && (ssl = env[:ssl]) && true)
           http.verify_mode = ssl[:verify_mode] || ssl.fetch(:verify, true) ?
                                OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
-          http.cert        = ssl[:client_cert] if ssl[:client_cert]
-          http.key         = ssl[:client_key]  if ssl[:client_key]
-          http.ca_file     = ssl[:ca_file]     if ssl[:ca_file]
-          http.ca_path     = ssl[:ca_path]     if ssl[:ca_path]
-          http.cert_store  = ssl[:cert_store]  if ssl[:cert_store]
+          http.cert         = ssl[:client_cert]  if ssl[:client_cert]
+          http.key          = ssl[:client_key]   if ssl[:client_key]
+          http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
+          http.ca_path      = ssl[:ca_path]      if ssl[:ca_path]
+          http.cert_store   = ssl[:cert_store]   if ssl[:cert_store]
+          http.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
         end
 
         http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
