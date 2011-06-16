@@ -18,6 +18,18 @@ module Faraday
       original_to_env(connection).merge(:sign_with => self.sign_with)
     end
 
+    # Sign your request using AuthHMAC.
+    #
+    #   @connection.get('http://localhost/') do |req|
+    #     req.sign! 'access_id', 'secret'
+    #     req.body = 'abc'
+    #   end
+    #
+    # This adds the Authorization, Content-MD5, and Date headers.
+    #
+    # This middleware can be added and nothing will happen unless the `sign!`
+    # method is called (as in the example above).
+    #
     class AuthHMAC < Faraday::Middleware
       AUTH_HEADER = "Authorization".freeze
       MD5_HEADER  = "Content-MD5".freeze
