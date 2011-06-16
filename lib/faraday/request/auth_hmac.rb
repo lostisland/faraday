@@ -32,7 +32,6 @@ module Faraday
     #
     class AuthHMAC < Faraday::Middleware
       AUTH_HEADER = "Authorization".freeze
-      MD5_HEADER  = "Content-MD5".freeze
 
       # Modified CanonicalString to know how to pull from the Faraday-specific
       # env hash.
@@ -71,9 +70,9 @@ module Faraday
       def sign!(env, sign_with)
         self.auth.sign!(env, sign_with)
 
-        # AuthHMAC doesn't set the headers in the `request_headers` hash.
-        env[:request_headers][AUTH_HEADER]  = env.delete(AUTH_HEADER)
-        env[:request_headers][MD5_HEADER]   = env.delete(MD5_HEADER)
+        # AuthHMAC doesn't set the Authorization header in the
+        # `request_headers` hash.
+        env[:request_headers][AUTH_HEADER] = env.delete(AUTH_HEADER)
       end
 
       def call(env)

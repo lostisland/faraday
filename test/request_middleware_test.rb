@@ -114,8 +114,17 @@ class AuthHMACMiddlewareTest < Faraday::TestCase
     klass.keys = {@access_id => @secret}
 
     call(@env)
-    assert_not_nil @env[:request_headers]['Authorization']
     assert signed?(@env, @access_id, @secret), "should be signed"
+  end
+
+  def test_a_signed_request_includes_appropriate_headers
+    @request.sign! @access_id, @secret
+    generate_env!
+    call(@env)
+
+    %w(Authorization Content-MD5 Date).each do |header|
+      assert_not_nil @env[:request_headers][header], "should have #{header} header"
+    end
   end
 
   protected
