@@ -217,7 +217,9 @@ module Faraday
     def build_url(url, extra_params = nil)
       uri          = URI.parse(url.to_s)
       if @path_prefix && uri.path !~ /^\//
-        uri.path = "#{@path_prefix.size > 1 ? @path_prefix : nil}/#{uri.path}"
+        new_path = @path_prefix.size > 1 ? @path_prefix.dup : ''
+        new_path << "/#{uri.path}" unless uri.path.empty?
+        uri.path = new_path
       end
       uri.host   ||= @host
       uri.port   ||= @port
