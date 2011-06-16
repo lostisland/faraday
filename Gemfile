@@ -4,6 +4,8 @@ gem 'addressable', '~> 2.2.6'
 gem 'multipart-post', '~> 1.1.0'
 gem 'rack', ['>= 1.1.0', '<= 1.2.0']
 
+gem 'dnclabs-auth-hmac', '~> 1.1.1'
+
 group :development do
   gem 'sinatra', '~> 1.2'
 end
