@@ -12,8 +12,8 @@ module Faraday
         session = ::Patron::Session.new
 
         if req = env[:request]
-          session.timeout = req[:timeout] if req[:timeout]
-          session.connect_timeout = req[:open_timeout] if req[:open_timeout]
+          session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
+          session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
         end
 
         response = begin
