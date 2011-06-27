@@ -136,6 +136,23 @@ module Faraday
       (url.query ? "?#{sort_query_params(url.query)}" : "")
     end
 
+    # Recursive hash update
+    def deep_merge!(target, hash)
+      hash.each do |key, value|
+        if Hash === value and Hash === target[key]
+          target[key] = deep_merge(target[key], value)
+        else
+          target[key] = value
+        end
+      end
+      target
+    end
+
+    # Recursive hash merge
+    def deep_merge(source, hash)
+      deep_merge!(source.dup, hash)
+    end
+
     protected
 
     def sort_query_params(query)

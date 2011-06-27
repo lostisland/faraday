@@ -2,55 +2,79 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class EnvTest < Faraday::TestCase
   def setup
-    @conn = Faraday.new :url => 'http://sushi.com/api', :headers => {'Mime-Version' => '1.0'}
+    @conn = Faraday.new :url => 'http://sushi.com/api',
+      :headers => {'Mime-Version' => '1.0'},
+      :request => {:oauth => {:consumer_key => 'anonymous'}}
+
     @conn.options[:timeout]      = 3
     @conn.options[:open_timeout] = 5
     @conn.ssl[:verify]           = false
     @conn.proxy 'http://proxy.com'
-    @input = { :body => 'abc' }
-    @env = env_for @conn do |req|
-      req.url 'foo.json', 'a' => 1
-      req['Server'] = 'Faraday'
-      req.body = @input[:body]
-    end
   end
 
   def test_request_create_stores_method
-    assert_equal :get, @env[:method]
+    env = make_env(:get)
+    assert_equal :get, env[:method]
   end
 
   def test_request_create_stores_addressable_uri
-    assert_equal 'http://sushi.com/api/foo.json?a=1', @env[:url].to_s
+    env = make_env do |req|
+      req.url 'foo.json', 'a' => 1
+    end
+    assert_equal 'http://sushi.com/api/foo.json?a=1', env[:url].to_s
   end
 
   def test_request_create_stores_headers
-    headers = @env[:request_headers]
+    env = make_env do |req|
+      req['Server'] = 'Faraday'
+    end
+    headers = env[:request_headers]
     assert_equal '1.0', headers['mime-version']
     assert_equal 'Faraday', headers['server']
   end
 
   def test_request_create_stores_body
-    assert_equal @input[:body], @env[:body]
+    env = make_env do |req|
+      req.body = 'hi'
+    end
+    assert_equal 'hi', env[:body]
   end
 
-  def test_request_create_stores_timeout_options
-    assert_equal 3, @env[:request][:timeout]
-    assert_equal 5, @env[:request][:open_timeout]
+  def test_global_request_options
+    env = make_env
+    assert_equal 3, env[:request][:timeout]
+    assert_equal 5, env[:request][:open_timeout]
+  end
+
+  def test_per_request_options
+    env = make_env do |req|
+      req.options[:timeout] = 10
+      req.options[:custom] = true
+      req.options[:oauth] = {:consumer_secret => 'xyz'}
+    end
+    assert_equal 10, env[:request][:timeout]
+    assert_equal 5, env[:request][:open_timeout]
+    assert_equal true, env[:request][:custom]
+
+    oauth_expected = {:consumer_secret => 'xyz', :consumer_key => 'anonymous'}
+    assert_equal oauth_expected, env[:request][:oauth]
   end
 
   def test_request_create_stores_ssl_options
-    assert_equal false, @env[:ssl][:verify]
+    env = make_env
+    assert_equal false, env[:ssl][:verify]
   end
 
   def test_request_create_stores_proxy_options
-    assert_equal 'proxy.com', @env[:request][:proxy][:uri].host
+    env = make_env
+    assert_equal 'proxy.com', env[:request][:proxy][:uri].host
   end
 
-  def env_for(connection)
-    env_setup = Faraday::Request.create(:get) do |req|
-      yield req
-    end
-    env_setup.to_env(connection)
+  private
+
+  def make_env(method = :get, connection = @conn, &block)
+    request = Faraday::Request.create(method, &block)
+    request.to_env(connection)
   end
 end
 

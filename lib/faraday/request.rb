@@ -9,7 +9,7 @@ module Faraday
   #     req.body = 'abc'
   #   end
   #
-  class Request < Struct.new(:path, :params, :headers, :body)
+  class Request < Struct.new(:path, :params, :headers, :body, :options)
     extend AutoloadHelper
 
     autoload_all 'faraday/request',
@@ -32,8 +32,9 @@ module Faraday
 
     def initialize(request_method)
       @method = request_method
-      self.params = {}
+      self.params  = {}
       self.headers = {}
+      self.options = {}
     end
 
     def url(path, params = {})
@@ -68,13 +69,15 @@ module Faraday
     def to_env(connection)
       env_params  = connection.params.merge(params)
       env_headers = connection.headers.merge(headers)
+      request_options = Utils.deep_merge(connection.options, options)
+      Utils.deep_merge!(request_options, :proxy => connection.proxy)
 
       { :method           => method,
         :body             => body,
         :url              => connection.build_url(path, env_params),
         :request_headers  => env_headers,
         :parallel_manager => connection.parallel_manager,
-        :request          => connection.options.merge(:proxy => connection.proxy),
+        :request          => request_options,
         :ssl              => connection.ssl}
     end
   end
