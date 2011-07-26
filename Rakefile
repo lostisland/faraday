@@ -53,10 +53,17 @@ Rake::TestTask.new(:test) do |test|
 end
 
 TEST_SERVER = 'http://faradaylive.heroku.com'
+LOCAL_TEST_SERVER = 'http://localhost:4567/'
 
 desc "Run tests including live tests against #{TEST_SERVER}"
 task :"test:live" do
   ENV['LIVE'] = TEST_SERVER
+  Rake::Task[:test].invoke
+end
+
+desc "Run tests including live tests against #{LOCAL_TEST_SERVER}"
+task :"test:local" do
+  ENV['LIVE'] = LOCAL_TEST_SERVER
   Rake::Task[:test].invoke
 end
 
