@@ -42,7 +42,7 @@ module Faraday
         # Main `EM::Synchrony::Multi` performer.
         def perform
           multi = ::EM::Synchrony::Multi.new
-          @queue.each do |item|
+          queue.each do |item|
             method = "a#{item[:method]}".to_sym
 
             req = item[:request].send(method, *item[:args])
