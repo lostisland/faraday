@@ -42,6 +42,7 @@ module Faraday
         # Main `EM::Synchrony::Multi` performer.
         def perform
           multi = ::EM::Synchrony::Multi.new
+
           queue.each do |item|
             method = "a#{item[:method]}".to_sym
 
@@ -51,6 +52,11 @@ module Faraday
             req_name = "req_#{multi.requests.size}".to_sym
             multi.add(req_name, req)
           end
+
+          # Clear the queue, so parallel manager objects can be reused.
+          @queue = []
+
+          # Block fiber until all requests have returned.
           multi.perform
         end
 
