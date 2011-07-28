@@ -237,7 +237,7 @@ module Faraday
     end
 
     def dup
-      self.class.new(build_url(''), :headers => headers.dup, :params => params.dup, :builder => builder.dup)
+      self.class.new(build_url(''), :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
     end
 
     def proxy_arg_to_uri(arg)

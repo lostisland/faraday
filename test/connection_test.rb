@@ -238,15 +238,16 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_dups_connection_object
-    conn = Faraday::Connection.new 'http://sushi.com/foo' do |b|
+    conn = Faraday::Connection.new 'http://sushi.com/foo', :ssl => { :verify => :none } do |b|
       b.adapter :net_http
     end
     conn.headers['content-type'] = 'text/plain'
     conn.params['a'] = '1'
 
     duped = conn.dup
+
     assert_equal conn.build_url(''), duped.build_url('')
-    [:headers, :params, :builder].each do |attr|
+    [:headers, :params, :builder, :ssl].each do |attr|
       assert_equal     conn.send(attr),           duped.send(attr)
       assert_not_equal conn.send(attr).object_id, duped.send(attr).object_id
     end
