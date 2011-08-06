@@ -170,6 +170,7 @@ implementations:
 * Ruby 1.8.7
 * Ruby 1.9.1
 * Ruby 1.9.2
+* [Rubinius](http://rubini.us)
 * [Ruby Enterprise Edition](http://www.rubyenterpriseedition.com/)
 
 If something doesn't work on one of these interpreters, it should be considered
