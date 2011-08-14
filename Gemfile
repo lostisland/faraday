@@ -17,6 +17,7 @@ group :test do
   gem 'rake', '~> 0.8'
   gem 'test-unit', '~> 2.3'
   gem 'typhoeus', '~> 0.2'
+  gem 'jruby-httpclient', :git => 'git://github.com/aesterline/jruby-httpclient.git', :require => false
   gem 'webmock', '~> 1.6'
   # ActiveSupport::JSON will be used in ruby 1.8 and Yajl in 1.9; this is to test against both adapters
   gem 'activesupport', '~> 2.3', :require => nil, :platforms => [:ruby_18, :jruby]
@@ -26,4 +27,5 @@ end
 platforms :jruby do
   gem 'jruby-openssl', '~> 0.7'
   gem 'ffi-ncurses', '~> 0.3'
+  gem 'jruby-httpclient', :git => 'git://github.com/aesterline/jruby-httpclient.git', :require => false
 end
