@@ -6,19 +6,28 @@ module Faraday
       def call(env)
         super
         
-        # Remove any non-parameter keys
-        method = env.delete(:method) || :get
-        req    = env.delete(:request)
-        url    = env.delete(:url).to_s
-        client_opts = env.delete(:client_options) || {}
-
-        http = HTTP::Client.new client_opts.merge(:default_host => url)
+        req  = env[:request]
+        args = [ env[:url] ]
+        env[:client_options] ||= {}
+        
+        # The Java client sets this.  Setting it twice generates an error
+        env[:request_headers].delete('Content-Length')
+        
+        http = HTTP::Client.new env[:client_options].merge(:default_host => env[:url])
         http.timeout_in_seconds = req[:timeout]    if req[:timeout]
         http.default_proxy      = req[:proxy].to_s if req[:proxy]
         http.connection_timeout = req[:open_timeout] * 1000 if req[:open_timeout]
         
-        request = HTTP.const_get(method.to_s.capitalize).new(url, env)
+        # TODO: support streaming requests
+        env[:body] = env[:body].read if env[:body].respond_to? :read
+        
+        request = HTTP.const_get(env[:method].to_s.capitalize).new(*args)
+        
+        # For some reason Apache HTTP-Client doesn't support a
+        #   body in an OPTIONS request and doesn't support PATCH at all
+        request.body = env[:body] if [:post, :put].include?(env[:method])
         request.add_headers env.delete(:request_headers)
+        
         begin
           http_response = http.execute request
         rescue NativeException => exception
@@ -29,11 +38,7 @@ module Faraday
           end
         end
 
-        save_response(env, http_response.status_code, http_response.body) do |response_headers|
-          http_response.headers.each do |key, value|
-            response_headers[key] = value
-          end
-        end
+        save_response(env, http_response.status_code, http_response.body, http_response.headers.to_hash)
 
         @app.call env
       end
