@@ -32,12 +32,12 @@ Gem::Specification.new do |s|
   ## require 'NAME.rb' or'/lib/NAME/file.rb' can be as require 'NAME/file.rb'
   s.require_paths = %w[lib]
 
+  s.add_dependency 'addressable', '~> 2.2.6'
+  s.add_dependency 'multipart-post', '~> 1.1.0'
+  s.add_dependency 'rack', ['>= 1.1.0', '< 2']
   s.add_development_dependency 'rake', '~> 0.9'
   s.add_development_dependency 'test-unit', '~> 2.3'
-  s.add_development_dependency 'webmock', '~> 1.6'
-  s.add_runtime_dependency 'addressable', '~> 2.2.6'
-  s.add_runtime_dependency 'multipart-post', '~> 1.1.0'
-  s.add_runtime_dependency 'rack', ['>= 1.1.0', '< 2']
+  s.add_development_dependency 'webmock', '~> 1.7'
 
   ## Leave this section as-is. It will be automatically generated from the
   ## contents of your Git repository via the gemspec task. DO NOT REMOVE
