@@ -22,7 +22,7 @@ group :test do
   gem 'activesupport', '~> 2.3', :require => nil, :platforms => [:ruby_18, :jruby]
   gem 'yajl-ruby', '~> 0.8', :require => 'yajl', :platforms => :ruby_19
   # Once these changes get merged I'll set this to the aesterline's repo
-  gem 'jruby-httpclient', :git => 'git://github.com/spiegela/jruby-httpclient.git', :ref => '4fa0785', :require => false, :platforms => :jruby
+  gem 'jruby-httpclient', :git => 'https://github.com/aesterline/jruby-httpclient.git', :ref => 'ebb9b6e', :require => false, :platforms => :jruby
 end
 
 platforms :jruby do
