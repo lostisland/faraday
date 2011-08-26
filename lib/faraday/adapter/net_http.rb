@@ -17,8 +17,18 @@ module Faraday
 
         if http.use_ssl = (url.scheme == 'https' && (ssl = env[:ssl]) && true)
           http.verify_mode = ssl[:verify_mode] || begin
-            ssl.fetch(:verify, true) ? OpenSSL::SSL::VERIFY_PEER : OpenSSL::SSL::VERIFY_NONE
+            if ssl.fetch(:verify, true) 
+              OpenSSL::SSL::VERIFY_PEER
+              # Use the default cert store by default, i.e. system ca certs
+              store = OpenSSL::X509::Store.new
+              store.set_default_paths
+              http.cert_store = store
+              OpenSSL::SSL::VERIFY_PEER
+            else
+              OpenSSL::SSL::VERIFY_NONE
+            end
           end
+
           http.cert         = ssl[:client_cert]  if ssl[:client_cert]
           http.key          = ssl[:client_key]   if ssl[:client_key]
           http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
