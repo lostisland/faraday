@@ -10,6 +10,10 @@ module Faraday
       Faraday::Connection.new(url, options, &block)
     end
 
+    def artifice
+      @artifice ||= Artifice.new
+    end
+
   private
     def method_missing(name, *args, &block)
       default_connection.send(name, *args, &block)
@@ -61,7 +65,8 @@ module Faraday
     :Response        => 'response',
     :CompositeReadIO => 'upload_io',
     :UploadIO        => 'upload_io',
-    :Parts           => 'upload_io'
+    :Parts           => 'upload_io',
+    :Artifice        => 'artifice'
 end
 
 require 'faraday/utils'
