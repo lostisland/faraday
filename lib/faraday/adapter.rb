@@ -11,7 +11,7 @@ module Faraday
       :EMSynchrony    => 'em_synchrony',
       :Patron         => 'patron',
       :Excon          => 'excon',
-      :HTTPClient     => 'http_client',
+      :ApacheClient   => 'apache_client',
       :Test           => 'test'
 
     register_lookup_modules \
@@ -22,7 +22,7 @@ module Faraday
       :patron          => :Patron,
       :em_synchrony    => :EMSynchrony,
       :excon           => :Excon,
-      :http_client     => :HTTPClient
+      :apache_client   => :ApacheClient
 
     def call(env)
       if !env[:body] and Connection::METHODS_WITH_BODIES.include? env[:method]

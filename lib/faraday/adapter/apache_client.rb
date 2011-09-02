@@ -2,7 +2,7 @@ require 'http_client'
 
 module Faraday
   class Adapter
-    class HTTPClient < Faraday::Adapter
+    class ApacheClient < Faraday::Adapter
       def call(env)
         super
         

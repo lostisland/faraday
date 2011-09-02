@@ -96,7 +96,7 @@ else
 
         # https://github.com/toland/patron/issues/34
         # PATCH Method not supported by Apache-HTTPClient yet
-        unless %w[Faraday::Adapter::Patron Faraday::Adapter::EMSynchrony Faraday::Adapter::HTTPClient].include? adapter.to_s
+        unless %w[Faraday::Adapter::Patron Faraday::Adapter::EMSynchrony Faraday::Adapter::ApacheClient].include? adapter.to_s
           define_method "test_#{adapter}_PATCH_send_url_encoded_params" do
             resp = create_connection(adapter).patch('echo_name', 'name' => 'zack')
             assert_equal %("zack"), resp.body

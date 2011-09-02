@@ -1,10 +1,10 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'helper'))
 
 module Adapters
-  class HTTPClientTest < Faraday::TestCase
+  class ApacheClientTest < Faraday::TestCase
     def setup
       @connection = Faraday.new('http://disney.com') do |b|
-        b.adapter :http_client
+        b.adapter :apache_http_client
       end
     end
 
