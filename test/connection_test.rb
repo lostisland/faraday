@@ -1,6 +1,15 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class TestConnection < Faraday::TestCase
+  def setup
+    @tmp_http_proxy = ENV['http_proxy']
+    ENV['http_proxy'] = nil 
+  end
+
+  def teardown
+    ENV['http_proxy'] = @tmp_http_proxy
+  end
+
   def test_initialize_parses_host_out_of_given_url
     conn = Faraday::Connection.new "http://sushi.com"
     assert_equal 'sushi.com', conn.host
@@ -197,6 +206,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_string
+    ENV['http_proxy'] = "http://duncan.proxy.com:80"
     conn = Faraday::Connection.new
     conn.proxy 'http://proxy.com'
     assert_equal 'proxy.com', conn.proxy[:uri].host
@@ -204,6 +214,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_uri
+    ENV['http_proxy'] = "http://duncan.proxy.com:80"
     conn = Faraday::Connection.new
     conn.proxy Addressable::URI.parse('http://proxy.com')
     assert_equal 'proxy.com', conn.proxy[:uri].host
@@ -211,6 +222,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_hash_with_string_uri
+    ENV['http_proxy'] = "http://duncan.proxy.com:80"
     conn = Faraday::Connection.new
     conn.proxy :uri => 'http://proxy.com', :user => 'rick'
     assert_equal 'proxy.com', conn.proxy[:uri].host
@@ -218,10 +230,17 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_hash
+    ENV['http_proxy'] = "http://duncan.proxy.com:80"
     conn = Faraday::Connection.new
     conn.proxy :uri => Addressable::URI.parse('http://proxy.com'), :user => 'rick'
     assert_equal 'proxy.com', conn.proxy[:uri].host
     assert_equal 'rick',      conn.proxy[:user]
+  end
+
+  def test_proxy_accepts_http_env
+    ENV['http_proxy'] = "http://duncan.proxy.com:80"
+    conn = Faraday::Connection.new
+    assert_equal 'duncan.proxy.com', conn.proxy[:uri].host
   end
 
   def test_proxy_requires_uri
