@@ -2,9 +2,6 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class EnvTest < Faraday::TestCase
   def setup
-    @tmp_http_proxy = ENV['http_proxy']
-    ENV['http_proxy'] = "http://duncan.proxy.com:80"
-
     @conn = Faraday.new :url => 'http://sushi.com/api',
       :headers => {'Mime-Version' => '1.0'},
       :request => {:oauth => {:consumer_key => 'anonymous'}}
@@ -13,10 +10,6 @@ class EnvTest < Faraday::TestCase
     @conn.options[:open_timeout] = 5
     @conn.ssl[:verify]           = false
     @conn.proxy 'http://proxy.com'
-  end
-
-  def teardown
-    ENV['http_proxy'] = @tmp_http_proxy
   end
 
   def test_request_create_stores_method

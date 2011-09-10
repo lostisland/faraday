@@ -34,8 +34,7 @@ module Faraday
 
       self.url_prefix = url if url
 
-      options[:proxy] = ENV['http_proxy'] if options[:proxy].nil?
-      proxy(options[:proxy])
+      proxy(options.fetch(:proxy) { ENV['http_proxy'] })
 
       @params.update options[:params]   if options[:params]
       @headers.update options[:headers] if options[:headers]
