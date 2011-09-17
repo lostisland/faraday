@@ -6,8 +6,10 @@ module Faraday
         require 'fiber'
       end
 
+      ::Fiber = Rubinius::Fiber if RUBY_DESCRIPTION =~ /rubinius/ rescue nil
+
       def call(env)
-        super
+        super        
         request = EventMachine::HttpRequest.new(URI::parse(env[:url].to_s))
         options = {:head => env[:request_headers]}
         options[:ssl] = env[:ssl] if env[:ssl]
@@ -40,6 +42,7 @@ module Faraday
 
         client = nil
         block = lambda { request.send env[:method].to_s.downcase.to_sym, options }
+
         if !EM.reactor_running?
           EM.run {
             Fiber.new do
