@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   ## the sub! line in the Rakefile
   s.name              = 'faraday'
   s.version           = '0.7.4'
-  s.date              = '2011-07-08'
+  s.date              = '2011-09-17'
   s.rubyforge_project = 'faraday'
 
   ## Make sure your summary is short. The description may be as long
