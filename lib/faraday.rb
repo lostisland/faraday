@@ -86,3 +86,5 @@ class Object
     self
   end unless Object.respond_to?(:tap)
 end
+
+Fiber = Rubinius::Fiber if RUBY_DESCRIPTION =~ /rubinius/ rescue nil
