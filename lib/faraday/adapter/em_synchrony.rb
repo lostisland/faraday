@@ -49,7 +49,7 @@ module Faraday
         http_method = env[:method].to_s.downcase.to_sym
 
         # Queue requests for parallel execution.
-        if !!env[:parallel_manager]
+        if env[:parallel_manager]
           env[:parallel_manager].add(request, http_method, options) do |resp|
             save_response(env, resp.response_header.status, resp.response) do |resp_headers|
               resp.response_header.each do |name, value|
