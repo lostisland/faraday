@@ -6,15 +6,23 @@ module Faraday
       def call(env)
         if !EM.reactor_running?
           res = nil
-          EM.run_block do
-            Fiber.new { res = call env }.resume
+          EM.synchrony do
+            begin
+              res = call(env)
+            ensure
+              EM.stop
+            end
           end
           return res
         end
         
-        save_response env, 200, "Hello World!" do |headers|
-          headers["Content-Length"] = "12"
-          headers["Server"] = "hatetepe/0.2.2"
+        args = env.values_at(:method, :url, :request_headers, :body)
+        response = ::Hatetepe::Client.request(*args)
+        
+        save_response env, response.status, response.body.read do |headers|
+          response.headers.each do |k, v|
+            headers[k] = v
+          end
         end
         
         @app.call env
