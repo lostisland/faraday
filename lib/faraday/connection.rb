@@ -177,7 +177,9 @@ module Faraday
       self.path_prefix = uri.path
 
       @params.merge_query(uri.query)
-      basic_auth(uri.user, uri.password) if uri.user && uri.password
+      if uri.user && uri.password
+        basic_auth(CGI.unescape(uri.user), CGI.unescape(uri.password))
+      end
 
       uri
     end
