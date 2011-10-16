@@ -42,37 +42,6 @@ class RequestMiddlewareTest < Faraday::TestCase
     assert_equal '{"a":"b"}', response.body
   end
 
-  def test_json_fails_with_useful_message_when_no_json_adapter_available
-    without_json_adapter do
-      expected_msg = "No JSON adapter available. Install either activesupport or yajl-ruby."
-      # assert_raise doesn't work to check the message (at least on 1.8.7)
-      begin
-        @conn.post('/echo', { :fruit => %w[apples oranges] }, 'content-type' => 'application/json')
-        fail "Exception not raised"
-      rescue Faraday::Error::MissingDependency => e
-        assert_equal expected_msg, e.message
-      end
-    end
-  end
-
-  def test_url_encoded_does_not_fail_when_no_json_adapter_available
-    without_json_adapter do
-      assert_nothing_raised {
-        @conn.post('/echo', { :fruit => %w[apples oranges] })
-      }
-    end
-  end
-
-  def without_json_adapter
-    original_adapter = Faraday::Request::JSON.adapter
-    Faraday::Request::JSON.adapter = nil
-    begin
-      yield
-    ensure
-      Faraday::Request::JSON.adapter = original_adapter
-    end
-  end
-
   def test_url_encoded_no_header
     response = @conn.post('/echo', { :fruit => %w[apples oranges] })
     assert_equal 'application/x-www-form-urlencoded', response.headers['Content-Type']
