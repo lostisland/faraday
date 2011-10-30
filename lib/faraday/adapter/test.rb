@@ -59,8 +59,16 @@ module Faraday
           new_stub(:put, path, body, &block)
         end
 
+        def patch(path, body=nil, &block)
+          new_stub(:patch, path, body, &block)
+        end
+
         def delete(path, &block)
           new_stub(:delete, path, &block)
+        end
+
+        def options(path, &block)
+          new_stub(:options, path, &block)
         end
 
         # Raises an error if any of the stubbed calls have not been made.
