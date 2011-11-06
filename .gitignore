@@ -29,3 +29,4 @@ log
 Gemfile.lock
 
 ## PROJECT::SPECIFIC
+.rbx
