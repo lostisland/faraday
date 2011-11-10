@@ -32,10 +32,11 @@ module Faraday
             end
           end
 
-          if req[:timeout]
-            options[:connect_timeout] = opts[:inactivity_timeout] = req[:timeout]
+          # only one timeout currently supported by em http request
+          if req[:timeout] or req[:open_timeout]
+            options[:timeout] = [req[:timeout] || 0, req[:open_timeout] || 0].max
           end
-          options[:inactivity_timeout] = req[:open_timeout]  if req[:open_timeout]
+        end
 
         client = nil
         block = lambda { request.send env[:method].to_s.downcase.to_sym, options }
