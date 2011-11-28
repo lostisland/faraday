@@ -112,45 +112,45 @@ class ResponseTest < Faraday::TestCase
     }
     @response = Faraday::Response.new @env
   end
-  
+
   def test_finished
     assert @response.finished?
   end
-  
+
   def test_error_on_finish
     assert_raises RuntimeError do
       @response.finish({})
     end
   end
-  
+
   def test_not_success
     assert !@response.success?
   end
-  
+
   def test_status
     assert_equal 404, @response.status
   end
-  
+
   def test_body
     assert_equal 'yikes', @response.body
   end
-  
+
   def test_headers
     assert_equal 'text/plain', @response.headers['Content-Type']
     assert_equal 'text/plain', @response['content-type']
   end
-  
+
   def test_apply_request
     @response.apply_request :body => 'a=b', :method => :post
     assert_equal 'yikes', @response.body
     assert_equal :post, @response.env[:method]
   end
-  
+
   def test_marshal
     @response = Faraday::Response.new
     @response.on_complete { }
     @response.finish @env.merge(:custom => 'moo')
-    
+
     loaded = Marshal.load Marshal.dump(@response)
     assert_nil loaded.env[:custom]
     assert_equal %w[body response_headers status], loaded.env.keys.map { |k| k.to_s }.sort

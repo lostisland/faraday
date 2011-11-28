@@ -185,7 +185,7 @@ else
             b.use adapter
           end
         end
-        
+
         Faraday::Connection.new(LIVE_SERVER, &builder_block).tap do |conn|
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
           adapter_handler = conn.builder.handlers.last
