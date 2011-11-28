@@ -13,10 +13,10 @@ module Faraday
       end
       @app.call env
     end
-    
+
     def match_content_type(env)
       type = request_type(env)
-      
+
       if process_request?(env)
         env[:request_headers][CONTENT_TYPE] ||= self.class.mime_type
         yield env[:body] unless env[:body].respond_to?(:to_str)

@@ -30,16 +30,16 @@ module Faraday
         end
 
         env_req = env[:request]
-        
+
         if proxy = env_req[:proxy]
           req.proxy = "#{proxy[:uri].host}:#{proxy[:uri].port}"
-          
+
           if proxy[:username] && proxy[:password]
             req.proxy_username = proxy[:username]
             req.proxy_password = proxy[:password]
           end
         end
-        
+
         req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
         req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
 

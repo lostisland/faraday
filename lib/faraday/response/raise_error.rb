@@ -8,7 +8,7 @@ module Faraday
         raise Faraday::Error::ClientError, response_values(env)
       end
     end
-    
+
     def response_values(env)
       {:status => env[:status], :headers => env[:response_headers], :body => env[:body]}
     end
