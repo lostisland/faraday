@@ -19,7 +19,6 @@ module Faraday
           :method  => env[:method],
           :body    => env[:body],
           :headers => env[:request_headers],
-          :user_agent => env[:request_headers][:user_agent],
           :disable_ssl_peer_verification => (env[:ssl] && !env[:ssl].fetch(:verify, true))
 
         if ssl = env[:ssl]

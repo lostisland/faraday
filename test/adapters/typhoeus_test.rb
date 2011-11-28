@@ -10,10 +10,6 @@ module Adapters
 
     def test_handles_user_agent
       # default typhoeus agent
-      stub_request(:get, 'disney.com/hello').with(:headers => {'User-Agent'=>'Typhoeus - http://github.com/dbalatero/typhoeus/tree/master'}){ |request|
-        request.headers["User-Agent"] == 'Typhoeus - http://github.com/dbalatero/typhoeus/tree/master'
-      }
-      @connection.get('/hello')
       stub_request(:get, 'disney.com/world').with(:headers => {'User-Agent'=>'Faraday Agent'}){ |request|
         request.headers["User-Agent"] == 'Faraday Agent'
       }
