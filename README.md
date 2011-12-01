@@ -1,11 +1,7 @@
-faraday
-=======
-Modular HTTP client library using middleware heavily inspired by Rack.
+# faraday
+Modular HTTP client library that uses middleware. Heavily inspired by Rack.
 
-This mess is gonna get raw, like sushi. So, haters to the left.
-
-Usage
------
+## <a name="usage"></a>Usage
     conn = Faraday.new(:url => 'http://sushi.com') do |builder|
       builder.use Faraday::Request::UrlEncoded  # convert request params as "www-form-urlencoded"
       builder.use Faraday::Request::JSON        # encode request params as json
@@ -50,8 +46,7 @@ If you're ready to roll with just the bare minimum:
     # default stack (net/http), no extra middleware:
     response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 
-Advanced middleware usage
--------------------------
+## Advanced middleware usage
 The order in which middleware is stacked is important. Like with Rack, the first middleware on the list wraps all others, while the last middleware is the innermost one, so that's usually the adapter.
 
     conn = Faraday.new(:url => 'http://sushi.com') do |builder|
@@ -67,7 +62,7 @@ This request middleware setup affects POST/PUT requests in the following way:
 
 1. `Request::Multipart` checks for files in the payload, otherwise leaves everything untouched;
 2. `Request::UrlEncoded` encodes as "application/x-www-form-urlencoded" if not already encoded or of another type
-2. `Request::JSON` encodes as "application/json" if not already encoded or of another type
+3. `Request::JSON` encodes as "application/json" if not already encoded or of another type
 
 Because "UrlEncoded" is higher on the stack than JSON encoder, it will get to process the request first. Swapping them means giving the other priority. Specifying the "Content-Type" for the request is explicitly stating which middleware should process it.
 
@@ -84,8 +79,7 @@ Examples:
     # "Multipart" middleware detects files and encodes with "multipart/form-data":
     conn.put '/profile', payload
 
-Writing middleware
-------------------
+## Writing middleware
 Middleware are classes that respond to `call()`. They wrap the request/response cycle.
 
     def call(env)
@@ -111,8 +105,7 @@ The `env` is a hash with symbol keys that contains info about the request and, l
     :body   - the response body
     :response_headers
 
-Testing
--------
+## <a name="testing"></a>Testing
     # It's possible to define stubbed request outside a test adapter block.
     stubs = Faraday::Adapter::Test::Stubs.new do |stub|
       stub.get('/tamago') { [200, {}, 'egg'] }
@@ -144,34 +137,44 @@ Testing
     # it was called once during the course of the test.
     stubs.verify_stubbed_calls
 
-TODO
-----
+## <a name="todo"></a>TODO
 * support streaming requests/responses
 * better stubbing API
 * Support timeouts
 * Add curb, em-http, fast_http
 
-Note on Patches/Pull Requests
------------------------------
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+## <a name="ci"></a>Build Status
+[![Build Status](https://secure.travis-ci.org/technoweenie/faraday.png)][ci]
 
-Supported Rubies
-----------------
-This library aims to support and is [tested
-against](http://travis-ci.org/technoweenie/faraday) the following Ruby
+[ci]: http://travis-ci.org/technoweenie/faraday
+
+## <a name="dependencies"></a>Dependency Status
+[![Dependency Status](https://gemnasium.com/technoweenie/faraday.png)][gemnasium]
+
+[gemnasium]: https://gemnasium.com/technoweenie/faraday
+
+## <a name="pulls"></a>Note on Patches/Pull Requests
+1. Fork the project.
+2. Make your feature addition or bug fix.
+3. Add tests for it. This is important so I don't break it in a future version
+   unintentionally.
+4. Commit, do not mess with rakefile, version, or history. (if you want to have
+   your own version, that is fine but bump version in a commit by itself I can
+   ignore when I pull)
+5. Send me a pull request. Bonus points for topic branches.
+
+## <a name="versions"></a>Supported Ruby Versions
+This library aims to support and is [tested against][ci] the following Ruby
 implementations:
 
 * Ruby 1.8.7
-* Ruby 1.9.1
 * Ruby 1.9.2
-* [Rubinius](http://rubini.us)
-* [Ruby Enterprise Edition](http://www.rubyenterpriseedition.com/)
+* Ruby 1.9.3
+* [Rubinius][]
+* [Ruby Enterprise Edition][ree]
+
+[rubinius]: http://rubini.us/
+[ree]: http://www.rubyenterpriseedition.com/
 
 If something doesn't work on one of these interpreters, it should be considered
 a bug.
@@ -187,8 +190,7 @@ implementation, you will be personally responsible for providing patches in a
 timely fashion. If critical issues for a particular implementation exist at the
 time of a major release, support for that Ruby version may be dropped.
 
-Copyright
----------
-Copyright (c) 2009-2011 rick, hobson. See [LICENSE][license] for details.
+## <a name="copyright"></a>Copyright
+Copyright (c) 2009 rick olson, zack hobson. See [LICENSE][] for details.
 
 [license]: https://github.com/technoweenie/faraday/blob/master/LICENSE.md
