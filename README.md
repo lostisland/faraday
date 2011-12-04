@@ -143,10 +143,10 @@ The `env` is a hash with symbol keys that contains info about the request and, l
 * Support timeouts
 * Add curb, em-http, fast_http
 
-## <a name="ci"></a>Build Status
-[![Build Status](https://secure.travis-ci.org/technoweenie/faraday.png)][ci]
+## <a name="build"></a>Build Status
+[![Build Status](https://secure.travis-ci.org/technoweenie/faraday.png?branch=master)][travis]
 
-[ci]: http://travis-ci.org/technoweenie/faraday
+[travis]: http://travis-ci.org/technoweenie/faraday
 
 ## <a name="dependencies"></a>Dependency Status
 [![Dependency Status](https://gemnasium.com/technoweenie/faraday.png?travis)][gemnasium]
@@ -164,7 +164,7 @@ The `env` is a hash with symbol keys that contains info about the request and, l
 5. Send me a pull request. Bonus points for topic branches.
 
 ## <a name="versions"></a>Supported Ruby Versions
-This library aims to support and is [tested against][ci] the following Ruby
+This library aims to support and is [tested against][travis] the following Ruby
 implementations:
 
 * Ruby 1.8.7
