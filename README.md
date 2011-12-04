@@ -149,7 +149,7 @@ The `env` is a hash with symbol keys that contains info about the request and, l
 [ci]: http://travis-ci.org/technoweenie/faraday
 
 ## <a name="dependencies"></a>Dependency Status
-[![Dependency Status](https://gemnasium.com/technoweenie/faraday.png)][gemnasium]
+[![Dependency Status](https://gemnasium.com/technoweenie/faraday.png?travis)][gemnasium]
 
 [gemnasium]: https://gemnasium.com/technoweenie/faraday
 
