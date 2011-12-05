@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'test/unit'
 
 if ENV['LEFTRIGHT']
@@ -9,10 +8,6 @@ if ENV['LEFTRIGHT']
   end
 end
 
-unless $LOAD_PATH.include? 'lib'
-  $LOAD_PATH.unshift(File.dirname(__FILE__))
-  $LOAD_PATH.unshift(File.join($LOAD_PATH.first, '..', 'lib'))
-end
 require 'faraday'
 
 begin
