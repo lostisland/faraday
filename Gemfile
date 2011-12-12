@@ -1,4 +1,4 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 group :development do
   gem 'sinatra', '~> 1.2'
