@@ -22,7 +22,7 @@ module Faraday
     end
 
     def has_multipart?(body)
-      body.values.each do |val|
+      body.values.flatten.map { |v| v.respond_to?(:values) ? v.values : v }.flatten.each do |val|
         if val.respond_to?(:content_type)
           return true
         elsif val.respond_to?(:values)
