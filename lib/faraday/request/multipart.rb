@@ -21,12 +21,11 @@ module Faraday
       )
     end
 
-    def has_multipart?(body)
-      body.values.each do |val|
-        if val.respond_to?(:content_type)
-          return true
-        elsif val.respond_to?(:values)
-          return true if has_multipart?(val)
+    def has_multipart?(obj)
+      # string is an enum in 1.8, returning list of itself
+      if obj.respond_to?(:each) && !obj.is_a?(String)
+        (obj.respond_to?(:values) ? obj.values : obj).each do |val|
+          return true if (val.respond_to?(:content_type) || has_multipart?(val))
         end
       end
       false
