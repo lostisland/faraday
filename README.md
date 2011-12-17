@@ -1,5 +1,8 @@
-# faraday
+# faraday [![Build Status](https://secure.travis-ci.org/technoweenie/faraday.png?branch=master)][travis] [![Dependency Status](https://gemnasium.com/technoweenie/faraday.png?travis)][gemnasium]
 Modular HTTP client library that uses middleware. Heavily inspired by Rack.
+
+[travis]: http://travis-ci.org/technoweenie/faraday
+[gemnasium]: https://gemnasium.com/technoweenie/faraday
 
 ## <a name="usage"></a>Usage
     conn = Faraday.new(:url => 'http://sushi.com') do |builder|
@@ -142,16 +145,6 @@ The `env` is a hash with symbol keys that contains info about the request and, l
 * better stubbing API
 * Support timeouts
 * Add curb, em-http, fast_http
-
-## <a name="build"></a>Build Status
-[![Build Status](https://secure.travis-ci.org/technoweenie/faraday.png?branch=master)][travis]
-
-[travis]: http://travis-ci.org/technoweenie/faraday
-
-## <a name="dependencies"></a>Dependency Status
-[![Dependency Status](https://gemnasium.com/technoweenie/faraday.png?travis)][gemnasium]
-
-[gemnasium]: https://gemnasium.com/technoweenie/faraday
 
 ## <a name="pulls"></a>Note on Patches/Pull Requests
 1. Fork the project.
