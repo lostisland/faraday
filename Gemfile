@@ -11,7 +11,7 @@ group :test do
   gem 'em-synchrony', '~> 1.0', :require => ['em-synchrony', 'em-synchrony/em-http'], :platforms => :ruby_19
   gem 'excon', '~> 0.6'
   gem 'leftright', '~> 0.9', :require => false
-  gem 'typhoeus', '~> 0.2'
+  gem 'typhoeus', '~> 0.3'
   gem 'yajl-ruby', '~> 1.0', :require => 'yajl', :platforms => :ruby_19
 end
 
