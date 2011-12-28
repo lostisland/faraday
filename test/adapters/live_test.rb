@@ -173,9 +173,18 @@ else
             end
           end
         end
+
+        if %w[Faraday::Adapter::Patron Faraday::Adapter::NetHttp].include?(adapter.to_s)
+          define_method "test_patron_timeout" do
+            conn = create_connection(adapter, :request => {:timeout => 1, :read_timeout => 1})
+            assert_raise Faraday::Error::TimeoutError do
+              conn.get '/slow'
+            end
+          end
+        end
       end
 
-      def create_connection(adapter)
+      def create_connection(adapter, options = {})
         if adapter == :default
           builder_block = nil
         else
@@ -186,7 +195,7 @@ else
           end
         end
 
-        Faraday::Connection.new(LIVE_SERVER, &builder_block).tap do |conn|
+        Faraday::Connection.new(LIVE_SERVER, options, &builder_block).tap do |conn|
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
           adapter_handler = conn.builder.handlers.last
           conn.builder.insert_before adapter_handler, Faraday::Response::RaiseError
