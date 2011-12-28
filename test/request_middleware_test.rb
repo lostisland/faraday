@@ -113,4 +113,27 @@ class RequestMiddlewareTest < Faraday::TestCase
     end
     assert_equal [], regexes
   end
+  
+  def test_multipart_with_arrays
+    # assume params are out of order
+    regexes = [
+      /name\=\"a\"/,
+      /name=\"b\[\]\[c\]\"\; filename\=\"request_middleware_test\.rb\"/,
+      /name=\"b\[\]\[d\]\"/]
+
+    payload = {:a => 1, :b =>[{:c => Faraday::UploadIO.new(__FILE__, 'text/x-ruby'), :d => 2}]}
+    response = @conn.post('/echo', payload)
+
+    assert_kind_of Faraday::CompositeReadIO, response.body
+    assert_equal "multipart/form-data;boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
+      response.headers['Content-Type']
+
+    response.body.send(:ios).map{|io| io.read}.each do |io|
+      if re = regexes.detect { |r| io =~ r }
+        regexes.delete re
+      end
+    end
+    assert_equal [], regexes
+  end
+  
 end
