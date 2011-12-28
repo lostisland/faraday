@@ -5,61 +5,83 @@ Modular HTTP client library that uses middleware. Heavily inspired by Rack.
 [gemnasium]: https://gemnasium.com/technoweenie/faraday
 
 ## <a name="usage"></a>Usage
-    conn = Faraday.new(:url => 'http://sushi.com') do |builder|
-      builder.use Faraday::Request::UrlEncoded  # convert request params as "www-form-urlencoded"
-      builder.use Faraday::Request::JSON        # encode request params as json
-      builder.use Faraday::Response::Logger     # log the request to STDOUT
-      builder.use Faraday::Adapter::NetHttp     # make http requests with Net::HTTP
 
-      # or, use shortcuts:
-      builder.request  :url_encoded
-      builder.request  :json
-      builder.response :logger
-      builder.adapter  :net_http
-    end
+```ruby
+conn = Faraday.new(:url => 'http://sushi.com') do |builder|
+  builder.use Faraday::Request::UrlEncoded  # convert request params as "www-form-urlencoded"
+  builder.use Faraday::Request::JSON        # encode request params as json
+  builder.use Faraday::Response::Logger     # log the request to STDOUT
+  builder.use Faraday::Adapter::NetHttp     # make http requests with Net::HTTP
 
-    ## GET ##
+  # or, use shortcuts:
+  builder.request  :url_encoded
+  builder.request  :json
+  builder.response :logger
+  builder.adapter  :net_http
+end
 
-    response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
-    response.body
+## GET ##
 
-    conn.get '/nigiri', 'X-Awesome' => true     # custom request header
+response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
+response.body
 
-    conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
-      req.url '/search', :page => 2
-      req.params['limit'] = 100
-    end
+conn.get '/nigiri', 'X-Awesome' => true     # custom request header
 
-    ## POST ##
+conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
+  req.url '/search', :page => 2
+  req.params['limit'] = 100
+end
 
-    conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi.com/nigiri
+## POST ##
 
-    # post payload as JSON instead of "www-form-urlencoded" encoding:
-    conn.post '/nigiri', payload, 'Content-Type' => 'application/json'
+conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi.com/nigiri
 
-    # a more verbose way:
-    conn.post do |req|
-      req.url '/nigiri'
-      req.headers['Content-Type'] = 'application/json'
-      req.body = { :name => 'Unagi' }
-    end
+# post payload as JSON instead of "www-form-urlencoded" encoding:
+conn.post '/nigiri', payload, 'Content-Type' => 'application/json'
+
+# a more verbose way:
+conn.post do |req|
+  req.url '/nigiri'
+  req.headers['Content-Type'] = 'application/json'
+  req.body = { :name => 'Unagi' }
+end
+
+## Options ##
+
+conn.get do |req|
+  req.url '/search'
+  req.options = {
+    :timeout => 5,                    # open/read timeout Integer in seconds
+    :open_timeout => 2,               # read timeout Integer in seconds
+    :proxy => {
+      :uri => "http://example.org/",  # proxy server URI
+      :user => "me",                  # proxy server username
+      :password => "test123"          # proxy server password
+    }
+  }
+end
+```
 
 If you're ready to roll with just the bare minimum:
 
-    # default stack (net/http), no extra middleware:
-    response = Faraday.get 'http://sushi.com/nigiri/sake.json'
+```ruby
+# default stack (net/http), no extra middleware:
+response = Faraday.get 'http://sushi.com/nigiri/sake.json'
+```
 
 ## Advanced middleware usage
 The order in which middleware is stacked is important. Like with Rack, the first middleware on the list wraps all others, while the last middleware is the innermost one, so that's usually the adapter.
 
-    conn = Faraday.new(:url => 'http://sushi.com') do |builder|
-      # POST/PUT params encoders:
-      builder.request  :multipart
-      builder.request  :url_encoded
-      builder.request  :json
+```ruby
+conn = Faraday.new(:url => 'http://sushi.com') do |builder|
+  # POST/PUT params encoders:
+  builder.request  :multipart
+  builder.request  :url_encoded
+  builder.request  :json
 
-      builder.adapter  :net_http
-    end
+  builder.adapter  :net_http
+end
+```
 
 This request middleware setup affects POST/PUT requests in the following way:
 
@@ -71,79 +93,87 @@ Because "UrlEncoded" is higher on the stack than JSON encoder, it will get to pr
 
 Examples:
 
-    payload = { :name => 'Maguro' }
+```ruby
+payload = { :name => 'Maguro' }
 
-    # post payload as JSON instead of urlencoded:
-    conn.post '/nigiri', payload, 'Content-Type' => 'application/json'
+# post payload as JSON instead of urlencoded:
+conn.post '/nigiri', payload, 'Content-Type' => 'application/json'
 
-    # uploading a file:
-    payload = { :profile_pic => Faraday::UploadIO.new('avatar.jpg', 'image/jpeg') }
+# uploading a file:
+payload = { :profile_pic => Faraday::UploadIO.new('avatar.jpg', 'image/jpeg') }
 
-    # "Multipart" middleware detects files and encodes with "multipart/form-data":
-    conn.put '/profile', payload
+# "Multipart" middleware detects files and encodes with "multipart/form-data":
+conn.put '/profile', payload
+```
 
 ## Writing middleware
 Middleware are classes that respond to `call()`. They wrap the request/response cycle.
 
-    def call(env)
-      # do something with the request
+```ruby
+def call(env)
+  # do something with the request
 
-      @app.call(env).on_complete do
-        # do something with the response
-      end
-    end
+  @app.call(env).on_complete do
+    # do something with the response
+  end
+end
+```
 
 It's important to do all processing of the response only in the `on_complete` block. This enables middleware to work in parallel mode where requests are asynchronous.
 
 The `env` is a hash with symbol keys that contains info about the request and, later, response. Some keys are:
 
-    # request phase
-    :method - :get, :post, ...
-    :url    - URI for the current request; also contains GET parameters
-    :body   - POST parameters for :post/:put requests
-    :request_headers
+```
+# request phase
+:method - :get, :post, ...
+:url    - URI for the current request; also contains GET parameters
+:body   - POST parameters for :post/:put requests
+:request_headers
 
-    # response phase
-    :status - HTTP response status code, such as 200
-    :body   - the response body
-    :response_headers
+# response phase
+:status - HTTP response status code, such as 200
+:body   - the response body
+:response_headers
+```
 
 ## <a name="testing"></a>Testing
-    # It's possible to define stubbed request outside a test adapter block.
-    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
-      stub.get('/tamago') { [200, {}, 'egg'] }
-    end
 
-    # You can pass stubbed request to the test adapter or define them in a block
-    # or a combination of the two.
-    test = Faraday.new do |builder|
-      builder.adapter :test, stubs do |stub|
-        stub.get('/ebi') {[ 200, {}, 'shrimp' ]}
-      end
-    end
+```ruby
+# It's possible to define stubbed request outside a test adapter block.
+stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+  stub.get('/tamago') { [200, {}, 'egg'] }
+end
 
-    # It's also possible to stub additional requests after the connection has
-    # been initialized. This is useful for testing.
-    stubs.get('/uni') {[ 200, {}, 'urchin' ]}
+# You can pass stubbed request to the test adapter or define them in a block
+# or a combination of the two.
+test = Faraday.new do |builder|
+  builder.adapter :test, stubs do |stub|
+    stub.get('/ebi') {[ 200, {}, 'shrimp' ]}
+  end
+end
 
-    resp = test.get '/tamago'
-    resp.body # => 'egg'
-    resp = test.get '/ebi'
-    resp.body # => 'shrimp'
-    resp = test.get '/uni'
-    resp.body # => 'urchin'
-    resp = test.get '/else' #=> raises "no such stub" error
+# It's also possible to stub additional requests after the connection has
+# been initialized. This is useful for testing.
+stubs.get('/uni') {[ 200, {}, 'urchin' ]}
 
-    # If you like, you can treat your stubs as mocks by verifying that all of
-    # the stubbed calls were made. NOTE that this feature is still fairly
-    # experimental: It will not verify the order or count of any stub, only that
-    # it was called once during the course of the test.
-    stubs.verify_stubbed_calls
+resp = test.get '/tamago'
+resp.body # => 'egg'
+resp = test.get '/ebi'
+resp.body # => 'shrimp'
+resp = test.get '/uni'
+resp.body # => 'urchin'
+resp = test.get '/else' #=> raises "no such stub" error
+
+# If you like, you can treat your stubs as mocks by verifying that all of
+# the stubbed calls were made. NOTE that this feature is still fairly
+# experimental: It will not verify the order or count of any stub, only that
+# it was called once during the course of the test.
+stubs.verify_stubbed_calls
+```
 
 ## <a name="todo"></a>TODO
 * support streaming requests/responses
 * better stubbing API
-* Support timeouts
 * Add curb, em-http, fast_http
 
 ## <a name="pulls"></a>Note on Patches/Pull Requests

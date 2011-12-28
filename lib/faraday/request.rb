@@ -15,12 +15,16 @@ module Faraday
     autoload_all 'faraday/request',
       :JSON       => 'json',
       :UrlEncoded => 'url_encoded',
-      :Multipart  => 'multipart'
+      :Multipart  => 'multipart',
+      :Retry      => 'retry',
+      :Timeout    => 'timeout'
 
     register_lookup_modules \
       :json        => :JSON,
       :url_encoded => :UrlEncoded,
-      :multipart   => :Multipart
+      :multipart   => :Multipart,
+      :retry       => :Retry,
+      :timeout     => :Timeout
 
     attr_reader :method
 
