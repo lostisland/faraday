@@ -27,6 +27,8 @@ pkg/*
 doc
 log
 Gemfile.lock
+.rvmrc
+.rbenv*
 
 ## PROJECT::SPECIFIC
 .rbx
