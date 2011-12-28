@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'helper'))
+require File.expand_path("../../helper", __FILE__)
 
 if !Faraday::TestCase::LIVE_SERVER
   warn "warning: test server not specified; skipping live server tests"

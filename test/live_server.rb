@@ -41,5 +41,5 @@ delete '/delete_with_json' do
 end
 
 get '/multi' do
-  [200, { 'Set-Cookie' => %w[ one two ] }, '']
+  [200, { 'Set-Cookie' => 'one, two' }, '']
 end
