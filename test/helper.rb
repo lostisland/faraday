@@ -8,7 +8,7 @@ if ENV['LEFTRIGHT']
   end
 end
 
-require 'faraday'
+require File.expand_path('../../lib/faraday', __FILE__)
 
 begin
   require 'ruby-debug'

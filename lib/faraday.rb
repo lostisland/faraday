@@ -2,6 +2,7 @@ module Faraday
   VERSION = "0.7.5"
 
   class << self
+    attr_accessor :root_path, :lib_path
     attr_accessor :default_adapter
     attr_writer   :default_connection
 
@@ -10,12 +11,22 @@ module Faraday
       Faraday::Connection.new(url, options, &block)
     end
 
+    def require_libs(*libs)
+      libs.each do |lib|
+        require "#{lib_path}/#{lib}"
+      end
+    end
+
+    alias require_lib require_libs
+
   private
     def method_missing(name, *args, &block)
       default_connection.send(name, *args, &block)
     end
   end
 
+  self.root_path = File.expand_path "..", __FILE__
+  self.lib_path = File.expand_path "../faraday", __FILE__
   self.default_adapter = :net_http
 
   def self.default_connection
@@ -34,7 +45,7 @@ module Faraday
 
     def autoload_all(prefix, options)
       options.each do |const_name, path|
-        autoload const_name, File.join(prefix, path)
+        autoload const_name, File.join(Faraday.root_path, prefix, path)
       end
     end
 
@@ -54,7 +65,7 @@ module Faraday
 
   extend AutoloadHelper
 
-  autoload_all 'faraday',
+  autoload_all "faraday",
     :Middleware      => 'middleware',
     :Builder         => 'builder',
     :Request         => 'request',
@@ -62,12 +73,10 @@ module Faraday
     :CompositeReadIO => 'upload_io',
     :UploadIO        => 'upload_io',
     :Parts           => 'upload_io'
+
+  require_libs "utils", "connection", "adapter", "error"
 end
 
-require 'faraday/utils'
-require 'faraday/connection'
-require 'faraday/adapter'
-require 'faraday/error'
 
 # not pulling in active-support JUST for this method.
 class Object

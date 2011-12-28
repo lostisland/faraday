@@ -1,10 +1,8 @@
 require 'addressable/uri'
 require 'base64'
 require 'set'
-require 'faraday/builder'
-require 'faraday/request'
-require 'faraday/response'
-require 'faraday/utils'
+
+Faraday.require_libs 'builder', 'request', 'response', 'utils'
 
 module Faraday
   class Connection
