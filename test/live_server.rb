@@ -43,3 +43,8 @@ end
 get '/multi' do
   [200, { 'Set-Cookie' => 'one, two' }, '']
 end
+
+get '/slow' do
+  sleep 10
+  [200, {}, 'ok']
+end

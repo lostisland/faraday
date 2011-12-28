@@ -3,9 +3,9 @@ module Faraday
     class ClientError < StandardError
       attr_reader :response
 
-      def initialize(ex)
+      def initialize(ex, response = nil)
         @wrapped_exception = nil
-        @response = nil
+        @response = response
 
         if ex.respond_to?(:backtrace)
           super(ex.message)
@@ -34,7 +34,7 @@ module Faraday
     class ConnectionFailed < ClientError;   end
     class ResourceNotFound < ClientError;   end
     class ParsingError     < ClientError;   end
-
+    class TimeoutError < ClientError; end
     class MissingDependency < StandardError; end
   end
 end

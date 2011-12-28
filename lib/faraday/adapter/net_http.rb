@@ -72,6 +72,8 @@ module Faraday
         end
 
         @app.call env
+      rescue Timeout::Error => err
+        raise Faraday::Error::TimeoutError, err
       end
 
       def net_http_class(env)

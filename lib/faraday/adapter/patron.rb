@@ -26,6 +26,8 @@ module Faraday
         save_response(env, response.status, response.body, response.headers)
 
         @app.call env
+      rescue ::Patron::TimeoutError => err
+        raise Faraday::Error::TimeoutError, err
       end
 
       if loaded? && defined?(::Patron::Request::VALID_ACTIONS)
