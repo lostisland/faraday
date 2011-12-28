@@ -23,7 +23,7 @@ module Faraday
     LIVE_SERVER = case ENV['LIVE']
       when /^http/ then ENV['LIVE']
       when nil     then nil
-      else 'http://localhost:4567'
+      else 'http://127.0.0.1:4567'
     end
 
     def test_default
