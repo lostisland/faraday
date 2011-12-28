@@ -67,39 +67,24 @@ class TestConnection < Faraday::TestCase
     assert_equal 'Faraday', conn.headers['User-agent']
   end
 
-  def test_basic_auth_sets_authorization_header
+  def test_basic_auth_prepends_basic_auth_middleware
     conn = Faraday::Connection.new
     conn.basic_auth 'Aladdin', 'open sesame'
-    assert_equal 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==', conn.headers['Authorization']
-  end
-
-  def test_long_basic_auth_sets_authorization_header_without_new_lines
-    conn = Faraday::Connection.new
-    conn.basic_auth "A" * 255, ""
-    assert_equal "Basic #{'QUFB' * 85}Og==", conn.headers['Authorization']
-  end
-
-  def test_auto_parses_basic_auth_from_url
-    conn = Faraday::Connection.new :url => "http://aladdin:opensesame@sushi.com/fish"
-    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', conn.headers['Authorization']
+    assert_equal Faraday::Request::BasicAuthentication, conn.builder[0].klass
+    assert_equal ['Aladdin', 'open sesame'], conn.builder[0].instance_eval { @args }
   end
 
   def test_auto_parses_basic_auth_from_url_and_unescapes
     conn = Faraday::Connection.new :url => "http://foo%40bar.com:pass%20word@sushi.com/fish"
-    assert_equal 'Basic Zm9vQGJhci5jb206cGFzcyB3b3Jk', conn.headers['Authorization']
+    assert_equal Faraday::Request::BasicAuthentication, conn.builder[0].klass
+    assert_equal ['foo@bar.com', 'pass word'], conn.builder[0].instance_eval { @args }
   end
 
-  def test_token_auth_sets_authorization_header
-    conn = Faraday::Connection.new
-    conn.token_auth 'abcdef'
-    assert_equal 'Token token="abcdef"', conn.headers['Authorization']
-  end
-
-  def test_token_auth_with_options_sets_authorization_header
+  def test_token_auth_prepends_token_auth_middleware
     conn = Faraday::Connection.new
     conn.token_auth 'abcdef', :nonce => 'abc'
-    assert_equal 'Token token="abcdef",
-                     nonce="abc"', conn.headers['Authorization']
+    assert_equal Faraday::Request::TokenAuthentication, conn.builder[0].klass
+    assert_equal ['abcdef', { :nonce => 'abc' }], conn.builder[0].instance_eval { @args }
   end
 
   def test_build_url_uses_connection_host_as_default_uri_host

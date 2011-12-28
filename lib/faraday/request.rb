@@ -17,13 +17,17 @@ module Faraday
       :UrlEncoded => 'url_encoded',
       :Multipart  => 'multipart',
       :Retry      => 'retry',
-      :Timeout    => 'timeout'
+      :Timeout    => 'timeout',
+      :BasicAuthentication => 'basic_authentication',
+      :TokenAuthentication => 'token_authentication'
 
     register_lookup_modules \
       :json        => :JSON,
       :url_encoded => :UrlEncoded,
       :multipart   => :Multipart,
-      :retry       => :Retry
+      :retry       => :Retry,
+      :basic_authentication => :BasicAuthentication,
+      :token_authentication => :TokenAuthentication
 
     attr_reader :method
 
