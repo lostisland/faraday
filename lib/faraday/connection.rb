@@ -1,5 +1,6 @@
 require 'addressable/uri'
 require 'base64'
+require 'cgi'
 require 'set'
 
 Faraday.require_libs 'builder', 'request', 'response', 'utils'
