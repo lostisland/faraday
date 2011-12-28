@@ -23,8 +23,7 @@ module Faraday
       :json        => :JSON,
       :url_encoded => :UrlEncoded,
       :multipart   => :Multipart,
-      :retry       => :Retry,
-      :timeout     => :Timeout
+      :retry       => :Retry
 
     attr_reader :method
 
