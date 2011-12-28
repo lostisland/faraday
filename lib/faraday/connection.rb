@@ -1,5 +1,6 @@
 require 'addressable/uri'
 require 'base64'
+require 'cgi'
 require 'set'
 require 'faraday/builder'
 require 'faraday/request'
