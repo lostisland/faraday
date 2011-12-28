@@ -2,32 +2,11 @@ module Faraday
   class Request::JSON < Request::UrlEncoded
     self.mime_type = 'application/json'.freeze
 
-    class << self
-      attr_writer :adapter
-
-      def adapter
-        @adapter or raise Error::MissingDependency, "No JSON adapter available. Install either activesupport or yajl-ruby."
-      end
-    end
-
-    # loads the JSON encoder either from yajl-ruby or activesupport
-    dependency do
-      begin
-        require 'yajl'
-        self.adapter = Yajl::Encoder
-      rescue LoadError, NameError
-        require 'active_support/core_ext/module/attribute_accessors' # AS 2.3.11
-        require 'active_support/core_ext/kernel/reporting'           # AS 2.3.11
-        require 'active_support/json/encoding'
-        require 'active_support/ordered_hash' # AS 3.0.4
-        self.adapter = ActiveSupport::JSON
-      end
-    end
+    dependency "multi_json"
 
     def call(env)
       match_content_type(env) do |data|
-        # encode with the first successfully loaded adapter
-        env[:body] = self.class.adapter.encode data
+        env[:body] = MultiJson.encode data
       end
       @app.call env
     end
