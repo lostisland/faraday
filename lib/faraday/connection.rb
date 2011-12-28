@@ -33,7 +33,8 @@ module Faraday
       @parallel_manager = options[:parallel]
 
       self.url_prefix = url if url
-      proxy(options[:proxy])
+
+      proxy(options.fetch(:proxy) { ENV['http_proxy'] })
 
       @params.update options[:params]   if options[:params]
       @headers.update options[:headers] if options[:headers]
