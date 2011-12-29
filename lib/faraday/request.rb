@@ -24,8 +24,8 @@ module Faraday
       :url_encoded => :UrlEncoded,
       :multipart   => :Multipart,
       :retry       => :Retry,
-      :basic_authentication => :BasicAuthentication,
-      :token_authentication => :TokenAuthentication
+      :basic_auth  => :BasicAuthentication,
+      :token_auth  => :TokenAuthentication
 
     attr_reader :method
 
