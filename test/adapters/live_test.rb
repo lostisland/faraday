@@ -6,7 +6,7 @@ else
   module Adapters
     class LiveTest < Faraday::TestCase
       adapters = if ENV['ADAPTER']
-        ENV['ADAPTER'].split(':').map { |name| Faraday::Adapter.lookup_module name.to_sym }
+        ENV['ADAPTER'].split(':').map { |name| Faraday::Adapter.lookup_middleware name.to_sym }
       else
         loaded_adapters  = Faraday::Adapter.all_loaded_constants
         loaded_adapters -= [Faraday::Adapter::ActionDispatch]
@@ -217,7 +217,7 @@ else
 
       def real_adapter_for(adapter)
         if adapter == :default
-          Faraday::Adapter.lookup_module(Faraday.default_adapter)
+          Faraday::Adapter.lookup_middleware(Faraday.default_adapter)
         else
           adapter
         end

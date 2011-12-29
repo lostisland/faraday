@@ -88,9 +88,13 @@ module Faraday
     end
 
     def use(klass, *args)
-      raise_if_locked
       block = block_given? ? Proc.new : nil
-      @handlers << self.class::Handler.new(klass, *args, &block)
+      if klass.is_a? Symbol
+        use_symbol(Faraday::Middleware, klass, *args, &block)
+      else
+        raise_if_locked
+        @handlers << self.class::Handler.new(klass, *args, &block)
+      end
     end
 
     def request(key, *args)
@@ -144,7 +148,7 @@ module Faraday
 
     def use_symbol(mod, key, *args)
       block = block_given? ? Proc.new : nil
-      use(mod.lookup_module(key), *args, &block)
+      use(mod.lookup_middleware(key), *args, &block)
     end
 
     def assert_index(index)
