@@ -1,4 +1,4 @@
-require 'uri'
+require 'cgi'
 
 module Faraday
   module Utils
@@ -162,31 +162,9 @@ module Faraday
       end
     end
 
-    # Be sure to URI escape '+' symbols to %2B. Otherwise, they get interpreted
-    # as spaces.
-    def escape(s)
-      s.to_s.gsub(/([^a-zA-Z0-9_.-]+)/n) do |match|
-        '%' << match.unpack('H2'*bytesize(match)).join('%').tap { |c| c.upcase! }
-      end
-    end
+    def escape(s) CGI.escape s.to_s end
 
-    if ''.respond_to?(:bytesize)
-      def bytesize(string) string.bytesize end
-    else
-      def bytesize(string) string.size end
-    end
-
-    # Unescapes a URI escaped string with +encoding+. +encoding+ will be the
-    # target encoding of the string returned, and it defaults to UTF-8
-    if defined?(::Encoding)
-      def unescape(s, encoding = Encoding::UTF_8)
-        URI.decode_www_form_component(s, encoding)
-      end
-    else
-      def unescape(s, encoding = nil)
-        URI.decode_www_form_component(s, encoding)
-      end
-    end
+    def unescape(s) CGI.unescape s.to_s end
 
     DEFAULT_SEP = /[&;] */n
 
