@@ -44,8 +44,11 @@ module Faraday
     end
 
     def autoload_all(prefix, options)
+      if prefix =~ /^faraday(\/|$)/i
+        prefix = File.join(Faraday.root_path, prefix)
+      end
       options.each do |const_name, path|
-        autoload const_name, File.join(Faraday.root_path, prefix, path)
+        autoload const_name, File.join(prefix, path)
       end
     end
 
