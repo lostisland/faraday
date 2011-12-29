@@ -11,6 +11,7 @@ module Faraday
   #
   class Request < Struct.new(:path, :params, :headers, :body, :options)
     extend AutoloadHelper
+    extend MiddlewareRegistry
 
     autoload_all 'faraday/request',
       :UrlEncoded => 'url_encoded',
@@ -20,7 +21,7 @@ module Faraday
       :BasicAuthentication => 'basic_authentication',
       :TokenAuthentication => 'token_authentication'
 
-    register_lookup_modules \
+    register_middleware \
       :url_encoded => :UrlEncoded,
       :multipart   => :Multipart,
       :retry       => :Retry,
