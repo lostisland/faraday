@@ -254,18 +254,38 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_dups_connection_object
-    conn = Faraday::Connection.new 'http://sushi.com/foo', :ssl => { :verify => :none } do |b|
-      b.adapter :net_http
-    end
-    conn.headers['content-type'] = 'text/plain'
-    conn.params['a'] = '1'
+    conn = Faraday::Connection.new 'http://sushi.com/foo',
+      :ssl => { :verify => :none },
+      :headers => {'content-type' => 'text/plain'},
+      :params => {'a'=>'1'}
 
-    duped = conn.dup
+    other = conn.dup
 
-    assert_equal conn.build_url(''), duped.build_url('')
-    [:headers, :params, :builder, :ssl].each do |attr|
-      assert_equal     conn.send(attr),           duped.send(attr)
-      assert_not_equal conn.send(attr).object_id, duped.send(attr).object_id
-    end
+    assert_equal conn.build_url(''), other.build_url('')
+    assert_equal 'text/plain', other.headers['content-type']
+    assert_equal '1', other.params['a']
+
+    other.basic_auth('', '')
+    other.headers['content-length'] = 12
+    other.params['b'] = '2'
+
+    assert_equal 3, other.builder.handlers.size
+    assert_equal 2, conn.builder.handlers.size
+    assert !conn.headers.key?('content-length')
+    assert !conn.params.key?('b')
+  end
+
+  def test_init_with_block
+    conn = Faraday::Connection.new { }
+    assert_equal 0, conn.builder.handlers.size
+  end
+
+  def test_init_with_block_yields_connection
+    conn = Faraday::Connection.new { |faraday|
+      faraday.adapter :net_http
+      faraday.url_prefix = 'http://sushi.com/omnom'
+    }
+    assert_equal 1, conn.builder.handlers.size
+    assert_equal '/omnom', conn.path_prefix
   end
 end

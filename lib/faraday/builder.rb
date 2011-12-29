@@ -8,10 +8,6 @@ module Faraday
   class Builder
     attr_accessor :handlers
 
-    def self.create
-      new { |builder| yield builder }
-    end
-
     # Error raised when trying to modify the stack after calling `lock!`
     class StackLocked < RuntimeError; end
 

@@ -2,6 +2,7 @@ require 'addressable/uri'
 require 'base64'
 require 'cgi'
 require 'set'
+require 'forwardable'
 
 Faraday.require_libs 'builder', 'request', 'response', 'utils'
 
@@ -36,11 +37,12 @@ module Faraday
       @params.update options[:params]   if options[:params]
       @headers.update options[:headers] if options[:headers]
 
-      if block_given?
-        @builder = Builder.create { |b| yield b }
-      else
-        @builder = options[:builder] || Builder.new
+      @builder = options[:builder] || begin
+        # pass an empty block to Builder so it doesn't assume default middleware
+        block = block_given?? Proc.new {|b| } : nil
+        Builder.new(&block)
       end
+      yield self if block_given?
 
       self.url_prefix = url if url
       proxy(options[:proxy])
@@ -49,25 +51,8 @@ module Faraday
       @headers.update options[:headers] if options[:headers]
     end
 
-    def use(klass, *args, &block)
-      @builder.use(klass, *args, &block)
-    end
-
-    def request(key, *args, &block)
-      @builder.request(key, *args, &block)
-    end
-
-    def response(key, *args, &block)
-      @builder.response(key, *args, &block)
-    end
-
-    def adapter(key, *args, &block)
-      @builder.adapter(key, *args, &block)
-    end
-
-    def build(options = {}, &block)
-      @builder.build(options, &block)
-    end
+    extend Forwardable
+    def_delegators :builder, :build, :use, :request, :response, :adapter
 
     # The "rack app" wrapped in middleware. All requests are sent here.
     #
