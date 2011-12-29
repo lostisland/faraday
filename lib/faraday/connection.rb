@@ -11,8 +11,8 @@ module Faraday
     METHODS = Set.new [:get, :post, :put, :delete, :head, :patch, :options]
     METHODS_WITH_BODIES = Set.new [:post, :put, :patch, :options]
 
-    attr_accessor :parallel_manager
-    attr_reader   :params, :headers, :url_prefix, :builder, :options, :ssl
+    attr_reader   :params, :headers, :url_prefix, :builder, :options, :ssl, :parallel_manager
+    attr_writer   :default_parallel_manager
 
     # :url
     # :params
@@ -24,11 +24,11 @@ module Faraday
         options = url
         url     = options[:url]
       end
-      @headers          = Utils::Headers.new
-      @params           = Utils::ParamsHash.new
-      @options          = options[:request] || {}
-      @ssl              = options[:ssl]     || {}
-      @parallel_manager = options[:parallel]
+      @headers = Utils::Headers.new
+      @params  = Utils::ParamsHash.new
+      @options = options[:request] || {}
+      @ssl     = options[:ssl]     || {}
+      @default_parallel_manager = options[:parallel_manager]
 
       @builder = options[:builder] || begin
         # pass an empty block to Builder so it doesn't assume default middleware
@@ -108,12 +108,24 @@ module Faraday
       @builder.insert(0, Faraday::Request::TokenAuthentication, token, options)
     end
 
+    def default_parallel_manager
+      return @default_parallel_manager if @default_parallel_manager
+
+      adapter = @builder.handlers.select { |h|
+        h.klass.respond_to?(:setup_parallel_manager)
+      }.first
+
+      if adapter
+        @default_parallel_manager = adapter.klass.setup_parallel_manager
+      end
+    end
+
     def in_parallel?
       !!@parallel_manager
     end
 
-    def in_parallel(manager)
-      @parallel_manager = manager
+    def in_parallel(manager = nil)
+      @parallel_manager = manager || default_parallel_manager
       yield
       @parallel_manager && @parallel_manager.run
     ensure

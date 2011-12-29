@@ -3,15 +3,8 @@ module Faraday
     extend MiddlewareRegistry
 
     class << self
-      attr_accessor :load_error, :supports_parallel_requests
+      attr_accessor :load_error
       private :load_error=
-      alias supports_parallel_requests? supports_parallel_requests
-
-      # valid parallel managers should respond to #run with no parameters.
-      # otherwise, return a short wrapper around it.
-      def setup_parallel_manager(options = {})
-        nil
-      end
     end
 
     self.load_error = nil
