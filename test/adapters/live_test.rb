@@ -175,7 +175,7 @@ else
         end
 
         if %w[Faraday::Adapter::Patron Faraday::Adapter::NetHttp].include?(adapter.to_s)
-          define_method "test_patron_timeout" do
+          define_method "test_#{adapter}_timeout" do
             conn = create_connection(adapter, :request => {:timeout => 1, :read_timeout => 1})
             assert_raise Faraday::Error::TimeoutError do
               conn.get '/slow'
