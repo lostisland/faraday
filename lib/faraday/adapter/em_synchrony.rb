@@ -10,6 +10,8 @@ module Faraday
         require 'fiber'
       end
 
+      self.supports_parallel_requests = true
+
       def self.setup_parallel_manager(options = {})
         ParallelManager.new
       end
