@@ -9,13 +9,11 @@ Modular HTTP client library that uses middleware. Heavily inspired by Rack.
 ```ruby
 conn = Faraday.new(:url => 'http://sushi.com') do |builder|
   builder.use Faraday::Request::UrlEncoded  # convert request params as "www-form-urlencoded"
-  builder.use Faraday::Request::JSON        # encode request params as json
   builder.use Faraday::Response::Logger     # log the request to STDOUT
   builder.use Faraday::Adapter::NetHttp     # make http requests with Net::HTTP
 
   # or, use shortcuts:
   builder.request  :url_encoded
-  builder.request  :json
   builder.response :logger
   builder.adapter  :net_http
 end
@@ -37,13 +35,10 @@ end
 conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi.com/nigiri
 
 # post payload as JSON instead of "www-form-urlencoded" encoding:
-conn.post '/nigiri', payload, 'Content-Type' => 'application/json'
-
-# a more verbose way:
 conn.post do |req|
   req.url '/nigiri'
   req.headers['Content-Type'] = 'application/json'
-  req.body = { :name => 'Unagi' }
+  req.body = '{ "name": "Unagi" }'
 end
 
 ## Options ##
@@ -77,7 +72,6 @@ conn = Faraday.new(:url => 'http://sushi.com') do |builder|
   # POST/PUT params encoders:
   builder.request  :multipart
   builder.request  :url_encoded
-  builder.request  :json
 
   builder.adapter  :net_http
 end
@@ -87,17 +81,13 @@ This request middleware setup affects POST/PUT requests in the following way:
 
 1. `Request::Multipart` checks for files in the payload, otherwise leaves everything untouched;
 2. `Request::UrlEncoded` encodes as "application/x-www-form-urlencoded" if not already encoded or of another type
-3. `Request::JSON` encodes as "application/json" if not already encoded or of another type
 
-Because "UrlEncoded" is higher on the stack than JSON encoder, it will get to process the request first. Swapping them means giving the other priority. Specifying the "Content-Type" for the request is explicitly stating which middleware should process it.
+Swapping middleware means giving the other priority. Specifying the "Content-Type" for the request is explicitly stating which middleware should process it.
 
 Examples:
 
 ```ruby
 payload = { :name => 'Maguro' }
-
-# post payload as JSON instead of urlencoded:
-conn.post '/nigiri', payload, 'Content-Type' => 'application/json'
 
 # uploading a file:
 payload = { :profile_pic => Faraday::UploadIO.new('avatar.jpg', 'image/jpeg') }

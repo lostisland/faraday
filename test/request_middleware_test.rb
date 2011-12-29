@@ -7,7 +7,6 @@ class RequestMiddlewareTest < Faraday::TestCase
     @conn = Faraday.new do |b|
       b.request :multipart
       b.request :url_encoded
-      b.request :json
       b.adapter :test do |stub|
         stub.post('/echo') do |env|
           posted_as = env[:request_headers]['Content-Type']
@@ -27,49 +26,6 @@ class RequestMiddlewareTest < Faraday::TestCase
     response = @conn.post('/echo', { :some => 'data' }, 'content-type' => 'application/x-foo')
     assert_equal 'application/x-foo', response.headers['Content-Type']
     assert_equal({ :some => 'data' }, response.body)
-  end
-
-  def test_json_encodes_hash
-    response = @conn.post('/echo', { :fruit => %w[apples oranges] }, 'content-type' => 'application/json')
-    assert_equal 'application/json', response.headers['Content-Type']
-    assert_equal '{"fruit":["apples","oranges"]}', response.body
-  end
-
-  def test_json_skips_encoding_for_strings
-    response = @conn.post('/echo', '{"a":"b"}', 'content-type' => 'application/json')
-    assert_equal 'application/json', response.headers['Content-Type']
-    assert_equal '{"a":"b"}', response.body
-  end
-
-  def test_json_fails_with_useful_message_when_no_json_adapter_available
-    without_json_adapter do
-      expected_msg = "No JSON adapter available. Install either activesupport or yajl-ruby."
-      # assert_raise doesn't work to check the message (at least on 1.8.7)
-      begin
-        @conn.post('/echo', { :fruit => %w[apples oranges] }, 'content-type' => 'application/json')
-        fail "Exception not raised"
-      rescue Faraday::Error::MissingDependency => e
-        assert_equal expected_msg, e.message
-      end
-    end
-  end
-
-  def test_url_encoded_does_not_fail_when_no_json_adapter_available
-    without_json_adapter do
-      assert_nothing_raised {
-        @conn.post('/echo', { :fruit => %w[apples oranges] })
-      }
-    end
-  end
-
-  def without_json_adapter
-    original_adapter = Faraday::Request::JSON.adapter
-    Faraday::Request::JSON.adapter = nil
-    begin
-      yield
-    ensure
-      Faraday::Request::JSON.adapter = original_adapter
-    end
   end
 
   def test_url_encoded_no_header

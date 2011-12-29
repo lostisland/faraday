@@ -13,7 +13,6 @@ module Faraday
     extend AutoloadHelper
 
     autoload_all 'faraday/request',
-      :JSON       => 'json',
       :UrlEncoded => 'url_encoded',
       :Multipart  => 'multipart',
       :Retry      => 'retry',
@@ -22,7 +21,6 @@ module Faraday
       :TokenAuthentication => 'token_authentication'
 
     register_lookup_modules \
-      :json        => :JSON,
       :url_encoded => :UrlEncoded,
       :multipart   => :Multipart,
       :retry       => :Retry,
