@@ -158,7 +158,7 @@ class TestConnection < Faraday::TestCase
   def test_build_url_parses_url_params_into_query
     conn = Faraday::Connection.new
     uri = conn.build_url("http://sushi.com/sake.html", 'a[b]' => '1 + 2')
-    assert_equal "a%5Bb%5D=1%20%2B%202", uri.query
+    assert_equal "a%5Bb%5D=1+%2B+2", uri.query
   end
 
   def test_build_url_mashes_default_and_given_params_together
@@ -250,7 +250,7 @@ class TestConnection < Faraday::TestCase
   def test_params_to_query_converts_hash_of_params_to_uri_escaped_query_string
     conn = Faraday::Connection.new
     url = conn.build_url('', 'a[b]' => '1 + 2')
-    assert_equal "a%5Bb%5D=1%20%2B%202", url.query
+    assert_equal "a%5Bb%5D=1+%2B+2", url.query
   end
 
   def test_dups_connection_object
