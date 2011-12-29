@@ -99,7 +99,7 @@ module Faraday
         def initialize(full, body, block)
           path, query = full.split('?')
           params = query ?
-            Rack::Utils.parse_nested_query(query) :
+            Faraday::Utils.parse_nested_query(query) :
             {}
           super path, params, body, block
         end
@@ -107,7 +107,7 @@ module Faraday
         def matches?(request_uri, request_body)
           request_path, request_query = request_uri.split('?')
           request_params = request_query ?
-            Rack::Utils.parse_nested_query(request_query) :
+            Faraday::Utils.parse_nested_query(request_query) :
             {}
           request_path == path &&
             params_match?(request_params) &&
@@ -141,7 +141,7 @@ module Faraday
 
         if stub = stubs.match(env[:method], normalized_path, env[:body])
           env[:params] = (query = env[:url].query) ?
-            Rack::Utils.parse_nested_query(query)  :
+            Faraday::Utils.parse_nested_query(query)  :
             {}
           status, headers, body = stub.block.call(env)
           save_response(env, status, body, headers)

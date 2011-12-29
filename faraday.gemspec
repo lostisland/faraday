@@ -34,7 +34,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'addressable', '~> 2.2'
   s.add_dependency 'multipart-post', '~> 1.1'
-  s.add_dependency 'rack', '~> 1.1'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'test-unit'
   s.add_development_dependency 'webmock'
