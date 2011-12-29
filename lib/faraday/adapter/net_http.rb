@@ -43,8 +43,8 @@ module Faraday
         if :get != env[:method]
           http_request = Net::HTTPGenericRequest.new \
             env[:method].to_s.upcase,    # request method
-            !!env[:body],                # is there data
-            true,                        # does net/http love you, true or false?
+            !!env[:body],                # is there request body
+            :head != env[:method],       # is there response body
             url.request_uri,             # request uri path
             env[:request_headers]        # request headers
 
