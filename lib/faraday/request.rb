@@ -58,7 +58,7 @@ module Faraday
     # ENV Keys
     # :method - a symbolized request method (:get, :post)
     # :body   - the request body that will eventually be converted to a string.
-    # :url    - Addressable::URI instance of the URI for the current request.
+    # :url    - URI instance for the current request.
     # :status           - HTTP response status code
     # :request_headers  - hash of HTTP Headers to be sent to the server
     # :response_headers - Hash of HTTP headers from the server

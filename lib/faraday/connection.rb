@@ -1,20 +1,18 @@
-require 'addressable/uri'
 require 'base64'
 require 'cgi'
 require 'set'
 require 'forwardable'
+require 'uri'
 
 Faraday.require_libs 'builder', 'request', 'response', 'utils'
 
 module Faraday
   class Connection
-    include Addressable
-
     METHODS = Set.new [:get, :post, :put, :delete, :head, :patch, :options]
     METHODS_WITH_BODIES = Set.new [:post, :put, :patch, :options]
 
-    attr_accessor :host, :port, :scheme, :params, :headers, :parallel_manager
-    attr_reader   :path_prefix, :builder, :options, :ssl
+    attr_accessor :params, :headers, :parallel_manager
+    attr_reader   :url_prefix, :builder, :options, :ssl
 
     # :url
     # :params
@@ -43,8 +41,7 @@ module Faraday
         Builder.new(&block)
       end
 
-      self.url_prefix = url if url
-      proxy(options[:proxy])
+      self.url_prefix = url || 'http:/'
 
       @params.update options[:params]   if options[:params]
       @headers.update options[:headers] if options[:headers]
@@ -127,20 +124,25 @@ module Faraday
     def proxy(arg = nil)
       return @proxy if arg.nil?
 
-      @proxy =
-        case arg
-          when String then {:uri => proxy_arg_to_uri(arg)}
-          when URI    then {:uri => arg}
-          when Hash
-            if arg[:uri] = proxy_arg_to_uri(arg[:uri])
-              arg
-            else
-              raise ArgumentError, "no :uri option."
-            end
-        end
+      @proxy = if arg.is_a? Hash
+        uri = arg.fetch(:uri) { raise ArgumentError, "no :uri option" }
+        arg.merge :uri => self.class.URI(uri)
+      else
+        {:uri => self.class.URI(arg)}
+      end
     end
 
-    # Parses the giving url with Addressable::URI and stores the individual
+    # normalize URI() behavior across Ruby versions
+    def self.URI url
+      url.respond_to?(:host) ? url :
+        url.respond_to?(:to_str) ? Kernel.URI(url) :
+          raise(ArgumentError, "bad argument (expected URI object or URI string)")
+    end
+
+    def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
+    def_delegator :url_prefix, :path, :path_prefix
+
+    # Parses the giving url with URI and stores the individual
     # components in this connection.  These components serve as defaults for
     # requests made by this connection.
     #
@@ -152,27 +154,27 @@ module Faraday
     #   conn.get("nigiri?page=2") # accesses https://sushi.com/api/nigiri
     #
     def url_prefix=(url)
-      uri              = URI.parse(url)
-      self.scheme      = uri.scheme
-      self.host        = uri.host
-      self.port        = uri.port
+      uri = @url_prefix = self.class.URI(url)
       self.path_prefix = uri.path
 
       @params.merge_query(uri.query)
+      uri.query = nil
+
       if uri.user && uri.password
         basic_auth(CGI.unescape(uri.user), CGI.unescape(uri.password))
+        uri.user = uri.password = nil
       end
 
       uri
     end
 
-    # Ensures that the path prefix always has a leading / and no trailing /
+    # Ensures that the path prefix always has a leading but no trailing slash
     def path_prefix=(value)
-      if value
-        value.chomp!  "/"
-        value.replace "/#{value}" if value !~ /^\//
+      url_prefix.path = if value
+        value = value.chomp '/'
+        value = '/' + value unless value[0,1] == '/'
+        value
       end
-      @path_prefix = value
     end
 
     def run_request(method, url, body, headers)
@@ -203,15 +205,13 @@ module Faraday
     #   conn.build_url("nigiri", :page => 2) # => https://sushi.com/api/nigiri?token=abc&page=2
     #
     def build_url(url, extra_params = nil)
-      uri          = URI.parse(url.to_s)
-      if @path_prefix && uri.path !~ /^\//
-        new_path = @path_prefix.size > 1 ? @path_prefix.dup : ''
-        new_path << "/#{uri.path}" unless uri.path.empty?
-        uri.path = new_path
+      url = nil if url and url.empty?
+      base = url_prefix
+      if url and base.path and base.path !~ /\/$/
+        base = base.dup
+        base.path = base.path + '/'  # ensure trailing slash
       end
-      uri.host   ||= @host
-      uri.port   ||= @port
-      uri.scheme ||= @scheme
+      uri = url ? base + url : base
 
       params = @params.dup.merge_query(uri.query)
       params.update extra_params if extra_params
@@ -222,13 +222,6 @@ module Faraday
 
     def dup
       self.class.new(build_url(''), :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
-    end
-
-    def proxy_arg_to_uri(arg)
-      case arg
-        when String then URI.parse(arg)
-        when URI    then arg
-      end
     end
   end
 end

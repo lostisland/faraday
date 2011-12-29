@@ -13,7 +13,7 @@ module Faraday
         url = env[:url]
         req = env[:request]
 
-        http = net_http_class(env).new(url.host, url.inferred_port)
+        http = net_http_class(env).new(url.host, url.port)
 
         if http.use_ssl = (url.scheme == 'https' && (ssl = env[:ssl]) && true)
           http.verify_mode = ssl[:verify_mode] || begin

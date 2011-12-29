@@ -1,3 +1,4 @@
+require 'uri'
 require 'faraday/adapter/em_synchrony/parallel_manager'
 
 module Faraday
@@ -30,10 +31,10 @@ module Faraday
 
         if req = env[:request]
           if proxy = req[:proxy]
-            uri = Addressable::URI.parse(proxy[:uri])
+            uri = URI.parse(proxy[:uri])
             options[:proxy] = {
               :host => uri.host,
-              :port => uri.inferred_port
+              :port => uri.port
             }
             if proxy[:username] && proxy[:password]
               options[:proxy][:authorization] = [proxy[:username], proxy[:password]]

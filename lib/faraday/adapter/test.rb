@@ -34,6 +34,7 @@ module Faraday
           return false if !@stack.key?(request_method)
           stack = @stack[request_method]
           consumed = (@consumed[request_method] ||= [])
+          path = normalize_path(path)
 
           if stub = matches?(stack, path, body)
             consumed << stack.delete(stub)
@@ -87,11 +88,19 @@ module Faraday
         protected
 
         def new_stub(request_method, path, body=nil, &block)
-          (@stack[request_method] ||= []) << Stub.new(path, body, block)
+          (@stack[request_method] ||= []) << Stub.new(normalize_path(path), body, block)
         end
 
         def matches?(stack, path, body)
           stack.detect { |stub| stub.matches?(path, body) }
+        end
+
+        # ensure leading + trailing slash
+        def normalize_path(path)
+          path = '/' + path if path.index('/') != 0
+          path = path.sub('?', '/?')
+          path = path + '/' unless $&
+          path.gsub('//', '/')
         end
       end
 

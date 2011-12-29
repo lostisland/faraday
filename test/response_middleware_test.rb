@@ -51,8 +51,8 @@ class ResponseNoBodyMiddleWareTest < Faraday::TestCase
     @conn = Faraday.new do |b|
       b.response :raise_error
       b.adapter :test do |stub|
-        stub.get('not modified') { [304, nil, nil] }
-        stub.get('no content') { [204, nil, nil] }
+        stub.get('not_modified') { [304, nil, nil] }
+        stub.get('no_content') { [204, nil, nil] }
       end
     end
     @conn.builder.insert(0, NotCalled)
@@ -65,10 +65,10 @@ class ResponseNoBodyMiddleWareTest < Faraday::TestCase
   end
 
   def test_204
-    assert_equal nil, @conn.get('no content').body
+    assert_equal nil, @conn.get('no_content').body
   end
 
   def test_304
-    assert_equal nil, @conn.get('not modified').body
+    assert_equal nil, @conn.get('not_modified').body
   end
 end
