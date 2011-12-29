@@ -128,7 +128,11 @@ module Faraday
     end
 
     def default_parallel_manager
-      @default_parallel_manager || @builder.default_parallel_manager
+      return @default_parallel_manager if @default_parallel_manager
+
+      if @builder.setup_parallel_manager
+        @default_parallel_manager = @builder.setup_parallel_manager.call
+      end
     end
 
     def in_parallel?
