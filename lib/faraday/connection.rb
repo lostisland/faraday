@@ -14,6 +14,7 @@ module Faraday
 
     attr_accessor :host, :port, :scheme, :params, :headers, :parallel_manager
     attr_reader   :path_prefix, :builder, :options, :ssl
+    attr_writer   :default_parallel_manager
 
     # :url
     # :params
@@ -25,11 +26,11 @@ module Faraday
         options = url
         url     = options[:url]
       end
-      @headers          = Utils::Headers.new
-      @params           = Utils::ParamsHash.new
-      @options          = options[:request] || {}
-      @ssl              = options[:ssl]     || {}
-      @parallel_manager = options[:parallel]
+      @headers                  = Utils::Headers.new
+      @params                   = Utils::ParamsHash.new
+      @options                  = options[:request] || {}
+      @ssl                      = options[:ssl]     || {}
+      @default_parallel_manager = options[:parallel]
 
       proxy(options.fetch(:proxy) { ENV['http_proxy'] })
 
@@ -126,12 +127,16 @@ module Faraday
       @builder.insert(0, Faraday::Request::TokenAuthentication, token, options)
     end
 
+    def default_parallel_manager
+      @default_parallel_manager || @builder.default_parallel_manager
+    end
+
     def in_parallel?
       !!@parallel_manager
     end
 
-    def in_parallel(manager)
-      @parallel_manager = manager
+    def in_parallel(manager = nil)
+      @parallel_manager = manager || default_parallel_manager
       yield
       @parallel_manager && @parallel_manager.run
     ensure
