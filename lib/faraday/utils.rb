@@ -1,13 +1,17 @@
-require 'rack/utils'
+require 'uri'
 
 module Faraday
   module Utils
-    include Rack::Utils
-
-    extend Rack::Utils
     extend self
 
-    class Headers < HeaderHash
+    # Adapted from Rack::Utils::HeaderHash
+    class Headers < ::Hash
+      def initialize(hash={})
+        super()
+        @names = {}
+        hash.each { |k, v| self[k] = v }
+      end
+
       # symbol -> string mapper + cache
       KeyMap = Hash.new do |map, key|
         map[key] = if key.respond_to?(:to_str) then key
@@ -20,16 +24,44 @@ module Faraday
       KeyMap[:etag] = "ETag"
 
       def [](k)
-        super(KeyMap[k])
+        k = KeyMap[k]
+        super(k) || super(@names[k.downcase])
       end
 
       def []=(k, v)
+        k = KeyMap[k]
+        @names[k.downcase] = k
         # join multiple values with a comma
         v = v.to_ary.join(', ') if v.respond_to? :to_ary
-        super(KeyMap[k], v)
+        super k, v
       end
 
+      def include?(k)
+        @names.include? k.downcase
+      end
+
+      alias_method :has_key?, :include?
+      alias_method :member?, :include?
+      alias_method :key?, :include?
+
+      def merge!(other)
+        other.each { |k, v| self[k] = v }
+        self
+      end
       alias_method :update, :merge!
+
+      def merge(other)
+        hash = dup
+        hash.merge! other
+      end
+
+      def replace(other)
+        clear
+        other.each { |k, v| self[k] = v }
+        self
+      end
+
+      def to_hash() ::Hash.new.update(self) end
 
       def parse(header_string)
         return unless header_string && !header_string.empty?
@@ -102,10 +134,18 @@ module Faraday
       end
     end
 
-    # Make Rack::Utils methods public.
-    public :build_query, :parse_query
+    # Copied from Rack
+    def build_query(params)
+      params.map { |k, v|
+        if v.class == Array
+          build_query(v.map { |x| [k, x] })
+        else
+          v.nil? ? escape(k) : "#{escape(k)}=#{escape(v)}"
+        end
+      }.join("&")
+    end
 
-    # Override Rack's version since it doesn't handle non-String values
+    # Rack's version modified to handle non-String values
     def build_nested_query(value, prefix = nil)
       case value
       when Array
@@ -128,6 +168,86 @@ module Faraday
       s.to_s.gsub(/([^a-zA-Z0-9_.-]+)/n) do |match|
         '%' << match.unpack('H2'*bytesize(match)).join('%').tap { |c| c.upcase! }
       end
+    end
+
+    if ''.respond_to?(:bytesize)
+      def bytesize(string) string.bytesize end
+    else
+      def bytesize(string) string.size end
+    end
+
+    # Unescapes a URI escaped string with +encoding+. +encoding+ will be the
+    # target encoding of the string returned, and it defaults to UTF-8
+    if defined?(::Encoding)
+      def unescape(s, encoding = Encoding::UTF_8)
+        URI.decode_www_form_component(s, encoding)
+      end
+    else
+      def unescape(s, encoding = nil)
+        URI.decode_www_form_component(s, encoding)
+      end
+    end
+
+    DEFAULT_SEP = /[&;] */n
+
+    # Adapted from Rack
+    def parse_query(qs)
+      params = {}
+
+      (qs || '').split(DEFAULT_SEP).each do |p|
+        k, v = p.split('=', 2).map { |x| unescape(x) }
+
+        if cur = params[k]
+          if cur.class == Array then params[k] << v
+          else params[k] = [cur, v]
+          end
+        else
+          params[k] = v
+        end
+      end
+      params
+    end
+
+    def parse_nested_query(qs)
+      params = {}
+
+      (qs || '').split(DEFAULT_SEP).each do |p|
+        k, v = p.split('=', 2).map { |s| unescape(s) }
+        normalize_params(params, k, v)
+      end
+      params
+    end
+
+    # Stolen from Rack
+    def normalize_params(params, name, v = nil)
+      name =~ %r(\A[\[\]]*([^\[\]]+)\]*)
+      k = $1 || ''
+      after = $' || ''
+
+      return if k.empty?
+
+      if after == ""
+        params[k] = v
+      elsif after == "[]"
+        params[k] ||= []
+        raise TypeError, "expected Array (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Array)
+        params[k] << v
+      elsif after =~ %r(^\[\]\[([^\[\]]+)\]$) || after =~ %r(^\[\](.+)$)
+        child_key = $1
+        params[k] ||= []
+        raise TypeError, "expected Array (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Array)
+        if params[k].last.is_a?(Hash) && !params[k].last.key?(child_key)
+          normalize_params(params[k].last, child_key, v)
+        else
+          params[k] << normalize_params({}, child_key, v)
+        end
+      else
+        params[k] ||= {}
+        raise TypeError, "expected Hash (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Hash)
+        params[k] = normalize_params(params[k], after, v)
+      end
+
+      return params
     end
 
     # Receives a URL and returns just the path with the query string sorted.

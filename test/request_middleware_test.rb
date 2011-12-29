@@ -1,5 +1,4 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
-require 'rack/utils'
 
 Faraday::CompositeReadIO.send :attr_reader, :ios
 
@@ -89,7 +88,7 @@ class RequestMiddlewareTest < Faraday::TestCase
     response = @conn.post('/echo', { :user => {:name => 'Mislav', :web => 'mislav.net'} })
     assert_equal 'application/x-www-form-urlencoded', response.headers['Content-Type']
     expected = { 'user' => {'name' => 'Mislav', 'web' => 'mislav.net'} }
-    assert_equal expected, Rack::Utils.parse_nested_query(response.body)
+    assert_equal expected, Faraday::Utils.parse_nested_query(response.body)
   end
 
   def test_multipart
