@@ -17,7 +17,7 @@ class EnvTest < Faraday::TestCase
     assert_equal :get, env[:method]
   end
 
-  def test_request_create_stores_addressable_uri
+  def test_request_create_stores_uri
     env = make_env do |req|
       req.url 'foo.json', 'a' => 1
     end

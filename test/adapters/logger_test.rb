@@ -23,7 +23,7 @@ module Adapters
     end
 
     def test_logs_method_and_url
-      assert_match "get /hello", @io.string
+      assert_match "get http:/hello", @io.string
     end
 
     def test_logs_request_headers

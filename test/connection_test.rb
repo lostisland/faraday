@@ -1,4 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
+require 'uri'
 
 class TestConnection < Faraday::TestCase
 
@@ -17,9 +18,9 @@ class TestConnection < Faraday::TestCase
     assert_equal 'sushi.com', conn.host
   end
 
-  def test_initialize_parses_nil_port_out_of_given_url
+  def test_initialize_inherits_default_port_out_of_given_url
     conn = Faraday::Connection.new "http://sushi.com"
-    assert_nil conn.port
+    assert_equal 80, conn.port
   end
 
   def test_initialize_parses_scheme_out_of_given_url
@@ -94,11 +95,11 @@ class TestConnection < Faraday::TestCase
     assert_equal 'sushi.com', uri.host
   end
 
-  def test_build_url_uses_connection_port_as_default_uri_port
+  def test_build_url_overrides_connection_port_for_absolute_urls
     conn = Faraday::Connection.new
     conn.port = 23
     uri = conn.build_url("http://sushi.com")
-    assert_equal 23, uri.port
+    assert_equal 80, uri.port
   end
 
   def test_build_url_uses_connection_scheme_as_default_uri_scheme
@@ -184,10 +185,9 @@ class TestConnection < Faraday::TestCase
   def test_build_url_parses_url
     conn = Faraday::Connection.new
     uri = conn.build_url("http://sushi.com/sake.html")
-    assert_equal "http",             uri.scheme
-    assert_equal "sushi.com",        uri.host
+    assert_equal "http",       uri.scheme
+    assert_equal "sushi.com",  uri.host
     assert_equal '/sake.html', uri.path
-    assert_nil uri.port
   end
 
   def test_build_url_parses_url_and_changes_scheme
@@ -209,7 +209,7 @@ class TestConnection < Faraday::TestCase
   def test_proxy_accepts_uri
     with_proxy_env "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
-      conn.proxy Addressable::URI.parse('http://proxy.com')
+      conn.proxy URI.parse('http://proxy.com')
       assert_equal 'proxy.com', conn.proxy[:uri].host
       assert_equal [:uri],      conn.proxy.keys
     end
@@ -227,7 +227,7 @@ class TestConnection < Faraday::TestCase
   def test_proxy_accepts_hash
     with_proxy_env "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
-      conn.proxy :uri => Addressable::URI.parse('http://proxy.com'), :user => 'rick'
+      conn.proxy :uri => URI.parse('http://proxy.com'), :user => 'rick'
       assert_equal 'proxy.com', conn.proxy[:uri].host
       assert_equal 'rick',      conn.proxy[:user]
     end
