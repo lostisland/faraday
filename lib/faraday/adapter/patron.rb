@@ -17,7 +17,7 @@ module Faraday
         end
 
         response = begin
-          data = Connection::METHODS_WITH_BODIES.include?(env[:method]) ? env[:body].to_s : nil
+          data = env[:body] ? env[:body].to_s : nil
           session.request(env[:method], env[:url].to_s, env[:request_headers], :data => data)
         rescue Errno::ECONNREFUSED
           raise Error::ConnectionFailed, $!
