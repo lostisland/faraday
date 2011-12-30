@@ -6,7 +6,7 @@ module Faraday
   #   builder.adapter  :net_http     # Faraday::Adapter::NetHttp
   # end
   class Builder
-    attr_accessor :handlers, :setup_parallel_manager
+    attr_accessor :handlers
 
     def self.create
       new { |builder| yield builder }
@@ -94,9 +94,6 @@ module Faraday
     def use(klass, *args)
       raise_if_locked
       block = block_given? ? Proc.new : nil
-      if klass.respond_to?(:setup_parallel_manager)
-        @setup_parallel_manager = klass.method(:setup_parallel_manager)
-      end
       @handlers << self.class::Handler.new(klass, *args, &block)
     end
 
