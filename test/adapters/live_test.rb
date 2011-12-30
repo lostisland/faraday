@@ -39,6 +39,17 @@ else
           end
         end
 
+        # https://github.com/dbalatero/typhoeus/issues/75
+        # https://github.com/toland/patron/issues/52
+        unless %[Faraday::Adapter::Typhoeus Faraday::Adapter::Patron].include? adapter.to_s
+          define_method "test_#{adapter}_GET_with_body" do
+            response = create_connection(adapter).get('echo') do |req|
+              req.body = {'bodyrock' => true}
+            end
+            assert_equal %(get {"bodyrock"=>"true"}), response.body
+          end
+        end
+
         define_method "test_#{adapter}_POST_send_url_encoded_params" do
           resp = create_connection(adapter).post do |req|
             req.url 'echo_name'
