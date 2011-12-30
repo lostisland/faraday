@@ -130,8 +130,12 @@ module Faraday
     def default_parallel_manager
       return @default_parallel_manager if @default_parallel_manager
 
-      if @builder.setup_parallel_manager
-        @default_parallel_manager = @builder.setup_parallel_manager.call
+      adapter = @builder.handlers.select { |h|
+        h.klass.respond_to?(:setup_parallel_manager)
+      }.first
+
+      if adapter
+        @default_parallel_manager = adapter.klass.setup_parallel_manager
       end
     end
 
