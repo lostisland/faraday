@@ -30,7 +30,7 @@ module Faraday
       @params                   = Utils::ParamsHash.new
       @options                  = options[:request] || {}
       @ssl                      = options[:ssl]     || {}
-      @default_parallel_manager = options[:parallel]
+      @default_parallel_manager = options[:parallel_manager]
 
       proxy(options.fetch(:proxy) { ENV['http_proxy'] })
 
