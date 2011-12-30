@@ -1,5 +1,16 @@
 module Faraday
   class Adapter < Middleware
+    class << self
+      attr_accessor :supports_parallel_requests
+      alias supports_parallel_requests? supports_parallel_requests
+
+      # valid parallel managers should respond to #run with no parameters.
+      # otherwise, return a short wrapper around it.
+      def setup_parallel_manager(options = {})
+        nil
+      end
+    end
+
     CONTENT_LENGTH = 'Content-Length'.freeze
 
     extend AutoloadHelper
