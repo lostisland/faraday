@@ -281,9 +281,10 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_init_with_block_yields_connection
-    conn = Faraday::Connection.new { |faraday|
+    conn = Faraday::Connection.new(:params => {'a'=>'1'}) { |faraday|
       faraday.adapter :net_http
       faraday.url_prefix = 'http://sushi.com/omnom'
+      assert_equal '1', faraday.params['a']
     }
     assert_equal 1, conn.builder.handlers.size
     assert_equal '/omnom', conn.path_prefix

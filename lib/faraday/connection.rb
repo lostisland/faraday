@@ -42,13 +42,14 @@ module Faraday
         block = block_given?? Proc.new {|b| } : nil
         Builder.new(&block)
       end
-      yield self if block_given?
 
       self.url_prefix = url if url
       proxy(options[:proxy])
 
       @params.update options[:params]   if options[:params]
       @headers.update options[:headers] if options[:headers]
+
+      yield self if block_given?
     end
 
     extend Forwardable
