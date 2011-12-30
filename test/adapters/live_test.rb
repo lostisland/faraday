@@ -39,6 +39,17 @@ else
           end
         end
 
+        #GET request with body
+        unless %[Faraday::Adapter::NetHttp] == adapter.to_s
+          define_method "test_#{adapter}_GET_with_body" do
+            body = '{hello: world}'
+            response = create_connection(adapter).get('get/body') do |req|
+              req.body = body
+            end
+            assert_equal body, response.body
+          end
+        end
+
         define_method "test_#{adapter}_POST_send_url_encoded_params" do
           resp = create_connection(adapter).post do |req|
             req.url 'echo_name'

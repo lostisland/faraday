@@ -48,3 +48,7 @@ get '/slow' do
   sleep 10
   [200, {}, 'ok']
 end
+
+get '/get/body' do
+  [200, {} , request.body]
+end

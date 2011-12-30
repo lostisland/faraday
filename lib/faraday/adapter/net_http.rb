@@ -40,7 +40,7 @@ module Faraday
         http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
         http.open_timeout = req[:open_timeout]                if req[:open_timeout]
 
-        if :get != env[:method]
+        if :get != env[:method] or env[:body]
           http_request = Net::HTTPGenericRequest.new \
             env[:method].to_s.upcase,    # request method
             !!env[:body],                # is there request body
@@ -55,7 +55,7 @@ module Faraday
         end
 
         begin
-          http_response = if :get == env[:method]
+          http_response = if :get == env[:method] and env[:body].nil?
             # prefer `get` to `request` because the former handles gzip (ruby 1.9)
             http.get url.request_uri, env[:request_headers]
           else
