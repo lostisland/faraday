@@ -1,6 +1,18 @@
 require 'sinatra'
 set :logging, false
 
+[:get, :post, :put, :patch, :delete, :options].each do |method|
+  send(method, '/echo') do
+    kind = request.request_method.downcase
+    out = kind.dup
+    out << ' ?' << request.GET.inspect if request.GET.any?
+    out << ' ' << request.POST.inspect if request.POST.any?
+
+    content_type 'text/plain'
+    return out
+  end
+end
+
 get '/hello_world' do
   'hello world'
 end
