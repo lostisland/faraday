@@ -18,8 +18,8 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_sets_default_adapter_if_none_set
-    default_middleware = Faraday::Request.lookup_module :url_encoded
-    default_adapter_klass = Faraday::Adapter.lookup_module Faraday.default_adapter
+    default_middleware = Faraday::Request.lookup_middleware :url_encoded
+    default_adapter_klass = Faraday::Adapter.lookup_middleware Faraday.default_adapter
     assert @builder[0] == default_middleware
     assert @builder[1] == default_adapter_klass
   end
@@ -94,12 +94,48 @@ class MiddlewareStackTest < Faraday::TestCase
     assert_equal @builder.handlers.first, Faraday::Builder::Handler.new(Apple)
   end
 
+  def test_unregistered_symbol
+    err = assert_raise(RuntimeError) { build_stack :apple }
+    assert_equal ":apple is not registered on Faraday::Middleware", err.message
+  end
+
+  def test_registered_symbol
+    Faraday.register_middleware :apple => Apple
+    begin
+      build_stack :apple
+      assert_handlers %w[Apple]
+    ensure
+      unregister_middleware Faraday::Middleware, :apple
+    end
+  end
+
+  def test_registered_symbol_with_proc
+    Faraday.register_middleware :apple => lambda { Apple }
+    begin
+      build_stack :apple
+      assert_handlers %w[Apple]
+    ensure
+      unregister_middleware Faraday::Middleware, :apple
+    end
+  end
+
+  def test_registered_symbol_with_type
+    Faraday.register_middleware :request, :orange => Orange
+    begin
+      build_stack {|b| b.request :orange }
+      assert_handlers %w[Orange]
+    ensure
+      unregister_middleware Faraday::Request, :orange
+    end
+  end
+
   private
 
   # make a stack with test adapter that reflects the order of middleware
   def build_stack(*handlers)
     @builder.build do |b|
       handlers.each { |handler| b.use(*handler) }
+      yield b if block_given?
 
       b.adapter :test do |stub|
         stub.get '/' do |env|
@@ -114,5 +150,10 @@ class MiddlewareStackTest < Faraday::TestCase
     echoed_list = @conn.get('/').body.to_s.split(':')
     echoed_list.shift if echoed_list.first == ''
     assert_equal list, echoed_list
+  end
+
+  def unregister_middleware(component, key)
+    # TODO: unregister API?
+    component.instance_variable_get('@registered_middleware').delete(key)
   end
 end

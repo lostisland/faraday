@@ -21,12 +21,13 @@ module Faraday
 
     extend Forwardable
     extend AutoloadHelper
+    extend MiddlewareRegistry
 
     autoload_all 'faraday/response',
       :RaiseError => 'raise_error',
       :Logger     => 'logger'
 
-    register_lookup_modules \
+    register_middleware \
       :raise_error => :RaiseError,
       :logger      => :Logger
 

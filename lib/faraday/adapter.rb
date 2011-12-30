@@ -3,6 +3,7 @@ module Faraday
     CONTENT_LENGTH = 'Content-Length'.freeze
 
     extend AutoloadHelper
+    extend MiddlewareRegistry
 
     autoload_all 'faraday/adapter',
       :ActionDispatch => 'action_dispatch',
@@ -13,7 +14,7 @@ module Faraday
       :Excon          => 'excon',
       :Test           => 'test'
 
-    register_lookup_modules \
+    register_middleware \
       :action_dispatch => :ActionDispatch,
       :test            => :Test,
       :net_http        => :NetHttp,

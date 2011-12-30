@@ -33,16 +33,28 @@ module Faraday
     @default_connection ||= Connection.new
   end
 
+  module MiddlewareRegistry
+    # Internal: Register middleware class(es) on the current module.
+    #
+    # mapping - A Hash mapping Symbol keys to classes. See
+    #           Faraday.register_middleware for more details.
+    def register_middleware(mapping)
+      (@registered_middleware ||= {}).update(mapping)
+    end
+
+    # Internal: Lookup middleware class with a registered Symbol shortcut.
+    #
+    # Returns a middleware Class.
+    def lookup_middleware(key)
+      unless defined? @registered_middleware and found = @registered_middleware[key]
+        raise "#{key.inspect} is not registered on #{self}"
+      end
+      found = @registered_middleware[key] = found.call if found.is_a? Proc
+      found.is_a?(Module) ? found : const_get(found)
+    end
+  end
+
   module AutoloadHelper
-    def register_lookup_modules(mods)
-      (@lookup_module_index ||= {}).update(mods)
-    end
-
-    def lookup_module(key)
-      return if !@lookup_module_index
-      const_get @lookup_module_index[key] || key
-    end
-
     def autoload_all(prefix, options)
       if prefix =~ /^faraday(\/|$)/i
         prefix = File.join(Faraday.root_path, prefix)
@@ -67,6 +79,29 @@ module Faraday
   end
 
   extend AutoloadHelper
+
+  # Public: register middleware classes under a short name.
+  #
+  # type    - A Symbol specifying the kind of middleware (default: :middleware)
+  # mapping - A Hash mapping Symbol keys to classes. Classes can be expressed
+  #           as fully qualified constant, or a Proc that will be lazily called
+  #           to return the former.
+  #
+  # Examples
+  #
+  #   Faraday.register_middleware :aloha => MyModule::Aloha
+  #   Faraday.register_middleware :response, :boom => MyModule::Boom
+  #
+  #   # shortcuts are now available in Builder:
+  #   builder.use :aloha
+  #   builder.response :boom
+  #
+  # Returns nothing.
+  def self.register_middleware type, mapping = nil
+    type, mapping = :middleware, type if mapping.nil?
+    component = self.const_get(type.to_s.capitalize)
+    component.register_middleware(mapping)
+  end
 
   autoload_all "faraday",
     :Middleware      => 'middleware',
