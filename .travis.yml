@@ -5,3 +5,8 @@ rvm:
   - jruby
   - rbx
   - ree
+
+before_script:
+  - "nohup bundle exec ruby test/live_server.rb &"
+  - "sleep 2"
+env: LIVE=1
