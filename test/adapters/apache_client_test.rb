@@ -4,7 +4,7 @@ module Adapters
   class ApacheClientTest < Faraday::TestCase
     def setup
       @connection = Faraday.new('http://disney.com') do |b|
-        b.adapter :apache_http_client
+        b.adapter :apache_client
       end
     end
 
