@@ -8,12 +8,12 @@ module Faraday
         
         req  = env[:request]
         args = [ env[:url] ]
-        env[:client_options] ||= {}
+        env[:client_options] ||= {:default_host => env[:url]}
         
         # The Java client sets this.  Setting it twice generates an error
         env[:request_headers].delete('Content-Length')
         
-        http = HTTP::Client.new env[:url], env[:client_options]
+        http = HTTP::Client.new env[:client_options]
         http.timeout_in_seconds = req[:timeout]    if req[:timeout]
         http.default_proxy      = req[:proxy].to_s if req[:proxy]
         http.connection_timeout = req[:open_timeout] * 1000 if req[:open_timeout]
