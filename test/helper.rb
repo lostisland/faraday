@@ -1,4 +1,5 @@
 require 'test/unit'
+require 'stringio'
 
 if ENV['LEFTRIGHT']
   begin
@@ -29,6 +30,16 @@ module Faraday
     def test_default
       assert true
     end unless defined? ::MiniTest
+
+    def capture_warnings
+      old, $stderr = $stderr, StringIO.new
+      begin
+        yield
+        $stderr.string
+      ensure
+        $stderr = old
+      end
+    end
   end
 end
 

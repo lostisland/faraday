@@ -125,7 +125,9 @@ module Faraday
     # Be sure to URI escape '+' symbols to %2B. Otherwise, they get interpreted
     # as spaces.
     def escape(s)
-      s.to_s.gsub(/([^a-zA-Z0-9_.-]+)/n) do |match|
+      s = s.to_s
+      s = s.dup.force_encoding('binary') if s.respond_to? :force_encoding
+      s.gsub(/([^a-zA-Z0-9_.-]+)/n) do |match|
         '%' << match.unpack('H2'*bytesize(match)).join('%').tap { |c| c.upcase! }
       end
     end
