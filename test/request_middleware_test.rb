@@ -32,7 +32,7 @@ class RequestMiddlewareTest < Faraday::TestCase
   def test_url_encoded_no_header
     response = @conn.post('/echo', { :fruit => %w[apples oranges] })
     assert_equal 'application/x-www-form-urlencoded', response.headers['Content-Type']
-    assert_equal 'fruit[]=apples&fruit[]=oranges', response.body
+    assert_equal 'fruit%5B%5D=apples&fruit%5B%5D=oranges', response.body
   end
 
   def test_url_encoded_with_header
@@ -54,6 +54,11 @@ class RequestMiddlewareTest < Faraday::TestCase
       assert_equal "str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2", response.body
     }
     assert err.empty?
+  end
+
+  def test_url_encoded_nested_keys
+    response = @conn.post('/echo', {'a'=>{'b'=>{'c'=>['d']}}})
+    assert_equal "a%5Bb%5D%5Bc%5D%5B%5D=d", response.body
   end
 
   def test_multipart

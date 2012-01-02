@@ -149,10 +149,10 @@ module Faraday
     def build_nested_query(value, prefix = nil)
       case value
       when Array
-        value.map { |v| build_nested_query(v, "#{prefix}[]") }.join("&")
+        value.map { |v| build_nested_query(v, "#{prefix}%5B%5D") }.join("&")
       when Hash
         value.map { |k, v|
-          build_nested_query(v, prefix ? "#{prefix}[#{escape(k)}]" : escape(k))
+          build_nested_query(v, prefix ? "#{prefix}%5B#{escape(k)}%5D" : escape(k))
         }.join("&")
       when NilClass
         prefix
