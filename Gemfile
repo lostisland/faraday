@@ -21,8 +21,7 @@ group :test do
   # ActiveSupport::JSON will be used in ruby 1.8 and Yajl in 1.9; this is to test against both adapters
   gem 'activesupport', '~> 2.3', :require => nil, :platforms => [:ruby_18, :jruby]
   gem 'yajl-ruby', '~> 0.8', :require => 'yajl', :platforms => :ruby_19
-  # Once these changes get merged I'll set this to the aesterline's repo
-  gem 'jruby-httpclient', :git => 'https://github.com/aesterline/jruby-httpclient.git', :ref => 'ebb9b6e', :require => false, :platforms => :jruby
+  gem 'jruby-httpclient', '~> 1.1', :require => nil, :platform => :jruby
 end
 
 platforms :jruby do
