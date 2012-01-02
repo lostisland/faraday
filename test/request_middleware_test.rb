@@ -1,3 +1,4 @@
+# encoding: utf-8
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 Faraday::CompositeReadIO.send :attr_reader, :ios
@@ -45,6 +46,14 @@ class RequestMiddlewareTest < Faraday::TestCase
     assert_equal 'application/x-www-form-urlencoded', response.headers['Content-Type']
     expected = { 'user' => {'name' => 'Mislav', 'web' => 'mislav.net'} }
     assert_equal expected, Faraday::Utils.parse_nested_query(response.body)
+  end
+
+  def test_url_encoded_unicode
+    err = capture_warnings {
+      response = @conn.post('/echo', {:str => "eé cç aã aâ"})
+      assert_equal "str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2", response.body
+    }
+    assert err.empty?
   end
 
   def test_multipart
