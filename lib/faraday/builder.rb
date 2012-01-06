@@ -87,8 +87,7 @@ module Faraday
       @handlers.frozen?
     end
 
-    def use(klass, *args)
-      block = block_given? ? Proc.new : nil
+    def use(klass, *args, &block)
       if klass.is_a? Symbol
         use_symbol(Faraday::Middleware, klass, *args, &block)
       else
@@ -97,18 +96,15 @@ module Faraday
       end
     end
 
-    def request(key, *args)
-      block = block_given? ? Proc.new : nil
+    def request(key, *args, &block)
       use_symbol(Faraday::Request, key, *args, &block)
     end
 
-    def response(key, *args)
-      block = block_given? ? Proc.new : nil
+    def response(key, *args, &block)
       use_symbol(Faraday::Response, key, *args, &block)
     end
 
-    def adapter(key, *args)
-      block = block_given? ? Proc.new : nil
+    def adapter(key, *args, &block)
       use_symbol(Faraday::Adapter, key, *args, &block)
     end
 
@@ -146,8 +142,7 @@ module Faraday
       raise StackLocked, "can't modify middleware stack after making a request" if locked?
     end
 
-    def use_symbol(mod, key, *args)
-      block = block_given? ? Proc.new : nil
+    def use_symbol(mod, key, *args, &block)
       use(mod.lookup_middleware(key), *args, &block)
     end
 

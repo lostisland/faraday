@@ -71,33 +71,27 @@ module Faraday
       end
     end
 
-    def get(url = nil, headers = nil)
-      block = block_given? ? Proc.new : nil
+    def get(url = nil, headers = nil, &block)
       run_request(:get, url, nil, headers, &block)
     end
 
-    def post(url = nil, body = nil, headers = nil)
-      block = block_given? ? Proc.new : nil
+    def post(url = nil, body = nil, headers = nil, &block)
       run_request(:post, url, body, headers, &block)
     end
 
-    def put(url = nil, body = nil, headers = nil)
-      block = block_given? ? Proc.new : nil
+    def put(url = nil, body = nil, headers = nil, &block)
       run_request(:put, url, body, headers, &block)
     end
 
-    def patch(url = nil, body = nil, headers = nil)
-      block = block_given? ? Proc.new : nil
+    def patch(url = nil, body = nil, headers = nil, &block)
       run_request(:patch, url, body, headers, &block)
     end
 
-    def head(url = nil, headers = nil)
-      block = block_given? ? Proc.new : nil
+    def head(url = nil, headers = nil, &block)
       run_request(:head, url, nil, headers, &block)
     end
 
-    def delete(url = nil, headers = nil)
-      block = block_given? ? Proc.new : nil
+    def delete(url = nil, headers = nil, &block)
       run_request(:delete, url, nil, headers, &block)
     end
 
