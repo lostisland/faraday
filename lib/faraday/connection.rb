@@ -71,28 +71,25 @@ module Faraday
       end
     end
 
-    def get(url = nil, headers = nil, &block)
-      run_request(:get, url, nil, headers, &block)
+    # get/head/delete(url, params, headers)
+    %w[get head delete].each do |method|
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        def #{method}(url = nil, params = nil, headers = nil)
+          run_request(:#{method}, url, nil, headers) { |request|
+            request.params = params if params
+            yield request if block_given?
+          }
+        end
+      RUBY
     end
 
-    def post(url = nil, body = nil, headers = nil, &block)
-      run_request(:post, url, body, headers, &block)
-    end
-
-    def put(url = nil, body = nil, headers = nil, &block)
-      run_request(:put, url, body, headers, &block)
-    end
-
-    def patch(url = nil, body = nil, headers = nil, &block)
-      run_request(:patch, url, body, headers, &block)
-    end
-
-    def head(url = nil, headers = nil, &block)
-      run_request(:head, url, nil, headers, &block)
-    end
-
-    def delete(url = nil, headers = nil, &block)
-      run_request(:delete, url, nil, headers, &block)
+    # post/put/patch(url, body, headers)
+    %w[post put patch].each do |method|
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        def #{method}(url = nil, body = nil, headers = nil, &block)
+          run_request(:#{method}, url, body, headers, &block)
+        end
+      RUBY
     end
 
     def basic_auth(login, pass)

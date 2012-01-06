@@ -13,7 +13,7 @@ module Adapters
       stub_request(:get, 'disney.com/world').with(:headers => {'User-Agent'=>'Faraday Agent'}){ |request|
         request.headers["User-Agent"] == 'Faraday Agent'
       }
-      @connection.get('/world', :user_agent => 'Faraday Agent')
+      @connection.get('/world', nil, :user_agent => 'Faraday Agent')
     end
 
   end if defined? ::Typhoeus
