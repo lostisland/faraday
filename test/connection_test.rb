@@ -204,6 +204,14 @@ class TestConnection < Faraday::TestCase
     assert_equal 'https://sushi.com/sushi/sake.html', uri.to_s
   end
 
+  def test_build_url_handles_given_url_without_empty_method
+    conn = Faraday::Connection.new
+    path = URI('/sake.html')
+    uri = conn.build_url(path)
+    assert !path.respond_to?(:empty?), 'given uri should not respond to #empty?'
+    assert_equal '/sake.html', uri.path
+  end
+
   def test_proxy_accepts_string
     with_proxy_env "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
