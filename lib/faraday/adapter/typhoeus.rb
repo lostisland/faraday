@@ -21,12 +21,7 @@ module Faraday
           :headers => env[:request_headers],
           :disable_ssl_peer_verification => (env[:ssl] && !env[:ssl].fetch(:verify, true))
 
-        if ssl = env[:ssl]
-          req.ssl_cert   = ssl[:client_cert_file] if ssl[:client_cert_file]
-          req.ssl_key    = ssl[:client_key_file]  if ssl[:client_key_file]
-          req.ssl_cacert = ssl[:ca_file]          if ssl[:ca_file]
-          req.ssl_capath = ssl[:ca_path]          if ssl[:ca_path]
-        end
+        configure_ssl_on req, env
 
         env_req = env[:request]
 
@@ -58,6 +53,15 @@ module Faraday
         @app.call env
       rescue Errno::ECONNREFUSED
         raise Error::ConnectionFailed, $!
+      end
+
+      def configure_ssl_on(req, env)
+        ssl = env[:ssl]
+
+        req.ssl_cert   = ssl[:client_cert_file] if ssl[:client_cert_file]
+        req.ssl_key    = ssl[:client_key_file]  if ssl[:client_key_file]
+        req.ssl_cacert = ssl[:ca_file]          if ssl[:ca_file]
+        req.ssl_capath = ssl[:ca_path]          if ssl[:ca_path]
       end
     end
   end
