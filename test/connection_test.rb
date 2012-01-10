@@ -149,10 +149,17 @@ class TestConnection < Faraday::TestCase
     assert_equal '/sake.html', uri.path
   end
 
-  def test_build_url_doesnt_add_ending_slash
+  def test_build_url_doesnt_add_ending_slash_given_nil_url
     conn = Faraday::Connection.new
     conn.url_prefix = "http://sushi.com/nigiri"
     uri = conn.build_url(nil)
+    assert_equal "/nigiri", uri.path
+  end
+
+  def test_build_url_doesnt_add_ending_slash_given_empty_url
+    conn = Faraday::Connection.new
+    conn.url_prefix = "http://sushi.com/nigiri"
+    uri = conn.build_url('')
     assert_equal "/nigiri", uri.path
   end
 
