@@ -149,10 +149,17 @@ class TestConnection < Faraday::TestCase
     assert_equal '/sake.html', uri.path
   end
 
-  def test_build_url_doesnt_add_ending_slash
+  def test_build_url_doesnt_add_ending_slash_given_nil_url
     conn = Faraday::Connection.new
     conn.url_prefix = "http://sushi.com/nigiri"
     uri = conn.build_url(nil)
+    assert_equal "/nigiri", uri.path
+  end
+
+  def test_build_url_doesnt_add_ending_slash_given_empty_url
+    conn = Faraday::Connection.new
+    conn.url_prefix = "http://sushi.com/nigiri"
+    uri = conn.build_url('')
     assert_equal "/nigiri", uri.path
   end
 
@@ -195,6 +202,12 @@ class TestConnection < Faraday::TestCase
     conn.scheme = 'https'
     uri = conn.build_url("sake.html")
     assert_equal 'https://sushi.com/sushi/sake.html', uri.to_s
+  end
+
+  def test_build_url_handles_uri_instances
+    conn = Faraday::Connection.new
+    uri = conn.build_url(URI('/sake.html'))
+    assert_equal '/sake.html', uri.path
   end
 
   def test_proxy_accepts_string

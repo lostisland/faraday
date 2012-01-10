@@ -196,7 +196,7 @@ module Faraday
     #   conn.build_url("nigiri", :page => 2) # => https://sushi.com/api/nigiri?token=abc&page=2
     #
     def build_url(url, extra_params = nil)
-      url = nil if url and url.empty?
+      url = nil if url.respond_to?(:empty?) and url.empty?
       base = url_prefix
       if url and base.path and base.path !~ /\/$/
         base = base.dup
