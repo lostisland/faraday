@@ -21,19 +21,10 @@ module Faraday
           :headers => env[:request_headers],
           :disable_ssl_peer_verification => (env[:ssl] && !env[:ssl].fetch(:verify, true))
 
-        configure_ssl_on req, env
+        configure_ssl_on   req, env
+        configure_proxy_on req, env
 
         env_req = env[:request]
-
-        if proxy = env_req[:proxy]
-          req.proxy = "#{proxy[:uri].host}:#{proxy[:uri].port}"
-
-          if proxy[:username] && proxy[:password]
-            req.proxy_username = proxy[:username]
-            req.proxy_password = proxy[:password]
-          end
-        end
-
         req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
         req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
 
@@ -62,6 +53,18 @@ module Faraday
         req.ssl_key    = ssl[:client_key_file]  if ssl[:client_key_file]
         req.ssl_cacert = ssl[:ca_file]          if ssl[:ca_file]
         req.ssl_capath = ssl[:ca_path]          if ssl[:ca_path]
+      end
+
+      def configure_proxy_on(req, env)
+        proxy = env[:request][:proxy]
+        return unless proxy
+
+        req.proxy = "#{proxy[:uri].host}:#{proxy[:uri].port}"
+
+        if proxy[:username] && proxy[:password]
+          req.proxy_username = proxy[:username]
+          req.proxy_password = proxy[:password]
+        end
       end
     end
   end
