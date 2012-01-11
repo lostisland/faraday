@@ -175,26 +175,6 @@ class TestConnection < Faraday::TestCase
     assert_equal "a%5Bb%5D=c", uri.query
   end
 
-  def test_build_url_mashes_default_and_given_params_together
-    conn = Faraday::Connection.new 'http://sushi.com/api?token=abc', :params => {'format' => 'json'}
-    url = conn.build_url("nigiri?page=1", :limit => 5)
-    assert_equal %w[format=json limit=5 page=1 token=abc], url.query.split('&').sort
-  end
-
-  def test_build_url_overrides_default_params_with_given_params
-    conn = Faraday::Connection.new 'http://sushi.com/api?token=abc', :params => {'format' => 'json'}
-    url = conn.build_url("nigiri?page=1", :limit => 5, :token => 'def', :format => 'xml')
-    assert_equal %w[format=xml limit=5 page=1 token=def], url.query.split('&').sort
-  end
-
-  def test_default_params_hash_has_indifferent_access
-    conn = Faraday::Connection.new :params => {'format' => 'json'}
-    assert conn.params.has_key?(:format)
-    conn.params[:format] = 'xml'
-    url = conn.build_url("")
-    assert_equal %w[format=xml], url.query.split('&').sort
-  end
-
   def test_build_url_parses_url
     conn = Faraday::Connection.new
     uri = conn.build_url("http://sushi.com/sake.html")
@@ -307,5 +287,83 @@ class TestConnection < Faraday::TestCase
     }
     assert_equal 1, conn.builder.handlers.size
     assert_equal '/omnom', conn.path_prefix
+  end
+end
+
+class TestRequestParams < Faraday::TestCase
+  def create_connection(*args)
+    @conn = Faraday::Connection.new(*args) do |conn|
+      yield conn if block_given?
+      class << conn
+        undef app
+        def app() lambda { |env| env } end
+      end
+    end
+  end
+
+  def get(*args)
+    env = @conn.get(*args) do |req|
+      yield req if block_given?
+    end
+    env[:url].query
+  end
+
+  def assert_query_equal(expected, query)
+    assert_equal expected, query.split('&').sort
+  end
+
+  def test_merges_connection_and_request_params
+    create_connection 'http://a.co/?token=abc', :params => {'format' => 'json'}
+    query = get '?page=1', :limit => 5
+    assert_query_equal %w[format=json limit=5 page=1 token=abc], query
+  end
+
+  def test_overrides_connection_params
+    create_connection 'http://a.co/?a=a&b=b&c=c', :params => {:a => 'A'} do |conn|
+      conn.params[:b] = 'B'
+      assert_equal 'c', conn.params[:c]
+    end
+    assert_query_equal %w[a=A b=B c=c], get
+  end
+
+  def test_all_overrides_connection_params
+    create_connection 'http://a.co/?a=a', :params => {:c => 'c'} do |conn|
+      conn.params = {'b' => 'b'}
+    end
+    assert_query_equal %w[b=b], get
+  end
+
+  def test_overrides_request_params
+    create_connection
+    query = get '?p=1&a=a', :p => 2
+    assert_query_equal %w[a=a p=2], query
+  end
+
+  def test_overrides_request_params_block
+    create_connection
+    query = get '?p=1&a=a', :p => 2 do |req|
+      req.params[:p] = 3
+    end
+    assert_query_equal %w[a=a p=3], query
+  end
+
+  def test_overrides_request_params_block_url
+    create_connection
+    query = get nil, :p => 2 do |req|
+      req.url '?p=1&a=a', 'p' => 3
+    end
+    assert_query_equal %w[a=a p=3], query
+  end
+
+  def test_overrides_all_request_params
+    create_connection :params => {:c => 'c'}
+    query = get '?p=1&a=a', :p => 2 do |req|
+      assert_equal 'a', req.params[:a]
+      assert_equal 'c', req.params['c']
+      assert_equal 2, req.params['p']
+      req.params = {:b => 'b'}
+      assert_equal 'b', req.params['b']
+    end
+    assert_query_equal %w[b=b], query
   end
 end
