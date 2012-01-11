@@ -50,7 +50,7 @@ class EnvTest < Faraday::TestCase
     env = make_env do |req|
       req.options[:timeout] = 10
       req.options[:custom] = true
-      req.options[:oauth] = {:consumer_secret => 'xyz'}
+      req.options[:oauth][:consumer_secret] = 'xyz'
     end
     assert_equal 10, env[:request][:timeout]
     assert_equal 5, env[:request][:open_timeout]
@@ -73,7 +73,7 @@ class EnvTest < Faraday::TestCase
   private
 
   def make_env(method = :get, connection = @conn, &block)
-    request = Faraday::Request.create(method, &block)
+    request = connection.build_request(method, &block)
     request.to_env(connection)
   end
 end

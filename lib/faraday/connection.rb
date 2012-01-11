@@ -11,8 +11,8 @@ module Faraday
     METHODS = Set.new [:get, :post, :put, :delete, :head, :patch, :options]
     METHODS_WITH_BODIES = Set.new [:post, :put, :patch, :options]
 
-    attr_accessor :params, :headers, :parallel_manager
-    attr_reader   :url_prefix, :builder, :options, :ssl
+    attr_accessor :parallel_manager
+    attr_reader   :params, :headers, :url_prefix, :builder, :options, :ssl
 
     # :url
     # :params
@@ -30,11 +30,6 @@ module Faraday
       @ssl              = options[:ssl]     || {}
       @parallel_manager = options[:parallel]
 
-      proxy(options.fetch(:proxy) { ENV['http_proxy'] })
-
-      @params.update options[:params]   if options[:params]
-      @headers.update options[:headers] if options[:headers]
-
       @builder = options[:builder] || begin
         # pass an empty block to Builder so it doesn't assume default middleware
         block = block_given?? Proc.new {|b| } : nil
@@ -46,7 +41,19 @@ module Faraday
       @params.update options[:params]   if options[:params]
       @headers.update options[:headers] if options[:headers]
 
+      proxy(options.fetch(:proxy) { ENV['http_proxy'] })
+
       yield self if block_given?
+    end
+
+    # Public: Replace default query parameters.
+    def params=(hash)
+      @params.replace hash
+    end
+
+    # Public: Replace default request headers.
+    def headers=(hash)
+      @headers.replace hash
     end
 
     extend Forwardable
@@ -76,7 +83,7 @@ module Faraday
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, params = nil, headers = nil)
           run_request(:#{method}, url, nil, headers) { |request|
-            request.params = params if params
+            request.params.update(params) if params
             yield request if block_given?
           }
         end
@@ -148,7 +155,7 @@ module Faraday
       uri = @url_prefix = self.class.URI(url)
       self.path_prefix = uri.path
 
-      @params.merge_query(uri.query)
+      params.merge_query(uri.query)
       uri.query = nil
 
       if uri.user && uri.password
@@ -173,7 +180,7 @@ module Faraday
         raise ArgumentError, "unknown http method: #{method}"
       end
 
-      request = Request.create(method) do |req|
+      request = build_request(method) do |req|
         req.url(url)                if url
         req.headers.update(headers) if headers
         req.body = body             if body
@@ -182,6 +189,18 @@ module Faraday
 
       env = request.to_env(self)
       self.app.call(env)
+    end
+
+    # Internal: Creates and configures the request object.
+    #
+    # Returns the new Request.
+    def build_request(method)
+      Request.create(method) do |req|
+        req.params  = self.params.dup
+        req.headers = self.headers.dup
+        req.options = self.options.merge(:proxy => self.proxy)
+        yield req if block_given?
+      end
     end
 
     # Takes a relative url for a request and combines it with the defaults
@@ -196,6 +215,23 @@ module Faraday
     #   conn.build_url("nigiri", :page => 2) # => https://sushi.com/api/nigiri?token=abc&page=2
     #
     def build_url(url, extra_params = nil)
+      uri = build_exclusive_url(url)
+
+      query_values = self.params.dup.merge_query(uri.query)
+      query_values.update extra_params if extra_params
+      uri.query = query_values.empty? ? nil : query_values.to_query
+
+      uri
+    end
+
+    # Internal: Build an absolute URL based on url_prefix.
+    #
+    # url    - A String or URI-like object
+    # params - A Faraday::Utils::ParamsHash to replace the query values
+    #          of the resulting url (default: nil).
+    #
+    # Returns the resulting URI instance.
+    def build_exclusive_url(url, params = nil)
       url = nil if url and url.empty?
       base = url_prefix
       if url and base.path and base.path !~ /\/$/
@@ -203,11 +239,8 @@ module Faraday
         base.path = base.path + '/'  # ensure trailing slash
       end
       uri = url ? base + url : base
-
-      params = @params.dup.merge_query(uri.query)
-      params.update extra_params if extra_params
-      uri.query = params.empty? ? nil : params.to_query
-
+      uri.query = params.to_query if params
+      uri.query = nil if uri.query and uri.query.empty?
       uri
     end
 
