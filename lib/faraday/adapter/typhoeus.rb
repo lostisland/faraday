@@ -21,7 +21,7 @@ module Faraday
         read_body_on env
 
         hydra = env[:parallel_manager] || self.class.setup_parallel_manager
-        hydra.queue build_request(env)
+        hydra.queue request(env)
         hydra.run unless parallel?(env)
       end
 
@@ -30,7 +30,7 @@ module Faraday
         env[:body] = env[:body].read if env[:body].respond_to? :read
       end
 
-      def build_request(env)
+      def request(env)
         req = ::Typhoeus::Request.new env[:url].to_s,
           :method  => env[:method],
           :body    => env[:body],
