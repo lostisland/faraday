@@ -13,10 +13,9 @@ module Faraday
         super
 
         read_body_on env
-        req = build_request env
 
         hydra = env[:parallel_manager] || self.class.setup_parallel_manager
-        hydra.queue req
+        hydra.queue build_request(env)
         hydra.run unless parallel?(env)
 
         @app.call env
