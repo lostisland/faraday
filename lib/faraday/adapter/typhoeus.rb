@@ -12,9 +12,7 @@ module Faraday
       def call(env)
         super
 
-        # TODO: support streaming requests
-        env[:body] = env[:body].read if env[:body].respond_to? :read
-
+        read_body_on env
         req = build_request env
 
         hydra = env[:parallel_manager] || self.class.setup_parallel_manager
@@ -24,6 +22,11 @@ module Faraday
         @app.call env
       rescue Errno::ECONNREFUSED
         raise Error::ConnectionFailed, $!
+      end
+
+      # TODO: support streaming requests
+      def read_body_on(env)
+        env[:body] = env[:body].read if env[:body].respond_to? :read
       end
 
       def build_request(env)
