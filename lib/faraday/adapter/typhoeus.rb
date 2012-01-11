@@ -16,7 +16,7 @@ module Faraday
       end
 
       def perform_request(env)
-        read_body_on env
+        read_body env
 
         hydra = env[:parallel_manager] || self.class.setup_parallel_manager
         hydra.queue request(env)
@@ -26,7 +26,7 @@ module Faraday
       end
 
       # TODO: support streaming requests
-      def read_body_on(env)
+      def read_body(env)
         env[:body] = env[:body].read if env[:body].respond_to? :read
       end
 
@@ -37,9 +37,9 @@ module Faraday
           :headers => env[:request_headers],
           :disable_ssl_peer_verification => (env[:ssl] && !env[:ssl].fetch(:verify, true))
 
-        configure_ssl_on     req, env
-        configure_proxy_on   req, env
-        configure_timeout_on req, env
+        configure_ssl     req, env
+        configure_proxy   req, env
+        configure_timeout req, env
 
         req.on_complete do |resp|
           save_response(env, resp.code, resp.body) do |response_headers|
@@ -52,7 +52,7 @@ module Faraday
         req
       end
 
-      def configure_ssl_on(req, env)
+      def configure_ssl(req, env)
         ssl = env[:ssl]
 
         req.ssl_cert   = ssl[:client_cert_file] if ssl[:client_cert_file]
@@ -61,7 +61,7 @@ module Faraday
         req.ssl_capath = ssl[:ca_path]          if ssl[:ca_path]
       end
 
-      def configure_proxy_on(req, env)
+      def configure_proxy(req, env)
         proxy = env[:request][:proxy]
         return unless proxy
 
@@ -73,7 +73,7 @@ module Faraday
         end
       end
 
-      def configure_timeout_on(req, env)
+      def configure_timeout(req, env)
         env_req = env[:request]
         req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
         req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
