@@ -21,12 +21,9 @@ module Faraday
           :headers => env[:request_headers],
           :disable_ssl_peer_verification => (env[:ssl] && !env[:ssl].fetch(:verify, true))
 
-        configure_ssl_on   req, env
-        configure_proxy_on req, env
-
-        env_req = env[:request]
-        req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
-        req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
+        configure_ssl_on     req, env
+        configure_proxy_on   req, env
+        configure_timeout_on req, env
 
         is_parallel = !!env[:parallel_manager]
         req.on_complete do |resp|
@@ -65,6 +62,12 @@ module Faraday
           req.proxy_username = proxy[:username]
           req.proxy_password = proxy[:password]
         end
+      end
+
+      def configure_timeout_on(req, env)
+        env_req = env[:request]
+        req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
+        req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
       end
     end
   end
