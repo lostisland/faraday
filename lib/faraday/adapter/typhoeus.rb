@@ -13,8 +13,6 @@ module Faraday
         super
         perform_request env
         @app.call env
-      rescue Errno::ECONNREFUSED
-        raise Error::ConnectionFailed, $!
       end
 
       def perform_request(env)
@@ -23,6 +21,8 @@ module Faraday
         hydra = env[:parallel_manager] || self.class.setup_parallel_manager
         hydra.queue request(env)
         hydra.run unless parallel?(env)
+      rescue Errno::ECONNREFUSED
+        raise Error::ConnectionFailed, $!
       end
 
       # TODO: support streaming requests
