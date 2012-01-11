@@ -9,7 +9,7 @@ module Faraday
   #     req.body = 'abc'
   #   end
   #
-  class Request < Struct.new(:path, :params, :headers, :body, :options)
+  class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
     extend AutoloadHelper
     extend MiddlewareRegistry
 
@@ -28,24 +28,38 @@ module Faraday
       :basic_auth  => :BasicAuthentication,
       :token_auth  => :TokenAuthentication
 
-    attr_reader :method
-
     def self.create(request_method)
       new(request_method).tap do |request|
         yield request if block_given?
       end
     end
 
-    def initialize(request_method)
-      @method = request_method
-      self.params  = {}
-      self.headers = {}
-      self.options = {}
+    # Public: Replace params, preserving the existing hash type
+    def params=(hash)
+      if params then params.replace hash
+      else super
+      end
     end
 
-    def url(path, params = {})
-      self.path   = path
-      self.params = params
+    # Public: Replace request headers, preserving the existing hash type
+    def headers=(hash)
+      if headers then headers.replace hash
+      else super
+      end
+    end
+
+    def url(path, params = nil)
+      if path.respond_to? :query
+        if query = path.query
+          path = path.dup
+          path.query = nil
+        end
+      else
+        path, query = path.split('?', 2)
+      end
+      self.path = path
+      self.params.merge_query query
+      self.params.update(params) if params
     end
 
     def [](key)
@@ -73,17 +87,12 @@ module Faraday
     #     :password   - Proxy server password
     # :ssl - Hash of options for configuring SSL requests.
     def to_env(connection)
-      env_params  = connection.params.merge(params)
-      env_headers = connection.headers.merge(headers)
-      request_options = Utils.deep_merge(connection.options, options)
-      Utils.deep_merge!(request_options, :proxy => connection.proxy)
-
       { :method           => method,
         :body             => body,
-        :url              => connection.build_url(path, env_params),
-        :request_headers  => env_headers,
+        :url              => connection.build_exclusive_url(path, params),
+        :request_headers  => headers,
         :parallel_manager => connection.parallel_manager,
-        :request          => request_options,
+        :request          => options,
         :ssl              => connection.ssl}
     end
   end
