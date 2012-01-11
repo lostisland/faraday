@@ -62,7 +62,7 @@ module Faraday
       end
 
       def configure_proxy(req, env)
-        proxy = env[:request][:proxy]
+        proxy = request_options(env)[:proxy]
         return unless proxy
 
         req.proxy = "#{proxy[:uri].host}:#{proxy[:uri].port}"
@@ -74,9 +74,13 @@ module Faraday
       end
 
       def configure_timeout(req, env)
-        env_req = env[:request]
+        env_req = request_options(env)
         req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
         req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
+      end
+
+      def request_options(env)
+        env[:request]
       end
 
       def parallel?(env)
