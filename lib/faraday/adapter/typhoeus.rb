@@ -15,6 +15,18 @@ module Faraday
         # TODO: support streaming requests
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
+        req = build_request env
+
+        hydra = env[:parallel_manager] || self.class.setup_parallel_manager
+        hydra.queue req
+        hydra.run unless parallel?(env)
+
+        @app.call env
+      rescue Errno::ECONNREFUSED
+        raise Error::ConnectionFailed, $!
+      end
+
+      def build_request(env)
         req = ::Typhoeus::Request.new env[:url].to_s,
           :method  => env[:method],
           :body    => env[:body],
@@ -25,22 +37,15 @@ module Faraday
         configure_proxy_on   req, env
         configure_timeout_on req, env
 
-        is_parallel = !!env[:parallel_manager]
         req.on_complete do |resp|
           save_response(env, resp.code, resp.body) do |response_headers|
             response_headers.parse resp.headers
           end
           # in async mode, :response is initialized at this point
-          env[:response].finish(env) if is_parallel
+          env[:response].finish(env) if parallel?(env)
         end
 
-        hydra = env[:parallel_manager] || self.class.setup_parallel_manager
-        hydra.queue req
-        hydra.run unless is_parallel
-
-        @app.call env
-      rescue Errno::ECONNREFUSED
-        raise Error::ConnectionFailed, $!
+        req
       end
 
       def configure_ssl_on(req, env)
@@ -68,6 +73,10 @@ module Faraday
         env_req = env[:request]
         req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
         req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
+      end
+
+      def parallel?(env)
+        !!env[:parallel_manager]
       end
     end
   end
