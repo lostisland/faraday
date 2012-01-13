@@ -42,6 +42,14 @@ module Faraday
         configure_timeout req, env
 
         req.on_complete do |resp|
+          if resp.timed_out?
+            if parallel?(env)
+              # TODO: error callback in async mode
+            else
+              raise Faraday::Error::TimeoutError, "request timed out"
+            end
+          end
+
           save_response(env, resp.code, resp.body) do |response_headers|
             response_headers.parse resp.headers
           end

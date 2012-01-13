@@ -34,11 +34,11 @@ module Faraday
               perform_single_request(env).
                 callback { EventMachine.stop }.
                 errback { |client|
-                  error = client.error || "connection failed"
+                  error = error_message(client)
                   EventMachine.stop
                 }
             end
-            raise Faraday::Error::ClientError, error if error
+            raise_error(error) if error
           else
             # EM is running: instruct upstream that this is an async request
             env[:parallel_manager] = true
@@ -62,6 +62,19 @@ module Faraday
             end
           end
         }
+      end
+
+      def error_message(client)
+        client.error or "request failed"
+      end
+
+      def raise_error(msg)
+        errklass = Faraday::Error::ClientError
+        if msg == Errno::ETIMEDOUT
+          errklass = Faraday::Error::TimeoutError
+          msg = "request timed out"
+        end
+        raise errklass, msg
       end
 
       def connection_config(env)
