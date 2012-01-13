@@ -1,16 +1,5 @@
 module Faraday
   class Adapter < Middleware
-    class << self
-      attr_accessor :supports_parallel_requests
-      alias supports_parallel_requests? supports_parallel_requests
-
-      # valid parallel managers should respond to #run with no parameters.
-      # otherwise, return a short wrapper around it.
-      def setup_parallel_manager(options = {})
-        nil
-      end
-    end
-
     CONTENT_LENGTH = 'Content-Length'.freeze
 
     extend AutoloadHelper
@@ -33,6 +22,19 @@ module Faraday
       :patron          => :Patron,
       :em_synchrony    => :EMSynchrony,
       :excon           => :Excon
+
+    module Parallelism
+      attr_writer :supports_parallel
+      def supports_parallel?() @supports_parallel end
+
+      def inherited(subclass)
+        super
+        subclass.supports_parallel = self.supports_parallel?
+      end
+    end
+
+    extend Parallelism
+    self.supports_parallel = false
 
     def call(env)
       if !env[:body] and Connection::METHODS_WITH_BODIES.include? env[:method]

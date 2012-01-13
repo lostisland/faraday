@@ -162,7 +162,7 @@ else
           connection.in_parallel do
             resp1 = connection.get('json')
             resp2 = connection.get('json')
-            if adapter.supports_parallel_requests?
+            if adapter.supports_parallel?
               assert connection.in_parallel?
               assert_nil resp1.body
               assert_nil resp2.body

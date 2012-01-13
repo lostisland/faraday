@@ -1,7 +1,7 @@
 module Faraday
   class Adapter
     class Typhoeus < Faraday::Adapter
-      self.supports_parallel_requests = true
+      self.supports_parallel = true
 
       def self.setup_parallel_manager(options = {})
         options.empty? ? ::Typhoeus::Hydra.hydra : ::Typhoeus::Hydra.new(options)
