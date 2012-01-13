@@ -28,6 +28,8 @@ module Faraday
       @params  = Utils::ParamsHash.new
       @options = options[:request] || {}
       @ssl     = options[:ssl]     || {}
+
+      @parallel_manager = nil
       @default_parallel_manager = options[:parallel_manager]
 
       @builder = options[:builder] || begin
@@ -108,15 +110,20 @@ module Faraday
       @builder.insert(0, Faraday::Request::TokenAuthentication, token, options)
     end
 
+    # Internal: Traverse the middleware stack in search of a
+    # parallel-capable adapter.
+    #
+    # Yields in case of not found.
+    #
+    # Returns a parallel manager or nil if not found.
     def default_parallel_manager
-      return @default_parallel_manager if @default_parallel_manager
-
-      adapter = @builder.handlers.select { |h|
-        h.klass.respond_to?(:setup_parallel_manager)
-      }.first
-
-      if adapter
-        @default_parallel_manager = adapter.klass.setup_parallel_manager
+      @default_parallel_manager ||= begin
+        handler = @builder.handlers.find { |h|
+          h.klass.respond_to?(:supports_parallel?) and h.klass.supports_parallel?
+        }
+        if handler then handler.klass.setup_parallel_manager
+        elsif block_given? then yield
+        end
       end
     end
 
@@ -125,7 +132,11 @@ module Faraday
     end
 
     def in_parallel(manager = nil)
-      @parallel_manager = manager || default_parallel_manager
+      @parallel_manager = manager || default_parallel_manager {
+        warn "Warning: `in_parallel` called but no parallel-capable adapter on Faraday stack"
+        warn caller[2,10].join("\n")
+        nil
+      }
       yield
       @parallel_manager && @parallel_manager.run
     ensure

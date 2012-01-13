@@ -143,32 +143,38 @@ else
           assert_match(/deleted/, create_connection(adapter).delete('delete_with_json').body)
         end
 
-        define_method "test_#{adapter}_async_requests_clear_parallel_manager_after_running_a_single_request" do
-          connection = create_connection(adapter)
-          assert !connection.in_parallel?
-          connection.get('hello_world')
-          assert !connection.in_parallel?
-          assert_equal 'hello world', connection.get('hello_world').body
-        end
+        if :default != adapter and adapter.supports_parallel?
+          define_method "test_#{adapter}_in_parallel" do
+            resp1, resp2 = nil, nil
 
-        define_method "test_#{adapter}_async_requests_uses_parallel_manager_to_run_multiple_json_requests" do
-          resp1, resp2 = nil, nil
+            connection = create_connection(adapter)
+            klass      = real_adapter_for(adapter)
 
-          connection = create_connection(adapter)
-          adapter    = real_adapter_for(adapter)
-
-          connection.in_parallel do
-            resp1 = connection.get('json')
-            resp2 = connection.get('json')
-            if adapter.supports_parallel?
+            connection.in_parallel do
+              resp1 = connection.get('echo?a=1')
+              resp2 = connection.get('echo?b=2')
               assert connection.in_parallel?
               assert_nil resp1.body
               assert_nil resp2.body
             end
+            assert !connection.in_parallel?
+            assert_equal 'get ?{"a"=>"1"}', resp1.body
+            assert_equal 'get ?{"b"=>"2"}', resp2.body
           end
-          assert !connection.in_parallel?
-          assert_equal '[1,2,3]', resp1.body
-          assert_equal '[1,2,3]', resp2.body
+        else
+          define_method "test_#{adapter}_no_parallel_support" do
+            connection = create_connection(adapter)
+            response = nil
+
+            err = capture_warnings do
+              connection.in_parallel do
+                response = connection.get('echo').body
+              end
+            end
+            assert response
+            assert_match "no parallel-capable adapter on Faraday stack", err
+            assert_match __FILE__, err
+          end
         end
 
         if adapter.to_s == "Faraday::Adapter::EMSynchrony"
