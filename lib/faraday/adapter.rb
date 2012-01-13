@@ -10,6 +10,7 @@ module Faraday
       :NetHttp        => 'net_http',
       :Typhoeus       => 'typhoeus',
       :EMSynchrony    => 'em_synchrony',
+      :EMHttp         => 'em_http',
       :Patron         => 'patron',
       :Excon          => 'excon',
       :Test           => 'test'
@@ -21,6 +22,7 @@ module Faraday
       :typhoeus        => :Typhoeus,
       :patron          => :Patron,
       :em_synchrony    => :EMSynchrony,
+      :em_http         => :EMHttp,
       :excon           => :Excon
 
     module Parallelism
