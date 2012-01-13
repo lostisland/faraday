@@ -95,3 +95,22 @@ module Faraday
 end
 
 require 'faraday/adapter/em_synchrony/parallel_manager'
+
+# add missing patch(), options() methods
+EventMachine::HTTPMethods.module_eval do
+  ([:patch, :options] - instance_methods).each do |type|
+    module_eval %[
+      def #{type}(options = {}, &blk)
+        f = Fiber.current
+        conn = setup_request(:#{type}, options, &blk)
+        if conn.error.nil?
+          conn.callback { f.resume(conn) }
+          conn.errback  { f.resume(conn) }
+          Fiber.yield
+        else
+          conn
+        end
+      end
+    ]
+  end
+end

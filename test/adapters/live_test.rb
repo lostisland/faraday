@@ -108,18 +108,16 @@ else
         end
 
         # https://github.com/toland/patron/issues/34
-        unless %w[Faraday::Adapter::Patron Faraday::Adapter::EMSynchrony].include? adapter.to_s
+        unless %w[Faraday::Adapter::Patron].include? adapter.to_s
           define_method "test_#{adapter}_PATCH_send_url_encoded_params" do
             resp = create_connection(adapter).patch('echo_name', 'name' => 'zack')
             assert_equal %("zack"), resp.body
           end
         end
 
-        unless %[Faraday::Adapter::EMSynchrony] == adapter.to_s
-          define_method "test_#{adapter}_OPTIONS" do
-            resp = create_connection(adapter).run_request(:options, '/options', nil, {})
-            assert_equal "hi", resp.body
-          end
+        define_method "test_#{adapter}_OPTIONS" do
+          resp = create_connection(adapter).run_request(:options, '/options', nil, {})
+          assert_equal "hi", resp.body
         end
 
         define_method "test_#{adapter}_HEAD_send_url_encoded_params" do
