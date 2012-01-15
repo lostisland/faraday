@@ -64,6 +64,17 @@ If you're ready to roll with just the bare minimum:
 response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 ```
 
+## Parallel requests
+
+When using an adapter that supports parallel requests, such as Typhoeus, you can take advantage of that:
+
+```ruby
+# We've created a connection with whatever middleware and Typhoeus
+conn.in_parallel Faraday::Adapter::Typhoeus.setup_parallel_manager do
+  @urls.each {|url| @responses << conn.get(url) }
+end
+```
+
 ## Advanced middleware usage
 The order in which middleware is stacked is important. Like with Rack, the first middleware on the list wraps all others, while the last middleware is the innermost one, so that's usually the adapter.
 
