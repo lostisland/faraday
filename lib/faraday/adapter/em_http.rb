@@ -73,6 +73,9 @@ module Faraday
         if msg == Errno::ETIMEDOUT
           errklass = Faraday::Error::TimeoutError
           msg = "request timed out"
+        elsif msg == Errno::ECONNREFUSED
+          errklass = Faraday::Error::ConnectionFailed
+          msg = "connection refused"
         end
         raise errklass, msg
       end
