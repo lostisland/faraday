@@ -19,7 +19,7 @@ module Faraday
     end
 
     def self.loaded?
-      @load_error.nil?
+      !defined? @load_error or @load_error.nil?
     end
 
     def initialize(app = nil)

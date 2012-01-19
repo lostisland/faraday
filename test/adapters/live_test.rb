@@ -29,8 +29,8 @@ else
 
         define_method "test_#{adapter}_GET_retrieves_the_response_headers" do
           response = create_connection(adapter).get('hello_world')
-          assert_match /text\/html/, response.headers['Content-Type'], 'original case fail'
-          assert_match /text\/html/, response.headers['content-type'], 'lowercase fail'
+          assert_match(/text\/html/, response.headers['Content-Type'], 'original case fail')
+          assert_match(/text\/html/, response.headers['content-type'], 'lowercase fail')
         end
 
         # https://github.com/geemus/excon/issues/10
@@ -69,7 +69,7 @@ else
         end
 
         define_method "test_#{adapter}_POST_retrieves_the_response_headers" do
-          assert_match /text\/html/, create_connection(adapter).post('echo_name').headers['content-type']
+          assert_match(/text\/html/, create_connection(adapter).post('echo_name').headers['content-type'])
         end
 
         define_method "test_#{adapter}_POST_sends_files" do
@@ -103,7 +103,7 @@ else
         # https://github.com/dbalatero/typhoeus/issues/84
         if ENV['FORCE'] || !%w[Faraday::Adapter::Patron Faraday::Adapter::Typhoeus].include?(adapter.to_s)
           define_method "test_#{adapter}_PUT_retrieves_the_response_headers" do
-            assert_match /text\/html/, create_connection(adapter).put('echo_name').headers['content-type']
+            assert_match(/text\/html/, create_connection(adapter).put('echo_name').headers['content-type'])
           end
         end
 
@@ -126,7 +126,7 @@ else
           resp = create_connection(adapter).head do |req|
             req.url 'hello', 'name' => 'zack'
           end
-          assert_match /text\/html/, resp.headers['content-type']
+          assert_match(/text\/html/, resp.headers['content-type'])
         end
 
         define_method "test_#{adapter}_HEAD_retrieves_no_response_body" do
@@ -134,21 +134,21 @@ else
         end
 
         define_method "test_#{adapter}_HEAD_retrieves_the_response_headers" do
-          assert_match /text\/html/, create_connection(adapter).head('hello_world').headers['content-type']
+          assert_match(/text\/html/, create_connection(adapter).head('hello_world').headers['content-type'])
         end
 
         define_method "test_#{adapter}_DELETE_retrieves_the_response_headers" do
-          assert_match /text\/html/, create_connection(adapter).delete('delete_with_json').headers['content-type']
+          assert_match(/text\/html/, create_connection(adapter).delete('delete_with_json').headers['content-type'])
         end
 
         define_method "test_#{adapter}_DELETE_retrieves_the_body" do
-          assert_match /deleted/, create_connection(adapter).delete('delete_with_json').body
+          assert_match(/deleted/, create_connection(adapter).delete('delete_with_json').body)
         end
 
         define_method "test_#{adapter}_async_requests_clear_parallel_manager_after_running_a_single_request" do
           connection = create_connection(adapter)
           assert !connection.in_parallel?
-          resp = connection.get('hello_world')
+          connection.get('hello_world')
           assert !connection.in_parallel?
           assert_equal 'hello world', connection.get('hello_world').body
         end

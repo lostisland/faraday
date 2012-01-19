@@ -5,8 +5,8 @@ module Faraday
     # Used for simple response middleware.
     class Middleware < Faraday::Middleware
       def call(env)
-        @app.call(env).on_complete do |env|
-          on_complete(env)
+        @app.call(env).on_complete do |environment|
+          on_complete(environment)
         end
       end
 

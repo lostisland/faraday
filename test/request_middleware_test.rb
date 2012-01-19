@@ -2,7 +2,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 require 'rack/utils'
 
-Faraday::CompositeReadIO.send :attr_reader, :ios
+Faraday::CompositeReadIO.class_eval { attr_reader :ios }
 
 class RequestMiddlewareTest < Faraday::TestCase
   def setup

@@ -33,7 +33,10 @@ module Faraday
       @ssl              = options[:ssl]     || {}
       @parallel_manager = options[:parallel]
 
+      @path_prefix = @host = @port = @scheme = nil
       self.url_prefix = url if url
+
+      @proxy = nil
       proxy(options[:proxy])
 
       @params.update options[:params]   if options[:params]
