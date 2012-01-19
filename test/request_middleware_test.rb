@@ -1,7 +1,7 @@
 # encoding: utf-8
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
-Faraday::CompositeReadIO.send :attr_reader, :ios
+Faraday::CompositeReadIO.class_eval { attr_reader :ios }
 
 class RequestMiddlewareTest < Faraday::TestCase
   def setup

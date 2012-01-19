@@ -30,6 +30,7 @@ module Faraday
       @ssl              = options[:ssl]     || {}
       @parallel_manager = options[:parallel]
 
+      @proxy = nil
       proxy(options.fetch(:proxy) { ENV['http_proxy'] })
 
       @params.update options[:params]   if options[:params]

@@ -9,7 +9,7 @@ module Faraday
       retries = @retries
       begin
         @app.call(env)
-      rescue StandardError, Timeout::Error => e
+      rescue StandardError, Timeout::Error
         if retries > 0
           retries -= 1
           retry

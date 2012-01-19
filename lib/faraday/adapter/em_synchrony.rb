@@ -1,5 +1,4 @@
 require 'uri'
-require 'faraday/adapter/em_synchrony/parallel_manager'
 
 module Faraday
   class Adapter
@@ -92,3 +91,5 @@ module Faraday
     end
   end
 end
+
+require 'faraday/adapter/em_synchrony/parallel_manager'
