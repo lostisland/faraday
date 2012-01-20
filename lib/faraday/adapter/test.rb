@@ -14,8 +14,6 @@ module Faraday
     class Test < Faraday::Adapter
       attr_accessor :stubs
 
-      def self.loaded?() false end
-
       class Stubs
         class NotFound < StandardError
         end

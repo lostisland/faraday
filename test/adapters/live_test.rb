@@ -9,7 +9,7 @@ else
         ENV['ADAPTER'].split(':').map { |name| Faraday::Adapter.lookup_middleware name.to_sym }
       else
         loaded_adapters  = Faraday::Adapter.all_loaded_constants
-        loaded_adapters -= [Faraday::Adapter::ActionDispatch]
+        loaded_adapters -= [Faraday::Adapter::Test, Faraday::Adapter::ActionDispatch]
         # https://github.com/geemus/excon/issues/98
         loaded_adapters -= [Faraday::Adapter::Excon] if defined? RUBY_ENGINE and "rbx" == RUBY_ENGINE
         loaded_adapters << :default

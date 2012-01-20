@@ -12,6 +12,10 @@ class MiddlewareStackTest < Faraday::TestCase
   class Orange < Handler; end
   class Banana < Handler; end
 
+  class Broken < Faraday::Middleware
+    dependency 'zomg/i_dont/exist'
+  end
+
   def setup
     @conn = Faraday::Connection.new
     @builder = @conn.builder
@@ -127,6 +131,14 @@ class MiddlewareStackTest < Faraday::TestCase
     ensure
       unregister_middleware Faraday::Request, :orange
     end
+  end
+
+  def test_missing_dependencies
+    build_stack Broken
+    err = assert_raises RuntimeError do
+      @conn.get('/')
+    end
+    assert_equal "missing dependency for MiddlewareStackTest::Broken: cannot load such file -- zomg/i_dont/exist", err.message
   end
 
   private
