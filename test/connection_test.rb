@@ -1,4 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
+require 'uri'
 
 class TestConnection < Faraday::TestCase
   def test_initialize_parses_host_out_of_given_url
@@ -221,9 +222,16 @@ class TestConnection < Faraday::TestCase
     assert_equal [:uri],      conn.proxy.keys
   end
 
-  def test_proxy_accepts_uri
+  def test_proxy_accepts_addressable_uri
     conn = Faraday::Connection.new
     conn.proxy Addressable::URI.parse('http://proxy.com')
+    assert_equal 'proxy.com', conn.proxy[:uri].host
+    assert_equal [:uri],      conn.proxy.keys
+  end
+
+  def test_proxy_accepts_stdlib_uri
+    conn = Faraday::Connection.new
+    conn.proxy URI('http://proxy.com')
     assert_equal 'proxy.com', conn.proxy[:uri].host
     assert_equal [:uri],      conn.proxy.keys
   end

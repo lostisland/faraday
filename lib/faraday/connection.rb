@@ -146,17 +146,14 @@ module Faraday
     def proxy(arg = nil)
       return @proxy if arg.nil?
 
-      @proxy =
-        case arg
-          when String then {:uri => proxy_arg_to_uri(arg)}
-          when URI    then {:uri => arg}
-          when Hash
-            if arg[:uri] = proxy_arg_to_uri(arg[:uri])
-              arg
-            else
-              raise ArgumentError, "no :uri option."
-            end
-        end
+      @proxy = if arg.is_a? Hash
+        uri = arg.fetch(:uri) { raise ArgumentError, "no :uri option" }
+        arg.merge :uri => URI.parse(uri)
+      else
+        {:uri => URI.parse(arg)}
+      end
+    rescue TypeError
+      raise ArgumentError, "bad uri"
     end
 
     # Parses the giving url with Addressable::URI and stores the individual
@@ -241,13 +238,6 @@ module Faraday
 
     def dup
       self.class.new(build_url(''), :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
-    end
-
-    def proxy_arg_to_uri(arg)
-      case arg
-        when String then URI.parse(arg)
-        when URI    then arg
-      end
     end
   end
 end
