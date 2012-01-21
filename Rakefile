@@ -47,14 +47,11 @@ end
 
 ## release management tasks
 
-desc "Create tag v#{version} and build and push #{gem_file} to Rubygems"
+desc "Commit, create tag v#{version} and build and push #{gem_file} to Rubygems"
 task :release => :build do
-  unless `git symbolic-ref HEAD` =~ /\/master$/
-    abort "You must be on the master branch to release!"
-  end
   sh "git commit --allow-empty -a -m 'Release #{version}'"
   sh "git tag v#{version}"
-  sh "git push origin master"
+  sh "git push"
   sh "git push origin v#{version}"
   sh "gem push pkg/#{gem_file}"
 end
