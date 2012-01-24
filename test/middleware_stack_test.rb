@@ -138,7 +138,8 @@ class MiddlewareStackTest < Faraday::TestCase
     err = assert_raises RuntimeError do
       @conn.get('/')
     end
-    assert_equal "missing dependency for MiddlewareStackTest::Broken: cannot load such file -- zomg/i_dont/exist", err.message
+    assert_match "missing dependency for MiddlewareStackTest::Broken: ", err.message
+    assert_match "zomg/i_dont/exist", err.message
   end
 
   private
