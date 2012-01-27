@@ -124,7 +124,7 @@ module Faraday
       end
 
       def to_query
-        Utils.build_query(self)
+        Utils.build_nested_query(self)
       end
 
       private

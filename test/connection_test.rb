@@ -169,6 +169,12 @@ class TestConnection < Faraday::TestCase
     assert_equal "a%5Bb%5D=1+%2B+2", uri.query
   end
 
+  def test_build_url_bracketizes_nested_params_in_query
+    conn = Faraday::Connection.new
+    uri = conn.build_url("http://sushi.com/sake.html", 'a' => {'b' => 'c'})
+    assert_equal "a%5Bb%5D=c", uri.query
+  end
+
   def test_build_url_mashes_default_and_given_params_together
     conn = Faraday::Connection.new 'http://sushi.com/api?token=abc', :params => {'format' => 'json'}
     url = conn.build_url("nigiri?page=1", :limit => 5)
