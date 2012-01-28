@@ -83,6 +83,31 @@ class HeadersTest < Faraday::TestCase
     @headers = Faraday::Utils::Headers.new
   end
 
+  def test_normalizes_different_capitalizations
+    @headers['Content-Type'] = 'application/json'
+    assert_equal ['Content-Type'], @headers.keys
+    assert_equal 'application/json', @headers['Content-Type']
+    assert_equal 'application/json', @headers['CONTENT-TYPE']
+    assert_equal 'application/json', @headers['content-type']
+    assert @headers.include?('content-type')
+
+    @headers['content-type'] = 'application/xml'
+    assert_equal ['Content-Type'], @headers.keys
+    assert_equal 'application/xml', @headers['Content-Type']
+    assert_equal 'application/xml', @headers['CONTENT-TYPE']
+    assert_equal 'application/xml', @headers['content-type']
+  end
+
+  def test_delete_key
+    @headers['Content-Type'] = 'application/json'
+    assert_equal 1, @headers.size
+    assert @headers.include?('content-type')
+    assert_equal 'application/json', @headers.delete('content-type')
+    assert_equal 0, @headers.size
+    assert !@headers.include?('content-type')
+    assert_equal nil, @headers.delete('content-type')
+  end
+
   def test_parse_response_headers_leaves_http_status_line_out
     @headers.parse("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n")
     assert_equal %w(Content-Type), @headers.keys

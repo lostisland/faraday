@@ -9,7 +9,7 @@ module Faraday
       def initialize(hash={})
         super()
         @names = {}
-        hash.each { |k, v| self[k] = v }
+        self.update hash
       end
 
       # symbol -> string mapper + cache
@@ -30,10 +30,18 @@ module Faraday
 
       def []=(k, v)
         k = KeyMap[k]
-        @names[k.downcase] = k
+        k = (@names[k.downcase] ||= k)
         # join multiple values with a comma
         v = v.to_ary.join(', ') if v.respond_to? :to_ary
         super k, v
+      end
+
+      def delete(k)
+        k = KeyMap[k]
+        if k = @names[k.downcase]
+          @names.delete k.downcase
+          super k
+        end
       end
 
       def include?(k)
@@ -57,7 +65,7 @@ module Faraday
 
       def replace(other)
         clear
-        other.each { |k, v| self[k] = v }
+        self.update other
         self
       end
 
