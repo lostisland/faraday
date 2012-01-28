@@ -1,5 +1,5 @@
 module Faraday
-  VERSION = "0.7.5"
+  VERSION = "0.8.0.rc"
 
   class << self
     attr_accessor :root_path, :lib_path
