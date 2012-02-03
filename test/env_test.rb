@@ -156,6 +156,10 @@ class ResponseTest < Faraday::TestCase
     assert_equal 404, @response.status
   end
 
+  def test_status_code
+    assert_equal 404, @response.code
+  end
+
   def test_body
     assert_equal 'yikes', @response.body
   end

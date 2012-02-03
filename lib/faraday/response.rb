@@ -42,6 +42,7 @@ module Faraday
     def status
       finished? ? env[:status] : nil
     end
+    alias_method :code, :status
 
     def headers
       finished? ? env[:response_headers] : {}
