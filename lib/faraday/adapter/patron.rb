@@ -14,8 +14,7 @@ module Faraday
         # TODO: support streaming requests
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
-        session = ::Patron::Session.new
-        @block.call(session)
+        session = @session ||= create_session
 
         if req = env[:request]
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
@@ -43,6 +42,12 @@ module Faraday
           actions << :patch unless actions.include? :patch
           actions << :options unless actions.include? :options
         end
+      end
+
+      def create_session
+        session = ::Patron::Session.new
+        @block.call(session)
+        session
       end
     end
   end
