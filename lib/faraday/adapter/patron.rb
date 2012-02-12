@@ -3,6 +3,11 @@ module Faraday
     class Patron < Faraday::Adapter
       dependency 'patron'
 
+      def initialize(app, &block)
+        super(app)
+        @block = block
+      end
+
       def call(env)
         super
 
@@ -10,6 +15,7 @@ module Faraday
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
         session = ::Patron::Session.new
+        @block.call(session)
 
         if req = env[:request]
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
