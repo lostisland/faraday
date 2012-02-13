@@ -5,7 +5,7 @@ module Faraday
 
       def initialize(app, &block)
         super(app)
-        @block = block
+        @block = block if block_given?
       end
 
       def call(env)
@@ -46,7 +46,7 @@ module Faraday
 
       def create_session
         session = ::Patron::Session.new
-        @block.call(session)
+        @block.call(session) if @block
         session
       end
     end
