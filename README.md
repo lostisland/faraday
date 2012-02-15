@@ -206,6 +206,6 @@ timely fashion. If critical issues for a particular implementation exist at the
 time of a major release, support for that Ruby version may be dropped.
 
 ## <a name="copyright"></a>Copyright
-Copyright (c) 2009 rick olson, zack hobson. See [LICENSE][] for details.
+Copyright (c) 2009 [Rick Olson](mailto:technoweenie@gmail.com), zack hobson. See [LICENSE][] for details.
 
 [license]: https://github.com/technoweenie/faraday/blob/master/LICENSE.md
