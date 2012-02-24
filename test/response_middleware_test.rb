@@ -28,7 +28,7 @@ class ResponseMiddlewareTest < Faraday::TestCase
     error = assert_raises Faraday::Error::ResourceNotFound do
       @conn.get('not-found')
     end
-    assert_equal 'the server responded with status 404', error.message
+    assert_match 'The server responded with status 404', error.message
     assert_equal 'because', error.response[:headers]['X-Reason']
   end
 
@@ -36,8 +36,15 @@ class ResponseMiddlewareTest < Faraday::TestCase
     error = assert_raises Faraday::Error::ClientError do
       @conn.get('error')
     end
-    assert_equal 'the server responded with status 500', error.message
+    assert_match 'The server responded with status 500', error.message
     assert_equal 'bailout', error.response[:headers]['X-Error']
+  end
+
+  def test_raises_error_with_body
+    error = assert_raises Faraday::Error::ClientError do
+      @conn.get('error')
+    end
+    assert_match 'fail', error.message
   end
 
   def test_upcase
