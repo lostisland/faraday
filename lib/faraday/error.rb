@@ -11,7 +11,7 @@ module Faraday
           super(ex.message)
           @wrapped_exception = ex
         elsif ex.respond_to?(:each_key)
-          super("the server responded with status #{ex[:status]}")
+          super("The server responded with status #{ex[:status]}:\n#{ex[:body]}")
           @response = ex
         else
           super(ex.to_s)

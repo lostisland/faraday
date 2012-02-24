@@ -15,6 +15,7 @@ module Adapters
           stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
         end
       end
+
       @resp = @conn.get '/hello', nil, :accept => 'text/html'
     end
 
@@ -27,11 +28,15 @@ module Adapters
     end
 
     def test_logs_request_headers
-      assert_match %(Accept: "text/html), @io.string
+      assert_match %(Accept: "text/html"), @io.string
     end
 
     def test_logs_response_headers
-      assert_match %(Content-Type: "text/html), @io.string
+      assert_match %(Content-Type: "text/html"), @io.string
+    end
+
+    def test_logs_body
+      assert_match %(hello), @io.string
     end
   end
 end

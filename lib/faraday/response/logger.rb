@@ -23,6 +23,7 @@ module Faraday
     def on_complete(env)
       info('Status') { env[:status].to_s }
       debug('response') { dump_headers env[:response_headers] }
+      debug('response') { env[:body] }
     end
 
     private
