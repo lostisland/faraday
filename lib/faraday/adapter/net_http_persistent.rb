@@ -60,8 +60,10 @@ module Faraday
         end
 
         @app.call env
-      rescue Net::HTTP::Persistent::Error => err
-        raise Faraday::Error::TimeoutError, err if err.message.include?("Timeout::Error")
+      rescue Errno::ETIMEDOUT => e1
+        raise Faraday::Error::TimeoutError, e1
+      rescue Net::HTTP::Persistent::Error => e2
+        raise Faraday::Error::TimeoutError, e2 if e2.message.include?("Timeout::Error")
       end
 
     end
