@@ -7,7 +7,7 @@ Modular HTTP client library that uses middleware. Heavily inspired by Rack.
 ## <a name="usage"></a>Usage
 
 ```ruby
-conn = Faraday.new(:url => 'http://sushi.com') do |builder|
+conn = Faraday.new('http://sushi.com') do |builder|
   builder.use Faraday::Request::UrlEncoded  # convert request params as "www-form-urlencoded"
   builder.use Faraday::Response::Logger     # log the request to STDOUT
   builder.use Faraday::Adapter::NetHttp     # make http requests with Net::HTTP
@@ -68,7 +68,7 @@ response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 The order in which middleware is stacked is important. Like with Rack, the first middleware on the list wraps all others, while the last middleware is the innermost one, so that's usually the adapter.
 
 ```ruby
-conn = Faraday.new(:url => 'http://sushi.com') do |builder|
+conn = Faraday.new('http://sushi.com') do |builder|
   # POST/PUT params encoders:
   builder.request  :multipart
   builder.request  :url_encoded
