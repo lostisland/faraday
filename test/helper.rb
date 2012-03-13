@@ -1,3 +1,8 @@
+unless ENV['CI']
+  require 'simplecov'
+  SimpleCov.start
+end
+
 require 'test/unit'
 require 'stringio'
 
