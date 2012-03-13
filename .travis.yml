@@ -1,3 +1,11 @@
+before_script:
+  - "nohup bundle exec ruby test/live_server.rb &"
+  - "sleep 2"
+
+env: LIVE=1
+
+language: ruby
+
 rvm:
   - 1.8.7
   - 1.9.2
@@ -5,8 +13,3 @@ rvm:
   - jruby
   - rbx
   - ree
-
-before_script:
-  - "nohup bundle exec ruby test/live_server.rb &"
-  - "sleep 2"
-env: LIVE=1
