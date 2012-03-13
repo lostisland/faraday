@@ -4,67 +4,152 @@ Modular HTTP client library that uses middleware. Heavily inspired by Rack.
 [travis]: http://travis-ci.org/technoweenie/faraday
 [gemnasium]: https://gemnasium.com/technoweenie/faraday
 
-## <a name="usage"></a>Usage
+Faraday is a Ruby HTTP client that allows developers to customize its behavior with middlewares. If you're familiar with [Rack](http://rack.rubyforge.org/), then you'll love Faraday for the same reasons. This tutorial will cover common use cases built into Faraday, and also explain how to extend Faraday with custom middleware.
+
+## <a name="basics"></a>Basics
+
+Out of the box, Faraday functions like a normal HTTP client with a easy to use interface.
 
 ```ruby
-conn = Faraday.new(:url => 'http://sushi.com') do |builder|
-  builder.use Faraday::Request::UrlEncoded  # convert request params as "www-form-urlencoded"
-  builder.use Faraday::Response::Logger     # log the request to STDOUT
-  builder.use Faraday::Adapter::NetHttp     # make http requests with Net::HTTP
+Faraday.get 'http://example.com'
+```
 
-  # or, use shortcuts:
-  builder.request  :url_encoded
+Alternatively, you can initialize a `Faraday::Connection` instance:
+
+```ruby
+conn = Faraday.new
+response = conn.get 'http://example.com'
+response.status
+response.body
+
+conn.post 'http://example.com', :some_param => 'Some Value'
+conn.put  'http://example.com', :other_param => 'Other Value'
+conn.delete 'http://example.com/foo'
+# head, patch, and options all work similarly
+```
+
+Parameters can be set inline as the 2nd hash argument. To specify headers, add optional hash after the parameters argument or set them through an accessor:
+
+```ruby
+conn.get 'http://example.com', {}, {'Accept' => 'vnd.github-v3+json'}
+
+conn.params  = {'tesla' => 'coil'}
+conn.headers = {'Accept' => 'vnd.github-v3+json'}
+```
+
+If you have a restful resource you're accessing with a common base url, you can pass in a `:url` parameter that'll be prefixed to all other calls. Other request options can also be set here.
+
+```ruby
+conn = Faraday.new(:url => 'http://example.com/comments')
+conn.get '/index'  # GET http://example.com/comments/index
+```
+
+All HTTP verb methods can take an optional block that will yield a Faraday::Request object:
+
+```ruby
+conn.get '/' do |request|
+  request.params['limit'] = 100
+  request.headers['Content-Type'] = 'application/json'
+  request.body = "{some: body}"
+end
+```
+
+### File upload
+
+```ruby
+payload = { :name => 'Maguro' }
+
+# uploading a file:
+payload = { :profile_pic => Faraday::UploadIO.new('avatar.jpg', 'image/jpeg') }
+
+# "Multipart" middleware detects files and encodes with "multipart/form-data":
+conn.put '/profile', payload
+```
+
+### Authentication
+
+Basic and Token authentication are handled by `Faraday::Request::BasicAuthentication` and `Faraday::Request::TokenAuthentication` respectively. These can be added as middleware manually or through the helper methods.
+
+```ruby
+conn.basic_auth('pita', 'ch1ps')
+conn.token_auth('pitach1ps-token')
+```
+
+### Proxies
+
+To specify an HTTP proxy:
+
+```ruby
+Faraday.new(:proxy => 'http://proxy.example.com:80')
+Faraday.new(:proxy => {
+  :uri      => 'http://proxy.example.com',
+  :user     => 'foo',
+  :password => 'bar'
+})
+```
+
+### SSL
+
+See the [Setting up SSL certificates](https://github.com/technoweenie/faraday/wiki/Setting-up-SSL-certificates) wiki page.
+
+```ruby
+conn = Faraday.new('https://encrypted.google.com', :ssl => {
+  :ca_path => "/usr/lib/ssl/certs"
+})
+conn.get '/search?q=asdf'
+```
+
+## Faraday Middleware
+
+Like a Rack app, a `Faraday::Connection` object has a list of middlewares. Faraday middlewares are passed an `env` hash that has request and response information. Middlewares can manipulate this information before and after a request is executed.
+
+To make this more concrete, let's take a look at a new Faraday::Connection:
+
+```ruby
+conn = Faraday.new
+conn.builder
+
+> #<Faraday::Builder:0x00000131239308 
+    @handlers=[Faraday::Request::UrlEncoded, Faraday::Adapter::NetHttp]>
+```
+
+`Faraday::Builder` is analogus to `Rack::Builder`. The newly initialized `Faraday::Connection` object has a middleware `Faraday::Request::UrlEncoded` in front of an adapter `Faraday::Adapter::NetHttp`. When a connection object executes a request, it creates a shared `env` hash, wraps the outer middlewares around each inner middleware, and executes the `call` method. Also like a Rack application, the adapter at the end of the builder chain is what actually executes the request.
+
+Middlewares can be grouped into 3 types: request middlewares, response middlewares, and adapters. The distinction between the three is cosmetic. The following two initializers are equivalent:
+
+```ruby
+Faraday.new do |builder|
+  builder.request  :retry
+  builder.request  :basic_authentication, 'login', 'pass'
   builder.response :logger
   builder.adapter  :net_http
 end
 
-## GET ##
-
-response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
-response.body
-
-conn.get '/nigiri', 'X-Awesome' => true     # custom request header
-
-conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
-  req.url '/search', :page => 2
-  req.params['limit'] = 100
-end
-
-## POST ##
-
-conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi.com/nigiri
-
-# post payload as JSON instead of "www-form-urlencoded" encoding:
-conn.post do |req|
-  req.url '/nigiri'
-  req.headers['Content-Type'] = 'application/json'
-  req.body = '{ "name": "Unagi" }'
-end
-
-## Options ##
-
-conn.get do |req|
-  req.url '/search'
-  req.options = {
-    :timeout => 5,                    # open/read timeout Integer in seconds
-    :open_timeout => 2,               # read timeout Integer in seconds
-    :proxy => {
-      :uri => "http://example.org/",  # proxy server URI
-      :user => "me",                  # proxy server username
-      :password => "test123"          # proxy server password
-    }
-  }
+Faraday.new do |builder|
+  builder.use Faraday::Request::Retry
+  builder.use Faraday::Request::BasicAuthentication, 'login', 'pass'
+  builder.use Faraday::Response::Logger
+  builder.use Faraday::Adapter::NetHttp
 end
 ```
 
-If you're ready to roll with just the bare minimum:
+### Using a Different HTTP Adapter
+
+If you wanted to use a different HTTP adapter, you can plug one in. For example, to use a EventMachine friendly client, you can switch to the EMHttp adapter:
 
 ```ruby
-# default stack (net/http), no extra middleware:
-response = Faraday.get 'http://sushi.com/nigiri/sake.json'
+conn = Faraday.new do |builder|
+  builder.use Faraday::Adapter::EMHttp
+
+  # alternative syntax that looks up registered adapters from lib/faraday/adapter.rb
+  builder.adapter :em_http
+end
 ```
 
-## Advanced middleware usage
+Currently, the supported adapters are Net::HTTP, EM::HTTP, Excon, and Patron.
+
+### Advanced Middleware Usage
+
 The order in which middleware is stacked is important. Like with Rack, the first middleware on the list wraps all others, while the last middleware is the innermost one, so that's usually the adapter.
 
 ```ruby
@@ -96,37 +181,64 @@ payload = { :profile_pic => Faraday::UploadIO.new('avatar.jpg', 'image/jpeg') }
 conn.put '/profile', payload
 ```
 
-## Writing middleware
-Middleware are classes that respond to `call()`. They wrap the request/response cycle.
+### Modifying the Middleware Stack
+
+Each `Faraday::Connection` instance has a `Faraday::Builder` instance that can be used to manipulate the middlewares stack.
 
 ```ruby
-def call(env)
-  # do something with the request
+conn = Faraday.new
+conn.builder.swap(1, Faraday::Adapter::EMHttp)  # replace adapter
+conn.builder.insert(0, MyCustomMiddleware)      # add middleware to beginning
+conn.builder.delete(MyCustomMiddleware)
+```
 
-  @app.call(env).on_complete do
-    # do something with the response
+For a full list of actions, take a look at the `Faraday::Builder` documentation.
+
+### Writing Middleware
+
+Middleware are classes that respond to `call`. They wrap the request/response cycle. When it's time to execute a middleware, it's called with an `env` hash that has information about the request and response. The general interface for a middleware is:
+
+```ruby
+class MyCustomMiddleware
+  def call(env)
+    # do something with the request
+
+    @app.call(env).on_complete do |env|
+      # do something with the response
+      # env[:response] is now filled in
+    end
   end
 end
 ```
 
-It's important to do all processing of the response only in the `on_complete` block. This enables middleware to work in parallel mode where requests are asynchronous.
+It's important to do all processing of the response only in the on_complete block. This enables middleware to work in parallel mode where requests are asynchronous.
 
-The `env` is a hash with symbol keys that contains info about the request and, later, response. Some keys are:
+`env` is a hash with symbol keys that contains info about the request and response.
 
 ```
-# request phase
-:method - :get, :post, ...
-:url    - URI for the current request; also contains GET parameters
-:body   - POST parameters for :post/:put requests
-:request_headers
-
-# response phase
-:status - HTTP response status code, such as 200
-:body   - the response body
-:response_headers
+:method - a symbolized request method (:get, :post, :put, :delete, :option, :patch)
+:body   - the request body that will eventually be converted to a string.
+:url    - URI instance for the current request.
+:status           - HTTP response status code
+:request_headers  - hash of HTTP Headers to be sent to the server
+:response_headers - Hash of HTTP headers from the server
+:parallel_manager - sent if the connection is in parallel mode
+:request - Hash of options for configuring the request.
+  :timeout      - open/read timeout Integer in seconds
+  :open_timeout - read timeout Integer in seconds
+  :proxy        - Hash of proxy options
+    :uri        - Proxy Server URI
+    :user       - Proxy server username
+    :password   - Proxy server password
+:response - Faraday::Response instance. Available only after `on_complete`
+:ssl - Hash of options for configuring SSL requests.
+  :ca_path - path to directory with certificates
+  :ca_file - path to certificate file
 ```
 
-## <a name="testing"></a>Testing
+### Testing Middleware
+
+Faraday::Adapter::Test is an HTTP adapter middleware that lets you to fake responses.
 
 ```ruby
 # It's possible to define stubbed request outside a test adapter block.
@@ -161,10 +273,15 @@ resp = test.get '/else' #=> raises "no such stub" error
 stubs.verify_stubbed_calls
 ```
 
+### Useful Middleware
+
+* [faraday-middleware](https://github.com/pengwynn/faraday_middleware) - collection of Faraday middlewares.
+* [faraday_yaml](https://github.com/dmarkow/faraday_yaml) - yaml request/response processing
+
 ## <a name="todo"></a>TODO
 * support streaming requests/responses
 * better stubbing API
-* Add curb, em-http, fast_http
+* Add curb, fast_http
 
 ## <a name="pulls"></a>Note on Patches/Pull Requests
 1. Fork the project.
@@ -183,8 +300,8 @@ implementations:
 * Ruby 1.8.7
 * Ruby 1.9.2
 * Ruby 1.9.3
-* JRuby[]
-* [Rubinius][]
+* [JRuby][jruby]
+* [Rubinius][rubinius]
 * [Ruby Enterprise Edition][ree]
 
 [jruby]: http://jruby.org/
