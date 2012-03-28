@@ -30,7 +30,16 @@ module Faraday
         env[:body] = env[:body].read if env[:body].respond_to? :read
       end
 
+      def convert_body_to_string_if_hash(env)
+        if env[:body].is_a? Hash
+          env[:body] = URI.encode_www_form(env[:body])
+        end
+      end
+
       def request(env)
+
+        convert_body_to_string_if_hash env
+
         req = ::Typhoeus::Request.new env[:url].to_s,
           :method  => env[:method],
           :body    => env[:body],

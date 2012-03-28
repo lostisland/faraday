@@ -16,5 +16,30 @@ module Adapters
       @connection.get('/world', nil, :user_agent => 'Faraday Agent')
     end
 
+    def test_typhoeus_adapter_can_post_with_hash
+      stub_request(:post, "http://disney.com/world").
+          with(:body => "q=1&x=2").
+          to_return(:status => 200, :body => "", :headers => {})
+
+      conn = Faraday.new(:url => 'http://disney.com') do |b|
+        b.adapter :typhoeus
+      end
+
+      hash = { :q => 1, :x => 2 }
+      conn.post('/world', hash)
+    end
+
+    def test_default_adapter_can_post_with_hash
+      stub_request(:post, "http://disney.com/world").
+          with(:body => {"q"=>"1", "x"=>"2"},
+               :headers => {'Accept'=>'*/*', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
+          to_return(:status => 200, :body => "", :headers => {})
+
+      conn = Faraday.new(:url => 'http://disney.com')
+
+      hash = { :q => 1, :x => 2 }
+      conn.post('/world', hash)
+    end
+
   end if defined? ::Typhoeus
 end
