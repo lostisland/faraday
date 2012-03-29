@@ -22,7 +22,7 @@ module Adapters
       @connection.get('/hello')
     end
 
-    def test_connection_errors_gets_wrapped
+    def test_connection_errors_get_wrapped
       exceptions = [
         EOFError,
         Errno::ECONNABORTED,
