@@ -22,10 +22,35 @@ module Adapters
       @connection.get('/hello')
     end
 
-    def test_connect_error_gets_wrapped
-      stub_request(:get, 'disney.com/hello').to_raise(Errno::ECONNREFUSED)
+    def test_connection_errors_gets_wrapped
+      exceptions = [
+        EOFError,
+        Errno::ECONNABORTED,
+        Errno::ECONNREFUSED,
+        Errno::ECONNRESET,
+        Errno::EINVAL,
+        Net::HTTPBadResponse,
+        Net::HTTPHeaderSyntaxError,
+        Net::ProtocolError,
+        SocketError
+      ]
 
-      assert_raise Faraday::Error::ConnectionFailed do
+      exceptions << OpenSSL::SSL::SSLError if defined?(OpenSSL)
+
+      exceptions.each do |exception_class|
+        stub_request(:get, 'disney.com/hello').to_raise(exception_class)
+
+        assert_raise(Faraday::Error::ConnectionFailed,
+                     "Failed to wrap #{exception_class} exceptions") do
+          @connection.get('/hello')
+        end
+      end
+    end
+
+    def test_timeout_errors_get_wrapped
+      stub_request(:get, 'disney.com/hello').to_raise(Timeout::Error)
+
+      assert_raise Faraday::Error::TimeoutError do
         @connection.get('/hello')
       end
     end
