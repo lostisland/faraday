@@ -185,11 +185,9 @@ implementations:
 * Ruby 1.9.3
 * JRuby[]
 * [Rubinius][]
-* [Ruby Enterprise Edition][ree]
 
 [jruby]: http://jruby.org/
 [rubinius]: http://rubini.us/
-[ree]: http://www.rubyenterpriseedition.com/
 
 If something doesn't work on one of these interpreters, it should be considered
 a bug.
