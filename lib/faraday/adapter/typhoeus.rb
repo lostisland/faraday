@@ -75,8 +75,8 @@ module Faraday
 
         req.proxy = "#{proxy[:uri].host}:#{proxy[:uri].port}"
 
-        if proxy[:username] && proxy[:password]
-          req.proxy_username = proxy[:username]
+        if proxy[:user] && proxy[:password]
+          req.proxy_username = proxy[:user]
           req.proxy_password = proxy[:password]
         end
       end
