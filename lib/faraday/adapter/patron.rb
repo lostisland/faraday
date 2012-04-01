@@ -16,9 +16,9 @@ module Faraday
           session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
                     
           if proxy = req[:proxy]
-            session.proxy = "http://#{proxy[:uri].host}:#{proxy[:uri].port}"
-            if proxy[:username] && proxy[:password]
-              session.proxy.insert(7, "#{proxy[:username]}:#{proxy[:password]}@")
+            session.proxy = proxy[:uri].to_s
+            if proxy[:user] && proxy[:password]
+              prepend_proxy_auth_string(proxy, session)
             end
           end
         end
@@ -45,6 +45,10 @@ module Faraday
           actions << :options unless actions.include? :options
         end
       end
+    end
+    
+    def prepend_proxy_auth_string(proxy, session)
+      session.proxy.insert(7, "#{proxy[:user]}:#{proxy[:password]}@")
     end
   end
 end
