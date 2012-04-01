@@ -14,6 +14,13 @@ module Faraday
         if req = env[:request]
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
           session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
+                    
+          if proxy = req[:proxy]
+            session.proxy = "http://#{proxy[:uri].host}:#{proxy[:uri].port}"
+            if proxy[:username] && proxy[:password]
+              session.proxy.insert(7, "#{proxy[:username]}:#{proxy[:password]}@")
+            end
+          end
         end
 
         response = begin
