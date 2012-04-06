@@ -7,79 +7,111 @@ end
 
 module Faraday
   class Adapter
-    class NetHttp < Faraday::Adapter
+    class NetHttpLike < Faraday::Adapter # :nodoc:
+      def setup_ssl(http, options)
+        http.verify_mode = options[:verify_mode] || begin
+          if options.fetch(:verify, true)
+            # Use the default cert store by default, i.e. system ca certs
+            store = OpenSSL::X509::Store.new
+            store.set_default_paths
+            http.cert_store = store
+            OpenSSL::SSL::VERIFY_PEER
+          else
+            OpenSSL::SSL::VERIFY_NONE
+          end
+        end
+
+        http.cert         = options[:client_cert]  if options[:client_cert]
+        http.key          = options[:client_key]   if options[:client_key]
+        http.ca_file      = options[:ca_file]      if options[:ca_file]
+        http.ca_path      = options[:ca_path]      if options[:ca_path]
+        http.cert_store   = options[:cert_store]   if options[:cert_store]
+        http.verify_depth = options[:verify_depth] if options[:verify_depth]
+      end
+
+      def create_request(env)
+        req = Net::HTTPGenericRequest.new \
+          env[:method].to_s.upcase,    # request method
+          !! env[:body],               # is there request body
+          :head != env[:method],       # is there response body
+          env[:url].request_uri,       # request uri path
+          env[:request_headers]        # request headers
+
+        if env[:body]
+          if env[:body].respond_to?(:read)
+            req.body_stream = env[:body]
+          else
+            req.body = env[:body]
+          end
+        end
+
+        req
+      end
+
       def call(env)
         super
+
         url = env[:url]
         req = env[:request]
 
-        http = net_http_class(env).new(url.host, url.port)
+        http = create_net_http(env)
 
-        if http.use_ssl = (url.scheme == 'https' && (ssl = env[:ssl]) && true)
-          http.verify_mode = ssl[:verify_mode] || begin
-            if ssl.fetch(:verify, true)
-              # Use the default cert store by default, i.e. system ca certs
-              store = OpenSSL::X509::Store.new
-              store.set_default_paths
-              http.cert_store = store
-              OpenSSL::SSL::VERIFY_PEER
-            else
-              OpenSSL::SSL::VERIFY_NONE
-            end
-          end
-
-          http.cert         = ssl[:client_cert]  if ssl[:client_cert]
-          http.key          = ssl[:client_key]   if ssl[:client_key]
-          http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
-          http.ca_path      = ssl[:ca_path]      if ssl[:ca_path]
-          http.cert_store   = ssl[:cert_store]   if ssl[:cert_store]
-          http.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
+        if url.scheme == 'https' && env[:ssl]
+          setup_ssl(http, env[:ssl])
         end
 
         http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
         http.open_timeout = req[:open_timeout]                if req[:open_timeout]
 
-        if :get != env[:method] or env[:body]
-          http_request = Net::HTTPGenericRequest.new \
-            env[:method].to_s.upcase,    # request method
-            !!env[:body],                # is there request body
-            :head != env[:method],       # is there response body
-            url.request_uri,             # request uri path
-            env[:request_headers]        # request headers
-
-          if env[:body].respond_to?(:read)
-            http_request.body_stream = env[:body]
-            env[:body] = nil
-          end
-        end
+        request = create_request(env)
 
         begin
-          http_response = if :get == env[:method] and env[:body].nil?
-            # prefer `get` to `request` because the former handles gzip (ruby 1.9)
-            http.get url.request_uri, env[:request_headers]
-          else
-            http.request http_request, env[:body]
-          end
+          res = perform(http, url, request)
         rescue Errno::ECONNREFUSED
           raise Error::ConnectionFailed, $!
         end
 
-        save_response(env, http_response.code.to_i, http_response.body) do |response_headers|
-          http_response.each_header do |key, value|
+        save_response(env, res.code.to_i, res.body) do |response_headers|
+          res.each_header do |key, value|
             response_headers[key] = value
           end
         end
 
-        @app.call env
+        @app.call(env)
       rescue Timeout::Error => err
         raise Faraday::Error::TimeoutError, err
       end
+    end
 
-      def net_http_class(env)
-        if proxy = env[:request][:proxy]
+    class NetHttp < NetHttpLike
+      def setup_ssl(http, options)
+        http.use_ssl = true
+        super
+      end
+
+      def create_net_http(env)
+        klass = if proxy = env[:request][:proxy]
           Net::HTTP::Proxy(proxy[:uri].host, proxy[:uri].port, proxy[:user], proxy[:password])
         else
           Net::HTTP
+        end
+
+        klass.new(env[:url].host, env[:url].port)
+      end
+
+      def perform(http, url, request)
+        if request.method == "GET" and !request.request_body_permitted?
+          # prefer `get` to `request` because the former handles gzip (ruby 1.9)
+
+          headers = request.to_hash
+
+          headers.each do |key, value|
+            headers[key] = value.first
+          end
+
+          http.get(url.request_uri, headers)
+        else
+          http.request(request)
         end
       end
     end

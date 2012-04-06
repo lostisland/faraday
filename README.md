@@ -64,6 +64,20 @@ If you're ready to roll with just the bare minimum:
 response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 ```
 
+## Adapters
+
+Check [this](https://github.com/technoweenie/faraday/tree/master/lib/faraday/adapter) for a list
+of currently supported adapters.
+
+By default, Faraday will use the `Net::HTTP` adapter, which doesn't have
+dependencies outside of Ruby's standard library.
+
+You can set a different global default. For example:
+
+```ruby
+Faraday.default_adapter = :net_http_persistent
+```
+
 ## Advanced middleware usage
 The order in which middleware is stacked is important. Like with Rack, the first middleware on the list wraps all others, while the last middleware is the innermost one, so that's usually the adapter.
 
