@@ -1,6 +1,10 @@
 # faraday [![Build Status](https://secure.travis-ci.org/technoweenie/faraday.png?branch=master)][travis] [![Dependency Status](https://gemnasium.com/technoweenie/faraday.png?travis)][gemnasium]
 Modular HTTP client library that uses middleware. Heavily inspired by Rack.
 
+## Additions on this fork
+
+I have added support to enable cURL's cookie management on the Patron adapter.
+
 [travis]: http://travis-ci.org/technoweenie/faraday
 [gemnasium]: https://gemnasium.com/technoweenie/faraday
 
