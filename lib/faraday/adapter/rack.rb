@@ -1,3 +1,4 @@
+require 'timeout'
 module Faraday
   class Adapter
     # This adapter wraps around a rack app, similar to how Rack::Test
@@ -19,12 +20,11 @@ module Faraday
       begin
         if RUBY_VERSION < '1.9'
           require 'system_timer'
-        else
-          require 'timeout'
         end
-        SystemTimer ||= Timeout
       rescue LoadError
-        $stderr.puts "Faraday: you may want to install system_timer to reliable timeouts"
+        $stderr.puts "Faraday: you may want to install system_timer for reliable timeouts"
+      ensure
+        SystemTimer ||= Timeout
       end
 
       # @param app [Faraday::Middleware]
