@@ -50,17 +50,6 @@ module Adapters
       end
     end
 
-    module Timeout
-      if Faraday::TestCase::LIVE_SERVER
-        def test_timeout
-          conn = create_connection(adapter, :request => {:timeout => 1, :open_timeout => 1})
-          assert_raise Faraday::Error::TimeoutError do
-            conn.get '/slow'
-          end
-        end
-      end
-    end
-
     module Common
       def test_GET_retrieves_the_response_body
         assert_equal 'hello world', create_connection(adapter).get('hello_world').body
@@ -77,6 +66,18 @@ module Adapters
         response = create_connection(adapter).get('hello_world')
         assert_match(/text\/html/, response.headers['Content-Type'], 'original case fail')
         assert_match(/text\/html/, response.headers['content-type'], 'lowercase fail')
+      end
+
+      def test_GET_handles_headers_with_multiple_values
+        response = create_connection(adapter).get('multi')
+        assert_equal 'one, two', response.headers['set-cookie']
+      end
+
+      def test_GET_with_body
+        response = create_connection(adapter).get('echo') do |req|
+          req.body = {'bodyrock' => true}
+        end
+        assert_equal %(get {"bodyrock"=>"true"}), response.body
       end
 
       def test_POST_send_url_encoded_params
@@ -107,12 +108,29 @@ module Adapters
         assert_equal "file integration.rb text/x-ruby", resp.body
       end
 
+      def test_PUT_send_url_encoded_params
+        resp = create_connection(adapter).put do |req|
+          req.url 'echo_name'
+          req.body = {'name' => 'zack'}
+        end
+        assert_equal %("zack"), resp.body
+      end
+
       def test_PUT_send_url_encoded_nested_params
         resp = create_connection(adapter).put do |req|
           req.url 'echo_name'
           req.body = {'name' => {'first' => 'zack'}}
         end
         assert_equal %({"first"=>"zack"}), resp.body
+      end
+
+      def test_PUT_retrieves_the_response_headers
+        assert_match(/text\/html/, create_connection(adapter).put('echo_name').headers['content-type'])
+      end
+
+      def test_PATCH_send_url_encoded_params
+        resp = create_connection(adapter).patch('echo_name', 'name' => 'zack')
+        assert_equal %("zack"), resp.body
       end
 
       def test_OPTIONS
@@ -143,6 +161,13 @@ module Adapters
         assert_match(/deleted/, create_connection(adapter).delete('delete_with_json').body)
       end
 
+      def test_timeout
+        conn = create_connection(adapter, :request => {:timeout => 1, :open_timeout => 1})
+        assert_raise Faraday::Error::TimeoutError do
+          conn.get '/slow'
+        end
+      end
+
       def adapter
         raise NotImplementedError.new("Need to override #adapter")
       end
@@ -165,6 +190,8 @@ module Adapters
 
         Faraday::Connection.new(Faraday::TestCase::LIVE_SERVER, options, &builder_block).tap do |conn|
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
+          adapter_handler = conn.builder.handlers.last
+          conn.builder.insert_before adapter_handler, Faraday::Response::RaiseError
         end
       end
     end
