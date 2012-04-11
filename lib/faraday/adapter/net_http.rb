@@ -34,6 +34,7 @@ module Faraday
           http.ca_path      = ssl[:ca_path]      if ssl[:ca_path]
           http.cert_store   = ssl[:cert_store]   if ssl[:cert_store]
           http.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
+          http.ssl_version  = ssl[:version]      if ssl[:version]
         end
 
         http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
