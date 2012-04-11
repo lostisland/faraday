@@ -1,7 +1,13 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'helper'))
+require File.expand_path('../integration', __FILE__)
 
 module Adapters
   class NetHttpTest < Faraday::TestCase
+    include Integration
+    include Integration::NonParallel
+    include Integration::Timeout
+
+    def adapter; :net_http end
+
     def setup
       @connection = Faraday.new('http://disney.com') do |b|
         b.adapter :net_http

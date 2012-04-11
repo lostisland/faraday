@@ -61,6 +61,29 @@ module Adapters
       end
     end
 
+    # https://github.com/dbalatero/typhoeus/issues/75
+    # https://github.com/toland/patron/issues/52
+    module GetWithBody
+      if Faraday::TestCase::LIVE_SERVER
+        def test_GET_with_body
+          response = create_connection(adapter).get('echo') do |req|
+            req.body = {'bodyrock' => true}
+          end
+          assert_equal %(get {"bodyrock"=>"true"}), response.body
+        end
+      end
+    end
+
+    # https://github.com/toland/patron/issues/9
+    # https://github.com/dbalatero/typhoeus/issues/84
+    module PutResponseHeaders
+      if Faraday::TestCase::LIVE_SERVER
+        def test_PUT_retrieves_the_response_headers
+          assert_match(/text\/html/, create_connection(adapter).put('echo_name').headers['content-type'])
+        end
+      end
+    end
+
     module Common
       def test_GET_retrieves_the_response_body
         assert_equal 'hello world', create_connection(adapter).get('hello_world').body
@@ -165,6 +188,8 @@ module Adapters
 
         Faraday::Connection.new(Faraday::TestCase::LIVE_SERVER, options, &builder_block).tap do |conn|
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
+          adapter_handler = conn.builder.handlers.last
+          conn.builder.insert_before adapter_handler, Faraday::Response::RaiseError
         end
       end
     end
