@@ -37,11 +37,20 @@ module Faraday
 
       def call(env)
         super
-        env[:params] = env[:body]
+        rack_env = {
+          :method => env[:method],
+          :input  => env[:body].respond_to?(:read) ? env[:body].read : env[:body]
+        }
+
+        if env[:request_headers]
+          env[:request_headers].each do |k,v|
+            rack_env[k.upcase.gsub('-', '_')] = v
+          end
+        end
 
         timeout = env[:request][:timeout] || env[:request][:open_timeout]
         SystemTimer.timeout(timeout, Faraday::Error::TimeoutError) do
-          response = @session.request(env[:url].to_s, env)
+          response = @session.request(env[:url].to_s, rack_env)
           save_response(env, response.status, response.body, response.headers)
         end
         @app.call env
