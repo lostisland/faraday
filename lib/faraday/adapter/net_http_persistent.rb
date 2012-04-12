@@ -22,6 +22,7 @@ module Faraday
             end
           end
 
+          http.ssl_version  = ssl[:version]      if ssl[:version]
           http.certificate  = ssl[:client_cert]  if ssl[:client_cert]
           http.private_key  = ssl[:client_key]   if ssl[:client_key]
           http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
