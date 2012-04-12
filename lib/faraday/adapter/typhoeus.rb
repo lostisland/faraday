@@ -63,10 +63,11 @@ module Faraday
       def configure_ssl(req, env)
         ssl = env[:ssl]
 
-        req.ssl_cert   = ssl[:client_cert_file] if ssl[:client_cert_file]
-        req.ssl_key    = ssl[:client_key_file]  if ssl[:client_key_file]
-        req.ssl_cacert = ssl[:ca_file]          if ssl[:ca_file]
-        req.ssl_capath = ssl[:ca_path]          if ssl[:ca_path]
+        req.ssl_version = ssl[:version]          if ssl[:version]
+        req.ssl_cert    = ssl[:client_cert_file] if ssl[:client_cert_file]
+        req.ssl_key     = ssl[:client_key_file]  if ssl[:client_key_file]
+        req.ssl_cacert  = ssl[:ca_file]          if ssl[:ca_file]
+        req.ssl_capath  = ssl[:ca_path]          if ssl[:ca_path]
       end
 
       def configure_proxy(req, env)
