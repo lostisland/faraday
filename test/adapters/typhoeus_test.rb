@@ -4,11 +4,14 @@ module Adapters
   class TyphoeusTest < Faraday::TestCase
     include Integration
     include Integration::Parallel
-    include Integration::GetWithBody
-    include Integration::PutResponseHeaders
-    include Integration::Timeout
 
     def adapter; :typhoeus end
+
+    # https://github.com/dbalatero/typhoeus/issues/84
+    undef :test_PUT_retrieves_the_response_headers
+
+    # https://github.com/dbalatero/typhoeus/issues/75
+    undef :test_GET_with_body
 
     def setup
       @connection = Faraday.new('http://disney.com') do |b|

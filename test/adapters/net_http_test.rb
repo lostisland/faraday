@@ -4,7 +4,6 @@ module Adapters
   class NetHttpTest < Faraday::TestCase
     include Integration
     include Integration::NonParallel
-    include Integration::Timeout
 
     def adapter; :net_http end
 

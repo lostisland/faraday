@@ -8,12 +8,9 @@ module Adapters
       include Integration::NonParallel
 
       def adapter; :excon end
-    end
 
-    # https://github.com/geemus/excon/issues/10
-    def test_GET_handles_headers_with_multiple_values
-      response = create_connection(adapter).get('multi')
-      assert_equal 'one, two', response.headers['set-cookie']
+      # https://github.com/eventmachine/eventmachine/pull/289
+      undef :test_timeout
     end
   end
 end
