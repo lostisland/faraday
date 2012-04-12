@@ -17,9 +17,14 @@ module Adapters
     # not using Integration::Timeout because error is swallowed by sinatra
     def test_timeout
       conn = create_connection(adapter, :request => {:timeout => 1, :open_timeout => 1})
-      res = conn.get '/slow'
-      assert_equal 500, res.status
-      assert res.body =~ /Faraday::Error::Timeout/
+      begin
+        res = conn.get '/slow'
+      rescue Faraday::Error::ClientError => e
+        assert_equal 500, e.response[:status]
+        assert e.response[:body] =~ /Faraday::Error::Timeout/
+        return true
+      end
+      assert false, "did not timeout"
     end
   end
 end

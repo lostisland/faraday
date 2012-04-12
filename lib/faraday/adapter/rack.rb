@@ -48,12 +48,21 @@ module Faraday
           end
         end
 
-        timeout = env[:request][:timeout] || env[:request][:open_timeout]
-        SystemTimer.timeout(timeout, Faraday::Error::TimeoutError) do
-          response = @session.request(env[:url].to_s, rack_env)
-          save_response(env, response.status, response.body, response.headers)
+        timeout  = env[:request][:timeout] || env[:request][:open_timeout]
+        response = if timeout
+          SystemTimer.timeout(timeout, Faraday::Error::TimeoutError) {
+            execute_request(env, rack_env)
+          }
+        else
+          execute_request(env, rack_env)
         end
+        save_response(env, response.status, response.body, response.headers)
         @app.call env
+      end
+
+      # @private
+      def execute_request(env, rack_env)
+        @session.request(env[:url].to_s, rack_env)
       end
     end
   end
