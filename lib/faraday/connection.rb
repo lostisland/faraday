@@ -138,7 +138,6 @@ module Faraday
         nil
       }
       yield
-      p 'run!'
       @parallel_manager && @parallel_manager.run
     ensure
       @parallel_manager = nil
