@@ -37,8 +37,8 @@ module Faraday
               :host => uri.host,
               :port => uri.port
             }
-            if proxy[:username] && proxy[:password]
-              options[:proxy][:authorization] = [proxy[:username], proxy[:password]]
+            if proxy[:user] && proxy[:password]
+              options[:proxy][:authorization] = [proxy[:user], proxy[:password]]
             end
           end
 
