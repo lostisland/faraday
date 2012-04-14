@@ -80,28 +80,24 @@ else
           assert_equal "file live_test.rb text/x-ruby", resp.body
         end unless :default == adapter # isn't configured for multipart
 
-        # https://github.com/toland/patron/issues/9
-        if ENV['FORCE'] || %[Faraday::Adapter::Patron] != adapter.to_s
-          define_method "test_#{adapter}_PUT_send_url_encoded_params" do
-            resp = create_connection(adapter).put do |req|
-              req.url 'echo_name'
-              req.body = {'name' => 'zack'}
-            end
-            assert_equal %("zack"), resp.body
+        define_method "test_#{adapter}_PUT_send_url_encoded_params" do
+          resp = create_connection(adapter).put do |req|
+            req.url 'echo_name'
+            req.body = {'name' => 'zack'}
           end
-
-          define_method "test_#{adapter}_PUT_send_url_encoded_nested_params" do
-            resp = create_connection(adapter).put do |req|
-              req.url 'echo_name'
-              req.body = {'name' => {'first' => 'zack'}}
-            end
-            assert_equal %({"first"=>"zack"}), resp.body
-          end
+          assert_equal %("zack"), resp.body
         end
 
-        # https://github.com/toland/patron/issues/9
+        define_method "test_#{adapter}_PUT_send_url_encoded_nested_params" do
+          resp = create_connection(adapter).put do |req|
+            req.url 'echo_name'
+            req.body = {'name' => {'first' => 'zack'}}
+          end
+          assert_equal %({"first"=>"zack"}), resp.body
+        end
+
         # https://github.com/dbalatero/typhoeus/issues/84
-        if ENV['FORCE'] || !%w[Faraday::Adapter::Patron Faraday::Adapter::Typhoeus].include?(adapter.to_s)
+        if ENV['FORCE'] || !%w[Faraday::Adapter::Typhoeus].include?(adapter.to_s)
           define_method "test_#{adapter}_PUT_retrieves_the_response_headers" do
             assert_match(/text\/html/, create_connection(adapter).put('echo_name').headers['content-type'])
           end
