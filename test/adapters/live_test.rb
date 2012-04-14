@@ -96,11 +96,8 @@ else
           assert_equal %({"first"=>"zack"}), resp.body
         end
 
-        # https://github.com/dbalatero/typhoeus/issues/84
-        if ENV['FORCE'] || !%w[Faraday::Adapter::Typhoeus].include?(adapter.to_s)
-          define_method "test_#{adapter}_PUT_retrieves_the_response_headers" do
-            assert_match(/text\/html/, create_connection(adapter).put('echo_name').headers['content-type'])
-          end
+        define_method "test_#{adapter}_PUT_retrieves_the_response_headers" do
+          assert_match(/text\/html/, create_connection(adapter).put('echo_name').headers['content-type'])
         end
 
         # https://github.com/toland/patron/issues/34
