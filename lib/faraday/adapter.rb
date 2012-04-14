@@ -6,7 +6,6 @@ module Faraday
     extend MiddlewareRegistry
 
     autoload_all 'faraday/adapter',
-      :ActionDispatch    => 'action_dispatch',
       :NetHttp           => 'net_http',
       :NetHttpPersistent => 'net_http_persistent',
       :Typhoeus          => 'typhoeus',
@@ -14,10 +13,10 @@ module Faraday
       :EMHttp            => 'em_http',
       :Patron            => 'patron',
       :Excon             => 'excon',
-      :Test              => 'test'
+      :Test              => 'test',
+      :Rack              => 'rack'
 
     register_middleware \
-      :action_dispatch     => :ActionDispatch,
       :test                => :Test,
       :net_http            => :NetHttp,
       :net_http_persistent => :NetHttpPersistent,
@@ -25,7 +24,8 @@ module Faraday
       :patron              => :Patron,
       :em_synchrony        => :EMSynchrony,
       :em_http             => :EMHttp,
-      :excon               => :Excon
+      :excon               => :Excon,
+      :rack                => :Rack
 
     module Parallelism
       attr_writer :supports_parallel
