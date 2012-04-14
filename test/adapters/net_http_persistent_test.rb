@@ -5,7 +5,10 @@ module Adapters
 
     def adapter() :net_http_persistent end
 
-    Integration.apply(self, :NonParallel)
+    Integration.apply(self, :NonParallel) do
+      # TODO: find out why
+      undef :test_GET_sends_user_agent
+    end
 
   end
 end

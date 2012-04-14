@@ -1,3 +1,4 @@
+require 'forwardable'
 require File.expand_path("../../helper", __FILE__)
 
 module Adapters
@@ -21,7 +22,7 @@ module Adapters
       def test_in_parallel
         resp1, resp2 = nil, nil
 
-        connection = create_connection(adapter)
+        connection = create_connection
         connection.in_parallel do
           resp1 = connection.get('echo?a=1')
           resp2 = connection.get('echo?b=2')
@@ -37,7 +38,7 @@ module Adapters
 
     module NonParallel
       def test_no_parallel_support
-        connection = create_connection(adapter)
+        connection = create_connection
         response = nil
 
         err = capture_warnings do
@@ -52,124 +53,100 @@ module Adapters
     end
 
     module Common
+      extend Forwardable
+      def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
+
       def test_GET_retrieves_the_response_body
-        assert_equal 'hello world', create_connection(adapter).get('hello_world').body
+        assert_equal 'get', get('echo').body
       end
 
       def test_GET_send_url_encoded_params
-        resp = create_connection(adapter).get do |req|
-          req.url 'hello', 'name' => 'zack'
-        end
-        assert_equal('hello zack', resp.body)
+        assert_equal %(get ?{"name"=>"zack"}), get('echo', :name => 'zack').body
       end
 
       def test_GET_retrieves_the_response_headers
-        response = create_connection(adapter).get('hello_world')
-        assert_match(/text\/html/, response.headers['Content-Type'], 'original case fail')
-        assert_match(/text\/html/, response.headers['content-type'], 'lowercase fail')
+        response = get('echo')
+        assert_match(/text\/plain/, response.headers['Content-Type'], 'original case fail')
+        assert_match(/text\/plain/, response.headers['content-type'], 'lowercase fail')
       end
 
       def test_GET_handles_headers_with_multiple_values
-        response = create_connection(adapter).get('multi')
-        assert_equal 'one, two', response.headers['set-cookie']
+        assert_equal 'one, two', get('multi').headers['set-cookie']
       end
 
       def test_GET_with_body
-        response = create_connection(adapter).get('echo') do |req|
+        response = get('echo') do |req|
           req.body = {'bodyrock' => true}
         end
         assert_equal %(get {"bodyrock"=>"true"}), response.body
       end
 
       def test_GET_sends_user_agent
-        response = create_connection(adapter).get('echo_header', {:name => 'user-agent'},
-                                                  :user_agent => 'Agent Faraday')
+        response = get('echo_header', {:name => 'user-agent'}, :user_agent => 'Agent Faraday')
         assert_equal 'Agent Faraday', response.body
       end
 
       def test_POST_send_url_encoded_params
-        resp = create_connection(adapter).post do |req|
-          req.url 'echo_name'
-          req.body = {'name' => 'zack'}
-        end
-        assert_equal %("zack"), resp.body
+        assert_equal %(post {"name"=>"zack"}), post('echo', :name => 'zack').body
       end
 
       def test_POST_send_url_encoded_nested_params
-        resp = create_connection(adapter).post do |req|
-          req.url 'echo_name'
-          req.body = {'name' => {'first' => 'zack'}}
-        end
-        assert_equal %({"first"=>"zack"}), resp.body
+        resp = post('echo', 'name' => {'first' => 'zack'})
+        assert_equal %(post {"name"=>{"first"=>"zack"}}), resp.body
       end
 
       def test_POST_retrieves_the_response_headers
-        assert_match(/text\/html/, create_connection(adapter).post('echo_name').headers['content-type'])
+        assert_match(/text\/plain/, post('echo').headers['content-type'])
       end
 
       def test_POST_sends_files
-        resp = create_connection(adapter).post do |req|
-          req.url 'file'
+        resp = post('file') do |req|
           req.body = {'uploaded_file' => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
         end
         assert_equal "file integration.rb text/x-ruby", resp.body
       end
 
       def test_PUT_send_url_encoded_params
-        resp = create_connection(adapter).put do |req|
-          req.url 'echo_name'
-          req.body = {'name' => 'zack'}
-        end
-        assert_equal %("zack"), resp.body
+        assert_equal %(put {"name"=>"zack"}), put('echo', :name => 'zack').body
       end
 
       def test_PUT_send_url_encoded_nested_params
-        resp = create_connection(adapter).put do |req|
-          req.url 'echo_name'
-          req.body = {'name' => {'first' => 'zack'}}
-        end
-        assert_equal %({"first"=>"zack"}), resp.body
+        resp = put('echo', 'name' => {'first' => 'zack'})
+        assert_equal %(put {"name"=>{"first"=>"zack"}}), resp.body
       end
 
       def test_PUT_retrieves_the_response_headers
-        assert_match(/text\/html/, create_connection(adapter).put('echo_name').headers['content-type'])
+        assert_match(/text\/plain/, put('echo').headers['content-type'])
       end
 
       def test_PATCH_send_url_encoded_params
-        resp = create_connection(adapter).patch('echo_name', 'name' => 'zack')
-        assert_equal %("zack"), resp.body
+        assert_equal %(patch {"name"=>"zack"}), patch('echo', :name => 'zack').body
       end
 
       def test_OPTIONS
-        resp = create_connection(adapter).run_request(:options, '/options', nil, {})
-        assert_equal "hi", resp.body
-      end
-
-      def test_HEAD_send_url_encoded_params
-        resp = create_connection(adapter).head do |req|
-          req.url 'hello', 'name' => 'zack'
-        end
-        assert_match(/text\/html/, resp.headers['content-type'])
+        resp = run_request(:options, 'echo', nil, {})
+        assert_equal 'options', resp.body
       end
 
       def test_HEAD_retrieves_no_response_body
-        assert_equal '', create_connection(adapter).head('hello_world').body.to_s
+        # FIXME: some adapters return empty string, some nil
+        assert_equal '', head('echo').body.to_s
       end
 
       def test_HEAD_retrieves_the_response_headers
-        assert_match(/text\/html/, create_connection(adapter).head('hello_world').headers['content-type'])
+        assert_match(/text\/plain/, head('echo').headers['content-type'])
       end
 
       def test_DELETE_retrieves_the_response_headers
-        assert_match(/text\/html/, create_connection(adapter).delete('delete_with_json').headers['content-type'])
+        assert_match(/text\/plain/, delete('echo').headers['content-type'])
       end
 
       def test_DELETE_retrieves_the_body
-        assert_match(/deleted/, create_connection(adapter).delete('delete_with_json').body)
+        assert_equal %(delete), delete('echo').body
       end
 
       def test_timeout
-        conn = create_connection(adapter, :request => {:timeout => 1, :open_timeout => 1})
+        conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
         assert_raise Faraday::Error::TimeoutError do
           conn.get '/slow'
         end
@@ -184,7 +161,7 @@ module Adapters
         nil
       end
 
-      def create_connection(adapter, options = {})
+      def create_connection(options = {})
         if adapter == :default
           builder_block = nil
         else
