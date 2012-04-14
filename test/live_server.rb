@@ -1,5 +1,7 @@
 require 'sinatra'
-set :logging, false
+set \
+  :logging => false,
+  :show_exceptions => false
 
 [:get, :post, :put, :patch, :delete, :options].each do |method|
   send(method, '/echo') do
@@ -59,4 +61,8 @@ end
 get '/slow' do
   sleep 10
   [200, {}, 'ok']
+end
+
+error do |e|
+  "#{e.class}\n#{e.to_s}\n#{e.backtrace.join("\n")}"
 end
