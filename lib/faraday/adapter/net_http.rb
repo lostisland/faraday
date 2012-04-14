@@ -8,6 +8,21 @@ end
 module Faraday
   class Adapter
     class NetHttp < Faraday::Adapter
+      NET_HTTP_EXCEPTIONS = [
+        EOFError,
+        Errno::ECONNABORTED,
+        Errno::ECONNREFUSED,
+        Errno::ECONNRESET,
+        Errno::EINVAL,
+        Net::HTTPBadResponse,
+        Net::HTTPHeaderSyntaxError,
+        Net::ProtocolError,
+        SocketError
+      ]
+
+      NET_HTTP_EXCEPTIONS << OpenSSL::SSL::SSLError if defined?(OpenSSL)
+
+
       def call(env)
         super
         url = env[:url]
@@ -61,7 +76,7 @@ module Faraday
           else
             http.request http_request, env[:body]
           end
-        rescue Errno::ECONNREFUSED
+        rescue *NET_HTTP_EXCEPTIONS
           raise Error::ConnectionFailed, $!
         end
 
