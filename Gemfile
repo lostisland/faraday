@@ -14,7 +14,7 @@ end
 
 platforms :ruby do
   gem 'patron', '~> 0.4', '> 0.4.1'
-  gem 'typhoeus', '~> 0.3'
+  gem 'typhoeus', '~> 0.3', '> 0.3.2'
 end
 
 platforms :jruby do
