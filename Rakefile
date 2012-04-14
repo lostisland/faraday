@@ -51,7 +51,7 @@ desc "Commit, create tag v#{version} and build and push #{gem_file} to Rubygems"
 task :release => :build do
   sh "git commit --allow-empty -a -m 'Release #{version}'"
   sh "git tag v#{version}"
-  sh "git push"
+  sh "git push origin master"
   sh "git push origin v#{version}"
   sh "gem push pkg/#{gem_file}"
 end
