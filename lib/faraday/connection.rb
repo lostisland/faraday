@@ -85,7 +85,7 @@ module Faraday
     %w[get head delete].each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, params = nil, headers = nil)
-          run_request(:#{method}, url, nil, headers) { |request|
+          run_request(:#{method}, url, params, headers) { |request|
             request.params.update(params) if params
             yield request if block_given?
           }
