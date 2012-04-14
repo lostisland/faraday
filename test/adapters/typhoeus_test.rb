@@ -10,18 +10,5 @@ module Adapters
       undef :test_GET_with_body
     end
 
-    def setup
-      @connection = Faraday.new('http://disney.com') do |b|
-        b.adapter :typhoeus
-      end
-    end
-
-    def test_handles_user_agent
-      # default typhoeus agent
-      stub_request(:get, 'disney.com/world').with(:headers => {'User-Agent'=>'Faraday Agent'}){ |request|
-        request.headers["User-Agent"] == 'Faraday Agent'
-      }
-      @connection.get('/world', nil, :user_agent => 'Faraday Agent')
-    end
   end
 end

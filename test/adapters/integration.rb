@@ -81,6 +81,12 @@ module Adapters
         assert_equal %(get {"bodyrock"=>"true"}), response.body
       end
 
+      def test_GET_sends_user_agent
+        response = create_connection(adapter).get('echo_header', {:name => 'user-agent'},
+                                                  :user_agent => 'Agent Faraday')
+        assert_equal 'Agent Faraday', response.body
+      end
+
       def test_POST_send_url_encoded_params
         resp = create_connection(adapter).post do |req|
           req.url 'echo_name'

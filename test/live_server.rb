@@ -15,6 +15,11 @@ set \
   end
 end
 
+get '/echo_header' do
+  header = "HTTP_#{params[:name].tr('-', '_').upcase}"
+  request.env.fetch(header) { 'NONE' }
+end
+
 get '/hello_world' do
   'hello world'
 end
