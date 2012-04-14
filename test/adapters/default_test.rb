@@ -2,11 +2,13 @@ require File.expand_path('../integration', __FILE__)
 
 module Adapters
   class DefaultTest < Faraday::TestCase
-    include Integration
-    include Integration::NonParallel
 
-    def adapter; :default end
+    def adapter() :default end
 
-    undef :test_POST_sends_files
+    Integration.apply(self, :NonParallel) do
+      # default stack is not configured with Multipart
+      undef :test_POST_sends_files
+    end
+
   end
 end

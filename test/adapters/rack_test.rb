@@ -3,16 +3,14 @@ require File.expand_path('../../live_server', __FILE__)
 
 module Adapters
   class RackTest < Faraday::TestCase
-    include Integration
-    include Integration::NonParallel
 
-    def adapter
-      :rack
-    end
+    def adapter() :rack end
 
     def adapter_options
       Sinatra::Application
     end
+
+    Integration.apply(self, :NonParallel)
 
     # not using Integration::Timeout because error is swallowed by sinatra
     def test_timeout

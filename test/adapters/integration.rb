@@ -6,47 +6,48 @@ module Adapters
   # `#adapter` required. returns a symbol for the adapter middleware name
   # `#adapter_options` optional. extra arguments for building an adapter
   module Integration
-    def self.included(base)
+    def self.apply(base, *extras)
       if Faraday::TestCase::LIVE_SERVER
-        base.send(:include, Common)
+        ([:Common] + extras).each {|name| base.send(:include, self.const_get(name)) }
+        yield if block_given?
+      elsif !defined? @warned
+        warn "Warning: Not running integration tests against a live server."
+        warn "Start the server `ruby test/live_server.rb` and set the LIVE=1 env variable."
+        @warned = true
       end
     end
 
     module Parallel
-      if Faraday::TestCase::LIVE_SERVER
-        def test_in_parallel
-          resp1, resp2 = nil, nil
+      def test_in_parallel
+        resp1, resp2 = nil, nil
 
-          connection = create_connection(adapter)
-          connection.in_parallel do
-            resp1 = connection.get('echo?a=1')
-            resp2 = connection.get('echo?b=2')
-            assert connection.in_parallel?
-            assert_nil resp1.body
-            assert_nil resp2.body
-          end
-          assert !connection.in_parallel?
-          assert_equal 'get ?{"a"=>"1"}', resp1.body
-          assert_equal 'get ?{"b"=>"2"}', resp2.body
+        connection = create_connection(adapter)
+        connection.in_parallel do
+          resp1 = connection.get('echo?a=1')
+          resp2 = connection.get('echo?b=2')
+          assert connection.in_parallel?
+          assert_nil resp1.body
+          assert_nil resp2.body
         end
+        assert !connection.in_parallel?
+        assert_equal 'get ?{"a"=>"1"}', resp1.body
+        assert_equal 'get ?{"b"=>"2"}', resp2.body
       end
     end
 
     module NonParallel
-      if Faraday::TestCase::LIVE_SERVER
-        def test_no_parallel_support
-          connection = create_connection(adapter)
-          response = nil
+      def test_no_parallel_support
+        connection = create_connection(adapter)
+        response = nil
 
-          err = capture_warnings do
-            connection.in_parallel do
-              response = connection.get('echo').body
-            end
+        err = capture_warnings do
+          connection.in_parallel do
+            response = connection.get('echo').body
           end
-          assert response
-          assert_match "no parallel-capable adapter on Faraday stack", err
-          assert_match __FILE__, err
         end
+        assert response
+        assert_match "no parallel-capable adapter on Faraday stack", err
+        assert_match __FILE__, err
       end
     end
 

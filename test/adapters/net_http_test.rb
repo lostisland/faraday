@@ -2,10 +2,10 @@ require File.expand_path('../integration', __FILE__)
 
 module Adapters
   class NetHttpTest < Faraday::TestCase
-    include Integration
-    include Integration::NonParallel
 
-    def adapter; :net_http end
+    def adapter() :net_http end
+
+    Integration.apply(self, :NonParallel)
 
     def setup
       @connection = Faraday.new('http://disney.com') do |b|
