@@ -73,11 +73,15 @@ else
         end
 
         define_method "test_#{adapter}_POST_sends_files" do
-          resp = create_connection(adapter).post do |req|
-            req.url 'file'
-            req.body = {'uploaded_file' => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
+          begin
+            resp = create_connection(adapter).post do |req|
+              req.url 'file'
+              req.body = {'uploaded_file' => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
+            end
+            assert_equal "file live_test.rb text/x-ruby", resp.body
+          rescue Faraday::Error::ClientError => err
+            fail err.response[:body]
           end
-          assert_equal "file live_test.rb text/x-ruby", resp.body
         end unless :default == adapter # isn't configured for multipart
 
         define_method "test_#{adapter}_PUT_send_url_encoded_params" do
