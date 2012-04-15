@@ -26,6 +26,9 @@ module Faraday
         SystemTimer = Timeout unless defined? ::SystemTimer
       end
 
+      # not prefixed with "HTTP_"
+      SPECIAL_HEADERS = %w[ CONTENT_LENGTH CONTENT_TYPE ]
+
       def initialize(faraday_app, rack_app)
         super(faraday_app)
         mock_session = ::Rack::MockSession.new(rack_app)
@@ -39,11 +42,11 @@ module Faraday
           :input  => env[:body].respond_to?(:read) ? env[:body].read : env[:body]
         }
 
-        if env[:request_headers]
-          env[:request_headers].each do |k,v|
-            rack_env[k.upcase.gsub('-', '_')] = v
-          end
-        end
+        env[:request_headers].each do |name, value|
+          name = name.upcase.tr('-', '_')
+          name = "HTTP_#{name}" unless SPECIAL_HEADERS.include? name
+          rack_env[name] = value
+        end if env[:request_headers]
 
         timeout  = env[:request][:timeout] || env[:request][:open_timeout]
         response = if timeout

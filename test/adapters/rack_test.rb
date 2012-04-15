@@ -10,22 +10,16 @@ module Adapters
       [FaradayTestServer]
     end
 
-    Integration.apply(self, :NonParallel) do
-      # TODO: find out why
-      undef :test_GET_sends_user_agent
+    # no Integration.apply because this doesn't require a server as a separate process
+    include Integration::Common
+    include Integration::NonParallel
 
-      # not using original test because error is swallowed by sinatra
-      def test_timeout
-        conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
-        begin
-          res = conn.get '/slow'
-        rescue Faraday::Error::ClientError => e
-          assert_equal 500, e.response[:status]
-          assert e.response[:body] =~ /Faraday::Error::Timeout/
-          return true
-        end
-        assert false, "did not timeout"
-      end
+    # not using shared test because error is swallowed by Sinatra
+    def test_timeout
+      conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
+      err = assert_raise(Faraday::Error::ClientError) { conn.get '/slow' }
+      assert_equal 500, err.response[:status]
+      assert err.response[:body] =~ /Faraday::Error::Timeout/
     end
 
   end
