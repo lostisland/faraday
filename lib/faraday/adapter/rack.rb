@@ -1,37 +1,34 @@
 require 'timeout'
+
 module Faraday
   class Adapter
-    # This adapter wraps around a rack app, similar to how Rack::Test
-    # allows you to test rack apps.
+    # Sends requests to a Rack app.
     #
-    # @example
-    #    class RackApp
-    #      def call(env)
-    #        [200, {'Content-Type' => 'text/html'}, ["hello world"]]
-    #      end
-    #    end
+    # Examples
     #
-    #    Faraday.new do |builder|
-    #      builder.adapter :rack, RackApp
-    #    end
+    #   class MyRackApp
+    #     def call(env)
+    #       [200, {'Content-Type' => 'text/html'}, ["hello world"]]
+    #     end
+    #   end
+    #
+    #   Faraday.new do |conn|
+    #     conn.adapter :rack, MyRackApp
+    #   end
     class Rack < Faraday::Adapter
       dependency 'rack/test'
 
       begin
-        if RUBY_VERSION < '1.9'
-          require 'system_timer'
-        end
+        require 'system_timer' if RUBY_VERSION < '1.9'
       rescue LoadError
-        $stderr.puts "Faraday: you may want to install system_timer for reliable timeouts"
+        warn "Faraday: you may want to install system_timer for reliable timeouts"
       ensure
         SystemTimer = Timeout unless defined? ::SystemTimer
       end
 
-      # @param app [Faraday::Middleware]
-      # @param rack rack application to wrap
-      def initialize(app, rack)
-        super(app)
-        mock_session = ::Rack::MockSession.new(rack)
+      def initialize(faraday_app, rack_app)
+        super(faraday_app)
+        mock_session = ::Rack::MockSession.new(rack_app)
         @session     = ::Rack::Test::Session.new(mock_session)
       end
 
@@ -56,11 +53,11 @@ module Faraday
         else
           execute_request(env, rack_env)
         end
+
         save_response(env, response.status, response.body, response.headers)
         @app.call env
       end
 
-      # @private
       def execute_request(env, rack_env)
         @session.request(env[:url].to_s, rack_env)
       end
