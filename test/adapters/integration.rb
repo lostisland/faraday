@@ -52,6 +52,13 @@ module Adapters
       end
     end
 
+    module Compression
+      def test_GET_handles_compression
+        res = get('echo_header', :name => 'accept-encoding')
+        assert_match /gzip;.+\bdeflate\b/, res.body
+      end
+    end
+
     module Common
       extend Forwardable
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request

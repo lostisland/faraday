@@ -5,10 +5,10 @@ module Adapters
 
     def adapter() :net_http_persistent end
 
-    Integration.apply(self, :NonParallel) do
-      # TODO: find out why
-      undef :test_GET_sends_user_agent
-    end
+    behaviors = [:NonParallel]
+    behaviors << :Compression if RUBY_VERSION >= '1.9'
+
+    Integration.apply(self, *behaviors)
 
   end
 end
