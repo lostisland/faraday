@@ -5,10 +5,7 @@ module Adapters
 
     def adapter() :net_http_persistent end
 
-    behaviors = [:NonParallel]
-    behaviors << :Compression if RUBY_VERSION >= '1.9'
-
-    Integration.apply(self, *behaviors)
+    Integration.apply(self, :NonParallel)
 
   end
 end
