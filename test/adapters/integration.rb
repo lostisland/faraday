@@ -158,7 +158,7 @@ module Adapters
 
       # extra options to pass when building the adapter
       def adapter_options
-        nil
+        []
       end
 
       def create_connection(options = {})

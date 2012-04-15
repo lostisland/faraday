@@ -7,7 +7,7 @@ module Adapters
     def adapter() :rack end
 
     def adapter_options
-      FaradayTestServer
+      [FaradayTestServer]
     end
 
     Integration.apply(self, :NonParallel) do

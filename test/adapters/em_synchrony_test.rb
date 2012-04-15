@@ -10,5 +10,5 @@ module Adapters
       undef :test_timeout
     end
 
-  end
+  end unless RUBY_VERSION < '1.9'
 end

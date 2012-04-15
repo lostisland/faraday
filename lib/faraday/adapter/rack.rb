@@ -24,7 +24,7 @@ module Faraday
       rescue LoadError
         $stderr.puts "Faraday: you may want to install system_timer for reliable timeouts"
       ensure
-        SystemTimer ||= Timeout
+        SystemTimer = Timeout unless defined? ::SystemTimer
       end
 
       # @param app [Faraday::Middleware]
