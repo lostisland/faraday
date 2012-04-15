@@ -18,8 +18,14 @@ module Adapters
     def test_timeout
       conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
       err = assert_raise(Faraday::Error::ClientError) { conn.get '/slow' }
-      assert_equal 500, err.response[:status]
-      assert err.response[:body] =~ /Faraday::Error::Timeout/
+
+      if err.response
+        assert_equal 500, err.response[:status]
+        assert err.response[:body] =~ /Faraday::Error::Timeout/
+      else
+        # this happens on Travis
+        assert_instance_of Faraday::Error::TimeoutError, err
+      end
     end
 
   end
