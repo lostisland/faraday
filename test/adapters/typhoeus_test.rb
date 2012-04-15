@@ -10,5 +10,5 @@ module Adapters
       undef :test_GET_with_body
     end
 
-  end
+  end unless defined? RUBY_ENGINE and 'jruby' == RUBY_ENGINE
 end

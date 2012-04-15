@@ -10,5 +10,5 @@ module Adapters
       undef :test_timeout
     end
 
-  end unless RUBY_VERSION < '1.9'
+  end unless RUBY_VERSION < '1.9' or (defined? RUBY_ENGINE and 'jruby' == RUBY_ENGINE)
 end
