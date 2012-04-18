@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/technoweenie/faraday'
 
   s.add_dependency 'multipart-post', '~> 1.1'
+  s.add_dependency 'rack-test', '~> 0.6'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'test-unit'

@@ -10,7 +10,6 @@ group :test do
   gem 'excon', '~> 0.6'
   gem 'net-http-persistent', '~> 2.5', :require => false
   gem 'leftright', '~> 0.9', :require => false
-  gem 'rack-test', '~> 0.6', :require => 'rack/test'
 end
 
 platforms :ruby do
