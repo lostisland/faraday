@@ -24,12 +24,12 @@ module Faraday
       end
 
       def configure_ssl(http, ssl)
-        http.verify_mode = ssl_verify_mode(ssl)
+        http.verify_mode  = ssl_verify_mode(ssl)
+        http.cert_store   = ssl_cert_store(ssl)
 
         http.certificate  = ssl[:client_cert]  if ssl[:client_cert]
         http.private_key  = ssl[:client_key]   if ssl[:client_key]
         http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
-        http.cert_store   = ssl[:cert_store]   if ssl[:cert_store]
         http.ssl_version  = ssl[:version]      if ssl[:version]
       end
     end

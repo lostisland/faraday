@@ -82,25 +82,29 @@ module Faraday
       end
 
       def configure_ssl(http, ssl)
-        http.use_ssl = true
-        http.verify_mode = ssl_verify_mode(ssl)
+        http.use_ssl      = true
+        http.verify_mode  = ssl_verify_mode(ssl)
+        http.cert_store   = ssl_cert_store(ssl)
 
         http.cert         = ssl[:client_cert]  if ssl[:client_cert]
         http.key          = ssl[:client_key]   if ssl[:client_key]
         http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
         http.ca_path      = ssl[:ca_path]      if ssl[:ca_path]
-        http.cert_store   = ssl[:cert_store]   if ssl[:cert_store]
         http.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
         http.ssl_version  = ssl[:version]      if ssl[:version]
+      end
+
+      def ssl_cert_store(ssl)
+        return ssl[:cert_store] if ssl[:cert_store]
+        # Use the default cert store by default, i.e. system ca certs
+        cert_store = OpenSSL::X509::Store.new
+        cert_store.set_default_paths
+        cert_store
       end
 
       def ssl_verify_mode(ssl)
         ssl[:verify_mode] || begin
           if ssl.fetch(:verify, true)
-            # Use the default cert store by default, i.e. system ca certs
-            store = OpenSSL::X509::Store.new
-            store.set_default_paths
-            http.cert_store = store
             OpenSSL::SSL::VERIFY_PEER
           else
             OpenSSL::SSL::VERIFY_NONE
