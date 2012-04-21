@@ -33,6 +33,15 @@ module Faraday
     @default_connection ||= Connection.new
   end
 
+  begin
+    require RUBY_VERSION < '1.9' ? 'system_timer' : 'timeout'
+  rescue LoadError
+    require 'timeout'
+    warn "Faraday: you may want to install system_timer for reliable timeouts"
+  ensure
+    Timer = defined?(::SystemTimer) ? ::SystemTimer : ::Timeout
+  end
+
   module MiddlewareRegistry
     # Internal: Register middleware class(es) on the current module.
     #
@@ -116,7 +125,7 @@ module Faraday
 end
 
 
-# not pulling in active-support JUST for this method.
+# not pulling in active-support JUST for this method.  And I love this method.
 class Object
   # Yields <code>x</code> to the block, and then returns <code>x</code>.
   # The primary purpose of this method is to "tap into" a method chain,
