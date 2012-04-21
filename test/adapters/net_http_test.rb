@@ -39,5 +39,11 @@ module Adapters
       end
     end
 
+    def test_configure_ssl
+      http = Net::HTTP.new 'disney.com', 443
+      # this should not raise an error
+      Faraday::Adapter::NetHttp.new.configure_ssl(http, :ssl => {:verify => true})
+    end
+
   end
 end
