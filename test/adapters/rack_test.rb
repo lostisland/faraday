@@ -17,17 +17,9 @@ module Adapters
     # not using shared test because error is swallowed by Sinatra
     def test_timeout
       conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
-      err = assert_raise { conn.get '/slow' }
-
-      case err
-      when Faraday::Error::ClientError
-        # happens on Mac OS
-        assert_include err.response[:body], 'execution expired'
-      else
-        # happens on Travis
-        assert_instance_of Timeout::Error, err
+      assert_raise Faraday::Error::ClientError do
+        conn.get '/slow'
       end
     end
-
   end
 end
