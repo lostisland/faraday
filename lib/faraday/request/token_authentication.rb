@@ -1,21 +1,15 @@
 module Faraday
-  class Request::TokenAuthentication < Faraday::Middleware
-    def initialize(app, token, options={})
-      super(app)
-
-      values = ["token=#{token.to_s.inspect}"]
-      options.each do |key, value|
-        values << "#{key}=#{value.to_s.inspect}"
-      end
-      comma = ",\n#{' ' * ('Authorization: Token '.size)}"
-      @header_value = "Token #{values * comma}"
+  class Request::TokenAuthentication < Request::Authorization
+    # Public
+    def self.build(token, options = nil)
+      options ||= {}
+      options[:token] = token
+      super :Token, options
     end
 
-    def call(env)
-      unless env[:request_headers]['Authorization']
-        env[:request_headers]['Authorization'] = @header_value
-      end
-      @app.call(env)
+    def initialize(app, token, options = nil)
+      super(app, token, options)
     end
   end
 end
+

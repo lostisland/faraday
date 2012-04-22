@@ -15,18 +15,20 @@ module Faraday
 
     autoload_all 'faraday/request',
       :UrlEncoded => 'url_encoded',
-      :Multipart  => 'multipart',
-      :Retry      => 'retry',
-      :Timeout    => 'timeout',
+      :Multipart => 'multipart',
+      :Retry => 'retry',
+      :Timeout => 'timeout',
+      :Authorization => 'authorization',
       :BasicAuthentication => 'basic_authentication',
       :TokenAuthentication => 'token_authentication'
 
     register_middleware \
       :url_encoded => :UrlEncoded,
-      :multipart   => :Multipart,
-      :retry       => :Retry,
-      :basic_auth  => :BasicAuthentication,
-      :token_auth  => :TokenAuthentication
+      :multipart => :Multipart,
+      :retry => :Retry,
+      :authorization => :Authorization,
+      :basic_auth => :BasicAuthentication,
+      :token_auth => :TokenAuthentication
 
     def self.create(request_method)
       new(request_method).tap do |request|
