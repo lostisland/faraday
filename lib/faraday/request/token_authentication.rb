@@ -1,7 +1,7 @@
 module Faraday
   class Request::TokenAuthentication < Request::Authorization
     # Public
-    def self.build(token, options = nil)
+    def self.header(token, options = nil)
       options ||= {}
       options[:token] = token
       super :Token, options

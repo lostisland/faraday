@@ -68,24 +68,30 @@ class TestConnection < Faraday::TestCase
     assert_equal 'Faraday', conn.headers['User-agent']
   end
 
-  def test_basic_auth_prepends_basic_auth_middleware
+  def test_basic_auth_sets_header
     conn = Faraday::Connection.new
+    assert_nil conn.headers['Authorization']
+
     conn.basic_auth 'Aladdin', 'open sesame'
-    assert_equal Faraday::Request::BasicAuthentication, conn.builder[0].klass
-    assert_equal ['Aladdin', 'open sesame'], conn.builder[0].instance_eval { @args }
+    assert auth = conn.headers['Authorization']
+    assert_equal 'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==', auth
   end
 
   def test_auto_parses_basic_auth_from_url_and_unescapes
     conn = Faraday::Connection.new :url => "http://foo%40bar.com:pass%20word@sushi.com/fish"
-    assert_equal Faraday::Request::BasicAuthentication, conn.builder[0].klass
-    assert_equal ['foo@bar.com', 'pass word'], conn.builder[0].instance_eval { @args }
+    assert auth = conn.headers['Authorization']
+    assert_equal Faraday::Request::BasicAuthentication.header("foo@bar.com", "pass word"), auth
   end
 
-  def test_token_auth_prepends_token_auth_middleware
+  def test_token_auth_sets_header
     conn = Faraday::Connection.new
+    assert_nil conn.headers['Authorization']
+
     conn.token_auth 'abcdef', :nonce => 'abc'
-    assert_equal Faraday::Request::TokenAuthentication, conn.builder[0].klass
-    assert_equal ['abcdef', { :nonce => 'abc' }], conn.builder[0].instance_eval { @args }
+    assert auth = conn.headers['Authorization']
+    assert_match /^Token /, auth
+    assert_match /token="abcdef"/, auth
+    assert_match /nonce="abc"/, auth
   end
 
   def test_build_url_uses_connection_host_as_default_uri_host
@@ -268,7 +274,7 @@ class TestConnection < Faraday::TestCase
     other.headers['content-length'] = 12
     other.params['b'] = '2'
 
-    assert_equal 3, other.builder.handlers.size
+    assert_equal 2, other.builder.handlers.size
     assert_equal 2, conn.builder.handlers.size
     assert !conn.headers.key?('content-length')
     assert !conn.params.key?('b')

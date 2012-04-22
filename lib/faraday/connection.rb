@@ -102,11 +102,18 @@ module Faraday
     end
 
     def basic_auth(login, pass)
-      @builder.insert(0, Faraday::Request::BasicAuthentication, login, pass)
+      headers[Faraday::Request::Authorization::KEY] =
+        Faraday::Request::BasicAuthentication.header(login, pass)
     end
 
-    def token_auth(token, options = {})
-      @builder.insert(0, Faraday::Request::TokenAuthentication, token, options)
+    def token_auth(token, options = nil)
+      headers[Faraday::Request::Authorization::KEY] =
+        Faraday::Request::TokenAuthentication.header(token, options)
+    end
+
+    def authorization(type, token)
+      headers[Faraday::Request::Authorization::KEY] =
+        Faraday::Request::Authorization.header(type, token)
     end
 
     # Internal: Traverse the middleware stack in search of a
