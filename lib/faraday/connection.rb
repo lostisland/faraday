@@ -10,8 +10,8 @@ module Faraday
     METHODS = Set.new [:get, :post, :put, :delete, :head, :patch, :options]
     METHODS_WITH_BODIES = Set.new [:post, :put, :patch, :options]
 
-    attr_reader   :params, :headers, :url_prefix, :builder, :options, :ssl, :parallel_manager
-    attr_writer   :default_parallel_manager
+    attr_reader :params, :headers, :url_prefix, :builder, :options, :ssl, :parallel_manager
+    attr_writer :default_parallel_manager
 
     # :url
     # :params
@@ -124,9 +124,10 @@ module Faraday
     # Returns a parallel manager or nil if not found.
     def default_parallel_manager
       @default_parallel_manager ||= begin
-        handler = @builder.handlers.find { |h|
+        handler = @builder.handlers.detect do |h|
           h.klass.respond_to?(:supports_parallel?) and h.klass.supports_parallel?
-        }
+        end
+
         if handler then handler.klass.setup_parallel_manager
         elsif block_given? then yield
         end
@@ -161,10 +162,14 @@ module Faraday
     end
 
     # normalize URI() behavior across Ruby versions
-    def self.URI url
-      url.respond_to?(:host) ? url :
-        url.respond_to?(:to_str) ? Kernel.URI(url) :
-          raise(ArgumentError, "bad argument (expected URI object or URI string)")
+    def self.URI(url)
+      if url.respond_to?(:host)
+        url
+      elsif url.respond_to?(:to_str)
+        Kernel.URI(url)
+      else
+        raise ArgumentError, "bad argument (expected URI object or URI string)"
+      end
     end
 
     def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
