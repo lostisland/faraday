@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 1.3.5") if s.respond_to? :required_rubygems_version=
 
   s.name    = 'faraday'
-  s.version = '0.8.0.rc2'
+  s.version = '0.8.0'
 
   s.summary     = "HTTP/REST API client library."
   # TODO: s.description
@@ -28,13 +28,14 @@ Gem::Specification.new do |s|
     faraday.gemspec
     lib/faraday.rb
     lib/faraday/adapter.rb
-    lib/faraday/adapter/action_dispatch.rb
     lib/faraday/adapter/em_http.rb
     lib/faraday/adapter/em_synchrony.rb
     lib/faraday/adapter/em_synchrony/parallel_manager.rb
     lib/faraday/adapter/excon.rb
     lib/faraday/adapter/net_http.rb
+    lib/faraday/adapter/net_http_persistent.rb
     lib/faraday/adapter/patron.rb
+    lib/faraday/adapter/rack.rb
     lib/faraday/adapter/test.rb
     lib/faraday/adapter/typhoeus.rb
     lib/faraday/builder.rb
@@ -42,6 +43,7 @@ Gem::Specification.new do |s|
     lib/faraday/error.rb
     lib/faraday/middleware.rb
     lib/faraday/request.rb
+    lib/faraday/request/authorization.rb
     lib/faraday/request/basic_authentication.rb
     lib/faraday/request/multipart.rb
     lib/faraday/request/retry.rb
@@ -52,9 +54,16 @@ Gem::Specification.new do |s|
     lib/faraday/response/raise_error.rb
     lib/faraday/upload_io.rb
     lib/faraday/utils.rb
-    test/adapters/live_test.rb
+    test/adapters/default_test.rb
+    test/adapters/em_http_test.rb
+    test/adapters/em_synchrony_test.rb
+    test/adapters/excon_test.rb
+    test/adapters/integration.rb
     test/adapters/logger_test.rb
+    test/adapters/net_http_persistent_test.rb
     test/adapters/net_http_test.rb
+    test/adapters/patron_test.rb
+    test/adapters/rack_test.rb
     test/adapters/test_middleware_test.rb
     test/adapters/typhoeus_test.rb
     test/authentication_middleware_test.rb

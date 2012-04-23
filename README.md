@@ -1,8 +1,21 @@
-# faraday [![Build Status](https://secure.travis-ci.org/technoweenie/faraday.png?branch=master)][travis] [![Dependency Status](https://gemnasium.com/technoweenie/faraday.png?travis)][gemnasium]
-Modular HTTP client library that uses middleware. Heavily inspired by Rack.
-
+# Faraday [![Build Status](https://secure.travis-ci.org/technoweenie/faraday.png?branch=master)][travis] [![Dependency Status](https://gemnasium.com/technoweenie/faraday.png?travis)][gemnasium]
 [travis]: http://travis-ci.org/technoweenie/faraday
 [gemnasium]: https://gemnasium.com/technoweenie/faraday
+
+Faraday is an HTTP client lib that provides a common interface over many
+adapters (such as Net::HTTP) and embraces the concept of Rack middleware when
+processing the request/response cycle.
+
+Faraday supports these adapters:
+
+* Net/HTTP
+* Excon
+* Typhoeus
+* Patron
+* EventMachine
+
+It also includes a Rack adapter for hitting loaded Rack applications through
+Rack::Test, and a Test adapter for stubbing requests by hand.
 
 ## <a name="usage"></a>Usage
 
@@ -23,7 +36,7 @@ end
 response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
 response.body
 
-conn.get '/nigiri', 'X-Awesome' => true     # custom request header
+conn.get '/nigiri', { :name => 'Maguro' } # GET /nigiri?name=Maguro
 
 conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
   req.url '/search', :page => 2
@@ -65,24 +78,30 @@ response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 ```
 
 ## Advanced middleware usage
-The order in which middleware is stacked is important. Like with Rack, the first middleware on the list wraps all others, while the last middleware is the innermost one, so that's usually the adapter.
+The order in which middleware is stacked is important. Like with Rack, the
+first middleware on the list wraps all others, while the last middleware is the
+innermost one, so that's usually the adapter.
 
 ```ruby
 conn = Faraday.new(:url => 'http://sushi.com') do |builder|
   # POST/PUT params encoders:
-  builder.request  :multipart
-  builder.request  :url_encoded
+  builder.request :multipart
+  builder.request :url_encoded
 
-  builder.adapter  :net_http
+  builder.adapter :net_http
 end
 ```
 
 This request middleware setup affects POST/PUT requests in the following way:
 
-1. `Request::Multipart` checks for files in the payload, otherwise leaves everything untouched;
-2. `Request::UrlEncoded` encodes as "application/x-www-form-urlencoded" if not already encoded or of another type
+1. `Request::Multipart` checks for files in the payload, otherwise leaves
+  everything untouched;
+2. `Request::UrlEncoded` encodes as "application/x-www-form-urlencoded" if not
+  already encoded or of another type
 
-Swapping middleware means giving the other priority. Specifying the "Content-Type" for the request is explicitly stating which middleware should process it.
+Swapping middleware means giving the other priority. Specifying the
+"Content-Type" for the request is explicitly stating which middleware should
+process it.
 
 Examples:
 
@@ -97,7 +116,8 @@ conn.put '/profile', payload
 ```
 
 ## Writing middleware
-Middleware are classes that respond to `call()`. They wrap the request/response cycle.
+Middleware are classes that respond to `call()`. They wrap the request/response
+cycle.
 
 ```ruby
 def call(env)
@@ -109,9 +129,12 @@ def call(env)
 end
 ```
 
-It's important to do all processing of the response only in the `on_complete` block. This enables middleware to work in parallel mode where requests are asynchronous.
+It's important to do all processing of the response only in the `on_complete`
+block. This enables middleware to work in parallel mode where requests are
+asynchronous.
 
-The `env` is a hash with symbol keys that contains info about the request and, later, response. Some keys are:
+The `env` is a hash with symbol keys that contains info about the request and,
+later, response. Some keys are:
 
 ```
 # request phase
@@ -164,7 +187,6 @@ stubs.verify_stubbed_calls
 ## <a name="todo"></a>TODO
 * support streaming requests/responses
 * better stubbing API
-* Add curb, em-http, fast_http
 
 ## <a name="pulls"></a>Note on Patches/Pull Requests
 1. Fork the project.
@@ -174,7 +196,11 @@ stubs.verify_stubbed_calls
 4. Commit, do not mess with rakefile, version, or history. (if you want to have
    your own version, that is fine but bump version in a commit by itself I can
    ignore when I pull)
-5. Send me a pull request. Bonus points for topic branches.
+5. Send us a pull request. Bonus points for topic branches.
+
+We are pushing towards a 1.0 release, when we will have to follow [Semantic
+Versioning](http://semver.org/).  If your patch includes changes to break
+compatiblitity, note that so we can add it to the [Changelog](https://github.com/technoweenie/faraday/wiki/Changelog).
 
 ## <a name="versions"></a>Supported Ruby Versions
 This library aims to support and is [tested against][travis] the following Ruby
@@ -204,6 +230,7 @@ timely fashion. If critical issues for a particular implementation exist at the
 time of a major release, support for that Ruby version may be dropped.
 
 ## <a name="copyright"></a>Copyright
-Copyright (c) 2009 [Rick Olson](mailto:technoweenie@gmail.com), zack hobson. See [LICENSE][] for details.
+Copyright (c) 2009-12 [Rick Olson](mailto:technoweenie@gmail.com), zack hobson.
+See [LICENSE][] for details.
 
 [license]: https://github.com/technoweenie/faraday/blob/master/LICENSE.md
