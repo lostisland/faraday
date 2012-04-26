@@ -33,17 +33,18 @@ module Faraday
     @default_connection ||= Connection.new
   end
 
-  def self.is_mri_18?
-    (!defined?(RUBY_ENGINE) || "ruby" == RUBY_ENGINE) && RUBY_VERSION < '1.9'
+  if (!defined?(RUBY_ENGINE) || "ruby" == RUBY_ENGINE) && RUBY_VERSION < '1.9'
+    begin
+      require 'system_timer'
+      Timer = SystemTimer
+    rescue LoadError
+      warn "Faraday: you may want to install system_timer for reliable timeouts"
+    end
   end
 
-  begin
-    require is_mri_18? ? 'system_timer' : 'timeout'
-  rescue LoadError
+  unless const_defined? :Timer
     require 'timeout'
-    warn "Faraday: you may want to install system_timer for reliable timeouts"
-  ensure
-    Timer = defined?(::SystemTimer) ? ::SystemTimer : ::Timeout
+    Timer = Timeout
   end
 
   module MiddlewareRegistry
