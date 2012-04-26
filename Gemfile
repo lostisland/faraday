@@ -1,7 +1,12 @@
 source 'https://rubygems.org'
 
 group :development do
-  gem 'sinatra', '~> 1.2'
+  # in Sinatra ~> 1.4, server settings will be passed that allows
+  # settings to passed to underlying web server.
+  # Extra SSL options are passed in for integration tests
+  # https://github.com/sinatra/sinatra/commit/9a2fa48074db6ffb7742e50c972a15e2f16fbcf7
+  gem 'sinatra', :git => "https://github.com/sinatra/sinatra.git"
+  gem 'rack-ssl'
 end
 
 group :test do

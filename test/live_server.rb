@@ -46,5 +46,21 @@ class FaradayTestServer < Sinatra::Base
 end
 
 if $0 == __FILE__
+  if ARGV.first == '--ssl'
+    require 'webrick/https'
+    require 'rack/ssl'
+    FaradayTestServer.class_eval do
+      use Rack::SSL
+
+      # WEBrick generates a self signed cert on start
+      # http://www.ruby-doc.org/stdlib-1.9.3/libdoc/webrick/rdoc/WEBrick.html
+      set :server => ['webrick'],
+          :server_settings => {
+            :SSLEnable => true,
+            :SSLCertName => [["CN", 'localhost']],
+            :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE
+          }
+    end
+  end
   FaradayTestServer.run!
 end
