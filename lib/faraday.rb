@@ -37,7 +37,7 @@ module Faraday
     require RUBY_VERSION < '1.9' ? 'system_timer' : 'timeout'
   rescue LoadError
     require 'timeout'
-    warn "Faraday: you may want to install system_timer for reliable timeouts"
+    warn "Faraday: you may want to install system_timer for reliable timeouts" unless defined?(JRUBY_VERSION)
   ensure
     Timer = defined?(::SystemTimer) ? ::SystemTimer : ::Timeout
   end
