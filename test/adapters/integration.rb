@@ -61,11 +61,6 @@ module Adapters
     end
 
     module SSL
-      # overrides Common version b/c of secure cookies
-      def test_GET_handles_headers_with_multiple_values
-        assert_equal 'one, two; secure', get('multi').headers['set-cookie']
-      end
-
       def test_ssl_secure
         assert_equal "ssl #{Faraday::TestCase::SSL}", get('ssl').body
       end

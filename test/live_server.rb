@@ -52,10 +52,7 @@ end
 if $0 == __FILE__
   if ENV['LIVE'].index('https') == 0
     require 'webrick/https'
-    require 'rack/ssl'
     FaradayTestServer.class_eval do
-      use Rack::SSL
-
       # See 'test:generate_certs' rake task
       key = OpenSSL::PKey::RSA.new(File.open("faraday.cert.key").read)
       cert = OpenSSL::X509::Certificate.new(File.open("faraday.cert.crt").read)
@@ -64,7 +61,6 @@ if $0 == __FILE__
             :SSLEnable => true,
             :SSLPrivateKey => key,
             :SSLCertificate => cert,
-            :SSLCertName => [["CN", 'localhost']],
             :SSLVerifyClient => OpenSSL::SSL::VERIFY_PEER,
           }
     end

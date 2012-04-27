@@ -6,7 +6,6 @@ group :development do
   # Extra SSL options are passed in for integration tests
   # https://github.com/sinatra/sinatra/commit/9a2fa48074db6ffb7742e50c972a15e2f16fbcf7
   gem 'sinatra', :git => "https://github.com/sinatra/sinatra.git"
-  gem 'rack-ssl'
 end
 
 group :test do
