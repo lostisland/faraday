@@ -9,7 +9,9 @@ module Adapters
   module Integration
     def self.apply(base, *extras)
       if base.live_server?
-        ([:Common] + extras).each {|name| base.send(:include, self.const_get(name)) }
+        modules = [:Common]
+        modules << :SSL if base.live_server.scheme == 'https'
+        modules.concat(extras).each {|name| base.send(:include, self.const_get(name)) }
         yield if block_given?
       elsif !defined? @warned
         warn "Warning: Not running integration tests against a live server."
@@ -56,6 +58,12 @@ module Adapters
       def test_GET_handles_compression
         res = get('echo_header', :name => 'accept-encoding')
         assert_match /gzip;.+\bdeflate\b/, res.body
+      end
+    end
+
+    module SSL
+      def test_ssl_secure
+        assert_equal "true", get('ssl').body
       end
     end
 
@@ -180,7 +188,10 @@ module Adapters
         end
 
         server = self.class.live_server
-        url = 'http://%s:%d' % [server.host, server.port]
+        url = '%s://%s:%d' % [server.scheme, server.host, server.port]
+
+        options[:ssl] ||= {}
+        options[:ssl][:ca_file] ||= File.expand_path('../../../faraday.cert.crt', __FILE__)
 
         Faraday::Connection.new(url, options, &builder_block).tap do |conn|
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
