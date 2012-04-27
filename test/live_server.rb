@@ -40,25 +40,32 @@ class FaradayTestServer < Sinatra::Base
     [200, {}, 'ok']
   end
 
+  get '/ssl' do
+    "ssl #{request.secure?}"
+  end
+
   error do |e|
     "#{e.class}\n#{e.to_s}\n#{e.backtrace.join("\n")}"
   end
 end
 
 if $0 == __FILE__
-  if ARGV.first == '--ssl'
+  if ENV['LIVE'].index('https') == 0
     require 'webrick/https'
     require 'rack/ssl'
     FaradayTestServer.class_eval do
       use Rack::SSL
 
-      # WEBrick generates a self signed cert on start
-      # http://www.ruby-doc.org/stdlib-1.9.3/libdoc/webrick/rdoc/WEBrick.html
+      # See 'test:generate_certs' rake task
+      key = OpenSSL::PKey::RSA.new(File.open("faraday.cert.key").read)
+      cert = OpenSSL::X509::Certificate.new(File.open("faraday.cert.crt").read)
       set :server => ['webrick'],
           :server_settings => {
             :SSLEnable => true,
+            :SSLPrivateKey => key,
+            :SSLCertificate => cert,
             :SSLCertName => [["CN", 'localhost']],
-            :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE
+            :SSLVerifyClient => OpenSSL::SSL::VERIFY_PEER,
           }
     end
   end

@@ -1,8 +1,11 @@
 before_script:
+  - "bundle exec rake test:generate_certs"
   - "nohup bundle exec ruby test/live_server.rb &"
   - "sleep 2"
 
-env: LIVE=1
+env:
+ - LIVE=http://localhost:4567
+ - LIVE=https://localhost:4567
 
 language: ruby
 

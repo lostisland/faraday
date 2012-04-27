@@ -37,6 +37,8 @@ module Faraday
       else 'http://127.0.0.1:4567'
     end
 
+    SSL = LIVE_SERVER && URI.parse(LIVE_SERVER).scheme == 'https'
+
     def test_default
       assert true
     end unless defined? ::MiniTest
