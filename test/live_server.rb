@@ -50,20 +50,25 @@ class FaradayTestServer < Sinatra::Base
 end
 
 if $0 == __FILE__
-  if ENV['LIVE'].index('https') == 0
+  options = {
+    :Port => FaradayTestServer.port
+  }
+
+  if (ENV['LIVE'] || '').index('https') == 0
     require 'webrick/https'
-    FaradayTestServer.class_eval do
-      # See 'test:generate_certs' rake task
-      key = OpenSSL::PKey::RSA.new(File.open("faraday.cert.key").read)
-      cert = OpenSSL::X509::Certificate.new(File.open("faraday.cert.crt").read)
-      set :server => ['webrick'],
-          :server_settings => {
-            :SSLEnable => true,
-            :SSLPrivateKey => key,
-            :SSLCertificate => cert,
-            :SSLVerifyClient => OpenSSL::SSL::VERIFY_PEER,
-          }
-    end
+
+    key     = OpenSSL::PKey::RSA.new(File.open(File.expand_path("../../faraday.cert.key", __FILE__)).read)
+    cert    = OpenSSL::X509::Certificate.new(File.open(File.expand_path("../../faraday.cert.crt", __FILE__)).read)
+    options = {
+      :SSLEnable       => true,
+      :SSLPrivateKey   => key,
+      :SSLCertificate  => cert,
+      :SSLVerifyClient => OpenSSL::SSL::VERIFY_PEER
+    }.merge(options)
   end
-  FaradayTestServer.run!
+
+  Rack::Handler::WEBrick.run(FaradayTestServer, options) do |server|
+    [:INT, :TERM].each { |sig| trap(sig) { server.stop } }
+  end
 end
+
