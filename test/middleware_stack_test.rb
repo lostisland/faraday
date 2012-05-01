@@ -69,6 +69,12 @@ class MiddlewareStackTest < Faraday::TestCase
     assert_handlers %w[Orange]
   end
 
+  def test_unshift_handler
+    build_stack Apple, Orange
+    @builder.unshift Banana
+    assert_handlers %w[Banana Apple Orange]
+  end
+
   def test_stack_is_locked_after_making_requests
     build_stack Apple
     assert !@builder.locked?

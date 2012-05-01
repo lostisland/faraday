@@ -136,6 +136,11 @@ module Faraday
       @handlers.delete(handler)
     end
 
+    def unshift(handler, &block)
+      raise_if_locked
+      insert(0, handler, &block)
+    end
+
     private
 
     def raise_if_locked
