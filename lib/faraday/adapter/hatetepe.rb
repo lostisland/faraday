@@ -4,6 +4,8 @@ module Faraday
       dependency "hatetepe/client"
       
       def call(env)
+        super
+
         shutdown = !EM.reactor_running?
         EM.synchrony do
           client, request = client_for(env), request_for(env)
@@ -24,10 +26,10 @@ module Faraday
 
       def client_for(env)
         options = {
-          host:            env[:url].host,
-          port:            env[:url].port,
-          timeout:         env[:request][:timeout],
-          connect_timeout: env[:request][:open_timeout]
+          :host            => env[:url].host,
+          :port            => env[:url].port,
+          :timeout         => env[:request][:timeout],
+          :connect_timeout => env[:request][:open_timeout]
         }
 
         ::Hatetepe::Client.start(options)
