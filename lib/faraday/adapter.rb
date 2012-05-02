@@ -14,7 +14,8 @@ module Faraday
       :Patron            => 'patron',
       :Excon             => 'excon',
       :Test              => 'test',
-      :Rack              => 'rack'
+      :Rack              => 'rack',
+      :HTTPClient        => 'httpclient'
 
     register_middleware \
       :test                => :Test,
@@ -25,7 +26,8 @@ module Faraday
       :em_synchrony        => :EMSynchrony,
       :em_http             => :EMHttp,
       :excon               => :Excon,
-      :rack                => :Rack
+      :rack                => :Rack,
+      :httpclient          => :HTTPClient
 
     module Parallelism
       attr_writer :supports_parallel
