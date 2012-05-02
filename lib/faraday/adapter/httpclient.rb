@@ -3,20 +3,27 @@ module Faraday
     class HTTPClient < Faraday::Adapter
       dependency 'httpclient'
 
+      def client
+        @client ||= ::HTTPClient.new
+      end
+
       def call(env)
         super
 
-        client ||= ::HTTPClient.new
-
         if req = env[:request]
           if proxy = req[:proxy]
-            configure_proxy client, proxy
+            configure_proxy proxy
           end
-          configure_timeouts client, req
+
+          if sock = req[:socket_local]
+            configure_local_socket sock
+          end
+
+          configure_timeouts req
         end
 
         if env[:url].scheme == 'https' && ssl = env[:ssl]
-          configure_ssl client, ssl
+          configure_ssl ssl
         end
 
         # TODO Don't stream yet.
@@ -34,14 +41,19 @@ module Faraday
         raise Faraday::Error::TimeoutError, $!
       end
 
-      def configure_proxy(client, proxy)
+      def configure_local_socket(sock)
+        client.socket_local.host = sock[:host]
+        client.socket_local.port = sock[:port]
+      end
+
+      def configure_proxy(proxy)
         client.proxy = proxy[:uri]
         if proxy[:user] && proxy[:password]
           client.set_proxy_auth proxy[:user], proxy[:password]
         end
       end
 
-      def configure_ssl(client, ssl)
+      def configure_ssl(ssl)
         ssl_config = client.ssl_config
 
         ssl_config.add_trust_ca ssl[:ca_file]        if ssl[:ca_file]
@@ -53,7 +65,7 @@ module Faraday
         ssl_config.verify_mode  = ssl_verify_mode(ssl)
       end
 
-      def configure_timeouts(client, req)
+      def configure_timeouts(req)
         if req[:timeout]
           client.connect_timeout   = req[:timeout]
           client.receive_timeout   = req[:timeout]
