@@ -51,6 +51,15 @@ module Faraday
           end
         end
 
+        def configure_socket(options, env)
+          if bind = request_options(env)[:bind]
+            options[:bind] = {
+              :host => bind[:host],
+              :port => bind[:port]
+            }
+          end
+        end
+
         def configure_timeout(options, env)
           timeout, open_timeout = request_options(env).values_at(:timeout, :open_timeout)
           options[:connect_timeout] = options[:inactivity_timeout] = timeout
