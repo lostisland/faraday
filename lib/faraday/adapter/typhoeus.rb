@@ -40,6 +40,7 @@ module Faraday
         configure_ssl     req, env
         configure_proxy   req, env
         configure_timeout req, env
+        configure_socket  req, env
 
         req.on_complete do |resp|
           if resp.timed_out?
@@ -86,6 +87,12 @@ module Faraday
         env_req = request_options(env)
         req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
         req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
+      end
+      
+      def configure_socket(req, env)
+        if bind = request_options(env)[:bind]
+          req.interface = bind[:host]
+        end
       end
 
       def request_options(env)
