@@ -1,4 +1,6 @@
 module Faraday
+  # Public: This is a base class for all Faraday adapters.  Adapters are
+  # responsible for fulfilling a Faraday request.
   class Adapter < Middleware
     CONTENT_LENGTH = 'Content-Length'.freeze
 
@@ -27,6 +29,7 @@ module Faraday
       :excon               => :Excon,
       :rack                => :Rack
 
+    # Public: This module marks an Adapter as supporting parallel requests.
     module Parallelism
       attr_writer :supports_parallel
       def supports_parallel?() @supports_parallel end
