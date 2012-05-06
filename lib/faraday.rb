@@ -41,6 +41,7 @@ module Faraday
     #           :headers - Hash of unencoded HTTP header key/value pairs.
     #           :request - Hash of request options.
     #           :ssl     - Hash of SSL options.
+    #           :proxy   - Hash of Proxy options.
     #
     # Examples
     #
