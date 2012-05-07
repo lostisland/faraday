@@ -17,7 +17,7 @@ Faraday supports these adapters:
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
 
-## <a name="usage"></a>Usage
+## Usage
 
 ```ruby
 conn = Faraday.new(:url => 'http://sushi.com') do |builder|
@@ -58,15 +58,8 @@ end
 
 conn.get do |req|
   req.url '/search'
-  req.options = {
-    :timeout => 5,                    # open/read timeout Integer in seconds
-    :open_timeout => 2,               # read timeout Integer in seconds
-    :proxy => {
-      :uri => "http://example.org/",  # proxy server URI
-      :user => "me",                  # proxy server username
-      :password => "test123"          # proxy server password
-    }
-  }
+  req.options[:timeout] = 5           # open/read timeout in seconds
+  req.options[:open_timeout] = 2      # connection open timeout in seconds
 end
 ```
 
@@ -149,7 +142,7 @@ later, response. Some keys are:
 :response_headers
 ```
 
-## <a name="testing"></a>Testing
+## Testing
 
 ```ruby
 # It's possible to define stubbed request outside a test adapter block.
@@ -184,11 +177,11 @@ resp = test.get '/else' #=> raises "no such stub" error
 stubs.verify_stubbed_calls
 ```
 
-## <a name="todo"></a>TODO
+## TODO
 * support streaming requests/responses
 * better stubbing API
 
-## <a name="pulls"></a>Note on Patches/Pull Requests
+## Note on Patches/Pull Requests
 1. Fork the project.
 2. Make your feature addition or bug fix.
 3. Add tests for it. This is important so I don't break it in a future version
@@ -202,7 +195,7 @@ We are pushing towards a 1.0 release, when we will have to follow [Semantic
 Versioning](http://semver.org/).  If your patch includes changes to break
 compatiblitity, note that so we can add it to the [Changelog](https://github.com/technoweenie/faraday/wiki/Changelog).
 
-## <a name="versions"></a>Supported Ruby Versions
+## Supported Ruby Versions
 This library aims to support and is [tested against][travis] the following Ruby
 implementations:
 
@@ -229,8 +222,8 @@ implementation, you will be personally responsible for providing patches in a
 timely fashion. If critical issues for a particular implementation exist at the
 time of a major release, support for that Ruby version may be dropped.
 
-## <a name="copyright"></a>Copyright
-Copyright (c) 2009-12 [Rick Olson](mailto:technoweenie@gmail.com), zack hobson.
+## Copyright
+Copyright (c) 2009-2012 [Rick Olson](mailto:technoweenie@gmail.com), zack hobson.
 See [LICENSE][] for details.
 
 [license]: https://github.com/technoweenie/faraday/blob/master/LICENSE.md

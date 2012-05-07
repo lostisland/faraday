@@ -35,6 +35,10 @@ class FaradayTestServer < Sinatra::Base
     [200, { 'Set-Cookie' => 'one, two' }, '']
   end
 
+  get '/who-am-i' do
+    request.env['REMOTE_ADDR']
+  end
+
   get '/slow' do
     sleep 10
     [200, {}, 'ok']

@@ -8,7 +8,12 @@ module Adapters
     Integration.apply(self, :Parallel) do
       # https://github.com/eventmachine/eventmachine/pull/289
       undef :test_timeout
-    end
 
+      def test_binds_local_socket
+        host = '1.2.3.4'
+        conn = create_connection :request => { :bind => { :host => host } }
+        assert_equal host, conn.options[:bind][:host]
+      end
+    end
   end
 end
