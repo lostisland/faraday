@@ -5,13 +5,12 @@ module Adapters
 
     def adapter() :httpclient end
 
-    Integration.apply(self, :NonParallel)
-
-    def test_local_socket
-      adapter = Faraday::Adapter::HTTPClient.new
-      adapter.configure_local_socket({ :host => 'foo' })
-      assert_equal 'foo', adapter.client.socket_local.host
-      assert_nil adapter.client.socket_local.port
+    Integration.apply(self, :NonParallel) do
+      def test_binds_local_socket
+        host = '1.2.3.4'
+        conn = create_connection :request => { :bind => { :host => host } }
+        assert_equal host, conn.options[:bind][:host]
+      end
     end
   end
 end

@@ -15,8 +15,8 @@ module Faraday
             configure_proxy proxy
           end
 
-          if sock = req[:socket_local]
-            configure_local_socket sock
+          if bind = req[:bind]
+            configure_socket bind
           end
 
           configure_timeouts req
@@ -41,9 +41,9 @@ module Faraday
         raise Faraday::Error::TimeoutError, $!
       end
 
-      def configure_local_socket(sock)
-        client.socket_local.host = sock[:host]
-        client.socket_local.port = sock[:port]
+      def configure_socket(bind)
+        client.socket_local.host = bind[:host]
+        client.socket_local.port = bind[:port]
       end
 
       def configure_proxy(proxy)
