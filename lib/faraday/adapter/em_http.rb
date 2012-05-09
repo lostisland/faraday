@@ -130,7 +130,7 @@ module Faraday
       def perform_single_request(env)
         req = EventMachine::HttpRequest.new(env[:url], connection_config(env))
         req.setup_request(env[:method], request_config(env)).callback { |client|
-          if handles_streaming?(env)
+          if want_streaming?(env)
             warn "Streaming downloads for EventMachine is not yet implemented."
             env[:on_data].call(client.response, client.response.size)
           end

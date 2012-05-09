@@ -58,7 +58,7 @@ module Faraday
       end
     end
 
-    def handles_streaming?(env)
+    def want_streaming?(env)
       env[:on_data].kind_of? Proc
     end
   end
