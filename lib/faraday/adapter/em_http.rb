@@ -132,7 +132,7 @@ module Faraday
         req.setup_request(env[:method], request_config(env)).callback { |client|
           if want_streaming?(env)
             warn "Streaming downloads for EventMachine are not yet implemented."
-            env[:on_data].call(client.response, client.response.size)
+            env[:on_data].call(client.response, client.response.bytesize)
           end
           save_response(env, client.response_header.status, client.response) do |resp_headers|
             client.response_header.each do |name, value|

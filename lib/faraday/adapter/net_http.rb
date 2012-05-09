@@ -68,7 +68,7 @@ module Faraday
         if want_streaming?(env)
           size = 0
           http_response = perform_request_with_wrapped_block(http, env) do |chunk|
-            size += chunk.size
+            size += chunk.bytesize
             env[:on_data].call(chunk, size)
           end
           # Net::HTTP returns something, but it's not meaningful according to the docs.

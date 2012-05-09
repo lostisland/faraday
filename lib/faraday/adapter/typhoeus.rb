@@ -52,7 +52,7 @@ module Faraday
 
           if want_streaming?(env)
             warn "Streaming downloads for EventMachine are not yet implemented."
-            env[:on_data].call(resp.body, resp.body.size)
+            env[:on_data].call(resp.body, resp.body.bytesize)
           end
           save_response(env, resp.code, resp.body) do |response_headers|
             response_headers.parse resp.headers

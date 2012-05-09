@@ -59,12 +59,15 @@ end
 conn.get do |req|
   req.url '/search'
   req.options = {
-    :timeout => 5,                    # open/read timeout Integer in seconds
-    :open_timeout => 2,               # read timeout Integer in seconds
+    :timeout => 5,                        # open/read timeout Integer in seconds
+    :open_timeout => 2,                   # read timeout Integer in seconds
+    :on_data => Proc.new do |data, size|  # streaming download (Net:HTTP adapter only right now)
+        puts "Downloaded #{size} bytes so far, current chunk starts with #{data[0..10]}"
+      end
     :proxy => {
-      :uri => "http://example.org/",  # proxy server URI
-      :user => "me",                  # proxy server username
-      :password => "test123"          # proxy server password
+      :uri => "http://example.org/",      # proxy server URI
+      :user => "me",                      # proxy server username
+      :password => "test123"              # proxy server password
     }
   }
 end
@@ -140,14 +143,15 @@ later, response. Some keys are:
 
 ```
 # request phase
-:method - :get, :post, ...
-:url    - URI for the current request; also contains GET parameters
-:body   - POST parameters for :post/:put requests
+:method  - :get, :post, ...
+:url     - URI for the current request; also contains GET parameters
+:body    - POST parameters for :post/:put requests
+:on_data - a Proc to call every time a chunk of data is downloaded (streaming) - Proc.new{|data, size| ... }
 :request_headers
 
 # response phase
-:status - HTTP response status code, such as 200
-:body   - the response body
+:status  - HTTP response status code, such as 200
+:body    - the response body
 :response_headers
 ```
 
