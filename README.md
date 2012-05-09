@@ -191,7 +191,8 @@ stubs.verify_stubbed_calls
 ```
 
 ## TODO
-* support streaming requests/responses
+* support streaming requests
+* support streaming responses for adapters other than Net::HTTP
 * better stubbing API
 
 ## Note on Patches/Pull Requests

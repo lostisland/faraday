@@ -77,26 +77,6 @@ module Adapters
       end
     end
 
-    # module ParallelStreaming
-    #   def test_streaming_in_parallel
-    #     resp1, resp2 = nil, nil
-
-    #     connection = create_connection
-    #     connection.in_parallel do
-    #       resp1, streamed1 = streaming_request(connection, :get, 'stream?a=1', :chunk_size => 16*1024)
-    #       resp2, streamed2 = streaming_request(connection, :get, 'stream?b=2', :chunk_size => 16*1024)
-    #       assert connection.in_parallel?
-    #       assert_nil resp1.body
-    #       assert_nil resp2.body
-    #       assert FIXME, streamed1
-    #       assert FIXME, streamed2
-    #     end
-    #     assert !connection.in_parallel?
-    #     check_streaming_response(resp1, streamed1, '{"a"=>"1"}')
-    #     check_streaming_response(resp2, streamed2, '{"b"=>"2"}')
-    #   end
-    # end
-
     module Streaming
       def test_GET_streaming
         response, streamed = streaming_request(create_connection, :get, 'stream')
