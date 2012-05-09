@@ -1,14 +1,11 @@
 require File.expand_path('../integration', __FILE__)
 
 module Adapters
-  class EMHttpTest < Faraday::TestCase
+  class HttpclientTest < Faraday::TestCase
 
-    def adapter() :em_http end
+    def adapter() :httpclient end
 
-    Integration.apply(self, :Parallel, :NonStreaming, :ParallelNonStreaming) do
-      # https://github.com/eventmachine/eventmachine/pull/289
-      undef :test_timeout
-
+    Integration.apply(self, :NonParallel) do
       def test_binds_local_socket
         host = '1.2.3.4'
         conn = create_connection :request => { :bind => { :host => host } }

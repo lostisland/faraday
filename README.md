@@ -58,18 +58,11 @@ end
 
 conn.get do |req|
   req.url '/search'
-  req.options = {
-    :timeout => 5,                        # open/read timeout Integer in seconds
-    :open_timeout => 2,                   # read timeout Integer in seconds
-    :on_data => Proc.new do |data, size|  # streaming download (Net:HTTP adapter only right now)
-        puts "Downloaded #{size} bytes so far, current chunk starts with #{data[0..10]}"
-      end
-    :proxy => {
-      :uri => "http://example.org/",      # proxy server URI
-      :user => "me",                      # proxy server username
-      :password => "test123"              # proxy server password
-    }
-  }
+  req.options[:timeout] = 5           # open/read timeout in seconds
+  req.options[:open_timeout] = 2      # connection open timeout in seconds
+  req.on_data = Proc.new do |data, size|  # streaming download (Net:HTTP adapter only right now)
+      puts "Downloaded #{size} bytes so far, current chunk starts with #{data[0..10]}"
+    end
 end
 ```
 

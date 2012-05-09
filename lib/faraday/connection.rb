@@ -6,18 +6,63 @@ require 'uri'
 Faraday.require_libs 'builder', 'request', 'response', 'utils'
 
 module Faraday
+  # Public: Connection objects manage the default properties and the middleware
+  # stack for fulfilling an HTTP request.
+  #
+  # Examples
+  #
+  #   conn = Faraday::Connection.new 'http://sushi.com'
+  #
+  #   # GET http://sushi.com/nigiri
+  #   conn.get 'nigiri'
+  #   # => #<Faraday::Response>
+  #
   class Connection
+    # A Set of allowed HTTP verbs.
     METHODS = Set.new [:get, :post, :put, :delete, :head, :patch, :options]
+
+    # A Set of HTTP verbs that typically send a body.  If no body is set for
+    # these requests, the Content-Length header is set to 0.
     METHODS_WITH_BODIES = Set.new [:post, :put, :patch, :options]
 
-    attr_reader :params, :headers, :url_prefix, :builder, :options, :ssl, :parallel_manager
+    # Public: Returns a Hash of URI query unencoded key/value pairs.
+    attr_reader :params
+
+    # Public: Returns a Hash of unencoded HTTP header key/value pairs.
+    attr_reader :headers
+
+    # Public: Returns a URI with the prefix used for all requests from this
+    # Connection.  This includes a default host name, scheme, port, and path.
+    attr_reader :url_prefix
+
+    # Public: Returns the Faraday::Builder for this Connection.
+    attr_reader :builder
+
+    # Public: Returns a Hash of the request options.
+    attr_reader :options
+
+    # Public: Returns a Hash of the SSL options.
+    attr_reader :ssl
+
+    # Public: Returns the parallel manager for this Connection.
+    attr_reader :parallel_manager
+
+    # Public: Sets the default parallel manager for this connection.
     attr_writer :default_parallel_manager
 
-    # :url
-    # :params
-    # :headers
-    # :request
-    # :ssl
+    # Public: Initializes a new Faraday::Collection.
+    #
+    # url     - The optional String base URL to use as a prefix for all
+    #           requests.  Can also be the options Hash.
+    # options - The optional Hash used to configure this Faraday::Connection.
+    #           Any of these values will be set on every request made, unless
+    #           overridden for a specific request.
+    #           :url     - String base URL.
+    #           :params  - Hash of URI query unencoded key/value pairs.
+    #           :headers - Hash of unencoded HTTP header key/value pairs.
+    #           :request - Hash of request options.
+    #           :ssl     - Hash of SSL options.
+    #           :proxy   - Hash of Proxy options.
     def initialize(url = nil, options = {})
       if url.is_a?(Hash)
         options = url
@@ -48,17 +93,18 @@ module Faraday
       yield self if block_given?
     end
 
-    # Public: Replace default query parameters.
+    # Public: Sets the Hash of URI query unencoded key/value pairs.
     def params=(hash)
       @params.replace hash
     end
 
-    # Public: Replace default request headers.
+    # Public: Sets the Hash of unencoded HTTP header key/value pairs.
     def headers=(hash)
       @headers.replace hash
     end
 
     extend Forwardable
+
     def_delegators :builder, :build, :use, :request, :response, :adapter
 
     # The "rack app" wrapped in middleware. All requests are sent here.
@@ -80,7 +126,33 @@ module Faraday
       end
     end
 
-    # get/head/delete(url, params, headers)
+    # Public: Makes an HTTP request without a body.
+    #
+    # url     - The optional String base URL to use as a prefix for all
+    #           requests.  Can also be the options Hash.
+    # params  - Hash of URI query unencoded key/value pairs.
+    # headers - Hash of unencoded HTTP header key/value pairs.
+    #
+    # Examples
+    #
+    #   conn.get '/items', {:page => 1}, :accept => 'application/json'
+    #   conn.head '/items/1'
+    #
+    #   # ElasticSearch example sending a body with GET.
+    #   conn.get '/twitter/tweet/_search' do |req|
+    #     req.headers[:content_type] = 'application/json'
+    #     req.params[:routing] = 'kimchy'
+    #     req.body = JSON.generate(:query => {...})
+    #   end
+    #
+    # Yields a Faraday::Response for further request customizations.
+    # Returns a Faraday::Response.
+    #
+    # Signature
+    #
+    #   <verb>(url = nil, params = nil, headers = nil)
+    #
+    # verb - An HTTP verb: get, head, or delete.
     %w[get head delete].each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, params = nil, headers = nil)
@@ -92,7 +164,32 @@ module Faraday
       RUBY
     end
 
-    # post/put/patch(url, body, headers)
+    # Public: Makes an HTTP request with a body.
+    #
+    # url     - The optional String base URL to use as a prefix for all
+    #           requests.  Can also be the options Hash.
+    # body    - The String body for the request.
+    # headers - Hash of unencoded HTTP header key/value pairs.
+    #
+    # Examples
+    #
+    #   conn.post '/items', data, :content_type => 'application/json'
+    #
+    #   # Simple ElasticSearch indexing sample.
+    #   conn.post '/twitter/tweet' do |req|
+    #     req.headers[:content_type] = 'application/json'
+    #     req.params[:routing] = 'kimchy'
+    #     req.body = JSON.generate(:user => 'kimchy', ...)
+    #   end
+    #
+    # Yields a Faraday::Response for further request customizations.
+    # Returns a Faraday::Response.
+    #
+    # Signature
+    #
+    #   <verb>(url = nil, body = nil, headers = nil)
+    #
+    # verb - An HTTP verb: post, put, or patch.
     %w[post put patch].each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, body = nil, headers = nil, &block)
@@ -101,16 +198,60 @@ module Faraday
       RUBY
     end
 
+    # Public: Sets up the Authorization header with these credentials, encoded
+    # with base64.
+    #
+    # login - The authentication login.
+    # pass  - The authentication password.
+    #
+    # Examples
+    #
+    #   conn.basic_auth 'Aladdin', 'open sesame'
+    #   conn.headers['Authorization']
+    #   # => "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="
+    #
+    # Returns nothing.
     def basic_auth(login, pass)
       headers[Faraday::Request::Authorization::KEY] =
         Faraday::Request::BasicAuthentication.header(login, pass)
     end
 
+    # Public: Sets up the Authorization header with the given token.
+    #
+    # token   - The String token.
+    # options - Optional Hash of extra token options.
+    #
+    # Examples
+    #
+    #   conn.token_auth 'abcdef', :foo => 'bar'
+    #   conn.headers['Authorization']
+    #   # => "Token token=\"abcdef\",
+    #               foo=\"bar\""
+    #
+    # Returns nothing.
     def token_auth(token, options = nil)
       headers[Faraday::Request::Authorization::KEY] =
         Faraday::Request::TokenAuthentication.header(token, options)
     end
 
+    # Public: Sets up a custom Authorization header.
+    #
+    # type  - The String authorization type.
+    # token - The String or Hash token.  A String value is taken literally, and
+    #         a Hash is encoded into comma separated key/value pairs.
+    #
+    # Examples
+    #
+    #   conn.authorization :Bearer, 'mF_9.B5f-4.1JqM'
+    #   conn.headers['Authorization']
+    #   # => "Bearer mF_9.B5f-4.1JqM"
+    #
+    #   conn.authorization :Token, :token => 'abcdef', :foo => 'bar'
+    #   conn.headers['Authorization']
+    #   # => "Token token=\"abcdef\",
+    #               foo=\"bar\""
+    #
+    # Returns nothing.
     def authorization(type, token)
       headers[Faraday::Request::Authorization::KEY] =
         Faraday::Request::Authorization.header(type, token)
@@ -134,10 +275,19 @@ module Faraday
       end
     end
 
+    # Public: Determine if this Faraday::Connection can make parallel requests.
+    #
+    # Returns true or false.
     def in_parallel?
       !!@parallel_manager
     end
 
+    # Public: Sets up the parallel manager to make a set of requests.
+    #
+    # manager - The parallel manager that this Connection's Adapter uses.
+    #
+    # Yields a block to execute multiple requests.
+    # Returns nothing.
     def in_parallel(manager = nil)
       @parallel_manager = manager || default_parallel_manager {
         warn "Warning: `in_parallel` called but no parallel-capable adapter on Faraday stack"
@@ -150,6 +300,7 @@ module Faraday
       @parallel_manager = nil
     end
 
+    # Public: Gets or Sets the Hash proxy options.
     def proxy(arg = nil)
       return @proxy if arg.nil?
 
@@ -161,7 +312,11 @@ module Faraday
       end
     end
 
-    # normalize URI() behavior across Ruby versions
+    # Public: Normalize URI() behavior across Ruby versions
+    #
+    # url - A String or URI.
+    #
+    # Returns a parsed URI.
     def self.URI(url)
       if url.respond_to?(:host)
         url
@@ -175,9 +330,13 @@ module Faraday
     def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
     def_delegator :url_prefix, :path, :path_prefix
 
-    # Parses the giving url with URI and stores the individual
+    # Public: Parses the giving url with URI and stores the individual
     # components in this connection.  These components serve as defaults for
     # requests made by this connection.
+    #
+    # url - A String or URI.
+    #
+    # Examples
     #
     #   conn = Faraday::Connection.new { ... }
     #   conn.url_prefix = "https://sushi.com/api"
@@ -186,6 +345,7 @@ module Faraday
     #
     #   conn.get("nigiri?page=2") # accesses https://sushi.com/api/nigiri
     #
+    # Returns the parsed URI from teh given input..
     def url_prefix=(url)
       uri = @url_prefix = self.class.URI(url)
       self.path_prefix = uri.path
@@ -201,7 +361,12 @@ module Faraday
       uri
     end
 
-    # Ensures that the path prefix always has a leading but no trailing slash
+    # Public: Sets the path prefix and ensures that it always has a leading
+    # but no trailing slash.
+    #
+    # value - A String.
+    #
+    # Returns the new String path prefix.
     def path_prefix=(value)
       url_prefix.path = if value
         value = value.chomp '/'
@@ -210,6 +375,14 @@ module Faraday
       end
     end
 
+    # Builds and runs the Faraday::Request.
+    #
+    # method  - The Symbol HTTP method.
+    # url     - The String or URI to access.
+    # body    - The String body
+    # headers - Hash of unencoded HTTP header key/value pairs.
+    #
+    # Returns a Faraday::Response.
     def run_request(method, url, body, headers)
       if !METHODS.include?(method)
         raise ArgumentError, "unknown http method: #{method}"
@@ -226,7 +399,7 @@ module Faraday
       self.app.call(env)
     end
 
-    # Internal: Creates and configures the request object.
+    # Creates and configures the request object.
     #
     # Returns the new Request.
     def build_request(method)
@@ -279,6 +452,9 @@ module Faraday
       uri
     end
 
+    # Internal: Creates a duplicate of this Faraday::Connection.
+    #
+    # Returns a Faraday::Connection.
     def dup
       self.class.new(build_url(''), :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
     end
