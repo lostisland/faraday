@@ -11,6 +11,20 @@ module Faraday
           opts[:ssl_verify_peer] = !!ssl.fetch(:verify, true)
           opts[:ssl_ca_path] = ssl[:ca_file] if ssl[:ca_file]
         end
+
+        if ( req = env[:request] )
+          if req[:timeout]
+            opts[:read_timeout]      = req[:timeout]
+            opts[:connect_timeout]   = req[:timeout]
+            opts[:write_timeout]     = req[:timeout]
+          end
+
+          if req[:open_timeout]
+            opts[:connect_timeout]   = req[:open_timeout]
+            opts[:write_timeout]     = req[:open_timeout]
+          end
+        end
+        
         conn = ::Excon.new(env[:url].to_s, opts)
 
         resp = conn.request \
@@ -23,6 +37,8 @@ module Faraday
         @app.call env
       rescue ::Excon::Errors::SocketError
         raise Error::ConnectionFailed, $!
+      rescue ::Excon::Errors::Timeout => err
+        raise Faraday::Error::TimeoutError, err
       end
     end
   end
