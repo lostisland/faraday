@@ -120,11 +120,13 @@ Middleware are classes that respond to `call()`. They wrap the request/response
 cycle.
 
 ```ruby
-def call(env)
-  # do something with the request
+class MyMiddleware < Faraday::Middleware
+  def call(env)
+    # do something with the request
 
-  @app.call(env).on_complete do
-    # do something with the response
+    @app.call(env).on_complete do
+      # do something with the response
+    end
   end
 end
 ```

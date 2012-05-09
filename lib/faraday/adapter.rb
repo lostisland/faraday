@@ -57,5 +57,9 @@ module Faraday
         yield response_headers if block_given?
       end
     end
+
+    def handles_streaming?(env)
+      env[:on_data].kind_of? Proc
+    end
   end
 end

@@ -5,7 +5,7 @@ module Adapters
 
     def adapter() :net_http end
 
-    behaviors = [:NonParallel]
+    behaviors = [:NonParallel, :Streaming]
     behaviors << :Compression if RUBY_VERSION >= '1.9'
 
     Integration.apply(self, *behaviors)
@@ -44,6 +44,5 @@ module Adapters
       # this should not raise an error
       Faraday::Adapter::NetHttp.new.configure_ssl(http, :ssl => {:verify => true})
     end
-
   end
 end

@@ -30,6 +30,7 @@ else
 end
 
 module Faraday
+
   class TestCase < Test::Unit::TestCase
     LIVE_SERVER = case ENV['LIVE']
       when /^http/ then ENV['LIVE']
@@ -49,6 +50,14 @@ module Faraday
       ensure
         $stderr = old
       end
+    end
+
+    def self.big_string
+      kb = 1024
+      (32..126).map{|i| i.chr}.cycle.take(50*kb).join
+    end
+    def big_string
+      self.class.big_string
     end
   end
 end

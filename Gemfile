@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 group :development do
   gem 'sinatra', '~> 1.2'
+  # WEBrick doesn't support streaming
+  gem 'thin', '~> 1.3.1'
 end
 
 group :test do
