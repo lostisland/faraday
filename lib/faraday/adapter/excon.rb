@@ -6,11 +6,12 @@ module Faraday
       def call(env)
         super
 
-        conn = ::Excon.new(env[:url].to_s)
+        opts = {}
         if env[:url].scheme == 'https' && ssl = env[:ssl]
-          ::Excon.ssl_verify_peer = !!ssl.fetch(:verify, true)
-          ::Excon.ssl_ca_path = ssl[:ca_file] if ssl[:ca_file]
+          opts[:ssl_verify_peer] = !!ssl.fetch(:verify, true)
+          opts[:ssl_ca_path] = ssl[:ca_file] if ssl[:ca_file]
         end
+        conn = ::Excon.new(env[:url].to_s, opts)
 
         resp = conn.request \
           :method  => env[:method].to_s.upcase,
