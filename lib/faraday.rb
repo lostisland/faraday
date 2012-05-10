@@ -29,6 +29,9 @@ module Faraday
     #     Faraday.get "https://faraday.com"
     attr_writer :default_connection
 
+    # Public: Sets the default options used when calling Faraday#new.
+    attr_writer :default_connection_options
+
     # Public: Initializes a new Faraday::Connection.
     #
     # url     - The optional String base URL to use as a prefix for all
@@ -58,6 +61,7 @@ module Faraday
     # Returns a Faraday::Connection.
     def new(url = nil, options = {})
       block = block_given? ? Proc.new : nil
+      options = Faraday::Utils.deep_merge(default_connection_options, options)
       Faraday::Connection.new(url, options, &block)
     end
 
@@ -91,6 +95,13 @@ module Faraday
   # Returns a Faraday::Connection, configured with the #default_adapter.
   def self.default_connection
     @default_connection ||= Connection.new
+  end
+
+  # Gets the default connection options used when calling Faraday#new.
+  #
+  # Returns an options Hash.
+  def self.default_connection_options
+    @default_connection_options ||= {}
   end
 
   if (!defined?(RUBY_ENGINE) || "ruby" == RUBY_ENGINE) && RUBY_VERSION < '1.9'
