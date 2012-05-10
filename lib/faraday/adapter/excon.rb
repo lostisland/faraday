@@ -3,6 +3,11 @@ module Faraday
     class Excon < Faraday::Adapter
       dependency 'excon'
 
+      def initialize(app, connection_options = {})
+        @connection_options = connection_options
+        super(app)
+      end
+
       def call(env)
         super
 
@@ -25,7 +30,7 @@ module Faraday
           end
         end
         
-        conn = ::Excon.new(env[:url].to_s, opts)
+        conn = ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
 
         resp = conn.request \
           :method  => env[:method].to_s.upcase,
