@@ -50,7 +50,7 @@ module Faraday
     # Public: Sets the default parallel manager for this connection.
     attr_writer :default_parallel_manager
 
-    # Public: Initializes a new Faraday::Collection.
+    # Public: Initializes a new Faraday::Connection.
     #
     # url     - The optional String base URL to use as a prefix for all
     #           requests.  Can also be the options Hash.

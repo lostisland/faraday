@@ -29,7 +29,7 @@ module Faraday
     #     Faraday.get "https://faraday.com"
     attr_writer :default_connection
 
-    # Public: Initializes a new Faraday::Collection.
+    # Public: Initializes a new Faraday::Connection.
     #
     # url     - The optional String base URL to use as a prefix for all
     #           requests.  Can also be the options Hash.
