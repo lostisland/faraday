@@ -175,6 +175,12 @@ class TestConnection < Faraday::TestCase
     assert_equal "a%5Bb%5D=1+%2B+2", uri.query
   end
 
+  def test_build_url_escapes_per_spec
+    conn = Faraday::Connection.new
+    uri = conn.build_url('http:/', 'a' => '1+2 foo~bar.-baz')
+    assert_equal "a=1%2B2+foo~bar.-baz", uri.query
+  end
+
   def test_build_url_bracketizes_nested_params_in_query
     conn = Faraday::Connection.new
     uri = conn.build_url("http://sushi.com/sake.html", 'a' => {'b' => 'c'})
@@ -250,12 +256,6 @@ class TestConnection < Faraday::TestCase
     assert_raises ArgumentError do
       conn.proxy :uri => :bad_uri, :user => 'rick'
     end
-  end
-
-  def test_params_to_query_converts_hash_of_params_to_uri_escaped_query_string
-    conn = Faraday::Connection.new
-    url = conn.build_url('', 'a[b]' => '1 + 2')
-    assert_equal "a%5Bb%5D=1+%2B+2", url.query
   end
 
   def test_dups_connection_object
