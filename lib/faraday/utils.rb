@@ -170,10 +170,12 @@ module Faraday
       end
     end
 
+    ESCAPE_RE = /[^\w .~-]+/
+
     def escape(s)
-      s.to_s.gsub(/([^\w.~-]+)/) {
-        '%' + $1.unpack('H2' * $1.bytesize).join('%').upcase
-      }.gsub("%20", "+")
+      s.to_s.gsub(ESCAPE_RE) {
+        '%' + $&.unpack('H2' * $&.bytesize).join('%').upcase
+      }.tr(' ', '+')
     end
 
     def unescape(s) CGI.unescape s.to_s end

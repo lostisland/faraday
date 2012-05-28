@@ -194,7 +194,7 @@ module Faraday
       uri.query = nil
 
       if uri.user && uri.password
-        basic_auth(CGI.unescape(uri.user), CGI.unescape(uri.password))
+        basic_auth(Utils.unescape(uri.user), Utils.unescape(uri.password))
         uri.user = uri.password = nil
       end
 
