@@ -3,23 +3,60 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "helper"))
 module Middleware
   class RetryTest < Faraday::TestCase
     def setup
-      @stubs = Faraday::Adapter::Test::Stubs.new
-      @conn = Faraday.new do |b|
-        b.request :retry, 2
-        b.adapter :test, @stubs
+      @times_called = 0
+    end
+
+    def conn(*retry_args)
+      Faraday.new do |b|
+        b.request :retry, *retry_args
+        b.adapter :test do |stub|
+          stub.post('/unstable') {
+            @times_called += 1
+            @explode.call @times_called
+          }
+        end
       end
     end
 
-    def test_retries
-      times_called = 0
+    def test_unhandled_error
+      @explode = lambda {|n| raise "boom!" }
+      assert_raise(RuntimeError) { conn.post("/unstable") }
+      assert_equal 1, @times_called
+    end
 
-      @stubs.post("/echo") do
-        times_called += 1
-        raise "Error occurred"
-      end
+    def test_handled_error
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      assert_raise(Errno::ETIMEDOUT) { conn.post("/unstable") }
+      assert_equal 3, @times_called
+    end
 
-      @conn.post("/echo") rescue nil
-      assert_equal times_called, 3
+    def test_legacy_max_retries
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      assert_raise(Errno::ETIMEDOUT) { conn(1).post("/unstable") }
+      assert_equal 2, @times_called
+    end
+
+    def test_new_max_retries
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      assert_raise(Errno::ETIMEDOUT) { conn(:max => 3).post("/unstable") }
+      assert_equal 4, @times_called
+    end
+
+    def test_interval
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      started  = Time.now
+      assert_raise(Errno::ETIMEDOUT) {
+        conn(:max => 2, :interval => 0.1).post("/unstable")
+      }
+      assert_in_delta 0.2, Time.now - started, 0.02
+    end
+
+    def test_custom_exceptions
+      @explode = lambda {|n| raise "boom!" }
+      assert_raise(RuntimeError) {
+        conn(:exceptions => StandardError).post("/unstable")
+      }
+      assert_equal 3, @times_called
     end
   end
 end

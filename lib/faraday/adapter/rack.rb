@@ -1,5 +1,3 @@
-require 'timeout'
-
 module Faraday
   class Adapter
     # Sends requests to a Rack app.
