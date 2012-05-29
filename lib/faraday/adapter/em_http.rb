@@ -10,7 +10,6 @@ module Faraday
           configure_ssl(options, env)
           configure_proxy(options, env)
           configure_timeout(options, env)
-          configure_socket(options, env)
           options
         end
 
