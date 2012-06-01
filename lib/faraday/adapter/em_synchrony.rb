@@ -26,6 +26,10 @@ module Faraday
         # Queue requests for parallel execution.
         if env[:parallel_manager]
           env[:parallel_manager].add(request, http_method, request_config(env)) do |resp|
+            if want_streaming?(env)
+              warn "Streaming downloads for EventMachine are not yet implemented."
+              env[:on_data].call(resp.response, resp.response.bytesize)
+            end
             save_response(env, resp.response_header.status, resp.response) do |resp_headers|
               resp.response_header.each do |name, value|
                 resp_headers[name.to_sym] = value
@@ -52,6 +56,10 @@ module Faraday
             client = block.call
           end
 
+          if want_streaming?(env)
+            warn "Streaming downloads for EventMachine are not yet implemented."
+            env[:on_data].call(client.response, client.response.bytesize)
+          end
           save_response(env, client.response_header.status, client.response) do |resp_headers|
             client.response_header.each do |name, value|
               resp_headers[name.to_sym] = value

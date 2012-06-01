@@ -13,6 +13,7 @@ module Adapters
     # no Integration.apply because this doesn't require a server as a separate process
     include Integration::Common
     include Integration::NonParallel
+    include Integration::NonStreaming
 
     # not using shared test because error is swallowed by Sinatra
     def test_timeout

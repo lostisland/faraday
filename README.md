@@ -60,6 +60,9 @@ conn.get do |req|
   req.url '/search'
   req.options[:timeout] = 5           # open/read timeout in seconds
   req.options[:open_timeout] = 2      # connection open timeout in seconds
+  req.on_data = Proc.new do |data, size|  # streaming download (Net:HTTP adapter only right now)
+      puts "Downloaded #{size} bytes so far, current chunk starts with #{data[0..10]}"
+    end
 end
 ```
 
@@ -113,11 +116,13 @@ Middleware are classes that respond to `call()`. They wrap the request/response
 cycle.
 
 ```ruby
-def call(env)
-  # do something with the request
+class MyMiddleware < Faraday::Middleware
+  def call(env)
+    # do something with the request
 
-  @app.call(env).on_complete do
-    # do something with the response
+    @app.call(env).on_complete do
+      # do something with the response
+    end
   end
 end
 ```
@@ -131,14 +136,15 @@ later, response. Some keys are:
 
 ```
 # request phase
-:method - :get, :post, ...
-:url    - URI for the current request; also contains GET parameters
-:body   - POST parameters for :post/:put requests
+:method  - :get, :post, ...
+:url     - URI for the current request; also contains GET parameters
+:body    - POST parameters for :post/:put requests
+:on_data - a Proc to call every time a chunk of data is downloaded (streaming) - Proc.new{|data, size| ... }
 :request_headers
 
 # response phase
-:status - HTTP response status code, such as 200
-:body   - the response body
+:status  - HTTP response status code, such as 200
+:body    - the response body
 :response_headers
 ```
 
@@ -178,7 +184,8 @@ stubs.verify_stubbed_calls
 ```
 
 ## TODO
-* support streaming requests/responses
+* support streaming requests
+* support streaming responses for adapters other than Net::HTTP
 * better stubbing API
 
 ## Note on Patches/Pull Requests

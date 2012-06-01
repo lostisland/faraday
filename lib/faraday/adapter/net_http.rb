@@ -65,9 +65,40 @@ module Faraday
       end
 
       def perform_request(http, env)
+        if want_streaming?(env)
+          size = 0
+          http_response = perform_request_with_wrapped_block(http, env) do |chunk|
+            size += chunk.bytesize
+            env[:on_data].call(chunk, size)
+          end
+          # Net::HTTP returns something, but it's not meaningful according to the docs.
+          http_response.body = nil
+          http_response
+        else
+          http_response = perform_request_with_wrapped_block(http, env)
+        end
+      end
+
+      def perform_request_with_wrapped_block(http, env, &block)
         if :get == env[:method] and !env[:body]
           # prefer `get` to `request` because the former handles gzip (ruby 1.9)
-          http.get env[:url].request_uri, env[:request_headers]
+          request_via_get_method(http, env, &block)
+        else
+          request_via_request_method(http, env, &block)
+        end
+      end
+
+      def request_via_get_method(http, env, &block)
+        http.get env[:url].request_uri, env[:request_headers], &block
+      end
+
+      def request_via_request_method(http, env, &block)
+        if block_given?
+          http.request create_request(env) do |response|
+            response.read_body do |chunk|
+              yield chunk
+            end
+          end
         else
           http.request create_request(env)
         end

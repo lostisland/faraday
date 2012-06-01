@@ -9,7 +9,7 @@ module Faraday
   #     req.body = 'abc'
   #   end
   #
-  class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
+  class Request < Struct.new(:method, :path, :params, :headers, :body, :options, :on_data)
     extend AutoloadHelper
     extend MiddlewareRegistry
 
@@ -95,7 +95,8 @@ module Faraday
         :request_headers  => headers,
         :parallel_manager => connection.parallel_manager,
         :request          => options,
-        :ssl              => connection.ssl}
+        :ssl              => connection.ssl,
+        :on_data          => on_data}
     end
   end
 end

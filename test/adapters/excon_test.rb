@@ -9,7 +9,7 @@ module Adapters
     if defined?(RUBY_ENGINE) and "rbx" == RUBY_ENGINE
       warn "Warning: Skipping Excon tests on Rubinius"
     else
-      Integration.apply(self, :NonParallel) do
+      Integration.apply(self, :NonParallel, :NonStreaming) do
         # https://github.com/eventmachine/eventmachine/pull/289
         undef :test_timeout
 

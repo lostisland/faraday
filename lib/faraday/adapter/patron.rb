@@ -35,6 +35,10 @@ module Faraday
           raise Error::ConnectionFailed, $!
         end
 
+        if want_streaming?(env)
+          warn "Streaming downloads for Patron are not yet implemented."
+          env[:on_data].call(response.body, response.body.bytesize)
+        end
         save_response(env, response.status, response.body, response.headers)
 
         @app.call env

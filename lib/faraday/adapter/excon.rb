@@ -17,6 +17,10 @@ module Faraday
           :headers => env[:request_headers],
           :body    => env[:body]
 
+        if want_streaming?(env)
+          warn "Streaming downloads for Excon are not yet implemented."
+          env[:on_data].call(resp.body, resp.body.bytesize)
+        end
         save_response(env, resp.status.to_i, resp.body, resp.headers)
 
         @app.call env
