@@ -10,6 +10,7 @@ module Adapters
     def self.apply(base, *extras)
       if Faraday::TestCase::LIVE_SERVER
         ([:Common] + extras).each {|name| base.send(:include, self.const_get(name)) }
+        base.send(:include, SSL) if Faraday::TestCase::SSL
         yield if block_given?
       elsif !defined? @warned
         warn "Warning: Not running integration tests against a live server."
@@ -56,6 +57,12 @@ module Adapters
       def test_GET_handles_compression
         res = get('echo_header', :name => 'accept-encoding')
         assert_match /gzip;.+\bdeflate\b/, res.body
+      end
+    end
+
+    module SSL
+      def test_ssl_secure
+        assert_equal "ssl #{Faraday::TestCase::SSL}", get('ssl').body
       end
     end
 
@@ -177,6 +184,11 @@ module Adapters
             b.request :url_encoded
             b.adapter adapter, *adapter_options
           end
+        end
+
+        if Faraday::TestCase::SSL
+          options[:ssl] ||= {}
+          options[:ssl][:ca_file] ||= File.expand_path('../../../faraday.cert.crt', __FILE__)
         end
 
         Faraday::Connection.new(Faraday::TestCase::LIVE_SERVER, options, &builder_block).tap do |conn|

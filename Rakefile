@@ -1,4 +1,5 @@
 require 'date'
+require 'openssl'
 require 'rake/testtask'
 
 task :default => :test
@@ -26,12 +27,36 @@ def replace_header(head, header_name)
   head.sub!(/(\.#{header_name}\s*= ').*'/) { "#{$1}#{send(header_name)}'"}
 end
 
+# Adapted from WEBrick::Utils. Skips cert extensions so it
+# can be used as a CA bundle
+def create_self_signed_cert(bits, cn, comment)
+  rsa = OpenSSL::PKey::RSA.new(bits)
+  cert = OpenSSL::X509::Certificate.new
+  cert.version = 2
+  cert.serial = 1
+  name = OpenSSL::X509::Name.new(cn)
+  cert.subject = name
+  cert.issuer = name
+  cert.not_before = Time.now
+  cert.not_after = Time.now + (365*24*60*60)
+  cert.public_key = rsa.public_key
+  cert.sign(rsa, OpenSSL::Digest::SHA1.new)
+  return [cert, rsa]
+end
+
 ## standard tasks
 
 Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
   test.pattern = 'test/**/*_test.rb'
   test.verbose = true
+end
+
+desc "Generate certificates for testing SSL"
+task :"test:generate_certs" do
+  cert, key = create_self_signed_cert(1024, [['CN', 'localhost']], "Faraday Test CA")
+  File.open('faraday.cert.crt', 'w') {|f| f.puts(cert.to_s)}
+  File.open('faraday.cert.key', 'w') {|f| f.puts(key)}
 end
 
 desc "Run tests including live tests against a local server on port 4567"
