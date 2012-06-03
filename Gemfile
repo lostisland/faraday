@@ -17,7 +17,7 @@ end
 platforms :ruby do
   gem 'patron', '~> 0.4', '> 0.4.1'
   gem 'typhoeus', '~> 0.3.3'
-  gem 'hatetepe', '~> 0.5.0.pre', :platforms => :ruby_19
+  gem 'hatetepe', '~> 0.5.pre.2', :platforms => :ruby_19
 end
 
 platforms :jruby do
