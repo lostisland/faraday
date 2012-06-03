@@ -2,26 +2,90 @@ module Faraday
   class Adapter
     class Hatetepe < Faraday::Adapter
       dependency "hatetepe/client"
-      
+
+      self.supports_parallel = true
+
+      def self.setup_parallel_manager(options = nil)
+        ParallelManager.new
+      end
+
+      class ParallelManager
+        def initialize
+          reset
+        end
+
+        def add
+          if running?
+            perform_request
+          else
+            @pending << Proc.new
+          end
+        end
+
+        def run
+          @running = true
+          with_reactor do
+            perform_request(&@pending.shift) until @pending.empty?
+            wait
+          end
+        ensure
+          reset
+        end
+
+        def running?
+          @running
+        end
+
+        private
+
+        def reset
+          @pending  = []
+          @requests = []
+          @running  = false
+        end
+
+        def perform_request
+          @requests << yield
+        end
+
+        def wait
+          until @requests.empty?
+            response = EM::Synchrony.sync(@requests.shift)
+            EM::Synchrony.sync(response.body) if response
+          end
+        end
+
+        def with_reactor
+          stop = !EM.reactor_running?
+          EM.synchrony do
+            yield
+            EM.stop if stop
+          end
+        end
+      end
+
       def call(env)
         super
 
-        shutdown = !EM.reactor_running?
-        EM.synchrony do
-          client, request = client_for(env), request_for(env)
+        manager = env[:parallel_manager] || ParallelManager.new
+        manager.add { perform_request(env, request_for(env)) }
 
-          client << request
-          if response = EM::Synchrony.sync(request)
-            respond(env, response)
-          else
-            raise_error(client)
-          end
-
-          client.stop
-          EM.stop if shutdown
+        unless env[:parallel_manager]
+          env[:parallel_manager] = true
+          manager.run
         end
 
-        @app.call(env)
+        @app.call(env).tap { env[:response].finish(env) }
+      end
+
+      def perform_request(env, request)
+        client = client_for(env)
+        client << request
+
+        request.callback {|response| respond(env, response) }
+        request.errback do |response|
+          response ? respond(env, response) : raise_error(client)
+        end
       end
 
       def client_for(env)

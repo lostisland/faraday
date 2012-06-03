@@ -6,7 +6,7 @@ module Adapters
     def adapter() :hatetepe end
 
     if RUBY_VERSION >= "1.9"
-      Integration.apply(self) do
+      Integration.apply(self, :Parallel) do
         if defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby"
           # https://github.com/eventmachine/eventmachine/pull/289
           # also EM::Connection#comm_inactivity_timeout is not
