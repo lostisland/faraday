@@ -7,7 +7,7 @@ module Adapters
     def adapter() :rack end
 
     def adapter_options
-      [FaradayTestServer]
+      [Faraday::LiveServer]
     end
 
     # no Integration.apply because this doesn't require a server as a separate process

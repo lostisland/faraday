@@ -28,16 +28,9 @@ end
 
 ## standard tasks
 
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/*_test.rb'
-  test.verbose = true
-end
-
-desc "Run tests including live tests against a local server on port 4567"
-task :"test:local" do
-  ENV['LIVE'] = '1'
-  Rake::Task[:test].invoke
+desc "Run all tests"
+task :test do
+  exec 'script/test'
 end
 
 desc "Open an irb session preloaded with this library"

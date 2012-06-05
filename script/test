@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby -rubygems -w
+# Runs the test suite against a local server spawned automatically in a
+# thread. After tests are done, the server is shut down.
+#
+# If filename arguments are given, only those files are run. If arguments given
+# are not filenames, they are taken as words that filter the list of files to run.
+#
+# Examples
+#
+#   $ script/test
+#   $ script/test test/env_test.rb
+#   $ script/test excon typhoeus
+
+require 'bundler'
+Bundler.setup
+
+host      = '127.0.0.1'
+logfile   = 'log/test.log'
+test_glob = 'test/**/*_test.rb'
+
+require 'fileutils'
+FileUtils.mkdir_p 'log'
+
+# find available port
+require 'socket'
+port = begin
+  server = TCPServer.new(host, 0)
+  server.addr[1]
+ensure
+  server.close if server
+end
+
+server = nil
+
+# start test server in a separate thread
+thread = Thread.new do
+  old_verbose, $VERBOSE = $VERBOSE, nil
+  begin
+    require File.expand_path('../../test/live_server', __FILE__)
+  ensure
+    $VERBOSE = old_verbose
+  end
+  require 'webrick'
+  log_io = File.open logfile, 'w'
+  webrick_opts = {
+    :Port => port, :Logger => WEBrick::Log::new(log_io),
+    :AccessLog => [[log_io, "[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b"]]
+  }
+  Rack::Handler::WEBrick.run(Faraday::LiveServer, webrick_opts) {|serv| server = serv }
+end
+
+# find files to test
+test_files = Dir[test_glob]
+if ARGV.any?
+  all_files, test_files = test_files, []
+  for arg in ARGV
+    re = /(\b|_)#{arg}(\b|_)/
+    test_files.concat all_files.select { |f| f =~ re }
+  end
+end
+
+require 'net/http'
+conn = Net::HTTP.new host, port
+conn.open_timeout = conn.read_timeout = 0.05
+
+# test if test server is accepting requests
+responsive = lambda { |path|
+  begin
+    res = conn.start { conn.get(path) }
+    res.is_a?(Net::HTTPSuccess)
+  rescue Errno::ECONNREFUSED, Errno::EBADF, Timeout::Error
+    false
+  end
+}
+
+require 'timeout'
+Timeout.timeout 20 do
+  # block until test server is ready
+  thread.join 0.05 until responsive.call('/echo')
+end
+
+ENV['LIVE'] = "http://#{host}:#{port}"
+system 'ruby', '-Ilib:test', '-S', 'testrb', *test_files
+
+server.respond_to?(:stop!) ? server.stop! : server.stop
+thread.join
