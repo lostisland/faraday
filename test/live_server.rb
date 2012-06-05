@@ -1,8 +1,10 @@
 require 'sinatra/base'
 
-class FaradayTestServer < Sinatra::Base
-  set :logging => false,
-      :show_exceptions => false
+module Faraday
+class LiveServer < Sinatra::Base
+  set :environment, :test
+  disable :logging
+  disable :protection
 
   [:get, :post, :put, :patch, :delete, :options].each do |method|
     send(method, '/echo') do
@@ -48,7 +50,8 @@ class FaradayTestServer < Sinatra::Base
     "#{e.class}\n#{e.to_s}\n#{e.backtrace.join("\n")}"
   end
 end
+end
 
 if $0 == __FILE__
-  FaradayTestServer.run!
+  Faraday::LiveServer.run!
 end

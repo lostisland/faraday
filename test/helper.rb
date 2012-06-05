@@ -9,7 +9,8 @@ unless ENV['CI']
 end
 
 require 'test/unit'
-require 'stringio'
+require 'webmock/test_unit'
+WebMock.disable_net_connect! :allow_localhost => true
 
 if ENV['LEFTRIGHT']
   begin
@@ -29,13 +30,33 @@ else
   Debugger.start
 end
 
+require 'stringio'
+require 'uri'
+
 module Faraday
-  class TestCase < Test::Unit::TestCase
-    LIVE_SERVER = case ENV['LIVE']
-      when /^http/ then ENV['LIVE']
-      when nil     then nil
-      else 'http://127.0.0.1:4567'
+  module LiveServerConfig
+    def live_server=(value)
+      @@live_server = case value
+      when /^http/
+        URI(value)
+      when /./
+        URI('http://127.0.0.1:4567')
+      end
     end
+
+    def live_server?
+      defined? @@live_server
+    end
+
+    # Returns an object that responds to `host` and `port`.
+    def live_server
+      live_server? and @@live_server
+    end
+  end
+
+  class TestCase < Test::Unit::TestCase
+    extend LiveServerConfig
+    self.live_server = ENV['LIVE']
 
     def test_default
       assert true
@@ -52,6 +73,3 @@ module Faraday
     end
   end
 end
-
-require 'webmock/test_unit'
-WebMock.disable_net_connect!(:allow => Faraday::TestCase::LIVE_SERVER)
