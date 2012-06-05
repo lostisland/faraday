@@ -8,7 +8,7 @@ module Adapters
   # `#adapter_options` optional. extra arguments for building an adapter
   module Integration
     def self.apply(base, *extras)
-      if Faraday::TestCase::LIVE_SERVER
+      if base.live_server?
         ([:Common] + extras).each {|name| base.send(:include, self.const_get(name)) }
         yield if block_given?
       elsif !defined? @warned
@@ -179,7 +179,10 @@ module Adapters
           end
         end
 
-        Faraday::Connection.new(Faraday::TestCase::LIVE_SERVER, options, &builder_block).tap do |conn|
+        server = self.class.live_server
+        url = 'http://%s:%d' % [server.host, server.port]
+
+        Faraday::Connection.new(url, options, &builder_block).tap do |conn|
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
           adapter_handler = conn.builder.handlers.last
           conn.builder.insert_before adapter_handler, Faraday::Response::RaiseError

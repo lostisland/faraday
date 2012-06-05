@@ -1,8 +1,4 @@
-before_script:
-  - "nohup bundle exec ruby test/live_server.rb &"
-  - "sleep 2"
-
-env: LIVE=1
+script: ruby -rubygems script/test
 
 language: ruby
 
