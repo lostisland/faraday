@@ -13,6 +13,7 @@ Faraday supports these adapters:
 * Typhoeus
 * Patron
 * EventMachine
+* Vertx
 
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
