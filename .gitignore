@@ -14,3 +14,6 @@ Gemfile.lock
 
 ## PROJECT::SPECIFIC
 .rbx
+
+## IDE::SPECIFIC
+.idea

@@ -17,7 +17,8 @@ module Faraday
       :Excon             => 'excon',
       :Test              => 'test',
       :Rack              => 'rack',
-      :HTTPClient        => 'httpclient'
+      :HTTPClient        => 'httpclient',
+      :Vertx             => 'vertx'
 
     register_middleware \
       :test                => :Test,
@@ -29,7 +30,8 @@ module Faraday
       :em_http             => :EMHttp,
       :excon               => :Excon,
       :rack                => :Rack,
-      :httpclient          => :HTTPClient
+      :httpclient          => :HTTPClient,
+      :vertx               => :Vertx
 
     # Public: This module marks an Adapter as supporting parallel requests.
     module Parallelism
