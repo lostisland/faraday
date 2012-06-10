@@ -10,7 +10,8 @@ module Adapters
       warn "Warning: Skipping Excon tests on Rubinius"
     else
       Integration.apply(self, :NonParallel) do
-        # https://github.com/eventmachine/eventmachine/pull/289
+        # FIXME: this test fails fails on Travis for an unknown reason even though
+        # excon's timeout settings are being updated.
         undef :test_timeout
 
         # FIXME: this test fails on Travis with
