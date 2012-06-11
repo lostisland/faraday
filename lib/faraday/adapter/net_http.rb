@@ -74,7 +74,7 @@ module Faraday
       end
 
       def net_http_connection(env)
-        @net_http_connection ||= net_http_connection(env)
+        @net_http_connection ||= fetch_net_http_connection(env)
       end
       
       def fetch_net_http_connection(env)
