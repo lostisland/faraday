@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 group :development do
-  gem 'sinatra', '~> 1.2'
+  gem 'sinatra', '~> 1.3'
 end
 
 group :test do
