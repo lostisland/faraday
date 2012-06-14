@@ -24,13 +24,13 @@ module Faraday
             opts[:write_timeout]     = req[:open_timeout]
           end
         end
-        
+
         conn = ::Excon.new(env[:url].to_s, opts)
 
         resp = conn.request \
           :method  => env[:method].to_s.upcase,
           :headers => env[:request_headers],
-          :body    => env[:body]
+          :body    => read_body(env)
 
         save_response(env, resp.status.to_i, resp.body, resp.headers)
 
@@ -39,6 +39,11 @@ module Faraday
         raise Error::ConnectionFailed, $!
       rescue ::Excon::Errors::Timeout => err
         raise Faraday::Error::TimeoutError, err
+      end
+
+      # TODO: support streaming requests
+      def read_body(env)
+        env[:body].respond_to?(:read) ? env[:body].read : env[:body]
       end
     end
   end
