@@ -10,13 +10,8 @@ module Adapters
       warn "Warning: Skipping Excon tests on Rubinius"
     else
       Integration.apply(self, :NonParallel) do
-        # FIXME: this test fails fails on Travis for an unknown reason even though
-        # excon's timeout settings are being updated.
+        # https://github.com/geemus/excon/issues/127
         undef :test_timeout
-
-        # FIXME: this test fails on Travis with
-        # "Faraday::Error::ClientError: the server responded with status 400"
-        undef :test_POST_sends_files if ENV['CI']
       end
     end
 
