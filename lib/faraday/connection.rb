@@ -72,6 +72,7 @@ module Faraday
       @params  = Utils::ParamsHash.new
       @options = options[:request] || {}
       @ssl     = options[:ssl]     || {}
+      adapter  = options[:adapter]
 
       @parallel_manager = nil
       @default_parallel_manager = options[:parallel_manager]
@@ -91,6 +92,10 @@ module Faraday
       proxy(options.fetch(:proxy) { ENV['http_proxy'] })
 
       yield self if block_given?
+
+      if adapter
+        self.adapter = adapter
+      end
     end
 
     # Public: Sets the Hash of URI query unencoded key/value pairs.
@@ -105,7 +110,8 @@ module Faraday
 
     extend Forwardable
 
-    def_delegators :builder, :build, :use, :request, :response, :adapter, :has_adapter?
+    def_delegators :builder, :build, :use, :request, :response, :adapter, :has_adapter?,
+                             :adapter=
 
     # The "rack app" wrapped in middleware. All requests are sent here.
     #

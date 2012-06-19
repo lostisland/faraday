@@ -18,7 +18,7 @@ module Faraday
         h[k] = k.respond_to?(:constantize) ? k.constantize : Object.const_get(k)
       }
 
-      attr_reader :name
+      attr_reader :name, :args
 
       def initialize(klass, *args, &block)
         @name = klass.to_s
@@ -112,8 +112,16 @@ module Faraday
       use_symbol(Faraday::Response, key, *args, &block)
     end
 
-    def adapter(key, *args, &block)
-      use_symbol(Faraday::Adapter, key, *args, &block)
+    def adapter(key=nil, *args, &block)
+      if [key, *args, block].none?
+        find_adapter
+      else
+        use_symbol(Faraday::Adapter, key, *args, &block)
+      end
+    end
+
+    def has_adapter?
+      !!find_adapter
     end
 
     ## methods to push onto the various positions in the stack:
@@ -144,8 +152,9 @@ module Faraday
       @handlers.delete(handler)
     end
 
-    def has_adapter?
-      @handlers.any?{|h| h.adapter?}
+    def adapter=(adapter_args)
+      clear_adapters
+      adapter(*adapter_args)
     end
 
     private
@@ -162,6 +171,14 @@ module Faraday
       idx = index.is_a?(Integer) ? index : @handlers.index(index)
       raise "No such handler: #{index.inspect}" unless idx
       idx
+    end
+
+    def find_adapter
+      @handlers.detect{|h| h.adapter?}
+    end
+
+    def clear_adapters
+      @handlers.delete_if{|h| h.adapter?}
     end
   end
 end

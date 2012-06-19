@@ -157,6 +157,22 @@ class MiddlewareStackTest < Faraday::TestCase
     assert @conn.has_adapter?
   end
 
+  def test_replace_adapter
+    @builder.clear
+    @conn.use Apple
+    @conn.use TestAdapter
+    @conn.adapter = :test, :foo, :bar
+    assert_equal 'Faraday::Adapter::Test', @conn.adapter.name
+    assert_equal [:foo, :bar], @conn.adapter.args
+  end
+
+  def test_set_adapter_as_connection_option
+    conn = Faraday::Connection.new('http://example.org',
+                                   :adapter => [:test, :foo, :bar])
+    assert_equal 'Faraday::Adapter::Test', conn.adapter.name
+    assert_equal [:foo, :bar], conn.adapter.args
+  end
+
   private
 
   # make a stack with test adapter that reflects the order of middleware
