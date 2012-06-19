@@ -74,7 +74,7 @@ responsive = lambda { |path|
 }
 
 require 'timeout'
-Timeout.timeout 10 do
+Timeout.timeout 20 do
   # block until test server is ready
   thread.join 0.05 until responsive.call('/echo')
 end
