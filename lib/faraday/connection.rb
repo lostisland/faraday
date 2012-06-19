@@ -105,7 +105,7 @@ module Faraday
 
     extend Forwardable
 
-    def_delegators :builder, :build, :use, :request, :response, :adapter
+    def_delegators :builder, :build, :use, :request, :response, :adapter, :has_adapter?
 
     # The "rack app" wrapped in middleware. All requests are sent here.
     #

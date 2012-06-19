@@ -30,6 +30,10 @@ module Faraday
       subclass.send(:load_error=, self.load_error)
     end
 
+    def self.adapter?
+      false
+    end
+
     def initialize(app = nil)
       @app = app
     end

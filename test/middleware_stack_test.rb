@@ -11,6 +11,9 @@ class MiddlewareStackTest < Faraday::TestCase
   class Apple < Handler; end
   class Orange < Handler; end
   class Banana < Handler; end
+  class TestAdapter < Handler
+    def self.adapter?; true; end
+  end
 
   class Broken < Faraday::Middleware
     dependency 'zomg/i_dont/exist'
@@ -140,6 +143,18 @@ class MiddlewareStackTest < Faraday::TestCase
     end
     assert_match "missing dependency for MiddlewareStackTest::Broken: ", err.message
     assert_match "zomg/i_dont/exist", err.message
+  end
+
+  def test_knows_when_contains_an_adapter
+    @builder.clear
+    assert !@builder.has_adapter?
+    assert !@conn.has_adapter?
+    @conn.use Apple
+    assert !@builder.has_adapter?
+    assert !@conn.has_adapter?
+    @conn.use TestAdapter
+    assert @builder.has_adapter?
+    assert @conn.has_adapter?
   end
 
   private

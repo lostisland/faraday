@@ -42,6 +42,10 @@ module Faraday
       def build(app)
         klass.new(app, *@args, &@block)
       end
+
+      def adapter?
+        klass.respond_to?(:adapter?) && klass.adapter?
+      end
     end
 
     def initialize(handlers = [])
@@ -57,8 +61,12 @@ module Faraday
 
     def build(options = {})
       raise_if_locked
-      @handlers.clear unless options[:keep]
+      clear unless options[:keep]
       yield self if block_given?
+    end
+
+    def clear
+      @handlers.clear
     end
 
     def [](idx)
@@ -134,6 +142,10 @@ module Faraday
     def delete(handler)
       raise_if_locked
       @handlers.delete(handler)
+    end
+
+    def has_adapter?
+      @handlers.any?{|h| h.adapter?}
     end
 
     private
