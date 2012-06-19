@@ -5,14 +5,10 @@ module Adapters
 
     def adapter() :excon end
 
-    # https://github.com/geemus/excon/issues/98
-    if defined?(RUBY_ENGINE) and "rbx" == RUBY_ENGINE
-      warn "Warning: Skipping Excon tests on Rubinius"
-    else
-      Integration.apply(self, :NonParallel) do
-        # https://github.com/geemus/excon/issues/127
-        undef :test_timeout
-      end
+    Integration.apply(self, :NonParallel) do
+      # https://github.com/geemus/excon/issues/127
+      # TODO: remove after 0.14.1 or greater is out
+      undef :test_timeout
     end
 
   end
