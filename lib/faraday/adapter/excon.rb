@@ -40,10 +40,14 @@ module Faraday
         save_response(env, resp.status.to_i, resp.body, resp.headers)
 
         @app.call env
-      rescue ::Excon::Errors::SocketError
-        raise Error::ConnectionFailed, $!
+      rescue ::Excon::Errors::SocketError => err
+        if err.message =~ /\btimeout\b/
+          raise Error::TimeoutError, err
+        else
+          raise Error::ConnectionFailed, err
+        end
       rescue ::Excon::Errors::Timeout => err
-        raise Faraday::Error::TimeoutError, err
+        raise Error::TimeoutError, err
       end
 
       # TODO: support streaming requests
