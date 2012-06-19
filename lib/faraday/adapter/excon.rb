@@ -12,11 +12,6 @@ module Faraday
         super
 
         opts = {}
-        if env[:url].scheme == 'https' && ssl = env[:ssl]
-          opts[:ssl_verify_peer] = !!ssl.fetch(:verify, true)
-          opts[:ssl_ca_path] = ssl[:ca_file] if ssl[:ca_file]
-        end
-
         if ( req = env[:request] )
           if req[:timeout]
             opts[:read_timeout]      = req[:timeout]
@@ -28,6 +23,11 @@ module Faraday
             opts[:connect_timeout]   = req[:open_timeout]
             opts[:write_timeout]     = req[:open_timeout]
           end
+        end
+
+        if env[:url].scheme == 'https' && ssl = env[:ssl]
+          ::Excon.defaults[:ssl_verify_peer] = !!ssl.fetch(:verify, true)
+          ::Excon.defaults[:ssl_ca_path] = ssl[:ca_file] if ssl[:ca_file]
         end
         
         conn = ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
