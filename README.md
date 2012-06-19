@@ -1,6 +1,4 @@
-# Faraday [![Build Status](https://secure.travis-ci.org/technoweenie/faraday.png?branch=master)][travis] [![Dependency Status](https://gemnasium.com/technoweenie/faraday.png?travis)][gemnasium]
-[travis]: http://travis-ci.org/technoweenie/faraday
-[gemnasium]: https://gemnasium.com/technoweenie/faraday
+# Faraday
 
 Faraday is an HTTP client lib that provides a common interface over many
 adapters (such as Net::HTTP) and embraces the concept of Rack middleware when
