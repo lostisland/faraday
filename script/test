@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -rubygems -w
+#!/usr/bin/env ruby
 # Runs the test suite against a local server spawned automatically in a
 # thread. After tests are done, the server is shut down.
 #
@@ -10,6 +10,11 @@
 #   $ script/test
 #   $ script/test test/env_test.rb
 #   $ script/test excon typhoeus
+
+require 'rubygems'
+
+# Enable warnings
+$VERBOSE = 2
 
 require 'bundler'
 Bundler.setup
