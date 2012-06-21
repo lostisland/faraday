@@ -7,7 +7,7 @@ end
 group :test do
   gem 'em-http-request', '~> 1.0', :require => 'em-http'
   gem 'em-synchrony', '~> 1.0', :require => ['em-synchrony', 'em-synchrony/em-http'], :platforms => :ruby_19
-  gem 'excon', '~> 0.14'
+  gem 'excon', '~> 0.14.1'
   gem 'net-http-persistent', '~> 2.5', :require => false
   gem 'leftright', '~> 0.9', :require => false
   gem 'rack-test', '~> 0.6', :require => 'rack/test'
