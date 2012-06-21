@@ -51,10 +51,35 @@ class MiddlewareStackTest < Faraday::TestCase
     assert_handlers %w[Banana Apple Orange]
   end
 
+  def test_insert_before_nonexistant
+    build_stack Apple, Orange
+    assert_raises(RuntimeError) do
+      @builder.insert_before Banana, Banana
+    end
+  end
+
+  def test_insert_before_array
+    build_stack Apple, Orange, Banana
+    @builder.insert_before [Apple, Banana], Orange 
+    assert_handlers %w[Orange Apple Orange Banana]
+  end
+
+  def test_insert_before_array_nonexistant
+    build_stack Orange, Banana
+    @builder.insert_before [Apple, Banana], Apple 
+    assert_handlers %w[Orange Apple Banana]
+  end
+
   def test_insert_after
     build_stack Apple, Orange
     @builder.insert_after Apple, Banana
     assert_handlers %w[Apple Banana Orange]
+  end
+
+  def test_insert_after_array
+    build_stack Apple, Orange, Banana
+    @builder.insert_after [Apple, Banana], Apple
+    assert_handlers %w[Apple Orange Banana Apple]
   end
 
   def test_swap_handlers
