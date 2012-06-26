@@ -126,7 +126,7 @@ module Faraday
 
       def merge_query(query)
         if query && !query.empty?
-          update Utils.parse_query(query)
+          update Utils.parse_nested_query(query)
         end
         self
       end
