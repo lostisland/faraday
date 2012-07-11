@@ -13,7 +13,7 @@ module Faraday
     #   end
     #
     #   Faraday.new do |conn|
-    #     conn.adapter :rack, MyRackApp
+    #     conn.adapter :rack, MyRackApp.new
     #   end
     class Rack < Faraday::Adapter
       dependency 'rack/test'
