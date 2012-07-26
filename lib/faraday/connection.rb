@@ -52,12 +52,11 @@ module Faraday
 
     # Public: Initializes a new Faraday::Connection.
     #
-    # url     - The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
-    # options - The optional Hash used to configure this Faraday::Connection.
-    #           Any of these values will be set on every request made, unless
-    #           overridden for a specific request.
-    #           :url     - String base URL.
+    # url     - URI or String base URL to use as a prefix for all
+    #           requests (optional).
+    # options - Hash of settings that will be applied to every request made
+    #           from this Connection (default: {}).
+    #           :url     - URI or String base URL (default: "http:/").
     #           :params  - Hash of URI query unencoded key/value pairs.
     #           :headers - Hash of unencoded HTTP header key/value pairs.
     #           :request - Hash of request options.
