@@ -154,11 +154,19 @@ module Faraday
       return @proxy if arg.nil?
 
       @proxy = if arg.is_a? Hash
-        uri = arg.fetch(:uri) { raise ArgumentError, "no :uri option" }
-        arg.merge :uri => self.class.URI(uri)
+        uri = self.class.URI arg.fetch(:uri) { raise ArgumentError, "missing :uri" }
+        arg.merge :uri => uri
       else
-        {:uri => self.class.URI(arg)}
+        uri = self.class.URI(arg)
+        {:uri => uri}
       end
+
+      with_uri_credentials(uri) do |user, password|
+        @proxy[:user]     ||= user
+        @proxy[:password] ||= password
+      end
+
+      @proxy
     end
 
     # normalize URI() behavior across Ruby versions
@@ -193,8 +201,8 @@ module Faraday
       params.merge_query(uri.query)
       uri.query = nil
 
-      if uri.user && uri.password
-        basic_auth(Utils.unescape(uri.user), Utils.unescape(uri.password))
+      with_uri_credentials(uri) do |user, password|
+        basic_auth user, password
         uri.user = uri.password = nil
       end
 
@@ -281,6 +289,13 @@ module Faraday
 
     def dup
       self.class.new(build_url(''), :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
+    end
+
+    # Internal: Yields username and password extracted from a URI if they both exist.
+    def with_uri_credentials(uri)
+      if uri.user and uri.password
+        yield Utils.unescape(uri.user), Utils.unescape(uri.password)
+      end
     end
   end
 end

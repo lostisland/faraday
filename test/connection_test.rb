@@ -3,13 +3,17 @@ require 'uri'
 
 class TestConnection < Faraday::TestCase
 
-  def with_proxy_env(proxy)
-    old_proxy = ENV['http_proxy']
-    ENV['http_proxy'] = proxy
+  def with_env(key, proxy)
+    old_value = ENV.fetch(key, false)
+    ENV[key] = proxy
     begin
       yield
     ensure
-      ENV['http_proxy'] = old_proxy
+      if old_value == false
+        ENV.delete key
+      else
+        ENV[key] = old_value
+      end
     end
   end
 
@@ -209,7 +213,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_string
-    with_proxy_env "http://duncan.proxy.com:80" do
+    with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy 'http://proxy.com'
       assert_equal 'proxy.com', conn.proxy[:uri].host
@@ -218,7 +222,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_uri
-    with_proxy_env "http://duncan.proxy.com:80" do
+    with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy URI.parse('http://proxy.com')
       assert_equal 'proxy.com', conn.proxy[:uri].host
@@ -227,7 +231,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_hash_with_string_uri
-    with_proxy_env "http://duncan.proxy.com:80" do
+    with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy :uri => 'http://proxy.com', :user => 'rick'
       assert_equal 'proxy.com', conn.proxy[:uri].host
@@ -236,7 +240,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_hash
-    with_proxy_env "http://duncan.proxy.com:80" do
+    with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy :uri => URI.parse('http://proxy.com'), :user => 'rick'
       assert_equal 'proxy.com', conn.proxy[:uri].host
@@ -245,9 +249,17 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_http_env
-    with_proxy_env "http://duncan.proxy.com:80" do
+    with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       assert_equal 'duncan.proxy.com', conn.proxy[:uri].host
+    end
+  end
+
+  def test_proxy_accepts_http_env_with_auth
+    with_env 'http_proxy', "http://a%40b:my%20pass@duncan.proxy.com:80" do
+      conn = Faraday::Connection.new
+      assert_equal 'a@b',     conn.proxy[:user]
+      assert_equal 'my pass', conn.proxy[:password]
     end
   end
 
