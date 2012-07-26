@@ -93,9 +93,9 @@ class TestConnection < Faraday::TestCase
 
     conn.token_auth 'abcdef', :nonce => 'abc'
     assert auth = conn.headers['Authorization']
-    assert_match /^Token /, auth
-    assert_match /token="abcdef"/, auth
-    assert_match /nonce="abc"/, auth
+    assert_match(/^Token /, auth)
+    assert_match(/token="abcdef"/, auth)
+    assert_match(/nonce="abc"/, auth)
   end
 
   def test_build_url_uses_connection_host_as_default_uri_host
