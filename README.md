@@ -183,10 +183,10 @@ automatically starts a test server in background. Only tests in
 
 ``` sh
 # run the whole suite
-$ script/server
+$ script/test
 
 # run only specific files
-$ script/server excon typhoeus
+$ script/test excon typhoeus
 ```
 
 We will accept middleware that:
