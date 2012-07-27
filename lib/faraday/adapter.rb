@@ -45,6 +45,10 @@ module Faraday
     extend Parallelism
     self.supports_parallel = false
 
+    def self.adapter?
+      true
+    end
+
     def call(env)
       if !env[:body] and Connection::METHODS_WITH_BODIES.include? env[:method]
         # play nice and indicate we're sending an empty body
@@ -62,5 +66,6 @@ module Faraday
         yield response_headers if block_given?
       end
     end
+
   end
 end
