@@ -384,4 +384,21 @@ class TestRequestParams < Faraday::TestCase
     end
     assert_query_equal %w[b=b], query
   end
+
+  def test_util_parse_params
+    expected = {'colors' => ['red', 'blue']}
+    assert_equal expected, Faraday::Utils.parse_nested_query("colors[]=red&colors[]=blue")
+  end
+
+  def test_array_params_in_url
+    create_connection 'http://a.co/page1?color[]=red&color[]=blue'
+    query = get
+    assert_equal "color%5B%5D=red&color%5B%5D=blue", query
+  end
+
+  def test_array_params_in_params
+    create_connection 'http://a.co/page1', :params => {:color => ['red', 'blue']}
+    query = get
+    assert_equal "color%5B%5D=red&color%5B%5D=blue", query
+  end
 end
