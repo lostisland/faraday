@@ -32,6 +32,7 @@ module Faraday
 
     def self.create(request_method)
       new(request_method).tap do |request|
+        request.params = Utils::ParamsHash.new
         yield request if block_given?
       end
     end
