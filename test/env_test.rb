@@ -69,6 +69,17 @@ class EnvTest < Faraday::TestCase
     env = make_env
     assert_equal 'proxy.com', env[:request][:proxy][:uri].host
   end
+  
+  def test_request_create_accepts_url_with_query_parameters_set_in_block
+    request = Faraday::Request.create(:get) { |request| request.url('http://sushi.com/api/foo.json?a=1') }
+    assert_equal request.params, {"a" => "1"}
+  end
+
+  def test_request_create_accepts_url_with_query_parameters_set_in_block
+    request = Faraday::Request.create(:get) { |request| request.url('http://sushi.com') }
+    env = request.to_env(@conn)
+    assert_not_nil env[:request]
+  end
 
   private
 

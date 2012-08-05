@@ -32,6 +32,7 @@ module Faraday
 
     def self.create(request_method)
       new(request_method).tap do |request|
+        request.params = Utils::ParamsHash.new
         yield request if block_given?
       end
     end
@@ -94,7 +95,7 @@ module Faraday
         :url              => connection.build_exclusive_url(path, params),
         :request_headers  => headers,
         :parallel_manager => connection.parallel_manager,
-        :request          => options,
+        :request          => options || {},
         :ssl              => connection.ssl}
     end
   end
