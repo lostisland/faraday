@@ -91,7 +91,7 @@ module Faraday
     def to_env(connection)
       { :method           => method,
         :body             => body,
-        :url              => connection.build_exclusive_url(path, params),
+        :url              => connection.build_exclusive_url(path, params, options[:param_encoding]),
         :request_headers  => headers,
         :parallel_manager => connection.parallel_manager,
         :request          => options,

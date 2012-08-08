@@ -48,6 +48,15 @@ class RequestMiddlewareTest < Faraday::TestCase
     assert_equal expected, Faraday::Utils.parse_nested_query(response.body)
   end
 
+  def test_url_encoded_non_nested
+    response = @conn.post('/echo', { :dimensions => ['date', 'location']}) do |req|
+      req.options[:param_encoding] = nil
+    end
+    assert_equal 'application/x-www-form-urlencoded', response.headers['Content-Type']
+    expected = { 'dimensions' => ['date', 'location'] }
+    assert_equal expected, Faraday::Utils.parse_nested_query(response.body)
+  end
+  
   def test_url_encoded_unicode
     err = capture_warnings {
       response = @conn.post('/echo', {:str => "eé cç aã aâ"})
