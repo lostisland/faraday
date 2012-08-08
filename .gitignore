@@ -14,3 +14,9 @@ Gemfile.lock
 
 ## PROJECT::SPECIFIC
 .rbx
+
+## Rubymine
+.idea
+
+## vim backup file
+*~

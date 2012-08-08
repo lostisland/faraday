@@ -154,20 +154,22 @@ module Faraday
     end
 
     # Rack's version modified to handle non-String values
-    def build_nested_query(value, prefix = nil)
-      case value
-      when Array
-        value.map { |v| build_nested_query(v, "#{prefix}%5B%5D") }.join("&")
-      when Hash
-        value.map { |k, v|
-          build_nested_query(v, prefix ? "#{prefix}%5B#{escape(k)}%5D" : escape(k))
-        }.join("&")
-      when NilClass
-        prefix
-      else
-        raise ArgumentError, "value must be a Hash" if prefix.nil?
-        "#{prefix}=#{escape(value)}"
-      end
+    def build_nested_query(params, prefix = nil)
+      params.reduce([]) do |all, (key, value)|
+        key = "#{prefixe}[#{key}]" if prefix
+        all << case value
+          when Array
+            values = value.map{|v| [nil, v]}
+            build_nested_query(values, key)
+          when Hash
+            build_nested_query(value, key)
+          when NilClass
+            key
+          else
+            "#{key}=#{escape(value)}"
+        end
+        all
+      end.join("&")
     end
 
     ESCAPE_RE = /[^\w .~-]+/
