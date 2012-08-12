@@ -136,8 +136,7 @@ module Adapters
       end
 
       def test_HEAD_retrieves_no_response_body
-        # FIXME: some adapters return empty string, some nil
-        assert_equal '', head('echo').body.to_s
+        assert_equal '', head('echo').body
       end
 
       def test_HEAD_retrieves_the_response_headers
