@@ -9,8 +9,6 @@ unless ENV['CI']
 end
 
 require 'test/unit'
-require 'webmock/test_unit'
-WebMock.disable_net_connect! :allow_localhost => true
 
 if ENV['LEFTRIGHT']
   begin
