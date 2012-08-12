@@ -12,7 +12,14 @@
 #   $ script/test excon typhoeus
 
 require 'bundler'
-Bundler.setup
+begin
+  Bundler.setup
+rescue Bundler::GemNotFound
+  $stderr.print "Error: "
+  $stderr.puts $!.message
+  warn "Run `bundle install` to install missing gems."
+  exit 1
+end
 
 host      = '127.0.0.1'
 logfile   = 'log/test.log'
