@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 1.3.5") if s.respond_to? :required_rubygems_version=
 
   s.name    = 'faraday'
-  s.version = '0.8.1'
+  s.version = '0.8.2'
 
   s.summary     = "HTTP/REST API client library."
   # TODO: s.description
@@ -53,6 +53,7 @@ Gem::Specification.new do |s|
     lib/faraday/response/raise_error.rb
     lib/faraday/upload_io.rb
     lib/faraday/utils.rb
+    script/test
     test/adapters/default_test.rb
     test/adapters/em_http_test.rb
     test/adapters/em_synchrony_test.rb
