@@ -5,7 +5,10 @@ module Adapters
 
     def adapter() :net_http_persistent end
 
-    Integration.apply(self, :NonParallel)
+    Integration.apply(self, :NonParallel) do
+      # https://github.com/drbrain/net-http-persistent/issues/33
+      undef :test_timeout
+    end
 
   end
 end
