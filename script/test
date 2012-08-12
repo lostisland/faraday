@@ -60,10 +60,16 @@ end
 test_files = Dir[test_glob]
 if ARGV.any?
   all_files, test_files = test_files, []
-  for arg in ARGV
+  args, extra_args = ARGV, []
+  if idx = args.index('--')
+     extra_args = args[(idx+1)..-1]
+     args = args[0, idx]
+  end
+  for arg in args
     re = /(\b|_)#{arg}(\b|_)/
     test_files.concat all_files.select { |f| f =~ re }
   end
+  test_files.concat extra_args
 end
 
 require 'net/http'
