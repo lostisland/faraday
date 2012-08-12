@@ -159,6 +159,11 @@ module Adapters
         end
       end
 
+      def test_empty_body_response_represented_as_blank_string
+        response = get('204')
+        assert_equal '', response.body
+      end
+
       def adapter
         raise NotImplementedError.new("Need to override #adapter")
       end

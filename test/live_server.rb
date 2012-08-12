@@ -46,6 +46,10 @@ class LiveServer < Sinatra::Base
     [200, {}, 'ok']
   end
 
+  get '/204' do
+    status 204 # no content
+  end
+
   error do |e|
     "#{e.class}\n#{e.to_s}\n#{e.backtrace.join("\n")}"
   end
