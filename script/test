@@ -52,6 +52,7 @@ thread = Thread.new do
   end
   require 'webrick'
   log_io = File.open logfile, 'w'
+  log_io.sync = true
   webrick_opts = {
     :Port => port, :Logger => WEBrick::Log::new(log_io),
     :AccessLog => [[log_io, "[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b"]]
