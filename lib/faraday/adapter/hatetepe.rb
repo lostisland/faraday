@@ -49,10 +49,7 @@ module Faraday
         end
 
         def wait
-          until @requests.empty?
-            response = EM::Synchrony.sync(@requests.shift)
-            EM::Synchrony.sync(response.body) if response
-          end
+          EM::Synchrony.sync(@requests.shift) until @requests.empty?
         end
 
         def with_reactor
