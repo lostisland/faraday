@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
     lib/faraday/adapter/em_synchrony.rb
     lib/faraday/adapter/em_synchrony/parallel_manager.rb
     lib/faraday/adapter/excon.rb
+    lib/faraday/adapter/httpclient.rb
     lib/faraday/adapter/net_http.rb
     lib/faraday/adapter/net_http_persistent.rb
     lib/faraday/adapter/patron.rb
@@ -53,10 +54,12 @@ Gem::Specification.new do |s|
     lib/faraday/response/raise_error.rb
     lib/faraday/upload_io.rb
     lib/faraday/utils.rb
+    script/test
     test/adapters/default_test.rb
     test/adapters/em_http_test.rb
     test/adapters/em_synchrony_test.rb
     test/adapters/excon_test.rb
+    test/adapters/httpclient_test.rb
     test/adapters/integration.rb
     test/adapters/logger_test.rb
     test/adapters/net_http_persistent_test.rb
