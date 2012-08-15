@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 1.3.5") if s.respond_to? :required_rubygems_version=
 
   s.name    = 'faraday'
-  s.version = '0.8.3'
+  s.version = '0.9.0.pre'
 
   s.summary     = "HTTP/REST API client library."
   # TODO: s.description
@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
     LICENSE.md
     README.md
     Rakefile
-    config.ru
     faraday.gemspec
     lib/faraday.rb
     lib/faraday/adapter.rb

@@ -9,7 +9,7 @@
 #   conn.get '/'
 #
 module Faraday
-  VERSION = "0.8.3"
+  VERSION = "0.9.0.pre"
 
   class << self
     # Public: Gets or sets the root path that Faraday is being loaded from.
