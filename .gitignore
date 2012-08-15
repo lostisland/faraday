@@ -1,16 +1,16 @@
 ## PROJECT::GENERAL
 coverage
 rdoc
+doc
+log
 pkg/*
+.rvmrc
+.rbenv*
 
 ## BUNDLER
 *.gem
 .bundle
-doc
-log
 Gemfile.lock
-.rvmrc
-.rbenv*
 
 ## PROJECT::SPECIFIC
 .rbx
