@@ -7,11 +7,11 @@ module Adapters
   # `#adapter` required. returns a symbol for the adapter middleware name
   # `#adapter_options` optional. extra arguments for building an adapter
   module Integration
-    def self.apply(base, *extras)
+    def self.apply(base, *extra_features)
       if base.live_server?
-        modules = [:Common]
-        modules << :SSL if base.live_server.scheme == 'https'
-        modules.concat(extras).each {|name| base.send(:include, self.const_get(name)) }
+        features = [:Common]
+        features.concat extra_features
+        features.each {|name| base.send(:include, self.const_get(name)) }
         yield if block_given?
       elsif !defined? @warned
         warn "Warning: Not running integration tests against a live server."
@@ -61,12 +61,6 @@ module Adapters
       end
     end
 
-    module SSL
-      def test_ssl_secure
-        assert_equal "true", get('ssl').body
-      end
-    end
-
     module Common
       extend Forwardable
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
@@ -99,6 +93,11 @@ module Adapters
       def test_GET_sends_user_agent
         response = get('echo_header', {:name => 'user-agent'}, :user_agent => 'Agent Faraday')
         assert_equal 'Agent Faraday', response.body
+      end
+
+      def test_GET_ssl
+        expected = (ENV['SSL'] == 'yes').to_s
+        assert_equal expected, get('ssl').body
       end
 
       def test_POST_send_url_encoded_params
@@ -195,7 +194,7 @@ module Adapters
         url = '%s://%s:%d' % [server.scheme, server.host, server.port]
 
         options[:ssl] ||= {}
-        options[:ssl][:ca_file] ||= File.expand_path('../../../faraday.cert.crt', __FILE__)
+        options[:ssl][:ca_file] ||= ENV['SSL_FILE']
 
         Faraday::Connection.new(url, options, &builder_block).tap do |conn|
           conn.headers['X-Faraday-Adapter'] = adapter.to_s

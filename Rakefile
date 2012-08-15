@@ -1,4 +1,5 @@
 require 'date'
+require 'fileutils'
 require 'openssl'
 require 'rake/testtask'
 
@@ -54,9 +55,13 @@ end
 desc "Generate certificates for SSL tests"
 task :'test:generate_certs' do
   cert, key = create_self_signed_cert(1024, [['CN', 'localhost']], 'Faraday Test CA')
-  File.open('faraday.cert.crt', 'w') {|f| f.puts(cert.to_s) }
-  File.open('faraday.cert.key', 'w') {|f| f.puts(key) }
+  FileUtils.mkdir_p 'tmp'
+  File.open('tmp/faraday-cert.key', 'w') {|f| f.puts(key) }
+  File.open('tmp/faraday-cert.crt', 'w') {|f| f.puts(cert.to_s) }
 end
+
+file 'tmp/faraday-cert.key' => :'test:generate_certs'
+file 'tmp/faraday-cert.crt' => :'test:generate_certs'
 
 desc "Open an irb session preloaded with this library"
 task :console do
@@ -76,7 +81,7 @@ end
 
 desc "Build #{gem_file} into the pkg directory"
 task :build => :gemspec do
-  sh "mkdir -p pkg"
+  FileUtils.mkdir_p 'pkg'
   sh "gem build #{gemspec_file}"
   sh "mv #{gem_file} pkg"
 end
