@@ -10,6 +10,7 @@
 #   $ script/test
 #   $ script/test test/env_test.rb
 #   $ script/test excon typhoeus
+#   $ SSL=yes script/test net_http -- -n /ssl/
 
 require 'rubygems'
 require 'bundler'
@@ -24,9 +25,18 @@ end
 
 $VERBOSE = true
 
-host      = '127.0.0.1'
+host      = 'localhost'
 logfile   = 'log/test.log'
 test_glob = 'test/**/*_test.rb'
+
+if ssl_mode = ENV['SSL'] == 'yes'
+  unless ENV['SSL_KEY'] and ENV['SSL_FILE']
+    key_file  = ENV['SSL_KEY']  = 'tmp/faraday-cert.key'
+    cert_file = ENV['SSL_FILE'] = 'tmp/faraday-cert.crt'
+    system 'rake', key_file, cert_file
+    abort unless $?.success?
+  end
+end
 
 require 'fileutils'
 FileUtils.mkdir_p 'log'
@@ -59,6 +69,14 @@ thread = Thread.new do
     :Port => port, :Logger => WEBrick::Log::new(log_io),
     :AccessLog => [[log_io, "[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b"]]
   }
+  if ssl_mode
+    require 'webrick/https'
+    webrick_opts.update \
+      :SSLEnable       => true,
+      :SSLPrivateKey   => OpenSSL::PKey::RSA.new(File.read(key_file)),
+      :SSLCertificate  => OpenSSL::X509::Certificate.new(File.read(cert_file)),
+      :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE
+  end
   Rack::Handler::WEBrick.run(Faraday::LiveServer, webrick_opts) {|serv| server = serv }
 end
 
@@ -78,9 +96,11 @@ if ARGV.any?
   test_files.concat extra_args
 end
 
-require 'net/http'
+require 'net/https'
 conn = Net::HTTP.new host, port
 conn.open_timeout = conn.read_timeout = 0.1
+conn.use_ssl      = ssl_mode
+conn.verify_mode  = OpenSSL::SSL::VERIFY_NONE
 
 # test if test server is accepting requests
 responsive = lambda { |path|
@@ -100,7 +120,7 @@ begin
   abort "test server didn't manage to start" if server_pings >= 50
 end until responsive.call('/echo')
 
-ENV['LIVE'] = "http://#{host}:#{port}"
+ENV['LIVE'] = "http#{ssl_mode ? 's' : ''}://#{host}:#{port}"
 ok = system 'ruby', '-Ilib:test', '-S', 'testrb', *test_files
 
 server.respond_to?(:stop!) ? server.stop! : server.stop
