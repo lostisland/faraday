@@ -4,6 +4,7 @@ rescue LoadError
   warn "Warning: no such file to load -- net/https. Make sure openssl is installed if you want ssl support"
   require 'net/http'
 end
+require 'zlib'
 
 module Faraday
   class Adapter
