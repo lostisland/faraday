@@ -51,6 +51,7 @@ ensure
 end
 
 server = nil
+require 'openssl' # for JRuby 1.6.7.2 in 1.9 mode on Travis
 
 Thread.abort_on_exception = true
 
