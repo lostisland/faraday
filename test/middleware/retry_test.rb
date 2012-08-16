@@ -48,7 +48,7 @@ module Middleware
       assert_raise(Errno::ETIMEDOUT) {
         conn(:max => 2, :interval => 0.1).post("/unstable")
       }
-      assert_in_delta 0.2, Time.now - started, 0.02
+      assert_in_delta 0.2, Time.now - started, 0.03
     end
 
     def test_custom_exceptions
