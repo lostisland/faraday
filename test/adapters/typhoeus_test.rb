@@ -8,7 +8,7 @@ module Adapters
     Integration.apply(self, :Parallel) do
       # https://github.com/dbalatero/typhoeus/issues/75
       undef :test_GET_with_body
-    end
+    end unless jruby?
 
-  end unless defined? RUBY_ENGINE and 'jruby' == RUBY_ENGINE
+  end
 end

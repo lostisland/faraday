@@ -11,7 +11,7 @@ module Adapters
 
       # https://github.com/toland/patron/issues/52
       undef :test_GET_with_body
-    end
+    end unless jruby?
 
-  end unless defined? RUBY_ENGINE and 'jruby' == RUBY_ENGINE
+  end
 end
