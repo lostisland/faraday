@@ -8,6 +8,10 @@ matrix:
     # "CRASH: A fatal error has occurred."
     - rvm: rbx-19mode
       env: SSL=yes
+    # "A fatal error has been detected by the Java Runtime Environment:
+    #  Internal Error (sharedRuntime.cpp:843)"
+    - rvm: jruby-19mode
+      env: SSL=yes
 
 env:
   - SSL=no
