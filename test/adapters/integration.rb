@@ -96,7 +96,7 @@ module Adapters
       end
 
       def test_GET_ssl
-        expected = (ENV['SSL'] == 'yes').to_s
+        expected = self.class.ssl_mode?.to_s
         assert_equal expected, get('ssl').body
       end
 

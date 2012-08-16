@@ -69,5 +69,13 @@ module Faraday
         $stderr = old
       end
     end
+
+    def self.jruby?
+      defined? RUBY_ENGINE and 'jruby' == RUBY_ENGINE
+    end
+
+    def self.ssl_mode?
+      ENV['SSL'] == 'yes'
+    end
   end
 end

@@ -14,7 +14,7 @@ module Adapters
         conn = create_connection :request => { :bind => { :host => host } }
         assert_equal host, conn.options[:bind][:host]
       end
-    end
-  end unless defined? RUBY_ENGINE and 'jruby' == RUBY_ENGINE
+    end unless jruby?
+  end
 end
 
