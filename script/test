@@ -87,7 +87,7 @@ responsive = lambda { |path|
   begin
     res = conn.start { conn.get(path) }
     res.is_a?(Net::HTTPSuccess)
-  rescue Errno::ECONNREFUSED, Errno::EBADF, Timeout::Error
+  rescue Errno::ECONNREFUSED, Errno::EBADF, Timeout::Error, Net::HTTPBadResponse
     false
   end
 }
