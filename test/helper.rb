@@ -74,6 +74,10 @@ module Faraday
       defined? RUBY_ENGINE and 'jruby' == RUBY_ENGINE
     end
 
+    def self.rbx?
+      defined? RUBY_ENGINE and 'rbx' == RUBY_ENGINE
+    end
+
     def self.ssl_mode?
       ENV['SSL'] == 'yes'
     end

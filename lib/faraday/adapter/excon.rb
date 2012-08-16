@@ -11,6 +11,10 @@ module Faraday
           opts[:ssl_verify_peer] = !!ssl.fetch(:verify, true)
           opts[:ssl_ca_path] = ssl[:ca_path] if ssl[:ca_path]
           opts[:ssl_ca_file] = ssl[:ca_file] if ssl[:ca_file]
+
+          # https://github.com/geemus/excon/issues/106
+          # https://github.com/jruby/jruby-ossl/issues/19
+          opts[:nonblock] = false
         end
 
         if ( req = env[:request] )
