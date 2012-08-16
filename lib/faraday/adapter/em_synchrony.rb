@@ -71,7 +71,9 @@ require 'faraday/adapter/em_synchrony/parallel_manager'
 
 # add missing patch(), options() methods
 EventMachine::HTTPMethods.module_eval do
-  ([:patch, :options] - instance_methods).each do |type|
+  [:patch, :options].each do |type|
+    next if method_defined? :"a#{type}"
+    alias_method :"a#{type}", type if method_defined? type
     module_eval %[
       def #{type}(options = {}, &blk)
         f = Fiber.current
