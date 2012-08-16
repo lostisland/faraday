@@ -50,6 +50,10 @@ class LiveServer < Sinatra::Base
     status 204 # no content
   end
 
+  get '/ssl' do
+    request.secure?.to_s
+  end
+
   error do |e|
     "#{e.class}\n#{e.to_s}\n#{e.backtrace.join("\n")}"
   end

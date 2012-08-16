@@ -5,6 +5,13 @@ language: ruby
 matrix:
   allow_failures:
     - rvm: ruby-head
+    # "CRASH: A fatal error has occurred."
+    - rvm: rbx-19mode
+      env: SSL=yes
+
+env:
+  - SSL=no
+  - SSL=yes
 
 rvm:
   - rbx-18mode

@@ -15,6 +15,6 @@ module Adapters
         #put conn.get('/who-am-i').body
         assert_equal host, conn.options[:bind][:host]
       end
-    end
-  end unless RUBY_VERSION < '1.9' or (defined? RUBY_ENGINE and 'jruby' == RUBY_ENGINE)
+    end unless RUBY_VERSION < '1.9' or jruby?
+  end
 end

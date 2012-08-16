@@ -4,6 +4,7 @@ rdoc
 doc
 log
 pkg/*
+tmp
 .rvmrc
 .rbenv*
 

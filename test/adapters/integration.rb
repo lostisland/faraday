@@ -7,9 +7,11 @@ module Adapters
   # `#adapter` required. returns a symbol for the adapter middleware name
   # `#adapter_options` optional. extra arguments for building an adapter
   module Integration
-    def self.apply(base, *extras)
+    def self.apply(base, *extra_features)
       if base.live_server?
-        ([:Common] + extras).each {|name| base.send(:include, self.const_get(name)) }
+        features = [:Common]
+        features.concat extra_features
+        features.each {|name| base.send(:include, self.const_get(name)) }
         yield if block_given?
       elsif !defined? @warned
         warn "Warning: Not running integration tests against a live server."
@@ -91,6 +93,11 @@ module Adapters
       def test_GET_sends_user_agent
         response = get('echo_header', {:name => 'user-agent'}, :user_agent => 'Agent Faraday')
         assert_equal 'Agent Faraday', response.body
+      end
+
+      def test_GET_ssl
+        expected = self.class.ssl_mode?.to_s
+        assert_equal expected, get('ssl').body
       end
 
       def test_POST_send_url_encoded_params
@@ -184,7 +191,10 @@ module Adapters
         end
 
         server = self.class.live_server
-        url = 'http://%s:%d' % [server.host, server.port]
+        url = '%s://%s:%d' % [server.scheme, server.host, server.port]
+
+        options[:ssl] ||= {}
+        options[:ssl][:ca_file] ||= ENV['SSL_FILE']
 
         Faraday::Connection.new(url, options, &builder_block).tap do |conn|
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
