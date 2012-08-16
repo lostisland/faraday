@@ -42,6 +42,8 @@ end
 
 server = nil
 
+Thread.abort_on_exception = true
+
 # start test server in a separate thread
 thread = Thread.new do
   old_verbose, $VERBOSE = $VERBOSE, nil
@@ -78,7 +80,7 @@ end
 
 require 'net/http'
 conn = Net::HTTP.new host, port
-conn.open_timeout = conn.read_timeout = 0.05
+conn.open_timeout = conn.read_timeout = 0.1
 
 # test if test server is accepting requests
 responsive = lambda { |path|
@@ -90,11 +92,13 @@ responsive = lambda { |path|
   end
 }
 
-require 'timeout'
-Timeout.timeout 40 do
+server_pings = 0
+begin
   # block until test server is ready
-  thread.join 0.05 until responsive.call('/echo')
-end
+  thread.join 0.05
+  server_pings += 1
+  abort "test server didn't manage to start" if server_pings >= 50
+end until responsive.call('/echo')
 
 ENV['LIVE'] = "http://#{host}:#{port}"
 ok = system 'ruby', '-Ilib:test', '-S', 'testrb', *test_files
