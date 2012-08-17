@@ -1,5 +1,32 @@
 module Faraday
   class Adapter
+    # Sends requests using Hatetepe::Client
+    #
+    # Hatetepe is an evented and fibered HTTP server and client framework
+    # based on EventMachine. It is especially suitable to applications that
+    # fit an evented IO model.
+    #
+    # It's recommended to run applications using this adapter within
+    # Hatetepe::Server in order to enable more advanced features like
+    # kernel-level proxying between client and upstream connections.
+    #
+    # Though it works just fine with other servers like Thin or even Webrick
+    # because it still enables you to make ad-hoc concurrent HTTP requests.
+    #
+    # Only Rubies >= 1.9 are supported due to the usage of Fibers. If you
+    # want to get the most out this adapter in terms of concurrency, don't
+    # combine it with blocking IO but rather use the evented and fibered
+    # equivalents of the respective libraries. Ilya Grigoriks's em-synchrony
+    # gem might be worth a look.
+    #
+    # Example
+    #
+    #   conn = Faraday.new(url: "http://example.org") do |c|
+    #     c.adapter :hatetepe
+    #   end
+    #
+    #   puts conn.get("/hello").body
+    #
     class Hatetepe < Faraday::Adapter
       dependency "hatetepe/client"
 
