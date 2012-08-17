@@ -139,11 +139,27 @@ module Faraday
       end
 
       def raise_error(client)
-        if client.closed_by_timeout?
-          raise Faraday::Error::TimeoutError.new("request timed out")
-        else
-          raise Faraday::Error::ClientError.new("request failed")
+        if !client.connected? && client.closed?
+          raise_connection_error(client)
+        elsif client.closed_by_connect_timeout? || client.closed_by_timeout?
+          raise_timeout_error
+        elsif
+          raise_request_error
         end
+      end
+
+      def raise_connection_error(client)
+        host, port = client.config.values_at(:host, :port)
+        raise Faraday::Error::ConnectionFailed
+          .new("connection to #{host}:#{port} failed")
+      end
+
+      def raise_timeout_error
+        raise Faraday::Error::TimeoutError.new("request timed out")
+      end
+
+      def raise_request_error
+        raise Faraday::Error::ClientError.new("request failed")
       end
     end
   end
