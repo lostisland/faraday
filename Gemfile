@@ -12,12 +12,12 @@ group :test do
   gem 'net-http-persistent', '~> 2.5', :require => false
   gem 'leftright', '~> 0.9', :require => false
   gem 'rack-test', '~> 0.6', :require => 'rack/test'
+  gem 'hatetepe', '~> 0.5', :require => false
 end
 
 platforms :ruby do
   gem 'patron', '~> 0.4', '> 0.4.1'
   gem 'typhoeus', '~> 0.3.3'
-  gem 'hatetepe', '~> 0.5.pre.2', :platforms => :ruby_19
 end
 
 platforms :jruby do
