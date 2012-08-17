@@ -5,7 +5,7 @@ module Adapters
 
     def adapter() :hatetepe end
 
-    if RUBY_VERSION >= "1.9"
+    if RUBY_VERSION >= "1.9" && !ssl_mode?
       Integration.apply(self, :Parallel) do
         if defined?(RUBY_ENGINE) && RUBY_ENGINE == "jruby"
           # https://github.com/eventmachine/eventmachine/pull/289
@@ -15,7 +15,7 @@ module Adapters
         end
       end
     else
-      warn "Warning: Skipping Hatetepe tests in 1.8 mode"
+      warn "Warning: Skipping Hatetepe tests in 1.8 or SSL mode"
     end
   end
 end
