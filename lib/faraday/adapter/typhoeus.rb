@@ -53,7 +53,7 @@ module Faraday
           end
 
           save_response(env, resp.code, resp.body) do |response_headers|
-            response_headers.parse resp.response_header
+            response_headers.parse resp.response_headers
           end
           # in async mode, :response is initialized at this point
           env[:response].finish(env) if parallel?(env)
