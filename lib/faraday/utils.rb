@@ -131,8 +131,12 @@ module Faraday
         self
       end
 
-      def to_query
-        Utils.build_nested_query(self)
+      def to_query(encoding=nil)
+        if encoding == :nested
+          Utils.build_nested_query(self)
+        else
+          Utils.build_query(self)
+        end
       end
 
       private
@@ -219,7 +223,12 @@ module Faraday
       return if k.empty?
 
       if after == ""
-        params[k] = v
+        if params[k]
+          params[k] = Array[params[k]] unless params[k].kind_of?(Array)
+          params[k] << v 
+        else
+          params[k] = v
+        end
       elsif after == "[]"
         params[k] ||= []
         raise TypeError, "expected Array (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Array)

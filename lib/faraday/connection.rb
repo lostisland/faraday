@@ -74,8 +74,9 @@ module Faraday
       @headers = Utils::Headers.new
       @params  = Utils::ParamsHash.new
       @options = options[:request] || {}
+      @options[:param_encoding] ||= :nested
       @ssl     = options[:ssl]     || {}
-
+      
       @parallel_manager = nil
       @default_parallel_manager = options[:parallel_manager]
 
@@ -438,19 +439,19 @@ module Faraday
 
       query_values = self.params.dup.merge_query(uri.query)
       query_values.update extra_params if extra_params
-      uri.query = query_values.empty? ? nil : query_values.to_query
+      uri.query = query_values.empty? ? nil : query_values.to_query(options[:param_encoding])
 
       uri
     end
 
     # Internal: Build an absolute URL based on url_prefix.
     #
-    # url    - A String or URI-like object
-    # params - A Faraday::Utils::ParamsHash to replace the query values
-    #          of the resulting url (default: nil).
-    #
+    # url            - A String or URI-like object
+    # params         - A Faraday::Utils::ParamsHash to replace the query values
+    #                  of the resulting url (default: nil).
+    # param_encoding - Scheme for encoding query parameters
     # Returns the resulting URI instance.
-    def build_exclusive_url(url, params = nil)
+    def build_exclusive_url(url, params = nil, param_encoding = nil)
       url = nil if url.respond_to?(:empty?) and url.empty?
       base = url_prefix
       if url and base.path and base.path !~ /\/$/
@@ -458,7 +459,7 @@ module Faraday
         base.path = base.path + '/'  # ensure trailing slash
       end
       uri = url ? base + url : base
-      uri.query = params.to_query if params
+      uri.query = params.to_query(param_encoding) if params
       uri.query = nil if uri.query and uri.query.empty?
       uri
     end
