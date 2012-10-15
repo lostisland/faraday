@@ -112,7 +112,7 @@ module Faraday
 
     def insert(index, *args, &block)
       raise_if_locked
-      index = assert_index(index)
+      index = map!(index).min
       handler = self.class::Handler.new(*args, &block)
       @handlers.insert(index, handler)
     end
@@ -120,13 +120,13 @@ module Faraday
     alias_method :insert_before, :insert
 
     def insert_after(index, *args, &block)
-      index = assert_index(index)
+      index = map!(index).max
       insert(index + 1, *args, &block)
     end
 
     def swap(index, *args, &block)
       raise_if_locked
-      index = assert_index(index)
+      index = assert_index!(index)
       @handlers.delete_at(index)
       insert(index, *args, &block)
     end
@@ -146,10 +146,25 @@ module Faraday
       use(mod.lookup_middleware(key), *args, &block)
     end
 
-    def assert_index(index)
-      idx = index.is_a?(Integer) ? index : @handlers.index(index)
-      raise "No such handler: #{index.inspect}" unless idx
+    def find_index(index)
+      index.is_a?(Integer) ? index : @handlers.index(index)
+    end
+
+    def assert_index!(index)
+      idx = find_index(index)
+      raise_missing(index) unless idx
       idx
+    end
+
+    def map!(index)
+      indexes = Array(index).map { |idx| find_index(idx) }
+      indexes.reject! { |idx| idx.nil? }
+      raise_missing(index) if indexes.empty?
+      indexes
+    end
+
+    def raise_missing(index)
+      raise "No such handler: #{index.inspect}"
     end
   end
 end
