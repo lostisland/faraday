@@ -1,5 +1,7 @@
 require 'cgi'
 
+Faraday.require_libs 'parameters'
+
 module Faraday
   module Utils
     extend self
@@ -124,15 +126,15 @@ module Faraday
         update(other)
       end
 
-      def merge_query(query)
+      def merge_query(query, encoder=NestedParamsEncoder)
         if query && !query.empty?
-          update Utils.parse_nested_query(query)
+          update encoder.decode(query)
         end
         self
       end
 
-      def to_query
-        Utils.build_nested_query(self)
+      def to_query(encoder=NestedParamsEncoder)
+        encoder.encode(self)
       end
 
       private
@@ -142,32 +144,12 @@ module Faraday
       end
     end
 
-    # Copied from Rack
     def build_query(params)
-      params.map { |k, v|
-        if v.class == Array
-          build_query(v.map { |x| [k, x] })
-        else
-          v.nil? ? escape(k) : "#{escape(k)}=#{escape(v)}"
-        end
-      }.join("&")
+      FlatParamsEncoder.encode(params)
     end
 
-    # Rack's version modified to handle non-String values
-    def build_nested_query(value, prefix = nil)
-      case value
-      when Array
-        value.map { |v| build_nested_query(v, "#{prefix}%5B%5D") }.join("&")
-      when Hash
-        value.map { |k, v|
-          build_nested_query(v, prefix ? "#{prefix}%5B#{escape(k)}%5D" : escape(k))
-        }.join("&")
-      when NilClass
-        prefix
-      else
-        raise ArgumentError, "value must be a Hash" if prefix.nil?
-        "#{prefix}=#{escape(value)}"
-      end
+    def build_nested_query(params)
+      NestedParamsEncoder.encode(params)
     end
 
     ESCAPE_RE = /[^\w .~-]+/
@@ -183,31 +165,12 @@ module Faraday
     DEFAULT_SEP = /[&;] */n
 
     # Adapted from Rack
-    def parse_query(qs)
-      params = {}
-
-      (qs || '').split(DEFAULT_SEP).each do |p|
-        k, v = p.split('=', 2).map { |x| unescape(x) }
-
-        if cur = params[k]
-          if cur.class == Array then params[k] << v
-          else params[k] = [cur, v]
-          end
-        else
-          params[k] = v
-        end
-      end
-      params
+    def parse_query(query)
+      FlatParamsEncoder.decode(query)
     end
 
-    def parse_nested_query(qs)
-      params = {}
-
-      (qs || '').split(DEFAULT_SEP).each do |p|
-        k, v = p.split('=', 2).map { |s| unescape(s) }
-        normalize_params(params, k, v)
-      end
-      params
+    def parse_nested_query(query)
+      NestedParamsEncoder.decode(query)
     end
 
     # Stolen from Rack
@@ -219,7 +182,12 @@ module Faraday
       return if k.empty?
 
       if after == ""
-        params[k] = v
+        if params[k]
+          params[k] = Array[params[k]] unless params[k].kind_of?(Array)
+          params[k] << v
+        else
+          params[k] = v
+        end
       elsif after == "[]"
         params[k] ||= []
         raise TypeError, "expected Array (got #{params[k].class.name}) for param `#{k}'" unless params[k].is_a?(Array)
