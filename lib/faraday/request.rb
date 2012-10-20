@@ -10,7 +10,6 @@ module Faraday
   #   end
   #
   class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
-    extend AutoloadHelper
     extend MiddlewareRegistry
 
     register_middleware 'faraday/request',

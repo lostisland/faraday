@@ -1,5 +1,5 @@
 module Faraday
-  extend AutoloadHelper# Internal: Adds the ability for other modules to manage autoloadable
+  # Internal: Adds the ability for other modules to manage autoloadable
   # constants.
   module AutoloadHelper
     # Internal: Registers the constants to be auto loaded.
