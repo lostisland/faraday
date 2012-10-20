@@ -20,16 +20,11 @@ module Faraday
     end
 
     extend Forwardable
-    extend AutoloadHelper
     extend MiddlewareRegistry
 
-    autoload_all 'faraday/response',
-      :RaiseError => 'raise_error',
-      :Logger     => 'logger'
-
-    register_middleware \
-      :raise_error => :RaiseError,
-      :logger      => :Logger
+    register_middleware 'faraday/response',
+      :raise_error => [:RaiseError, 'raise_error'],
+      :logger => [:Logger, 'logger']
 
     def initialize(env = nil)
       @env = env
