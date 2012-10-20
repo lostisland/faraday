@@ -99,7 +99,7 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_unregistered_symbol
-    err = assert_raise(RuntimeError) { build_stack :apple }
+    err = assert_raise(Faraday::Error) { build_stack :apple }
     assert_equal ":apple is not registered on Faraday::Middleware", err.message
   end
 
