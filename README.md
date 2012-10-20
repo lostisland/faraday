@@ -11,6 +11,7 @@ Faraday supports these adapters:
 * [Typhoeus][]
 * [Patron][]
 * [EventMachine][]
+* [Hatetepe][]
 
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
@@ -213,5 +214,6 @@ See [LICENSE][] for details.
   [excon]:     https://github.com/geemus/excon#readme
   [typhoeus]:  https://github.com/typhoeus/typhoeus#readme
   [patron]:    http://toland.github.com/patron/
+  [hatetepe]:  https://github.com/lgierth/hatetepe
 
   [eventmachine]: https://github.com/igrigorik/em-http-request#readme
