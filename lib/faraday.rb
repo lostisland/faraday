@@ -215,29 +215,6 @@ module Faraday
     end
   end
 
-  # Public: Register middleware classes under a short name.
-  #
-  # type    - A Symbol specifying the kind of middleware (default: :middleware)
-  # mapping - A Hash mapping Symbol keys to classes. Classes can be expressed
-  #           as fully qualified constant, or a Proc that will be lazily called
-  #           to return the former.
-  #
-  # Examples
-  #
-  #   Faraday.register_middleware :aloha => MyModule::Aloha
-  #   Faraday.register_middleware :response, :boom => MyModule::Boom
-  #
-  #   # shortcuts are now available in Builder:
-  #   builder.use :aloha
-  #   builder.response :boom
-  #
-  # Returns nothing.
-  def self.register_middleware(type, mapping = nil)
-    type, mapping = :middleware, type if mapping.nil?
-    component = self.const_get(type.to_s.capitalize)
-    component.register_middleware(mapping)
-  end
-
   require_libs "utils", "connection", "builder", "parameters", "middleware",
     "adapter", "request", "response", "upload_io", "error"
 end

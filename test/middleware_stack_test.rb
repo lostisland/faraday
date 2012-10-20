@@ -104,7 +104,7 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_registered_symbol
-    Faraday.register_middleware :apple => Apple
+    Faraday::Middleware.register_middleware :apple => Apple
     begin
       build_stack :apple
       assert_handlers %w[Apple]
@@ -114,22 +114,12 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_registered_symbol_with_proc
-    Faraday.register_middleware :apple => lambda { Apple }
+    Faraday::Middleware.register_middleware :apple => lambda { Apple }
     begin
       build_stack :apple
       assert_handlers %w[Apple]
     ensure
       unregister_middleware Faraday::Middleware, :apple
-    end
-  end
-
-  def test_registered_symbol_with_type
-    Faraday.register_middleware :request, :orange => Orange
-    begin
-      build_stack {|b| b.request :orange }
-      assert_handlers %w[Orange]
-    ensure
-      unregister_middleware Faraday::Request, :orange
     end
   end
 
