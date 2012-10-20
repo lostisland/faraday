@@ -215,8 +215,6 @@ module Faraday
     end
   end
 
-  extend AutoloadHelper
-
   # Public: Register middleware classes under a short name.
   #
   # type    - A Symbol specifying the kind of middleware (default: :middleware)
