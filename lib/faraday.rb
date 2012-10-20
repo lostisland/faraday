@@ -240,18 +240,9 @@ module Faraday
     component.register_middleware(mapping)
   end
 
-  autoload_all "faraday",
-    :Middleware      => 'middleware',
-    :Builder         => 'builder',
-    :Request         => 'request',
-    :Response        => 'response',
-    :CompositeReadIO => 'upload_io',
-    :UploadIO        => 'upload_io',
-    :Parts           => 'upload_io'
-
-  require_libs "utils", "connection", "adapter", "error"
+  require_libs "utils", "connection", "builder", "parameters", "middleware",
+    "adapter", "request", "response", "upload_io", "error"
 end
-
 
 # not pulling in active-support JUST for this method.  And I love this method.
 class Object

@@ -3,8 +3,6 @@ require 'set'
 require 'forwardable'
 require 'uri'
 
-Faraday.require_libs 'builder', 'request', 'response', 'utils', 'parameters'
-
 module Faraday
   # Public: Connection objects manage the default properties and the middleware
   # stack for fulfilling an HTTP request.
