@@ -133,11 +133,22 @@ module Faraday
     #     class Whatever
     #       # Middleware looked up by :foo returns Faraday::Whatever::Foo.
     #       register_middleware :foo => Foo
+    #
+    #       # Middleware looked up by :bar returns Faraday::Whatever.const_get(:Bar)
+    #       register_middleware :bar => :Bar
+    #
+    #       # Middleware looked up by :baz requires 'baz' and returns Faraday::Whatever.const_get(:Baz)
+    #       register_middleware :baz => [:Baz, 'baz']
     #     end
     #   end
     #
     # Returns nothing.
-    def register_middleware(mapping)
+    def register_middleware(autoload_path = nil, mapping = nil)
+      if mapping.nil?
+        mapping = autoload_path
+        autoload_path = nil
+      end
+      @middleware_autoload_path = autoload_path if autoload_path
       (@registered_middleware ||= {}).update(mapping)
     end
 
@@ -158,11 +169,24 @@ module Faraday
     #
     # Returns a middleware Class.
     def lookup_middleware(key)
-      unless defined? @registered_middleware and found = @registered_middleware[key]
-        raise "#{key.inspect} is not registered on #{self}"
+      value = defined?(@registered_middleware) && @registered_middleware[key]
+      case value
+      when Module then value
+      when Symbol, String
+        @registered_middleware[key] = const_get(value)
+      when Proc
+        @registered_middleware[key] = value.call
+      when Array
+        const, path = value
+        if root = @middleware_autoload_path
+          path = "#{root}/#{path}"
+        end
+        require(path)
+        @registered_middleware[key] = const
+        lookup_middleware(key)
+      else
+        raise Faraday::Error.new("#{key.inspect} is not registered on #{self}")
       end
-      found = @registered_middleware[key] = found.call if found.is_a? Proc
-      found.is_a?(Module) ? found : const_get(found)
     end
   end
 

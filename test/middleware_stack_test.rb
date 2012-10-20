@@ -123,6 +123,17 @@ class MiddlewareStackTest < Faraday::TestCase
     end
   end
 
+  def test_registered_symbol_with_array
+    Faraday::Middleware.register_middleware File.expand_path("..", __FILE__),
+      :strawberry => [lambda { Strawberry }, 'strawberry']
+    begin
+      build_stack :strawberry
+      assert_handlers %w[Strawberry]
+    ensure
+      unregister_middleware Faraday::Middleware, :strawberry
+    end
+  end
+
   def test_missing_dependencies
     build_stack Broken
     err = assert_raises RuntimeError do
