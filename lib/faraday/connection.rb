@@ -18,10 +18,6 @@ module Faraday
     # A Set of allowed HTTP verbs.
     METHODS = Set.new [:get, :post, :put, :delete, :head, :patch, :options]
 
-    # A Set of HTTP verbs that typically send a body.  If no body is set for
-    # these requests, the Content-Length header is set to 0.
-    METHODS_WITH_BODIES = Set.new [:post, :put, :patch, :options]
-
     # Public: Returns a Hash of URI query unencoded key/value pairs.
     attr_reader :params
 

@@ -132,14 +132,28 @@ module Faraday
   class Env < Options.new(:method, :body, :url, :request, :request_headers,
     :ssl, :parallel_manager, :params, :response, :response_headers, :status)
 
+    ContentLength = 'Content-Length'.freeze
     StatusesWithoutBody = Set.new [204, 304]
     SuccessfulStatuses = (200..299)
+
+    # A Set of HTTP verbs that typically send a body.  If no body is set for
+    # these requests, the Content-Length header is set to 0.
+    MethodsWithBodies = Set.new [:post, :put, :patch, :options]
 
     options :request => RequestOptions,
       :request_headers => Utils::Headers, :response_headers => Utils::Headers
 
     def success?
       SuccessfulStatuses.include?(status)
+    end
+
+    def needs_body?
+      !body && MethodsWithBodies.include?(method)
+    end
+
+    def clear_body
+      request_headers[ContentLength] = '0'
+      self.body = ''
     end
 
     def parse_body?
