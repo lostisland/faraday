@@ -92,7 +92,7 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      proxy!(options.fetch(:proxy) { ENV['http_proxy'] })
+      proxy(options.fetch(:proxy) { ENV['http_proxy'] })
 
       yield self if block_given?
     end
@@ -307,26 +307,7 @@ module Faraday
     # Public: Gets or Sets the Hash proxy options.
     def proxy(arg = nil)
       return @proxy if arg.nil?
-
-      @proxy = if arg.is_a? Hash
-        uri = self.class.URI arg.fetch(:uri) { raise ArgumentError, "missing :uri" }
-        arg.merge :uri => uri
-      else
-        uri = self.class.URI(arg)
-        {:uri => uri}
-      end
-
-      with_uri_credentials(uri) do |user, password|
-        @proxy[:user]     ||= user
-        @proxy[:password] ||= password
-      end
-
-      @proxy
-    end
-
-    def proxy!(arg = nil)
-      @proxy = nil
-      proxy(arg)
+      @proxy = ProxyOptions.from(arg)
     end
 
     # Public: Normalize URI() behavior across Ruby versions
@@ -501,6 +482,31 @@ module Faraday
 
       def disable?
         !verify?
+      end
+    end
+
+    class ProxyOptions < Faraday::Options.new(:uri, :user, :password)
+      extend Forwardable
+      def_delegators :uri, :scheme, :scheme=, :host, :host=, :port, :port=
+
+      def self.from(value)
+        case value
+        when String then value = {:uri => Faraday::Connection.URI(value)}
+        when URI then value = {:uri => value}
+        end
+        super(value)
+      end
+
+      def uri
+        @uri ||= Faraday::Connection.URI(self[:uri])
+      end
+
+      def user
+        self[:user] ||= Utils.unescape(uri.user)
+      end
+
+      def password
+        self[:password] ||= Utils.unescape(uri.password)
       end
     end
 

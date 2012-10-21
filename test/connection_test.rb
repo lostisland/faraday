@@ -229,8 +229,7 @@ class TestConnection < Faraday::TestCase
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy 'http://proxy.com'
-      assert_equal 'proxy.com', conn.proxy[:uri].host
-      assert_equal [:uri],      conn.proxy.keys
+      assert_equal 'proxy.com', conn.proxy.host
     end
   end
 
@@ -238,8 +237,7 @@ class TestConnection < Faraday::TestCase
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy URI.parse('http://proxy.com')
-      assert_equal 'proxy.com', conn.proxy[:uri].host
-      assert_equal [:uri],      conn.proxy.keys
+      assert_equal 'proxy.com', conn.proxy.host
     end
   end
 
@@ -247,8 +245,8 @@ class TestConnection < Faraday::TestCase
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy :uri => 'http://proxy.com', :user => 'rick'
-      assert_equal 'proxy.com', conn.proxy[:uri].host
-      assert_equal 'rick',      conn.proxy[:user]
+      assert_equal 'proxy.com', conn.proxy.host
+      assert_equal 'rick',      conn.proxy.user
     end
   end
 
@@ -256,30 +254,23 @@ class TestConnection < Faraday::TestCase
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy :uri => URI.parse('http://proxy.com'), :user => 'rick'
-      assert_equal 'proxy.com', conn.proxy[:uri].host
-      assert_equal 'rick',      conn.proxy[:user]
+      assert_equal 'proxy.com', conn.proxy.host
+      assert_equal 'rick',      conn.proxy.user
     end
   end
 
   def test_proxy_accepts_http_env
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
-      assert_equal 'duncan.proxy.com', conn.proxy[:uri].host
+      assert_equal 'duncan.proxy.com', conn.proxy.host
     end
   end
 
   def test_proxy_accepts_http_env_with_auth
     with_env 'http_proxy', "http://a%40b:my%20pass@duncan.proxy.com:80" do
       conn = Faraday::Connection.new
-      assert_equal 'a@b',     conn.proxy[:user]
-      assert_equal 'my pass', conn.proxy[:password]
-    end
-  end
-
-  def test_proxy_requires_uri
-    conn = Faraday::Connection.new
-    assert_raises ArgumentError do
-      conn.proxy :uri => :bad_uri, :user => 'rick'
+      assert_equal 'a@b',     conn.proxy.user
+      assert_equal 'my pass', conn.proxy.password
     end
   end
 
