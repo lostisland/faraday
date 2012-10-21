@@ -60,6 +60,15 @@ module Faraday
       members.reject { |m| send(m).nil? }
     end
 
+    def to_hash
+      hash = {}
+      members.each do |key|
+        value = send(key)
+        hash[key] = value if value
+      end
+      hash
+    end
+
     def inspect
       values = []
       members.each do |m|

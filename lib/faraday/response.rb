@@ -35,7 +35,8 @@ module Faraday
     end
 
     attr_reader :env
-    alias_method :to_hash, :env
+
+    def_delegators :env, :to_hash
 
     def status
       finished? ? env.status : nil

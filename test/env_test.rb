@@ -179,5 +179,11 @@ class ResponseTest < Faraday::TestCase
     assert_nil loaded.env[:params]
     assert_equal %w[body response_headers status], loaded.env.keys.map { |k| k.to_s }.sort
   end
+
+  def test_hash
+    hash = @response.to_hash
+    assert_kind_of Hash, hash
+    assert_equal @env.to_hash, hash
+  end
 end
 
