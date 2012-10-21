@@ -143,6 +143,10 @@ module Faraday
     options :request => RequestOptions,
       :request_headers => Utils::Headers, :response_headers => Utils::Headers
 
+    extend Forwardable
+
+    def_delegators :request, :params_encoder
+
     def success?
       SuccessfulStatuses.include?(status)
     end
