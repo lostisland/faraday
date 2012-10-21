@@ -134,7 +134,7 @@ module Faraday
 
     ContentLength = 'Content-Length'.freeze
     StatusesWithoutBody = Set.new [204, 304]
-    SuccessfulStatuses = (200..299)
+    SuccessfulStatuses = 200..299
 
     # A Set of HTTP verbs that typically send a body.  If no body is set for
     # these requests, the Content-Length header is set to 0.
