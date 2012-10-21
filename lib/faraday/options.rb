@@ -56,16 +56,16 @@ module Faraday
     end
   end
 
-  class RequestOptions < Options.new(:params_encoder, :oauth, :bind,
+  class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
     :timeout, :open_timeout, :boundary,
-    :custom, :proxy)
+    :custom, :oauth)
 
     def params_encoder
       self[:params_encoder] ||= NestedParamsEncoder
     end
   end
 
-  class SSLOptions < Options.new(:verify, :ca_file, :ca_path,
+  class SSLOptions < Options.new(:verify, :ca_file, :ca_path, :verify_mode,
     :cert_store, :client_cert, :client_key, :verify_depth, :version)
 
     def verify?
@@ -85,12 +85,9 @@ module Faraday
       case value
       when String then value = {:uri => Connection.URI(value)}
       when URI then value = {:uri => value}
+      when Hash, Options then value[:uri] = Connection.URI(value[:uri])
       end
       super(value)
-    end
-
-    def uri
-      @uri ||= Connection.URI(self[:uri])
     end
 
     def user
