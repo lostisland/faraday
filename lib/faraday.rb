@@ -249,7 +249,7 @@ module Faraday
     :UploadIO        => 'upload_io',
     :Parts           => 'upload_io'
 
-  require_libs "utils", "connection", "adapter", "error"
+  require_libs "utils", "options", "connection", "adapter", "error"
 end
 
 
