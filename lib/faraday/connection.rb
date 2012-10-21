@@ -77,7 +77,7 @@ module Faraday
       unless @options[:params_encoder]
         @options[:params_encoder] = Faraday::NestedParamsEncoder
       end
-      @ssl     = options[:ssl]     || {}
+      @ssl     = options[:ssl] || {}
 
       @parallel_manager = nil
       @default_parallel_manager = options[:parallel_manager]
@@ -478,6 +478,10 @@ module Faraday
       if uri.user and uri.password
         yield Utils.unescape(uri.user), Utils.unescape(uri.password)
       end
+    end
+
+    class Options < Faraday::Options.new(:request, :proxy, :ssl, :builder,
+      :parallel_manager, :params, :headers)
     end
   end
 end

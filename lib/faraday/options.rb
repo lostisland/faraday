@@ -45,6 +45,11 @@ module Faraday
     def merge(value)
       dup.update(value)
     end
+
+    def fetch(key, default = nil)
+      send(key) || send("#{key}=", default ||
+        (block_given? ? Proc.new.call : nil))
+    end
   end
 end
 
