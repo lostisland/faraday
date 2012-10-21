@@ -1,3 +1,7 @@
+require 'cgi'
+require 'set'
+require 'forwardable'
+
 # Public: This is the main namespace for Faraday.  You can either use it to
 # create Faraday::Connection objects, or access it directly.
 #
@@ -99,9 +103,9 @@ module Faraday
 
   # Gets the default connection options used when calling Faraday#new.
   #
-  # Returns a Faraday::Connection::Options.
+  # Returns a Faraday::ConnectionOptions.
   def self.default_connection_options
-    @default_connection_options ||= Connection::Options.new
+    @default_connection_options ||= ConnectionOptions.new
   end
 
   if (!defined?(RUBY_ENGINE) || "ruby" == RUBY_ENGINE) && RUBY_VERSION < '1.9'

@@ -115,5 +115,12 @@ module Faraday
       self[:ssl] ||= self.class.options_for(:ssl).new
     end
   end
+
+  class Env < Options.new(:method, :body, :url, :request, :request_headers,
+    :ssl, :parallel_manager, :params, :response, :response_headers, :status)
+
+    options :request => ConnectionOptions,
+      :request_headers => Utils::Headers, :response_headers => Utils::Headers
+  end
 end
 
