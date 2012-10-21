@@ -492,17 +492,29 @@ module Faraday
       end
     end
 
+    class SSLOptions < Faraday::Options.new(:verify, :ca_file, :ca_path,
+      :cert_store, :client_cert, :client_key, :verify_depth, :version)
+
+      def verify?
+        verify != false
+      end
+
+      def disable?
+        !verify?
+      end
+    end
+
     class Options < Faraday::Options.new(:request, :proxy, :ssl, :builder,
       :parallel_manager, :params, :headers, :url)
 
-      options :request => RequestOptions
+      options :request => RequestOptions, :ssl => SSLOptions
 
       def request
         self[:request] ||= self.class.options_for(:request).new
       end
 
       def ssl
-        self[:ssl] ||= {}
+        self[:ssl] ||= self.class.options_for(:ssl).new
       end
     end
   end
