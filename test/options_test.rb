@@ -1,7 +1,9 @@
 require File.expand_path('../helper', __FILE__)
 
 class OptionsTest < Faraday::TestCase
-  class Options < Faraday::Options.new(:a, :b)
+  class SubOptions < Faraday::Options.new(:sub); end
+  class Options < Faraday::Options.new(:a, :b, :c)
+    options :c => SubOptions
   end
 
   def test_from_options
@@ -12,11 +14,30 @@ class OptionsTest < Faraday::TestCase
     assert_nil value.b
   end
 
+  def test_from_options_with_sub_object
+    sub = SubOptions.new 1
+    options = Options.from :a => 1, :c => sub
+    assert_kind_of Options, options
+    assert_equal 1, options.a
+    assert_nil options.b
+    assert_kind_of SubOptions, options.c
+    assert_equal 1, options.c.sub
+  end
+
   def test_from_hash
     options = Options.from :a => 1
     assert_kind_of Options, options
     assert_equal 1, options.a
     assert_nil options.b
+  end
+
+  def test_from_hash_with_sub_object
+    options = Options.from :a => 1, :c => {:sub => 1}
+    assert_kind_of Options, options
+    assert_equal 1, options.a
+    assert_nil options.b
+    assert_kind_of SubOptions, options.c
+    assert_equal 1, options.c.sub
   end
 
   def test_from_deep_hash
@@ -37,6 +58,12 @@ class OptionsTest < Faraday::TestCase
     assert_kind_of Options, options
     assert_nil options.a
     assert_nil options.b
+  end
+
+  def test_invalid_key
+    assert_raises NoMethodError do
+      Options.from :invalid => 1
+    end
   end
 
   def test_update

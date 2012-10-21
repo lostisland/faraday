@@ -6,15 +6,30 @@ module Faraday
       value ? new.update(value) : new
     end
 
+    def self.options(mapping)
+      attribute_options.update(mapping)
+    end
+
+    def self.options_for(key)
+      attribute_options[key]
+    end
+
+    def self.attribute_options
+      @attribute_options ||= {}
+    end
+
     def each(&block)
       members.each do |key|
         block.call key, send(key)
       end
     end
 
-    def update(value)
-      value.each do |key, value|
-        if Hash === value
+    def update(obj)
+      obj.each do |key, value|
+        sub_options = self.class.options_for(key)
+        if sub_options && value
+          value = sub_options.from(value)
+        elsif Hash === value
           hash = {}
           value.each do |hash_key, hash_value|
             hash[hash_key] = hash_value
