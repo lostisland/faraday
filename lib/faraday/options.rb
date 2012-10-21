@@ -14,7 +14,15 @@ module Faraday
 
     def update(value)
       value.each do |key, value|
-        self[key] = value
+        if Hash === value
+          hash = {}
+          value.each do |hash_key, hash_value|
+            hash[hash_key] = hash_value
+          end
+          value = hash
+        end
+
+        self.send("#{key}=", value)
       end
       self
     end

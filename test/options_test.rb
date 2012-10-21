@@ -19,6 +19,19 @@ class OptionsTest < Faraday::TestCase
     assert_nil options.b
   end
 
+  def test_from_deep_hash
+    hash = {:b => 1}
+    options = Options.from :a => hash
+    assert_equal 1, options.a[:b]
+
+    hash[:b] = 2
+    assert_equal 1, options.a[:b]
+
+    options.a[:b] = 3
+    assert_equal 2, hash[:b]
+    assert_equal 3, options.a[:b]
+  end
+
   def test_from_nil
     options = Options.from(nil)
     assert_kind_of Options, options
