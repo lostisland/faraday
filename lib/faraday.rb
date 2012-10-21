@@ -1,3 +1,5 @@
+require 'thread'
+
 # Public: This is the main namespace for Faraday.  You can either use it to
 # create Faraday::Connection objects, or access it directly.
 #
@@ -148,8 +150,10 @@ module Faraday
         mapping = autoload_path
         autoload_path = nil
       end
-      @middleware_autoload_path = autoload_path if autoload_path
-      (@registered_middleware ||= {}).update(mapping)
+      middleware_mutex do
+        @middleware_autoload_path = autoload_path if autoload_path
+        (@registered_middleware ||= {}).update(mapping)
+      end
     end
 
     # Public: Lookup middleware class with a registered Symbol shortcut.
@@ -169,23 +173,40 @@ module Faraday
     #
     # Returns a middleware Class.
     def lookup_middleware(key)
-      value = defined?(@registered_middleware) && @registered_middleware[key]
+      load_middleware(key) ||
+        raise(Faraday::Error.new("#{key.inspect} is not registered on #{self}"))
+    end
+
+    def middleware_mutex(&block)
+      (@middleware_mutex ||= Mutex.new).synchronize(&block)
+    end
+
+    def fetch_middleware(key)
+      defined?(@registered_middleware) && @registered_middleware[key]
+    end
+
+    def load_middleware(key)
+      value = fetch_middleware(key)
       case value
       when Module then value
       when Symbol, String
-        @registered_middleware[key] = const_get(value)
-      when Proc
-        @registered_middleware[key] = value.call
-      when Array
-        const, path = value
-        if root = @middleware_autoload_path
-          path = "#{root}/#{path}"
+        middleware_mutex do
+          @registered_middleware[key] = const_get(value)
         end
-        require(path)
-        @registered_middleware[key] = const
-        lookup_middleware(key)
-      else
-        raise Faraday::Error.new("#{key.inspect} is not registered on #{self}")
+      when Proc
+        middleware_mutex do
+          @registered_middleware[key] = value.call
+        end
+      when Array
+        middleware_mutex do
+          const, path = value
+          if root = @middleware_autoload_path
+            path = "#{root}/#{path}"
+          end
+          require(path)
+          @registered_middleware[key] = const
+        end
+        load_middleware(key)
       end
     end
   end
