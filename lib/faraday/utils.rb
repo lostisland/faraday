@@ -1,5 +1,3 @@
-require 'cgi'
-
 Faraday.require_libs 'parameters'
 
 module Faraday

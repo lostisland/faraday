@@ -1,6 +1,3 @@
-require 'cgi'
-require 'set'
-require 'forwardable'
 require 'uri'
 
 Faraday.require_libs 'builder', 'request', 'response', 'utils', 'parameters'
@@ -68,10 +65,10 @@ module Faraday
     #                     :password - String (optional)
     def initialize(url = nil, options = nil)
       if url.is_a?(Hash)
-        options = Options.from(url)
+        options = ConnectionOptions.from(url)
         url     = options.url
       else
-        options = Options.from(options)
+        options = ConnectionOptions.from(options)
       end
 
       @parallel_manager = nil
@@ -461,66 +458,6 @@ module Faraday
     def with_uri_credentials(uri)
       if uri.user and uri.password
         yield Utils.unescape(uri.user), Utils.unescape(uri.password)
-      end
-    end
-
-    class RequestOptions < Faraday::Options.new(:params_encoder, :oauth, :bind,
-      :timeout, :open_timeout, :boundary,
-      :custom, :proxy)
-
-      def params_encoder
-        self[:params_encoder] ||= Faraday::NestedParamsEncoder
-      end
-    end
-
-    class SSLOptions < Faraday::Options.new(:verify, :ca_file, :ca_path,
-      :cert_store, :client_cert, :client_key, :verify_depth, :version)
-
-      def verify?
-        verify != false
-      end
-
-      def disable?
-        !verify?
-      end
-    end
-
-    class ProxyOptions < Faraday::Options.new(:uri, :user, :password)
-      extend Forwardable
-      def_delegators :uri, :scheme, :scheme=, :host, :host=, :port, :port=
-
-      def self.from(value)
-        case value
-        when String then value = {:uri => Faraday::Connection.URI(value)}
-        when URI then value = {:uri => value}
-        end
-        super(value)
-      end
-
-      def uri
-        @uri ||= Faraday::Connection.URI(self[:uri])
-      end
-
-      def user
-        self[:user] ||= Utils.unescape(uri.user)
-      end
-
-      def password
-        self[:password] ||= Utils.unescape(uri.password)
-      end
-    end
-
-    class Options < Faraday::Options.new(:request, :proxy, :ssl, :builder,
-      :parallel_manager, :params, :headers, :url)
-
-      options :request => RequestOptions, :ssl => SSLOptions
-
-      def request
-        self[:request] ||= self.class.options_for(:request).new
-      end
-
-      def ssl
-        self[:ssl] ||= self.class.options_for(:ssl).new
       end
     end
   end

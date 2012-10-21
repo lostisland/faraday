@@ -55,5 +55,65 @@ module Faraday
       keys.map { |key| send(key) }
     end
   end
+
+  class RequestOptions < Options.new(:params_encoder, :oauth, :bind,
+    :timeout, :open_timeout, :boundary,
+    :custom, :proxy)
+
+    def params_encoder
+      self[:params_encoder] ||= NestedParamsEncoder
+    end
+  end
+
+  class SSLOptions < Options.new(:verify, :ca_file, :ca_path,
+    :cert_store, :client_cert, :client_key, :verify_depth, :version)
+
+    def verify?
+      verify != false
+    end
+
+    def disable?
+      !verify?
+    end
+  end
+
+  class ProxyOptions < Options.new(:uri, :user, :password)
+    extend Forwardable
+    def_delegators :uri, :scheme, :scheme=, :host, :host=, :port, :port=
+
+    def self.from(value)
+      case value
+      when String then value = {:uri => Connection.URI(value)}
+      when URI then value = {:uri => value}
+      end
+      super(value)
+    end
+
+    def uri
+      @uri ||= Connection.URI(self[:uri])
+    end
+
+    def user
+      self[:user] ||= Utils.unescape(uri.user)
+    end
+
+    def password
+      self[:password] ||= Utils.unescape(uri.password)
+    end
+  end
+
+  class ConnectionOptions < Options.new(:request, :proxy, :ssl, :builder, :url,
+    :parallel_manager, :params, :headers)
+
+    options :request => RequestOptions, :ssl => SSLOptions
+
+    def request
+      self[:request] ||= self.class.options_for(:request).new
+    end
+
+    def ssl
+      self[:ssl] ||= self.class.options_for(:ssl).new
+    end
+  end
 end
 
