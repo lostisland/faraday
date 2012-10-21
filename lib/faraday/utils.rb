@@ -1,5 +1,3 @@
-require 'cgi'
-
 Faraday.require_libs 'parameters'
 
 module Faraday
@@ -8,6 +6,10 @@ module Faraday
 
     # Adapted from Rack::Utils::HeaderHash
     class Headers < ::Hash
+      def self.from(value)
+        new(value)
+      end
+
       def initialize(hash={})
         super()
         @names = {}

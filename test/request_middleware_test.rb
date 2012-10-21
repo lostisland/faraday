@@ -1,5 +1,5 @@
 # encoding: utf-8
-require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
+require File.expand_path('../helper', __FILE__)
 
 Faraday::CompositeReadIO.class_eval { attr_reader :ios }
 
@@ -50,7 +50,7 @@ class RequestMiddlewareTest < Faraday::TestCase
 
   def test_url_encoded_non_nested
     response = @conn.post('/echo', { :dimensions => ['date', 'location']}) do |req|
-      req.options[:params_encoder] = Faraday::FlatParamsEncoder
+      req.options.params_encoder = Faraday::FlatParamsEncoder
     end
     assert_equal 'application/x-www-form-urlencoded', response.headers['Content-Type']
     expected = { 'dimensions' => ['date', 'location'] }

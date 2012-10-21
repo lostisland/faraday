@@ -13,6 +13,30 @@ module Faraday
   #     conn.adapter ...
   #   end
   class Request::Retry < Faraday::Middleware
+    class Options < Faraday::Options.new(:max, :interval, :exceptions)
+      def self.from(value)
+        if Fixnum === value
+          new(value)
+        else
+          super(value)
+        end
+      end
+
+      def max
+        (self[:max] ||= 2).to_i
+      end
+
+      def interval
+        (self[:interval] ||= 0).to_f
+      end
+
+      def exceptions
+        Array(self[:exceptions] ||= [Errno::ETIMEDOUT, 'Timeout::Error',
+                                     Error::TimeoutError])
+      end
+
+    end
+
     # Public: Initialize middleware
     #
     # Options:
@@ -21,25 +45,20 @@ module Faraday
     # exceptions - The list of exceptions to handle. Exceptions can be
     #              given as Class, Module, or String. (default:
     #              [Errno::ETIMEDOUT, Timeout::Error, Error::TimeoutError])
-    def initialize(app, options = {})
+    def initialize(app, options = nil)
       super(app)
-      @retries, options = options, {} if options.is_a? Integer
-      @retries ||= options.fetch(:max, 2).to_i
-      @sleep     = options.fetch(:interval, 0).to_f
-      to_handle  = options.fetch(:exceptions) {
-                     [Errno::ETIMEDOUT, 'Timeout::Error', Error::TimeoutError]
-                   }
-      @errmatch  = build_exception_matcher Array(to_handle)
+      @options = Options.from(options)
+      @errmatch = build_exception_matcher(@options.exceptions)
     end
 
     def call(env)
-      retries = @retries
+      retries = @options.max
       begin
         @app.call(env)
       rescue @errmatch
         if retries > 0
           retries -= 1
-          sleep @sleep if @sleep > 0
+          sleep @options.interval if @options.interval > 0
           retry
         end
         raise
@@ -65,3 +84,4 @@ module Faraday
     end
   end
 end
+
