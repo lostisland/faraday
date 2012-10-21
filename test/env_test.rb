@@ -131,10 +131,9 @@ end
 
 class ResponseTest < Faraday::TestCase
   def setup
-    @env = {
+    @env = Faraday::Env.from \
       :status => 404, :body => 'yikes',
-      :response_headers => Faraday::Utils::Headers.new('Content-Type' => 'text/plain')
-    }
+      :response_headers => {'Content-Type' => 'text/plain'}
     @response = Faraday::Response.new @env
   end
 
@@ -181,3 +180,4 @@ class ResponseTest < Faraday::TestCase
     assert_equal %w[body response_headers status], loaded.env.keys.map { |k| k.to_s }.sort
   end
 end
+

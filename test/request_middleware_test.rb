@@ -50,7 +50,7 @@ class RequestMiddlewareTest < Faraday::TestCase
 
   def test_url_encoded_non_nested
     response = @conn.post('/echo', { :dimensions => ['date', 'location']}) do |req|
-      req.options[:params_encoder] = Faraday::FlatParamsEncoder
+      req.options.params_encoder = Faraday::FlatParamsEncoder
     end
     assert_equal 'application/x-www-form-urlencoded', response.headers['Content-Type']
     expected = { 'dimensions' => ['date', 'location'] }

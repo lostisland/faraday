@@ -32,7 +32,7 @@ module Faraday
       :logger      => :Logger
 
     def initialize(env = nil)
-      @env = env
+      @env = Env.from(env) if env
       @on_complete_callbacks = []
     end
 
@@ -67,7 +67,7 @@ module Faraday
 
     def finish(env)
       raise "response already finished" if finished?
-      @env = env
+      @env = Env.from(env)
       @on_complete_callbacks.each { |callback| callback.call(env) }
       return self
     end
@@ -85,15 +85,16 @@ module Faraday
     end
 
     def marshal_load(env)
-      @env = env
+      @env = Env.from(env)
     end
 
     # Expand the env with more properties, without overriding existing ones.
     # Useful for applying request params after restoring a marshalled Response.
     def apply_request(request_env)
       raise "response didn't finish yet" unless finished?
-      @env = request_env.merge @env
+      @env = Env.from(request_env).merge @env
       return self
     end
   end
 end
+

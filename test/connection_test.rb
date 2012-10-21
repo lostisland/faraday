@@ -199,7 +199,7 @@ class TestConnection < Faraday::TestCase
 
   def test_build_url_without_braketizing_repeated_params_in_query
     conn = Faraday::Connection.new
-    conn.options[:params_encoder] = Faraday::FlatParamsEncoder
+    conn.options.params_encoder = Faraday::FlatParamsEncoder
     uri = conn.build_url("http://sushi.com/sake.html", 'a' => [1, 2])
     assert_equal "a=1&a=2", uri.query
   end

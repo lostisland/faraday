@@ -26,6 +26,7 @@ module Faraday
 
     def update(obj)
       obj.each do |key, value|
+        next unless value
         sub_options = self.class.options_for(key)
         if sub_options && value
           value = sub_options.from(value)
@@ -53,6 +54,21 @@ module Faraday
 
     def values_at(*keys)
       keys.map { |key| send(key) }
+    end
+
+    def keys
+      members.reject { |m| send(m).nil? }
+    end
+
+    def inspect
+      values = []
+      members.each do |m|
+        value = send(m)
+        values << "#{m}=#{value.inspect}" if value
+      end
+      values = values.empty? ? nil : (' ' << values.join(", "))
+
+      %(#<#{self.class}#{values}>)
     end
   end
 
@@ -116,7 +132,7 @@ module Faraday
   class Env < Options.new(:method, :body, :url, :request, :request_headers,
     :ssl, :parallel_manager, :params, :response, :response_headers, :status)
 
-    options :request => ConnectionOptions,
+    options :request => RequestOptions,
       :request_headers => Utils::Headers, :response_headers => Utils::Headers
   end
 end
