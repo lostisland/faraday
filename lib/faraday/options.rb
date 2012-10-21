@@ -20,7 +20,7 @@ module Faraday
 
     def each(&block)
       members.each do |key|
-        block.call key, send(key)
+        block.call key.to_sym, send(key)
       end
     end
 
