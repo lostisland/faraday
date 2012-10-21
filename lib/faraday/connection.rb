@@ -66,23 +66,26 @@ module Faraday
     #                     :uri      - URI or String
     #                     :user     - String (optional)
     #                     :password - String (optional)
-    def initialize(url = nil, options = {})
+    def initialize(url = nil, options = nil)
       if url.is_a?(Hash)
-        options = url
-        url     = options[:url]
+        options = Options.from(url)
+        url     = options.url
+      else
+        options = Options.from(options)
       end
+
+      @parallel_manager = nil
       @headers = Utils::Headers.new
       @params  = Utils::ParamsHash.new
-      @options = options[:request] || {}
+      @options = options.request
+      @ssl = options.ssl
+      @default_parallel_manager = options.parallel_manager
+
       unless @options[:params_encoder]
         @options[:params_encoder] = Faraday::NestedParamsEncoder
       end
-      @ssl     = options[:ssl] || {}
 
-      @parallel_manager = nil
-      @default_parallel_manager = options[:parallel_manager]
-
-      @builder = options[:builder] || begin
+      @builder = options.builder || begin
         # pass an empty block to Builder so it doesn't assume default middleware
         block = block_given?? Proc.new {|b| } : nil
         Builder.new(&block)
@@ -93,8 +96,7 @@ module Faraday
       @params.update options[:params]   if options[:params]
       @headers.update options[:headers] if options[:headers]
 
-      @proxy = nil
-      proxy(options.fetch(:proxy) { ENV['http_proxy'] })
+      proxy!(options.fetch(:proxy) { ENV['http_proxy'] })
 
       yield self if block_given?
     end
@@ -326,6 +328,11 @@ module Faraday
       @proxy
     end
 
+    def proxy!(arg = nil)
+      @proxy = nil
+      proxy(arg)
+    end
+
     # Public: Normalize URI() behavior across Ruby versions
     #
     # url - A String or URI.
@@ -481,7 +488,15 @@ module Faraday
     end
 
     class Options < Faraday::Options.new(:request, :proxy, :ssl, :builder,
-      :parallel_manager, :params, :headers)
+      :parallel_manager, :params, :headers, :url)
+
+      def request
+        self[:request] ||= {}
+      end
+
+      def ssl
+        self[:ssl] ||= {}
+      end
     end
   end
 end
