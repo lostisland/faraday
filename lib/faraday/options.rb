@@ -58,7 +58,7 @@ module Faraday
 
   class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
     :timeout, :open_timeout, :boundary,
-    :custom, :oauth)
+    :oauth)
 
     def params_encoder
       self[:params_encoder] ||= NestedParamsEncoder
