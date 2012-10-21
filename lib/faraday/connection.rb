@@ -121,8 +121,8 @@ module Faraday
         builder.to_app(lambda { |env|
           # the inner app that creates and returns the Response object
           response = Response.new
-          response.finish(env) unless env[:parallel_manager]
-          env[:response] = response
+          response.finish(env) unless env.parallel?
+          env.response = response
         })
       end
     end

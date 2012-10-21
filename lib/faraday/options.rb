@@ -132,8 +132,23 @@ module Faraday
   class Env < Options.new(:method, :body, :url, :request, :request_headers,
     :ssl, :parallel_manager, :params, :response, :response_headers, :status)
 
+    StatusesWithoutBody = Set.new [204, 304]
+    SuccessfulStatuses = (200..299)
+
     options :request => RequestOptions,
       :request_headers => Utils::Headers, :response_headers => Utils::Headers
+
+    def success?
+      SuccessfulStatuses.include?(status)
+    end
+
+    def parse_body?
+      !StatusesWithoutBody.include?(status)
+    end
+
+    def parallel?
+      !!parallel_manager
+    end
   end
 end
 
