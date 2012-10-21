@@ -81,10 +81,6 @@ module Faraday
       @ssl = options.ssl
       @default_parallel_manager = options.parallel_manager
 
-      unless @options[:params_encoder]
-        @options[:params_encoder] = Faraday::NestedParamsEncoder
-      end
-
       @builder = options.builder || begin
         # pass an empty block to Builder so it doesn't assume default middleware
         block = block_given?? Proc.new {|b| } : nil
@@ -93,8 +89,8 @@ module Faraday
 
       self.url_prefix = url || 'http:/'
 
-      @params.update options[:params]   if options[:params]
-      @headers.update options[:headers] if options[:headers]
+      @params.update(options.params)   if options.params
+      @headers.update(options.headers) if options.headers
 
       proxy!(options.fetch(:proxy) { ENV['http_proxy'] })
 
@@ -446,9 +442,9 @@ module Faraday
     def build_url(url, extra_params = nil)
       uri = build_exclusive_url(url)
 
-      query_values = self.params.dup.merge_query(uri.query, options[:params_encoder])
+      query_values = self.params.dup.merge_query(uri.query, options.params_encoder)
       query_values.update extra_params if extra_params
-      uri.query = query_values.empty? ? nil : query_values.to_query(options[:params_encoder])
+      uri.query = query_values.empty? ? nil : query_values.to_query(options.params_encoder)
 
       uri
     end
@@ -468,7 +464,7 @@ module Faraday
         base.path = base.path + '/'  # ensure trailing slash
       end
       uri = url ? base + url : base
-      uri.query = params.to_query(options[:params_encoder]) if params
+      uri.query = params.to_query(options.params_encoder) if params
       uri.query = nil if uri.query and uri.query.empty?
       uri
     end
@@ -487,11 +483,22 @@ module Faraday
       end
     end
 
+    class RequestOptions < Faraday::Options.new(:params_encoder, :oauth, :bind,
+      :timeout, :open_timeout, :boundary,
+      :custom, :proxy)
+
+      def params_encoder
+        self[:params_encoder] ||= Faraday::NestedParamsEncoder
+      end
+    end
+
     class Options < Faraday::Options.new(:request, :proxy, :ssl, :builder,
       :parallel_manager, :params, :headers, :url)
 
+      options :request => RequestOptions
+
       def request
-        self[:request] ||= {}
+        self[:request] ||= self.class.options_for(:request).new
       end
 
       def ssl
@@ -500,3 +507,4 @@ module Faraday
     end
   end
 end
+

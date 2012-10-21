@@ -50,6 +50,10 @@ module Faraday
       send(key) || send("#{key}=", default ||
         (block_given? ? Proc.new.call : nil))
     end
+
+    def values_at(*keys)
+      keys.map { |key| send(key) }
+    end
   end
 end
 

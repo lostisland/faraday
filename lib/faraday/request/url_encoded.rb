@@ -10,7 +10,7 @@ module Faraday
     def call(env)
       match_content_type(env) do |data|
         params = Faraday::Utils::ParamsHash[data]
-        env[:body] = params.to_query(env[:request][:params_encoder])
+        env[:body] = params.to_query(env[:request].params_encoder)
       end
       @app.call env
     end
