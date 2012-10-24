@@ -4,7 +4,7 @@ module Faraday
       self.supports_parallel = true
 
       def self.setup_parallel_manager(options = {})
-        options.empty? ? ::Typhoeus::Hydra.hydra : ::Typhoeus::Hydra.new(options)
+        ::Typhoeus::Hydra.new(options)
       end
 
       dependency 'typhoeus'
@@ -31,11 +31,12 @@ module Faraday
       end
 
       def request(env)
+        ssl_verifyhost = (env[:ssl] && env[:ssl].fetch(:verify, true)) ? 2 : 0
         req = ::Typhoeus::Request.new env[:url].to_s,
           :method  => env[:method],
           :body    => env[:body],
           :headers => env[:request_headers],
-          :disable_ssl_peer_verification => (env[:ssl] && !env[:ssl].fetch(:verify, true))
+          :ssl_verifyhost => ssl_verifyhost
 
         configure_ssl     req, env
         configure_proxy   req, env
@@ -52,7 +53,7 @@ module Faraday
           end
 
           save_response(env, resp.code, resp.body) do |response_headers|
-            response_headers.parse resp.headers
+            response_headers.parse resp.response_headers
           end
           # in async mode, :response is initialized at this point
           env[:response].finish(env) if parallel?(env)
@@ -64,11 +65,11 @@ module Faraday
       def configure_ssl(req, env)
         ssl = env[:ssl]
 
-        req.ssl_version = ssl[:version]          if ssl[:version]
-        req.ssl_cert    = ssl[:client_cert_file] if ssl[:client_cert_file]
-        req.ssl_key     = ssl[:client_key_file]  if ssl[:client_key_file]
-        req.ssl_cacert  = ssl[:ca_file]          if ssl[:ca_file]
-        req.ssl_capath  = ssl[:ca_path]          if ssl[:ca_path]
+        req.sslversion = ssl[:version]          if ssl[:version]
+        req.sslcert    = ssl[:client_cert_file] if ssl[:client_cert_file]
+        req.sslkey     = ssl[:client_key_file]  if ssl[:client_key_file]
+        req.cainfo     = ssl[:ca_file]          if ssl[:ca_file]
+        req.capath     = ssl[:ca_path]          if ssl[:ca_path]
       end
 
       def configure_proxy(req, env)
@@ -78,17 +79,16 @@ module Faraday
         req.proxy = "#{proxy[:uri].host}:#{proxy[:uri].port}"
 
         if proxy[:username] && proxy[:password]
-          req.proxy_username = proxy[:username]
-          req.proxy_password = proxy[:password]
+          req.proxyuserpwd = "#{proxy[:username]}:#{proxy[:password]}"
         end
       end
 
       def configure_timeout(req, env)
         env_req = request_options(env)
-        req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
-        req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
+        req.options[:timeout_ms] = (env_req[:timeout] * 1000)             if env_req[:timeout]
+        req.options[:connecttimeout_ms] = (env_req[:open_timeout] * 1000) if env_req[:open_timeout]
       end
-      
+
       def configure_socket(req, env)
         if bind = request_options(env)[:bind]
           req.interface = bind[:host]
