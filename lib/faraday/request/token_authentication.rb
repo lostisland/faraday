@@ -4,7 +4,7 @@ module Faraday
     def self.header(token, options = nil)
       options ||= {}
       options[:token] = token
-      super :Token, options
+      super(:Token, options)
     end
 
     def initialize(app, token, options = nil)

@@ -1,3 +1,7 @@
+require 'cgi'
+require 'set'
+require 'forwardable'
+
 # Public: This is the main namespace for Faraday.  You can either use it to
 # create Faraday::Connection objects, or access it directly.
 #
@@ -59,9 +63,9 @@ module Faraday
     #     :params => {:page => 1}
     #
     # Returns a Faraday::Connection.
-    def new(url = nil, options = {})
+    def new(url = nil, options = nil)
       block = block_given? ? Proc.new : nil
-      options = Faraday::Utils.deep_merge(default_connection_options, options)
+      options = options ? default_connection_options.merge(options) : default_connection_options.dup
       Faraday::Connection.new(url, options, &block)
     end
 
@@ -99,9 +103,9 @@ module Faraday
 
   # Gets the default connection options used when calling Faraday#new.
   #
-  # Returns an options Hash.
+  # Returns a Faraday::ConnectionOptions.
   def self.default_connection_options
-    @default_connection_options ||= {}
+    @default_connection_options ||= ConnectionOptions.new
   end
 
   if (!defined?(RUBY_ENGINE) || "ruby" == RUBY_ENGINE) && RUBY_VERSION < '1.9'
@@ -249,9 +253,8 @@ module Faraday
     :UploadIO        => 'upload_io',
     :Parts           => 'upload_io'
 
-  require_libs "utils", "connection", "adapter", "error"
+  require_libs "utils", "options", "connection", "adapter", "error"
 end
-
 
 # not pulling in active-support JUST for this method.  And I love this method.
 class Object

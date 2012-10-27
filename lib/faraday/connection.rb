@@ -1,6 +1,3 @@
-require 'cgi'
-require 'set'
-require 'forwardable'
 require 'uri'
 
 Faraday.require_libs 'builder', 'request', 'response', 'utils', 'parameters'
@@ -20,10 +17,6 @@ module Faraday
   class Connection
     # A Set of allowed HTTP verbs.
     METHODS = Set.new [:get, :post, :put, :delete, :head, :patch, :options]
-
-    # A Set of HTTP verbs that typically send a body.  If no body is set for
-    # these requests, the Content-Length header is set to 0.
-    METHODS_WITH_BODIES = Set.new [:post, :put, :patch, :options]
 
     # Public: Returns a Hash of URI query unencoded key/value pairs.
     attr_reader :params
@@ -66,23 +59,22 @@ module Faraday
     #                     :uri      - URI or String
     #                     :user     - String (optional)
     #                     :password - String (optional)
-    def initialize(url = nil, options = {})
+    def initialize(url = nil, options = nil)
       if url.is_a?(Hash)
-        options = url
-        url     = options[:url]
+        options = ConnectionOptions.from(url)
+        url     = options.url
+      else
+        options = ConnectionOptions.from(options)
       end
-      @headers = Utils::Headers.new
-      @params  = Utils::ParamsHash.new
-      @options = options[:request] || {}
-      unless @options[:params_encoder]
-        @options[:params_encoder] = Faraday::NestedParamsEncoder
-      end
-      @ssl     = options[:ssl]     || {}
 
       @parallel_manager = nil
-      @default_parallel_manager = options[:parallel_manager]
+      @headers = Utils::Headers.new
+      @params  = Utils::ParamsHash.new
+      @options = options.request
+      @ssl = options.ssl
+      @default_parallel_manager = options.parallel_manager
 
-      @builder = options[:builder] || begin
+      @builder = options.builder || begin
         # pass an empty block to Builder so it doesn't assume default middleware
         block = block_given?? Proc.new {|b| } : nil
         Builder.new(&block)
@@ -90,10 +82,9 @@ module Faraday
 
       self.url_prefix = url || 'http:/'
 
-      @params.update options[:params]   if options[:params]
-      @headers.update options[:headers] if options[:headers]
+      @params.update(options.params)   if options.params
+      @headers.update(options.headers) if options.headers
 
-      @proxy = nil
       proxy(options.fetch(:proxy) { ENV['http_proxy'] })
 
       yield self if block_given?
@@ -126,8 +117,8 @@ module Faraday
         builder.to_app(lambda { |env|
           # the inner app that creates and returns the Response object
           response = Response.new
-          response.finish(env) unless env[:parallel_manager]
-          env[:response] = response
+          response.finish(env) unless env.parallel?
+          env.response = response
         })
       end
     end
@@ -309,21 +300,7 @@ module Faraday
     # Public: Gets or Sets the Hash proxy options.
     def proxy(arg = nil)
       return @proxy if arg.nil?
-
-      @proxy = if arg.is_a? Hash
-        uri = self.class.URI arg.fetch(:uri) { raise ArgumentError, "missing :uri" }
-        arg.merge :uri => uri
-      else
-        uri = self.class.URI(arg)
-        {:uri => uri}
-      end
-
-      with_uri_credentials(uri) do |user, password|
-        @proxy[:user]     ||= user
-        @proxy[:password] ||= password
-      end
-
-      @proxy
+      @proxy = ProxyOptions.from(arg)
     end
 
     # Public: Normalize URI() behavior across Ruby versions
@@ -439,9 +416,9 @@ module Faraday
     def build_url(url, extra_params = nil)
       uri = build_exclusive_url(url)
 
-      query_values = self.params.dup.merge_query(uri.query, options[:params_encoder])
+      query_values = self.params.dup.merge_query(uri.query, options.params_encoder)
       query_values.update extra_params if extra_params
-      uri.query = query_values.empty? ? nil : query_values.to_query(options[:params_encoder])
+      uri.query = query_values.empty? ? nil : query_values.to_query(options.params_encoder)
 
       uri
     end
@@ -461,7 +438,7 @@ module Faraday
         base.path = base.path + '/'  # ensure trailing slash
       end
       uri = url ? base + url : base
-      uri.query = params.to_query(options[:params_encoder]) if params
+      uri.query = params.to_query(options.params_encoder) if params
       uri.query = nil if uri.query and uri.query.empty?
       uri
     end
@@ -481,3 +458,4 @@ module Faraday
     end
   end
 end
+

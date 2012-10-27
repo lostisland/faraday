@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
+require File.expand_path('../helper', __FILE__)
 require 'uri'
 
 class TestConnection < Faraday::TestCase
@@ -199,7 +199,7 @@ class TestConnection < Faraday::TestCase
 
   def test_build_url_without_braketizing_repeated_params_in_query
     conn = Faraday::Connection.new
-    conn.options[:params_encoder] = Faraday::FlatParamsEncoder
+    conn.options.params_encoder = Faraday::FlatParamsEncoder
     uri = conn.build_url("http://sushi.com/sake.html", 'a' => [1, 2])
     assert_equal "a=1&a=2", uri.query
   end
@@ -229,8 +229,7 @@ class TestConnection < Faraday::TestCase
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy 'http://proxy.com'
-      assert_equal 'proxy.com', conn.proxy[:uri].host
-      assert_equal [:uri],      conn.proxy.keys
+      assert_equal 'proxy.com', conn.proxy.host
     end
   end
 
@@ -238,8 +237,7 @@ class TestConnection < Faraday::TestCase
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy URI.parse('http://proxy.com')
-      assert_equal 'proxy.com', conn.proxy[:uri].host
-      assert_equal [:uri],      conn.proxy.keys
+      assert_equal 'proxy.com', conn.proxy.host
     end
   end
 
@@ -247,8 +245,8 @@ class TestConnection < Faraday::TestCase
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy :uri => 'http://proxy.com', :user => 'rick'
-      assert_equal 'proxy.com', conn.proxy[:uri].host
-      assert_equal 'rick',      conn.proxy[:user]
+      assert_equal 'proxy.com', conn.proxy.host
+      assert_equal 'rick',      conn.proxy.user
     end
   end
 
@@ -256,30 +254,23 @@ class TestConnection < Faraday::TestCase
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy :uri => URI.parse('http://proxy.com'), :user => 'rick'
-      assert_equal 'proxy.com', conn.proxy[:uri].host
-      assert_equal 'rick',      conn.proxy[:user]
+      assert_equal 'proxy.com', conn.proxy.host
+      assert_equal 'rick',      conn.proxy.user
     end
   end
 
   def test_proxy_accepts_http_env
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
-      assert_equal 'duncan.proxy.com', conn.proxy[:uri].host
+      assert_equal 'duncan.proxy.com', conn.proxy.host
     end
   end
 
   def test_proxy_accepts_http_env_with_auth
     with_env 'http_proxy', "http://a%40b:my%20pass@duncan.proxy.com:80" do
       conn = Faraday::Connection.new
-      assert_equal 'a@b',     conn.proxy[:user]
-      assert_equal 'my pass', conn.proxy[:password]
-    end
-  end
-
-  def test_proxy_requires_uri
-    conn = Faraday::Connection.new
-    assert_raises ArgumentError do
-      conn.proxy :uri => :bad_uri, :user => 'rick'
+      assert_equal 'a@b',     conn.proxy.user
+      assert_equal 'my pass', conn.proxy.password
     end
   end
 

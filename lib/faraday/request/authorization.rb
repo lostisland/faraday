@@ -30,8 +30,8 @@ module Faraday
 
     # Public
     def call(env)
-      unless env[:request_headers][KEY]
-        env[:request_headers][KEY] = @header_value
+      unless env.request_headers[KEY]
+        env.request_headers[KEY] = @header_value
       end
       @app.call(env)
     end
