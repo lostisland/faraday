@@ -1,3 +1,4 @@
+require 'thread'
 require 'cgi'
 require 'set'
 require 'forwardable'
@@ -137,12 +138,25 @@ module Faraday
     #     class Whatever
     #       # Middleware looked up by :foo returns Faraday::Whatever::Foo.
     #       register_middleware :foo => Foo
+    #
+    #       # Middleware looked up by :bar returns Faraday::Whatever.const_get(:Bar)
+    #       register_middleware :bar => :Bar
+    #
+    #       # Middleware looked up by :baz requires 'baz' and returns Faraday::Whatever.const_get(:Baz)
+    #       register_middleware :baz => [:Baz, 'baz']
     #     end
     #   end
     #
     # Returns nothing.
-    def register_middleware(mapping)
-      (@registered_middleware ||= {}).update(mapping)
+    def register_middleware(autoload_path = nil, mapping = nil)
+      if mapping.nil?
+        mapping = autoload_path
+        autoload_path = nil
+      end
+      middleware_mutex do
+        @middleware_autoload_path = autoload_path if autoload_path
+        (@registered_middleware ||= {}).update(mapping)
+      end
     end
 
     # Public: Lookup middleware class with a registered Symbol shortcut.
@@ -162,98 +176,46 @@ module Faraday
     #
     # Returns a middleware Class.
     def lookup_middleware(key)
-      unless defined? @registered_middleware and found = @registered_middleware[key]
-        raise "#{key.inspect} is not registered on #{self}"
+      load_middleware(key) ||
+        raise(Faraday::Error.new("#{key.inspect} is not registered on #{self}"))
+    end
+
+    def middleware_mutex(&block)
+      (@middleware_mutex ||= Mutex.new).synchronize(&block)
+    end
+
+    def fetch_middleware(key)
+      defined?(@registered_middleware) && @registered_middleware[key]
+    end
+
+    def load_middleware(key)
+      value = fetch_middleware(key)
+      case value
+      when Module then value
+      when Symbol, String
+        middleware_mutex do
+          @registered_middleware[key] = const_get(value)
+        end
+      when Proc
+        middleware_mutex do
+          @registered_middleware[key] = value.call
+        end
+      when Array
+        middleware_mutex do
+          const, path = value
+          if root = @middleware_autoload_path
+            path = "#{root}/#{path}"
+          end
+          require(path)
+          @registered_middleware[key] = const
+        end
+        load_middleware(key)
       end
-      found = @registered_middleware[key] = found.call if found.is_a? Proc
-      found.is_a?(Module) ? found : const_get(found)
     end
   end
 
-  # Internal: Adds the ability for other modules to manage autoloadable
-  # constants.
-  module AutoloadHelper
-    # Internal: Registers the constants to be auto loaded.
-    #
-    # prefix  - The String require prefix.  If the path is inside Faraday, then
-    #           it will be prefixed with the root path of this loaded Faraday
-    #           version.
-    # options - Hash of Symbol => String library names.
-    #
-    # Examples.
-    #
-    #   Faraday.autoload_all 'faraday/foo',
-    #     :Bar => 'bar'
-    #
-    #   # requires faraday/foo/bar to load Faraday::Bar.
-    #   Faraday::Bar
-    #
-    #
-    # Returns nothing.
-    def autoload_all(prefix, options)
-      if prefix =~ /^faraday(\/|$)/i
-        prefix = File.join(Faraday.root_path, prefix)
-      end
-      options.each do |const_name, path|
-        autoload const_name, File.join(prefix, path)
-      end
-    end
-
-    # Internal: Loads each autoloaded constant.  If thread safety is a concern,
-    # wrap this in a Mutex.
-    #
-    # Returns nothing.
-    def load_autoloaded_constants
-      constants.each do |const|
-        const_get(const) if autoload?(const)
-      end
-    end
-
-    # Internal: Filters the module's contents with those that have been already
-    # autoloaded.
-    #
-    # Returns an Array of Class/Module objects.
-    def all_loaded_constants
-      constants.map { |c| const_get(c) }.
-        select { |a| a.respond_to?(:loaded?) && a.loaded? }
-    end
-  end
-
-  extend AutoloadHelper
-
-  # Public: Register middleware classes under a short name.
-  #
-  # type    - A Symbol specifying the kind of middleware (default: :middleware)
-  # mapping - A Hash mapping Symbol keys to classes. Classes can be expressed
-  #           as fully qualified constant, or a Proc that will be lazily called
-  #           to return the former.
-  #
-  # Examples
-  #
-  #   Faraday.register_middleware :aloha => MyModule::Aloha
-  #   Faraday.register_middleware :response, :boom => MyModule::Boom
-  #
-  #   # shortcuts are now available in Builder:
-  #   builder.use :aloha
-  #   builder.response :boom
-  #
-  # Returns nothing.
-  def self.register_middleware(type, mapping = nil)
-    type, mapping = :middleware, type if mapping.nil?
-    component = self.const_get(type.to_s.capitalize)
-    component.register_middleware(mapping)
-  end
-
-  autoload_all "faraday",
-    :Middleware      => 'middleware',
-    :Builder         => 'builder',
-    :Request         => 'request',
-    :Response        => 'response',
-    :CompositeReadIO => 'upload_io',
-    :UploadIO        => 'upload_io',
-    :Parts           => 'upload_io'
-
-  require_libs "utils", "options", "connection", "adapter", "error"
+  require_libs "utils", "options", "connection", "builder", "parameters",
+    "middleware", "adapter", "request", "response", "upload_io", "error"
 end
 
 # not pulling in active-support JUST for this method.  And I love this method.

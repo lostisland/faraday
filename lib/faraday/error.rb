@@ -1,40 +1,45 @@
 module Faraday
-  module Error
-    class ClientError < StandardError
-      attr_reader :response
+  class Error < StandardError; end
+  class MissingDependency < Error; end
 
-      def initialize(ex, response = nil)
-        @wrapped_exception = nil
-        @response = response
+  class ClientError < Error
+    attr_reader :response
 
-        if ex.respond_to?(:backtrace)
-          super(ex.message)
-          @wrapped_exception = ex
-        elsif ex.respond_to?(:each_key)
-          super("the server responded with status #{ex[:status]}")
-          @response = ex
-        else
-          super(ex.to_s)
-        end
-      end
+    def initialize(ex, response = nil)
+      @wrapped_exception = nil
+      @response = response
 
-      def backtrace
-        if @wrapped_exception
-          @wrapped_exception.backtrace
-        else
-          super
-        end
-      end
-
-      def inspect
-        %(#<#{self.class}>)
+      if ex.respond_to?(:backtrace)
+        super(ex.message)
+        @wrapped_exception = ex
+      elsif ex.respond_to?(:each_key)
+        super("the server responded with status #{ex[:status]}")
+        @response = ex
+      else
+        super(ex.to_s)
       end
     end
 
-    class ConnectionFailed < ClientError;   end
-    class ResourceNotFound < ClientError;   end
-    class ParsingError     < ClientError;   end
-    class TimeoutError < ClientError; end
-    class MissingDependency < StandardError; end
+    def backtrace
+      if @wrapped_exception
+        @wrapped_exception.backtrace
+      else
+        super
+      end
+    end
+
+    def inspect
+      %(#<#{self.class}>)
+    end
+  end
+
+  class ConnectionFailed < ClientError;   end
+  class ResourceNotFound < ClientError;   end
+  class ParsingError     < ClientError;   end
+  class TimeoutError < ClientError; end
+
+  [:MissingDependency, :ClientError, :ConnectionFailed, :ResourceNotFound,
+   :ParsingError, :TimeoutError].each do |const|
+    Error.const_set(const, Faraday.const_get(const))
   end
 end
