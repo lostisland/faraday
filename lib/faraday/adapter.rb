@@ -2,32 +2,21 @@ module Faraday
   # Public: This is a base class for all Faraday adapters.  Adapters are
   # responsible for fulfilling a Faraday request.
   class Adapter < Middleware
-    extend AutoloadHelper
+    CONTENT_LENGTH = 'Content-Length'.freeze
+
     extend MiddlewareRegistry
 
-    autoload_all 'faraday/adapter',
-      :NetHttp           => 'net_http',
-      :NetHttpPersistent => 'net_http_persistent',
-      :Typhoeus          => 'typhoeus',
-      :EMSynchrony       => 'em_synchrony',
-      :EMHttp            => 'em_http',
-      :Patron            => 'patron',
-      :Excon             => 'excon',
-      :Test              => 'test',
-      :Rack              => 'rack',
-      :HTTPClient        => 'httpclient'
-
-    register_middleware \
-      :test                => :Test,
-      :net_http            => :NetHttp,
-      :net_http_persistent => :NetHttpPersistent,
-      :typhoeus            => :Typhoeus,
-      :patron              => :Patron,
-      :em_synchrony        => :EMSynchrony,
-      :em_http             => :EMHttp,
-      :excon               => :Excon,
-      :rack                => :Rack,
-      :httpclient          => :HTTPClient
+    register_middleware File.expand_path('../adapter', __FILE__),
+      :test => [:Test, 'test'],
+      :net_http => [:NetHttp, 'net_http'],
+      :net_http_persistent => [:NetHttpPersistent, 'net_http_persistent'],
+      :typhoeus => [:Typhoeus, 'typhoeus'],
+      :patron => [:Patron, 'patron'],
+      :em_synchrony => [:EMSynchrony, 'em_synchrony'],
+      :em_http => [:EMHttp, 'em_http'],
+      :excon => [:Excon, 'excon'],
+      :rack => [:Rack, 'rack'],
+      :httpclient => [:HTTPClient, 'httpclient']
 
     # Public: This module marks an Adapter as supporting parallel requests.
     module Parallelism

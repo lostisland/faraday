@@ -10,25 +10,15 @@ module Faraday
   #   end
   #
   class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
-    extend AutoloadHelper
     extend MiddlewareRegistry
 
-    autoload_all 'faraday/request',
-      :UrlEncoded => 'url_encoded',
-      :Multipart => 'multipart',
-      :Retry => 'retry',
-      :Timeout => 'timeout',
-      :Authorization => 'authorization',
-      :BasicAuthentication => 'basic_authentication',
-      :TokenAuthentication => 'token_authentication'
-
-    register_middleware \
-      :url_encoded => :UrlEncoded,
-      :multipart => :Multipart,
-      :retry => :Retry,
-      :authorization => :Authorization,
-      :basic_auth => :BasicAuthentication,
-      :token_auth => :TokenAuthentication
+    register_middleware File.expand_path('../request', __FILE__),
+      :url_encoded => [:UrlEncoded, 'url_encoded'],
+      :multipart => [:Multipart, 'multipart'],
+      :retry => [:Retry, 'retry'],
+      :authorization => [:Authorization, 'authorization'],
+      :basic_auth => [:BasicAuthentication, 'basic_authentication'],
+      :token_auth => [:TokenAuthentication, 'token_authentication']
 
     def self.create(request_method)
       new(request_method).tap do |request|

@@ -1,5 +1,6 @@
 require 'forwardable'
 require File.expand_path("../../helper", __FILE__)
+Faraday.require_lib 'autoload'
 
 module Adapters
   # Adapter integration tests. To use, implement two methods:

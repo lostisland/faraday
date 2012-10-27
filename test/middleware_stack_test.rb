@@ -99,12 +99,12 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_unregistered_symbol
-    err = assert_raise(RuntimeError) { build_stack :apple }
+    err = assert_raise(Faraday::Error) { build_stack :apple }
     assert_equal ":apple is not registered on Faraday::Middleware", err.message
   end
 
   def test_registered_symbol
-    Faraday.register_middleware :apple => Apple
+    Faraday::Middleware.register_middleware :apple => Apple
     begin
       build_stack :apple
       assert_handlers %w[Apple]
@@ -114,7 +114,7 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_registered_symbol_with_proc
-    Faraday.register_middleware :apple => lambda { Apple }
+    Faraday::Middleware.register_middleware :apple => lambda { Apple }
     begin
       build_stack :apple
       assert_handlers %w[Apple]
@@ -123,13 +123,14 @@ class MiddlewareStackTest < Faraday::TestCase
     end
   end
 
-  def test_registered_symbol_with_type
-    Faraday.register_middleware :request, :orange => Orange
+  def test_registered_symbol_with_array
+    Faraday::Middleware.register_middleware File.expand_path("..", __FILE__),
+      :strawberry => [lambda { Strawberry }, 'strawberry']
     begin
-      build_stack {|b| b.request :orange }
-      assert_handlers %w[Orange]
+      build_stack :strawberry
+      assert_handlers %w[Strawberry]
     ensure
-      unregister_middleware Faraday::Request, :orange
+      unregister_middleware Faraday::Middleware, :strawberry
     end
   end
 
