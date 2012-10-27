@@ -13,9 +13,7 @@ module Faraday
       # Override this to modify the environment after the response has finished.
       # Calls the `parse` method if defined
       def on_complete(env)
-        if respond_to? :parse
-          env[:body] = parse(env[:body]) unless [204,304].index env[:status]
-        end
+        env.body = parse(env.body) if respond_to?(:parse) && env.parse_body?
       end
     end
 
@@ -27,24 +25,25 @@ module Faraday
       :logger => [:Logger, 'logger']
 
     def initialize(env = nil)
-      @env = env
+      @env = Env.from(env) if env
       @on_complete_callbacks = []
     end
 
     attr_reader :env
-    alias_method :to_hash, :env
+
+    def_delegators :env, :to_hash
 
     def status
-      finished? ? env[:status] : nil
+      finished? ? env.status : nil
     end
 
     def headers
-      finished? ? env[:response_headers] : {}
+      finished? ? env.response_headers : {}
     end
     def_delegator :headers, :[]
 
     def body
-      finished? ? env[:body] : nil
+      finished? ? env.body : nil
     end
 
     def finished?
@@ -62,33 +61,34 @@ module Faraday
 
     def finish(env)
       raise "response already finished" if finished?
-      @env = env
+      @env = Env.from(env)
       @on_complete_callbacks.each { |callback| callback.call(env) }
       return self
     end
 
     def success?
-      (200..299).include?(status)
+      finished? && env.success?
     end
 
     # because @on_complete_callbacks cannot be marshalled
     def marshal_dump
       !finished? ? nil : {
-        :status => @env[:status], :body => @env[:body],
-        :response_headers => @env[:response_headers]
+        :status => @env.status, :body => @env.body,
+        :response_headers => @env.response_headers
       }
     end
 
     def marshal_load(env)
-      @env = env
+      @env = Env.from(env)
     end
 
     # Expand the env with more properties, without overriding existing ones.
     # Useful for applying request params after restoring a marshalled Response.
     def apply_request(request_env)
       raise "response didn't finish yet" unless finished?
-      @env = request_env.merge @env
+      @env = Env.from(request_env).merge(@env)
       return self
     end
   end
 end
+

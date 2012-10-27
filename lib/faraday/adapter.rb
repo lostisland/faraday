@@ -33,18 +33,13 @@ module Faraday
     self.supports_parallel = false
 
     def call(env)
-      if !env[:body] and Connection::METHODS_WITH_BODIES.include? env[:method]
-        # play nice and indicate we're sending an empty body
-        env[:request_headers][CONTENT_LENGTH] = "0"
-        # Typhoeus hangs on PUT requests if body is nil
-        env[:body] = ''
-      end
+      env.clear_body if env.needs_body?
     end
 
     def save_response(env, status, body, headers = nil)
-      env[:status] = status
-      env[:body] = body
-      env[:response_headers] = Utils::Headers.new.tap do |response_headers|
+      env.status = status
+      env.body = body
+      env.response_headers = Utils::Headers.new.tap do |response_headers|
         response_headers.update headers unless headers.nil?
         yield response_headers if block_given?
       end

@@ -35,7 +35,7 @@ module Faraday
           :method  => env[:method],
           :body    => env[:body],
           :headers => env[:request_headers],
-          :disable_ssl_peer_verification => (env[:ssl] && !env[:ssl].fetch(:verify, true))
+          :disable_ssl_peer_verification => (env[:ssl] && env[:ssl].verify?)
 
         configure_ssl     req, env
         configure_proxy   req, env
@@ -65,8 +65,8 @@ module Faraday
         ssl = env[:ssl]
 
         req.ssl_version = ssl[:version]          if ssl[:version]
-        req.ssl_cert    = ssl[:client_cert_file] if ssl[:client_cert_file]
-        req.ssl_key     = ssl[:client_key_file]  if ssl[:client_key_file]
+        req.ssl_cert    = ssl[:client_cert] if ssl[:client_cert]
+        req.ssl_key     = ssl[:client_key]  if ssl[:client_key]
         req.ssl_cacert  = ssl[:ca_file]          if ssl[:ca_file]
         req.ssl_capath  = ssl[:ca_path]          if ssl[:ca_path]
       end
@@ -88,7 +88,7 @@ module Faraday
         req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
         req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
       end
-      
+
       def configure_socket(req, env)
         if bind = request_options(env)[:bind]
           req.interface = bind[:host]
