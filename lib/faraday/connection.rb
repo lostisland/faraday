@@ -365,7 +365,7 @@ module Faraday
         yield req if block_given?
       end
 
-      env = request.to_env(self)
+      env = builder.build_env(self, request)
       self.app.call(env)
     end
 
