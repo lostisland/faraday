@@ -14,19 +14,22 @@ module Faraday
     end
 
     def request(key, *args, &block)
-      add_before_handler(key, args, block)
+      raise_if_locked
+      @before << Handler.new(key, args, block)
     end
 
     def response(key, *args, &block)
-      add_after_handler(key, args, block)
+      raise_if_locked
+      @after << Handler.new(key, args, block)
     end
 
     def streaming_response(key, *args, &block)
-      add_streaming_handler(key, args, block)
+      raise_if_locked
+      @streaming << Handler.new(key, args, block)
     end
 
     def adapter(key, *args, &block)
-      set_adapter_handler(key, args, block)
+      @current_adapter = Handler.new(key, args, block)
     end
 
     def build_response(connection, request)
@@ -93,30 +96,6 @@ module Faraday
 
     def meta_class
       @meta_class ||= class << self; self; end
-    end
-
-    def add_before_handler(*args)
-      handler = handler_for(*args)
-      @before << handler
-    end
-
-    def add_after_handler(*args)
-      handler = handler_for(*args)
-      @after << handler
-    end
-
-    def add_streaming_handler(*args)
-      handler = handler_for(*args)
-      @streaming << handler
-    end
-
-    def set_adapter_handler(*args)
-      handler = handler_for(*args)
-      @current_adapter = handler
-    end
-
-    def handler_for(key, args, block)
-      Handler.new(key, args, block)
     end
 
     def raise_if_locked
