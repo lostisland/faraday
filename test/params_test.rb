@@ -1,16 +1,6 @@
 require File.expand_path('../helper', __FILE__)
 
-class ParamsTest < Faraday::TestCase
-  def create_connection(*args)
-    @conn = Faraday::Connection.new(*args) do |conn|
-      yield conn if block_given?
-      class << conn.builder
-        undef app
-        def app() lambda { |env| env } end
-      end
-    end
-  end
-
+module ParamTests
   def get(*args)
     env = @conn.get(*args) do |req|
       yield req if block_given?
