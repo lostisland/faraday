@@ -16,8 +16,20 @@ class CallbackBuilderTest < Faraday::TestCase
     end
 
     def on_response(res)
-      @response = res
+      @response ||= res
       res.body.upcase!
+    end
+  end
+
+  class StreamingUpcaser < Upcaser
+    def initialize(builder, &block)
+      super(builder)
+      @callback = block
+    end
+
+    def on_response_chunk(res, chunk, size)
+      @response = res
+      @callback.call(chunk.upcase, size)
     end
   end
 
@@ -27,13 +39,30 @@ class CallbackBuilderTest < Faraday::TestCase
     end
 
     def call(req)
-      @builder.run_request_callbacks(req)
+      @builder.on_request(req)
 
-      res = Faraday::Response.new :status => 200, :body => 'booya',
+      res = response(req)
+
+      @builder.on_response(res)
+
+      res
+    end
+
+    def response(req)
+      Faraday::Response.new :status => 200, :body => 'booya',
+        :response_headers => {"Content-Type" => "text/plain",
+        'X-Body' => req.body}
+    end
+  end
+
+  class StreamingAdapter < Adapter
+    def response(req)
+      res = Faraday::Response.new :status => 200, :body => nil,
         :response_headers => {"Content-Type" => "text/plain",
         'X-Body' => req.body}
 
-      @builder.run_response_callbacks(res)
+      @builder.on_response_chunk(res, 'boo', 3)
+      @builder.on_response_chunk(res, 'ya', 5)
 
       res
     end
@@ -63,6 +92,25 @@ class CallbackBuilderTest < Faraday::TestCase
     res = builder.build_response(nil, req)
     assert_equal 'YOLO', res['X-Body']
     assert_equal 'BOOYA', res.body
+  end
+
+  def test_performs_streaming_request
+    streamed = []
+
+    builder = build do |b|
+      b.request StreamingUpcaser
+      b.streaming_response StreamingUpcaser do |chunk, size|
+        streamed << [chunk, size]
+      end
+      b.adapter StreamingAdapter
+    end
+
+    req = Faraday::Request.new
+    req.body = 'yolo'
+    res = builder.build_response(nil, req)
+    assert_equal 'YOLO', res['X-Body']
+    assert_nil res.body
+    assert_equal [['BOO', 3], ['YA', 5]], streamed
   end
 
   def test_initializes_with_empty_callbacks

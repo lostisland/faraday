@@ -5,9 +5,10 @@ module Faraday
 
     attr_reader :current_adapter, :before, :after
 
-    def initialize(adapter = nil, before = nil, after = nil)
+    def initialize(adapter = nil, before = nil, after = nil, streaming = nil)
       @before = Array(before)
       @after = Array(after)
+      @streaming = Array(streaming)
       @current_adapter = adapter
     end
 
@@ -17,6 +18,10 @@ module Faraday
 
     def response(key, *args, &block)
       add_after_handler(key, args, block)
+    end
+
+    def streaming_response(key, *args, &block)
+      add_streaming_handler(key, args, block)
     end
 
     def adapter(key, *args, &block)
@@ -32,6 +37,7 @@ module Faraday
       unless options && options[:keep]
         @before.clear
         @after.clear
+        @streaming.clear
       end
       yield self if block_given?
     end
@@ -39,18 +45,23 @@ module Faraday
     def lock!
       @before.freeze
       @after.freeze
+      @streaming.freeze
     end
 
     def locked?
-      @before.frozen? || @after.frozen?
+      @before.frozen? || @after.frozen? || @streaming.frozen?
     end
 
-    def run_request_callbacks(request)
+    def on_request(request)
       @before.each { |handler| handler.on_request(self, request) }
     end
 
-    def run_response_callbacks(response)
+    def on_response(response)
       @after.each { |handler| handler.on_response(self, response) }
+    end
+
+    def on_response_chunk(response, chunk, size)
+      @streaming.each { |handler| handler.on_response_chunk(self, response, chunk, size) }
     end
 
   private
@@ -63,6 +74,11 @@ module Faraday
     def add_after_handler(*args)
       handler = handler_for(*args)
       @after << handler
+    end
+
+    def add_streaming_handler(*args)
+      handler = handler_for(*args)
+      @streaming << handler
     end
 
     def set_adapter_handler(*args)
@@ -82,12 +98,16 @@ module Faraday
       class Invalid < RuntimeError; end
       class BuilderMismatch < RuntimeError; end
 
-      def on_request(builder, req)
-        inner_handler(builder).on_request(req)
+      def on_request(builder, request)
+        inner_handler(builder).on_request(request)
       end
 
-      def on_response(builder, res)
-        inner_handler(builder).on_response(res)
+      def on_response(builder, response)
+        inner_handler(builder).on_response(response)
+      end
+
+      def on_response_chunk(builder, response, chunk, size)
+        inner_handler(builder).on_response_chunk(response, chunk, size)
       end
 
       def call(builder, req)
