@@ -75,7 +75,7 @@ class MiddlewareStackTest < Faraday::TestCase
     @conn.get('/')
     assert @builder.locked?
 
-    assert_raises Faraday::Builder::StackLocked do
+    assert_raises Faraday::RackBuilder::StackLocked do
       @conn.use Orange
     end
   end
@@ -95,7 +95,7 @@ class MiddlewareStackTest < Faraday::TestCase
     build_stack Apple
     assert_equal @builder.handlers.first, Apple
     assert_equal @builder.handlers[0,1], [Apple]
-    assert_equal @builder.handlers.first, Faraday::Builder::Handler.new(Apple)
+    assert_equal @builder.handlers.first, Faraday::RackBuilder::Handler.new(Apple)
   end
 
   def test_unregistered_symbol

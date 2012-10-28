@@ -1,11 +1,12 @@
 module Faraday
-  # Possibly going to extend this a bit.
+  # A Builder that processes requests into responses by passing through an inner
+  # middleware stack (heavily inspired by Rack).
   #
-  # Faraday::Connection.new(:url => 'http://sushi.com') do |builder|
-  #   builder.request  :url_encoded  # Faraday::Request::UrlEncoded
-  #   builder.adapter  :net_http     # Faraday::Adapter::NetHttp
-  # end
-  class Builder
+  #   Faraday::Connection.new(:url => 'http://sushi.com') do |builder|
+  #     builder.request  :url_encoded  # Faraday::Request::UrlEncoded
+  #     builder.adapter  :net_http     # Faraday::Adapter::NetHttp
+  #   end
+  class RackBuilder
     attr_accessor :handlers
 
     # Error raised when trying to modify the stack after calling `lock!`

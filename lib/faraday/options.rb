@@ -138,7 +138,7 @@ module Faraday
     end
 
     def builder_class
-      self[:builder_class] ||= Builder
+      self[:builder_class] ||= RackBuilder
     end
 
     def new_builder(block)

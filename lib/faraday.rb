@@ -214,7 +214,7 @@ module Faraday
     end
   end
 
-  require_libs "utils", "options", "connection", "builder", "parameters",
+  require_libs "utils", "options", "connection", "rack_builder", "parameters",
     "middleware", "adapter", "request", "response", "upload_io", "error"
 end
 
