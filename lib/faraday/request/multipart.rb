@@ -1,3 +1,5 @@
+require File.expand_path("../url_encoded", __FILE__)
+
 module Faraday
   class Request::Multipart < Request::UrlEncoded
     self.mime_type = 'multipart/form-data'.freeze
