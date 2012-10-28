@@ -100,26 +100,7 @@ module Faraday
 
     extend Forwardable
 
-    def_delegators :builder, :build, :use, :request, :response, :adapter
-
-    # The "rack app" wrapped in middleware. All requests are sent here.
-    #
-    # The builder is responsible for creating the app object. After this,
-    # the builder gets locked to ensure no further modifications are made
-    # to the middleware stack.
-    #
-    # Returns an object that responds to `call` and returns a Response.
-    def app
-      @app ||= begin
-        builder.lock!
-        builder.to_app(lambda { |env|
-          # the inner app that creates and returns the Response object
-          response = Response.new
-          response.finish(env) unless env.parallel?
-          env.response = response
-        })
-      end
-    end
+    def_delegators :builder, :build, :use, :request, :response, :adapter, :app
 
     # Public: Makes an HTTP request without a body.
     #

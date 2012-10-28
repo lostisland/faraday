@@ -73,6 +73,17 @@ module Faraday
       self.class.new(@handlers.dup)
     end
 
+    def app
+      @app ||= begin
+        lock!
+        to_app(lambda { |env|
+          response = Response.new
+          response.finish(env) unless env.parallel?
+          env.response = response
+        })
+      end
+    end
+
     def to_app(inner_app)
       # last added handler is the deepest and thus closest to the inner app
       @handlers.reverse.inject(inner_app) { |app, handler| handler.build(app) }
