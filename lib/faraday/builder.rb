@@ -123,6 +123,17 @@ module Faraday
       @handlers.delete(handler)
     end
 
+    # Processes a Request into a Response by passing it through this Builder's
+    # middleware stack.
+    #
+    # connection - Faraday::Connection
+    # request    - Faraday::Request
+    #
+    # Returns a Faraday::Response.
+    def build_response(connection, request)
+      app.call(build_env(connection, request))
+    end
+
     # The "rack app" wrapped in middleware. All requests are sent here.
     #
     # The builder is responsible for creating the app object. After this,

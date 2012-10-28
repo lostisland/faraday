@@ -316,7 +316,7 @@ class TestRequestParams < Faraday::TestCase
   def create_connection(*args)
     @conn = Faraday::Connection.new(*args) do |conn|
       yield conn if block_given?
-      class << conn
+      class << conn.builder
         undef app
         def app() lambda { |env| env } end
       end
