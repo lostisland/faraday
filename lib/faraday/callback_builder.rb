@@ -65,11 +65,12 @@ module Faraday
       end
 
       # don't lock a builder twice
-      meta_class.send(:alias_method, :lock!, :noop)
+      meta_class.send(:alias_method, :lock!, :lock_noop)
+      meta_class.send(:alias_method, :locked?, :lock_noop)
     end
 
     def locked?
-      @before.frozen? || @after.frozen? || @streaming.frozen?
+      false
     end
 
     def on_request(request)
@@ -89,10 +90,11 @@ module Faraday
     def callback_noop(a, b = nil, c = nil)
     end
 
-  private
-
-    def noop
+    def lock_noop
+      true
     end
+
+  private
 
     def meta_class
       @meta_class ||= class << self; self; end
