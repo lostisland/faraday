@@ -65,30 +65,6 @@ module Faraday
       @handlers[idx]
     end
 
-    def ==(other)
-      other.is_a?(self.class) && @handlers == other.handlers
-    end
-
-    def dup
-      self.class.new(@handlers.dup)
-    end
-
-    def app
-      @app ||= begin
-        lock!
-        to_app(lambda { |env|
-          response = Response.new
-          response.finish(env) unless env.parallel?
-          env.response = response
-        })
-      end
-    end
-
-    def to_app(inner_app)
-      # last added handler is the deepest and thus closest to the inner app
-      @handlers.reverse.inject(inner_app) { |app, handler| handler.build(app) }
-    end
-
     # Locks the middleware stack to ensure no further modifications are possible.
     def lock!
       @handlers.freeze
@@ -145,6 +121,37 @@ module Faraday
     def delete(handler)
       raise_if_locked
       @handlers.delete(handler)
+    end
+
+    # The "rack app" wrapped in middleware. All requests are sent here.
+    #
+    # The builder is responsible for creating the app object. After this,
+    # the builder gets locked to ensure no further modifications are made
+    # to the middleware stack.
+    #
+    # Returns an object that responds to `call` and returns a Response.
+    def app
+      @app ||= begin
+        lock!
+        to_app(lambda { |env|
+          response = Response.new
+          response.finish(env) unless env.parallel?
+          env.response = response
+        })
+      end
+    end
+
+    def to_app(inner_app)
+      # last added handler is the deepest and thus closest to the inner app
+      @handlers.reverse.inject(inner_app) { |app, handler| handler.build(app) }
+    end
+
+    def ==(other)
+      other.is_a?(self.class) && @handlers == other.handlers
+    end
+
+    def dup
+      self.class.new(@handlers.dup)
     end
 
     private
