@@ -27,9 +27,15 @@ class CallbackBuilderTest < Faraday::TestCase
     end
 
     def call(req)
-      Faraday::Response.new :status => 200, :body => 'booya',
+      @builder.run_request_callbacks(req)
+
+      res = Faraday::Response.new :status => 200, :body => 'booya',
         :response_headers => {"Content-Type" => "text/plain",
         'X-Body' => req.body}
+
+      @builder.run_response_callbacks(res)
+
+      res
     end
   end
 

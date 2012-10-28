@@ -1,4 +1,5 @@
 module Faraday
+  # A Builder that processes requests into responses wit
   class CallbackBuilder
     class StackLocked < RuntimeError; end
 
@@ -23,10 +24,7 @@ module Faraday
     end
 
     def build_response(connection, request)
-      run_request_callbacks(request)
-      response = @current_adapter.call(self, request)
-      run_response_callbacks(response)
-      response
+      @current_adapter.call(self, request)
     end
 
     def build(options = nil)
@@ -47,7 +45,6 @@ module Faraday
       @before.frozen? || @after.frozen?
     end
 
-  private
     def run_request_callbacks(request)
       @before.each { |handler| handler.on_request(self, request) }
     end
@@ -55,6 +52,8 @@ module Faraday
     def run_response_callbacks(response)
       @after.each { |handler| handler.on_response(self, response) }
     end
+
+  private
 
     def add_before_handler(*args)
       handler = handler_for(*args)
