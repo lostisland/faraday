@@ -115,19 +115,20 @@ module Faraday
       end
 
       def inner_handler(builder)
-        if @inner_handler
-          if builder != @inner_handler.builder
-            raise BuilderMismatch, "Builders don't match"
-          end
-          @inner_handler
-        else
-          @inner_handler = klass.new(builder, *args, &block)
-        end
+        @inner_handler ||= klass.new(*args, &block)
+        ensure_builder(builder) if @inner_handler.respond_to?(:builder)
+        @inner_handler
       end
 
     private
-      def raise_if_builder_mismatch(builder)
-        raise BuilderMismatch, "Builders don't match" if builder != inner_handler.builder
+      def ensure_builder(builder)
+        if set_builder = @inner_handler.builder
+          if builder != set_builder
+            raise BuilderMismatch, "Builders don't match"
+          end
+        else
+          @inner_handler.builder = builder
+        end
       end
     end
   end

@@ -3,40 +3,27 @@ Faraday.require_lib 'callback_builder'
 
 class CallbackBuilderTest < Faraday::TestCase
   class Upcaser
-    attr_reader :builder
-    attr_writer :request, :response
-
-    def initialize(builder)
-      @builder = builder
-    end
-
     def on_request(req)
-      @request = req
       req.body.upcase!
     end
 
     def on_response(res)
-      @response ||= res
       res.body.upcase!
     end
   end
 
   class StreamingUpcaser < Upcaser
-    def initialize(builder, &block)
-      super(builder)
+    def initialize(&block)
       @callback = block
     end
 
     def on_response_chunk(res, chunk, size)
-      @response = res
       @callback.call(chunk.upcase, size)
     end
   end
 
   class Adapter
-    def initialize(builder)
-      @builder = builder
-    end
+    attr_accessor :builder
 
     def call(req)
       @builder.on_request(req)
