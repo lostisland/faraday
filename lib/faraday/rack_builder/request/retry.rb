@@ -12,7 +12,7 @@ module Faraday
   #                          exceptions: [CustomException, 'Timeout::Error']
   #     conn.adapter ...
   #   end
-  class Request::Retry < Faraday::Middleware
+  class RackBuilder::Request::Retry < Faraday::Middleware
     class Options < Faraday::Options.new(:max, :interval, :exceptions)
       def self.from(value)
         if Fixnum === value

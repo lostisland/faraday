@@ -1,5 +1,5 @@
 module Faraday
-  class Request::Authorization < Faraday::Middleware
+  class RackBuilder::Request::Authorization < Faraday::Middleware
     KEY = "Authorization".freeze
 
     # Public

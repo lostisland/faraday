@@ -82,7 +82,7 @@ class RequestMiddlewareTest < Faraday::TestCase
     response = @conn.post('/echo', payload)
 
     assert_kind_of Faraday::CompositeReadIO, response.body
-    assert_equal "multipart/form-data;boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
+    assert_equal "multipart/form-data;boundary=%s" % Faraday::RackBuilder::Request::Multipart::DEFAULT_BOUNDARY,
       response.headers['Content-Type']
 
     response.body.send(:ios).map{|io| io.read}.each do |io|
@@ -92,7 +92,7 @@ class RequestMiddlewareTest < Faraday::TestCase
     end
     assert_equal [], regexes
   end
-  
+
   def test_multipart_with_arrays
     # assume params are out of order
     regexes = [
@@ -104,7 +104,7 @@ class RequestMiddlewareTest < Faraday::TestCase
     response = @conn.post('/echo', payload)
 
     assert_kind_of Faraday::CompositeReadIO, response.body
-    assert_equal "multipart/form-data;boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
+    assert_equal "multipart/form-data;boundary=%s" % Faraday::RackBuilder::Request::Multipart::DEFAULT_BOUNDARY,
       response.headers['Content-Type']
 
     response.body.send(:ios).map{|io| io.read}.each do |io|

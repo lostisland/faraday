@@ -85,15 +85,19 @@ module Faraday
     end
 
     def request(key, *args, &block)
-      use_symbol(Faraday::Request, key, *args, &block)
+      use_symbol(Faraday::RackBuilder::Request, key, *args, &block)
     end
 
     def response(key, *args, &block)
-      use_symbol(Faraday::Response, key, *args, &block)
+      use_symbol(Faraday::RackBuilder::Response, key, *args, &block)
     end
 
     def adapter(key, *args, &block)
       use_symbol(Faraday::Adapter, key, *args, &block)
+    end
+
+    def request_middleware(key)
+      Faraday::RackBuilder::Request.lookup_middleware(key)
     end
 
     ## methods to push onto the various positions in the stack:
@@ -146,7 +150,7 @@ module Faraday
       @app ||= begin
         lock!
         to_app(lambda { |env|
-          response = Response.new
+          response = Faraday::Response.new
           response.finish(env) unless env.parallel?
           env.response = response
         })
@@ -205,4 +209,6 @@ module Faraday
       idx
     end
   end
+
+  require_libs *%w(request response).map { |suffix| "rack_builder/#{suffix}" }
 end

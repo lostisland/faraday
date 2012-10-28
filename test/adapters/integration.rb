@@ -200,7 +200,7 @@ module Adapters
         Faraday::Connection.new(url, options, &builder_block).tap do |conn|
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
           adapter_handler = conn.builder.handlers.last
-          conn.builder.insert_before adapter_handler, Faraday::Response::RaiseError
+          conn.builder.insert_before adapter_handler, Faraday::RackBuilder::Response::RaiseError
         end
       end
     end

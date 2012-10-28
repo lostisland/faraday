@@ -22,7 +22,7 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_sets_default_adapter_if_none_set
-    default_middleware = Faraday::Request.lookup_middleware :url_encoded
+    default_middleware = Faraday::RackBuilder::Request.lookup_middleware :url_encoded
     default_adapter_klass = Faraday::Adapter.lookup_middleware Faraday.default_adapter
     assert @builder[0] == default_middleware
     assert @builder[1] == default_adapter_klass

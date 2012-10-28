@@ -1,7 +1,8 @@
 require 'base64'
+require File.expand_path("../authorization", __FILE__)
 
 module Faraday
-  class Request::BasicAuthentication < Request::Authorization
+  class RackBuilder::Request::BasicAuthentication < RackBuilder::Request::Authorization
     # Public
     def self.header(login, pass)
       value = Base64.encode64([login, pass].join(':'))

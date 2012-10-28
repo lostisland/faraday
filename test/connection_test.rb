@@ -84,7 +84,7 @@ class TestConnection < Faraday::TestCase
   def test_auto_parses_basic_auth_from_url_and_unescapes
     conn = Faraday::Connection.new :url => "http://foo%40bar.com:pass%20word@sushi.com/fish"
     assert auth = conn.headers['Authorization']
-    assert_equal Faraday::Request::BasicAuthentication.header("foo@bar.com", "pass word"), auth
+    assert_equal Faraday::RackBuilder::Request::BasicAuthentication.header("foo@bar.com", "pass word"), auth
   end
 
   def test_token_auth_sets_header

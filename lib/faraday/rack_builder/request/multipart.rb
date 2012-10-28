@@ -1,7 +1,7 @@
 require File.expand_path("../url_encoded", __FILE__)
 
 module Faraday
-  class Request::Multipart < Request::UrlEncoded
+  class RackBuilder::Request::Multipart < RackBuilder::Request::UrlEncoded
     self.mime_type = 'multipart/form-data'.freeze
     DEFAULT_BOUNDARY = "-----------RubyMultipartPost".freeze
 

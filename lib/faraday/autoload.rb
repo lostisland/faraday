@@ -63,9 +63,9 @@ module Faraday
       :HTTPClient        => 'httpclient'
   end
 
-  class Request
+  module RackBuilder::Request
     extend AutoloadHelper
-    autoload_all 'faraday/request',
+    autoload_all 'faraday/rack_builder/request',
       :UrlEncoded => 'url_encoded',
       :Multipart => 'multipart',
       :Retry => 'retry',
@@ -75,9 +75,9 @@ module Faraday
       :TokenAuthentication => 'token_authentication'
   end
 
-  class Response
+  module RackBuilder::Response
     extend AutoloadHelper
-    autoload_all 'faraday/response',
+    autoload_all 'faraday/rack_builder/response',
       :RaiseError => 'raise_error',
       :Logger     => 'logger'
   end
