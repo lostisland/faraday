@@ -12,6 +12,7 @@ group :test do
   gem 'net-http-persistent', '~> 2.5', :require => false
   gem 'leftright', '~> 0.9', :require => false
   gem 'rack-test', '~> 0.6', :require => 'rack/test'
+  gem 'test-unit', '2.4.5', :platforms => :ruby_19
 end
 
 platforms :ruby do
