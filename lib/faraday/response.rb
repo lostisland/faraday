@@ -2,21 +2,6 @@ require 'forwardable'
 
 module Faraday
   class Response
-    # Used for simple response middleware.
-    class Middleware < Faraday::Middleware
-      def call(env)
-        @app.call(env).on_complete do |environment|
-          on_complete(environment)
-        end
-      end
-
-      # Override this to modify the environment after the response has finished.
-      # Calls the `parse` method if defined
-      def on_complete(env)
-        env.body = parse(env.body) if respond_to?(:parse) && env.parse_body?
-      end
-    end
-
     extend Forwardable
 
     def initialize(env = nil)

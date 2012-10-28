@@ -1,5 +1,5 @@
-module Faraday
-  class RackBuilder::Request::UrlEncoded < Faraday::Middleware
+class Faraday::RackBuilder
+  class Request::UrlEncoded < Middleware
     CONTENT_TYPE = 'Content-Type'.freeze
 
     class << self

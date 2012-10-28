@@ -1,6 +1,6 @@
-require 'faraday/adapter/net_http'
+require File.expand_path("../net_http", __FILE__)
 
-module Faraday
+class Faraday::RackBuilder
   class Adapter
     # Experimental adapter for net-http-persistent
     class NetHttpPersistent < NetHttp

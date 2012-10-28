@@ -1,6 +1,6 @@
-module Faraday
+class Faraday::RackBuilder
   class Adapter
-    class HTTPClient < Faraday::Adapter
+    class HTTPClient < self
       dependency 'httpclient'
 
       def client

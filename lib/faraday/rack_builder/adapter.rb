@@ -1,10 +1,10 @@
-module Faraday
+class Faraday::RackBuilder
   # Public: This is a base class for all Faraday adapters.  Adapters are
   # responsible for fulfilling a Faraday request.
   class Adapter < Middleware
     CONTENT_LENGTH = 'Content-Length'.freeze
 
-    extend MiddlewareRegistry
+    extend Faraday::MiddlewareRegistry
 
     register_middleware File.expand_path('../adapter', __FILE__),
       :test => [:Test, 'test'],
@@ -39,7 +39,7 @@ module Faraday
     def save_response(env, status, body, headers = nil)
       env.status = status
       env.body = body
-      env.response_headers = Utils::Headers.new.tap do |response_headers|
+      env.response_headers = Faraday::Utils::Headers.new.tap do |response_headers|
         response_headers.update headers unless headers.nil?
         yield response_headers if block_given?
       end

@@ -215,7 +215,7 @@ module Faraday
   end
 
   require_libs "utils", "options", "connection", "rack_builder", "parameters",
-    "middleware", "adapter", "request", "response", "upload_io", "error"
+    "request", "response", "upload_io", "error"
 end
 
 # not pulling in active-support JUST for this method.  And I love this method.

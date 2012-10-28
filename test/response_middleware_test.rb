@@ -12,7 +12,7 @@ class ResponseMiddlewareTest < Faraday::TestCase
     end
   end
 
-  class ResponseUpcaser < Faraday::Response::Middleware
+  class ResponseUpcaser < Faraday::RackBuilder::Response::Middleware
     def parse(body)
       body.upcase
     end
@@ -58,7 +58,7 @@ class ResponseNoBodyMiddleWareTest < Faraday::TestCase
     @conn.builder.insert(0, NotCalled)
   end
 
-  class NotCalled < Faraday::Response::Middleware
+  class NotCalled < Faraday::RackBuilder::Response::Middleware
     def parse(body)
       raise "this should not be called"
     end

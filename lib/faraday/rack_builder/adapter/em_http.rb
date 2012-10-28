@@ -1,9 +1,9 @@
-module Faraday
+class Faraday::RackBuilder
   class Adapter
     # EventMachine adapter is useful for either asynchronous requests
     # when in EM reactor loop or for making parallel requests in
     # synchronous code.
-    class EMHttp < Faraday::Adapter
+    class EMHttp < self
       module Options
         def connection_config(env)
           options = {}

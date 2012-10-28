@@ -1,6 +1,6 @@
-module Faraday
+class Faraday::RackBuilder
   class Adapter
-    class Excon < Faraday::Adapter
+    class Excon < self
       dependency 'excon'
 
       def initialize(app, connection_options = {})
@@ -47,12 +47,12 @@ module Faraday
         @app.call env
       rescue ::Excon::Errors::SocketError => err
         if err.message =~ /\btimeout\b/
-          raise Error::TimeoutError, err
+          raise Faraday::Error::TimeoutError, err
         else
-          raise Error::ConnectionFailed, err
+          raise Faraday::Error::ConnectionFailed, err
         end
       rescue ::Excon::Errors::Timeout => err
-        raise Error::TimeoutError, err
+        raise Faraday::Error::TimeoutError, err
       end
 
       # TODO: support streaming requests

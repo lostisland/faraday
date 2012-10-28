@@ -1,6 +1,6 @@
-module Faraday
+class Faraday::RackBuilder
   class Middleware
-    extend MiddlewareRegistry
+    extend Faraday::MiddlewareRegistry
 
     class << self
       attr_accessor :load_error

@@ -1,7 +1,7 @@
 require 'forwardable'
 
-module Faraday
-  class RackBuilder::Response::Logger < Faraday::Response::Middleware
+class Faraday::RackBuilder
+  class Response::Logger < Response::Middleware
     extend Forwardable
 
     def initialize(app, logger = nil)

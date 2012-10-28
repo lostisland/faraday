@@ -6,9 +6,9 @@ rescue LoadError
 end
 require 'zlib'
 
-module Faraday
+class Faraday::RackBuilder
   class Adapter
-    class NetHttp < Faraday::Adapter
+    class NetHttp < self
       NET_HTTP_EXCEPTIONS = [
         EOFError,
         Errno::ECONNABORTED,

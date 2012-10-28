@@ -1,5 +1,5 @@
-module Faraday
-  class RackBuilder::Response::RaiseError < Faraday::Response::Middleware
+class Faraday::RackBuilder
+  class Response::RaiseError < Response::Middleware
     ClientErrorStatuses = 400...600
 
     def on_complete(env)

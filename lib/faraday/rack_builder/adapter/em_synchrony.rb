@@ -1,8 +1,8 @@
 require 'uri'
 
-module Faraday
+class Faraday::RackBuilder
   class Adapter
-    class EMSynchrony < Faraday::Adapter
+    class EMSynchrony < self
       include EMHttp::Options
 
       dependency do
@@ -67,7 +67,7 @@ module Faraday
   end
 end
 
-require 'faraday/adapter/em_synchrony/parallel_manager'
+require File.expand_path("../em_synchrony/parallel_manager", __FILE__)
 
 # add missing patch(), options() methods
 EventMachine::HTTPMethods.module_eval do

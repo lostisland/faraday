@@ -12,7 +12,7 @@ class MiddlewareStackTest < Faraday::TestCase
   class Orange < Handler; end
   class Banana < Handler; end
 
-  class Broken < Faraday::Middleware
+  class Broken < Faraday::RackBuilder::Middleware
     dependency 'zomg/i_dont/exist'
   end
 
@@ -23,7 +23,7 @@ class MiddlewareStackTest < Faraday::TestCase
 
   def test_sets_default_adapter_if_none_set
     default_middleware = Faraday::RackBuilder::Request.lookup_middleware :url_encoded
-    default_adapter_klass = Faraday::Adapter.lookup_middleware Faraday.default_adapter
+    default_adapter_klass = Faraday::RackBuilder::Adapter.lookup_middleware Faraday.default_adapter
     assert @builder[0] == default_middleware
     assert @builder[1] == default_adapter_klass
   end
@@ -100,37 +100,37 @@ class MiddlewareStackTest < Faraday::TestCase
 
   def test_unregistered_symbol
     err = assert_raise(Faraday::Error) { build_stack :apple }
-    assert_equal ":apple is not registered on Faraday::Middleware", err.message
+    assert_equal ":apple is not registered on Faraday::RackBuilder::Middleware", err.message
   end
 
   def test_registered_symbol
-    Faraday::Middleware.register_middleware :apple => Apple
+    Faraday::RackBuilder::Middleware.register_middleware :apple => Apple
     begin
       build_stack :apple
       assert_handlers %w[Apple]
     ensure
-      unregister_middleware Faraday::Middleware, :apple
+      unregister_middleware Faraday::RackBuilder::Middleware, :apple
     end
   end
 
   def test_registered_symbol_with_proc
-    Faraday::Middleware.register_middleware :apple => lambda { Apple }
+    Faraday::RackBuilder::Middleware.register_middleware :apple => lambda { Apple }
     begin
       build_stack :apple
       assert_handlers %w[Apple]
     ensure
-      unregister_middleware Faraday::Middleware, :apple
+      unregister_middleware Faraday::RackBuilder::Middleware, :apple
     end
   end
 
   def test_registered_symbol_with_array
-    Faraday::Middleware.register_middleware File.expand_path("..", __FILE__),
+    Faraday::RackBuilder::Middleware.register_middleware File.expand_path("..", __FILE__),
       :strawberry => [lambda { Strawberry }, 'strawberry']
     begin
       build_stack :strawberry
       assert_handlers %w[Strawberry]
     ensure
-      unregister_middleware Faraday::Middleware, :strawberry
+      unregister_middleware Faraday::RackBuilder::Middleware, :strawberry
     end
   end
 

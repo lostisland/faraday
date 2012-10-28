@@ -1,6 +1,6 @@
-module Faraday
+class Faraday::RackBuilder
   class Adapter
-    class EMSynchrony < Faraday::Adapter
+    class EMSynchrony
       class ParallelManager
 
         # Add requests to queue. The `request` argument should be a

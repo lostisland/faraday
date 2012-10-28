@@ -1,6 +1,6 @@
-module Faraday
+class Faraday::RackBuilder
   class Adapter
-    class Typhoeus < Faraday::Adapter
+    class Typhoeus < self
       self.supports_parallel = true
 
       def self.setup_parallel_manager(options = {})

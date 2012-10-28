@@ -1,4 +1,4 @@
-module Faraday
+class Faraday::RackBuilder
   class Adapter
     # Sends requests to a Rack app.
     #
@@ -13,7 +13,7 @@ module Faraday
     #   Faraday.new do |conn|
     #     conn.adapter :rack, MyRackApp.new
     #   end
-    class Rack < Faraday::Adapter
+    class Rack < self
       dependency 'rack/test'
 
       # not prefixed with "HTTP_"
@@ -41,7 +41,7 @@ module Faraday
 
         timeout  = env[:request][:timeout] || env[:request][:open_timeout]
         response = if timeout
-          Timer.timeout(timeout, Faraday::Error::TimeoutError) { execute_request(env, rack_env) }
+          Faraday::Timer.timeout(timeout, Faraday::Error::TimeoutError) { execute_request(env, rack_env) }
         else
           execute_request(env, rack_env)
         end

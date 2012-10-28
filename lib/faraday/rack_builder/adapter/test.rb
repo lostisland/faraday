@@ -1,4 +1,4 @@
-module Faraday
+class Faraday::RackBuilder
   class Adapter
     # test = Faraday::Connection.new do
     #   use Faraday::Adapter::Test do |stub|
@@ -11,7 +11,7 @@ module Faraday
     # resp = test.get '/nigiri/sake.json'
     # resp.body # => 'hi world'
     #
-    class Test < Faraday::Adapter
+    class Test < self
       attr_accessor :stubs
 
       class Stubs

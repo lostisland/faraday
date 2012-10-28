@@ -1,4 +1,4 @@
-module Faraday
+class Faraday::RackBuilder
   # Catches exceptions and retries each request a limited number of times.
   #
   # By default, it retries 2 times and handles only timeout exceptions. It can
@@ -12,7 +12,7 @@ module Faraday
   #                          exceptions: [CustomException, 'Timeout::Error']
   #     conn.adapter ...
   #   end
-  class RackBuilder::Request::Retry < Faraday::Middleware
+  class Request::Retry < Middleware
     class Options < Faraday::Options.new(:max, :interval, :exceptions)
       def self.from(value)
         if Fixnum === value
@@ -32,7 +32,7 @@ module Faraday
 
       def exceptions
         Array(self[:exceptions] ||= [Errno::ETIMEDOUT, 'Timeout::Error',
-                                     Error::TimeoutError])
+                                     Faraday::Error::TimeoutError])
       end
 
     end

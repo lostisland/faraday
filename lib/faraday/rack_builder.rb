@@ -77,7 +77,7 @@ module Faraday
 
     def use(klass, *args, &block)
       if klass.is_a? Symbol
-        use_symbol(Faraday::Middleware, klass, *args, &block)
+        use_symbol(Middleware, klass, *args, &block)
       else
         raise_if_locked
         @handlers << self.class::Handler.new(klass, *args, &block)
@@ -85,19 +85,19 @@ module Faraday
     end
 
     def request(key, *args, &block)
-      use_symbol(Faraday::RackBuilder::Request, key, *args, &block)
+      use_symbol(Request, key, *args, &block)
     end
 
     def response(key, *args, &block)
-      use_symbol(Faraday::RackBuilder::Response, key, *args, &block)
+      use_symbol(Response, key, *args, &block)
     end
 
     def adapter(key, *args, &block)
-      use_symbol(Faraday::Adapter, key, *args, &block)
+      use_symbol(Adapter, key, *args, &block)
     end
 
     def request_middleware(key)
-      Faraday::RackBuilder::Request.lookup_middleware(key)
+      Request.lookup_middleware(key)
     end
 
     ## methods to push onto the various positions in the stack:
@@ -210,5 +210,5 @@ module Faraday
     end
   end
 
-  require_libs *%w(request response).map { |suffix| "rack_builder/#{suffix}" }
+  require_libs *%w(middleware adapter request response).map { |suffix| "rack_builder/#{suffix}" }
 end

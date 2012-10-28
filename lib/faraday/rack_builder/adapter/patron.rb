@@ -1,6 +1,6 @@
-module Faraday
+class Faraday::RackBuilder
   class Adapter
-    class Patron < Faraday::Adapter
+    class Patron < self
       dependency 'patron'
 
       def initialize(app, &block)
@@ -19,7 +19,7 @@ module Faraday
         if req = env[:request]
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
           session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
-                    
+
           if proxy = req[:proxy]
             session.proxy = proxy[:uri].to_s
             if proxy[:user] && proxy[:password]
