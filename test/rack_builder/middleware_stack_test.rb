@@ -1,4 +1,4 @@
-require File.expand_path('../helper', __FILE__)
+require File.expand_path('../../helper', __FILE__)
 
 class MiddlewareStackTest < Faraday::TestCase
   # mock handler classes
@@ -17,7 +17,7 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def setup
-    @conn = Faraday::Connection.new
+    @conn = rack_builder_connection
     @builder = @conn.builder
   end
 
@@ -124,7 +124,7 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_registered_symbol_with_array
-    Faraday::RackBuilder::Middleware.register_middleware File.expand_path("..", __FILE__),
+    Faraday::RackBuilder::Middleware.register_middleware File.expand_path("../..", __FILE__),
       :strawberry => [lambda { Strawberry }, 'strawberry']
     begin
       build_stack :strawberry
