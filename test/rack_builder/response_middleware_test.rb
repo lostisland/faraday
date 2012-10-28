@@ -1,8 +1,8 @@
-require File.expand_path('../helper', __FILE__)
+require File.expand_path('../../helper', __FILE__)
 
 class ResponseMiddlewareTest < Faraday::TestCase
   def setup
-    @conn = Faraday.new do |b|
+    @conn = rack_builder_connection do |b|
       b.response :raise_error
       b.adapter :test do |stub|
         stub.get('ok')        { [200, {'Content-Type' => 'text/html'}, '<body></body>'] }
@@ -48,7 +48,7 @@ end
 
 class ResponseNoBodyMiddleWareTest < Faraday::TestCase
   def setup
-    @conn = Faraday.new do |b|
+    @conn = rack_builder_connection do |b|
       b.response :raise_error
       b.adapter :test do |stub|
         stub.get('not_modified') { [304, nil, nil] }

@@ -1,11 +1,11 @@
 # encoding: utf-8
-require File.expand_path('../helper', __FILE__)
+require File.expand_path('../../helper', __FILE__)
 
 Faraday::CompositeReadIO.class_eval { attr_reader :ios }
 
 class RequestMiddlewareTest < Faraday::TestCase
   def setup
-    @conn = Faraday.new do |b|
+    @conn = rack_builder_connection do |b|
       b.request :multipart
       b.request :url_encoded
       b.adapter :test do |stub|

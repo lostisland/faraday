@@ -1,4 +1,4 @@
-require File.expand_path("../../helper", __FILE__)
+require File.expand_path("../../../helper", __FILE__)
 
 module Middleware
   class RetryTest < Faraday::TestCase
@@ -7,7 +7,7 @@ module Middleware
     end
 
     def conn(*retry_args)
-      Faraday.new do |b|
+      rack_builder_connection do |b|
         b.request :retry, *retry_args
         b.adapter :test do |stub|
           stub.post('/unstable') {
