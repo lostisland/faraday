@@ -6,17 +6,7 @@ class RackBuilderParamsTest < Faraday::TestCase
 
   def create_connection(url = nil, options = nil)
     @conn ||= begin
-      if url.is_a?(Hash)
-        options = url
-        url = nil
-      end
-
-      options = Faraday::ConnectionOptions.from(options)
-      options.builder_class = Faraday::RackBuilder
-
-      args = [url, options.to_hash].compact
-
-      Faraday::Connection.new(*args) do |conn|
+      rack_builder_connection(url, options) do |conn|
         yield conn if block_given?
         class << conn.builder
           undef app

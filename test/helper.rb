@@ -84,5 +84,25 @@ module Faraday
     def self.ssl_mode?
       ENV['SSL'] == 'yes'
     end
+
+    def rack_builder_connection(url = nil, options = nil, &block)
+      build_connection_with_options(lambda { |options|
+        options.builder_class = Faraday::RackBuilder
+      }, url, options, &block)
+    end
+
+    def build_connection_with_options(options_proc, url = nil, options = nil, &block)
+      if url.is_a?(Hash)
+        options = url
+        url = nil
+      end
+
+      options = Faraday::ConnectionOptions.from(options)
+      options_proc.call(options)
+
+      args = [url, options.to_hash].compact
+
+      Faraday::Connection.new(*args, &block)
+    end
   end
 end
