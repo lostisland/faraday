@@ -1,10 +1,11 @@
-require File.expand_path('../../helper', __FILE__)
+require File.expand_path('../../../helper', __FILE__)
+Faraday.require_lib 'rack_builder/adapter/test'
 
-module Adapters
+module RackBuilderAdapters
   class TestMiddleware < Faraday::TestCase
     def setup
       @stubs = Faraday::RackBuilder::Adapter::Test::Stubs.new
-      @conn  = Faraday.new do |builder|
+      @conn  = rack_builder_connection do |builder|
         builder.adapter :test, @stubs
       end
       @stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }

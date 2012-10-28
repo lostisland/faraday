@@ -1,11 +1,14 @@
-require File.expand_path('../integration', __FILE__)
+require File.expand_path("../../../adapters_helper", __FILE__)
+Faraday.require_lib 'rack_builder/adapter/em_http'
 
-module Adapters
+module RackBuilderAdapters
   class EMHttpTest < Faraday::TestCase
 
     def adapter() :em_http end
 
-    Integration.apply(self, :Parallel) do
+    alias build_connection rack_builder_connection
+
+    Adapters::Integration.apply(self, :Parallel) do
       # https://github.com/eventmachine/eventmachine/pull/289
       undef :test_timeout
 
@@ -18,3 +21,4 @@ module Adapters
     # https://github.com/eventmachine/eventmachine/issues/180
   end
 end
+

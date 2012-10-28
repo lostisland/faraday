@@ -1,15 +1,16 @@
-require File.expand_path('../../helper', __FILE__)
+require File.expand_path('../../../helper', __FILE__)
+
 require 'stringio'
 require 'logger'
 
-module Adapters
+module RackBuilderAdapters
   class LoggerTest < Faraday::TestCase
     def setup
       @io     = StringIO.new
       @logger = Logger.new(@io)
       @logger.level = Logger::DEBUG
 
-      @conn = Faraday.new do |b|
+      @conn = rack_builder_connection do |b|
         b.response :logger, @logger
         b.adapter :test do |stubs|
           stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }

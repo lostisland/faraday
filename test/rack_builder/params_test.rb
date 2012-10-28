@@ -17,4 +17,3 @@ class RackBuilderParamsTest < Faraday::TestCase
   end
 end
 
-

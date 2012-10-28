@@ -1,7 +1,8 @@
-require File.expand_path("../integration", __FILE__)
-require File.expand_path('../../live_server', __FILE__)
+require File.expand_path("../../../adapters_helper", __FILE__)
+require File.expand_path('../../../live_server', __FILE__)
+Faraday.require_lib 'rack_builder/adapter/rack'
 
-module Adapters
+module RackBuilderAdapters
   class RackTest < Faraday::TestCase
 
     def adapter() :rack end
@@ -10,9 +11,11 @@ module Adapters
       [Faraday::LiveServer]
     end
 
+    alias build_connection rack_builder_connection
+
     # no Integration.apply because this doesn't require a server as a separate process
-    include Integration::Common
-    include Integration::NonParallel
+    include Adapters::Integration::Common
+    include Adapters::Integration::NonParallel
 
     # not using shared test because error is swallowed by Sinatra
     def test_timeout
@@ -24,3 +27,4 @@ module Adapters
     end
   end
 end
+
