@@ -36,7 +36,7 @@ class Faraday::RackBuilder
         begin
           http_response = perform_request(http, env)
         rescue *NET_HTTP_EXCEPTIONS
-          raise Error::ConnectionFailed, $!
+          raise Faraday::Error::ConnectionFailed, $!
         end
 
         save_response(env, http_response.code.to_i, http_response.body || '') do |response_headers|

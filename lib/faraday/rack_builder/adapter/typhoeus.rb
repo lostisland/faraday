@@ -22,7 +22,7 @@ class Faraday::RackBuilder
         hydra.queue request(env)
         hydra.run unless parallel?(env)
       rescue Errno::ECONNREFUSED
-        raise Error::ConnectionFailed, $!
+        raise Faraday::Error::ConnectionFailed, $!
       end
 
       # TODO: support streaming requests
