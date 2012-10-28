@@ -125,7 +125,7 @@ module Faraday
   end
 
   class ConnectionOptions < Options.new(:request, :proxy, :ssl, :builder, :url,
-    :parallel_manager, :params, :headers)
+    :parallel_manager, :params, :headers, :builder_class)
 
     options :request => RequestOptions, :ssl => SSLOptions
 
@@ -135,6 +135,14 @@ module Faraday
 
     def ssl
       self[:ssl] ||= self.class.options_for(:ssl).new
+    end
+
+    def builder_class
+      self[:builder_class] ||= Builder
+    end
+
+    def new_builder(block)
+      builder_class.new(&block)
     end
   end
 

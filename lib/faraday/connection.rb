@@ -45,8 +45,7 @@ module Faraday
     #
     # url     - URI or String base URL to use as a prefix for all
     #           requests (optional).
-    # options - Hash of settings that will be applied to every request made
-    #           from this Connection (default: {}).
+    # options - Hash or Faraday::ConnectionOptions.
     #           :url     - URI or String base URL (default: "http:/").
     #           :params  - Hash of URI query unencoded key/value pairs.
     #           :headers - Hash of unencoded HTTP header key/value pairs.
@@ -74,8 +73,7 @@ module Faraday
 
       @builder = options.builder || begin
         # pass an empty block to Builder so it doesn't assume default middleware
-        block = block_given?? Proc.new {|b| } : nil
-        Builder.new(&block)
+        options.new_builder(block_given? ? Proc.new { |b| } : nil)
       end
 
       self.url_prefix = url || 'http:/'
