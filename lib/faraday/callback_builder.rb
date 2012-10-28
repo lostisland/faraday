@@ -3,13 +3,14 @@ module Faraday
   class CallbackBuilder
     class StackLocked < RuntimeError; end
 
-    attr_reader :current_adapter, :before, :after
+    attr_reader :current_adapter, :before, :after, :has_streaming_callbacks
 
     def initialize(adapter = nil, before = nil, after = nil, streaming = nil)
       @before = Array(before)
       @after = Array(after)
       @streaming = Array(streaming)
       @current_adapter = adapter
+      @has_streaming_callbacks = nil
     end
 
     def request(key, *args, &block)
@@ -29,6 +30,7 @@ module Faraday
     end
 
     def build_response(connection, request)
+      lock!
       @current_adapter.call(self, request)
     end
 
@@ -43,9 +45,24 @@ module Faraday
     end
 
     def lock!
-      @before.freeze
-      @after.freeze
-      @streaming.freeze
+      [
+        [@before, :request], [@after, :response], [@streaming, :response_chunk]
+      ].each do |(callbacks, suffix)|
+        callbacks.freeze
+
+        # make this check once
+        if suffix == :response_chunk
+          @has_streaming_callbacks = callbacks.size > 0
+        end
+
+        # turn callbacks into no-ops if there are no callbacks
+        if callbacks.empty?
+          meta_class.send(:alias_method, "on_#{suffix}", :callback_noop)
+        end
+      end
+
+      # don't lock a builder twice
+      meta_class.send(:alias_method, :lock!, :noop)
     end
 
     def locked?
@@ -64,11 +81,19 @@ module Faraday
       @streaming.each { |handler| handler.on_response_chunk(self, response, chunk, size) }
     end
 
-    def streaming_callbacks?
-      @streaming.size > 0
+    alias streaming_callbacks? has_streaming_callbacks
+
+    def callback_noop(a, b = nil, c = nil)
     end
 
   private
+
+    def noop
+    end
+
+    def meta_class
+      @meta_class ||= class << self; self; end
+    end
 
     def add_before_handler(*args)
       handler = handler_for(*args)
