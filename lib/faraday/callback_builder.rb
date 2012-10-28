@@ -64,6 +64,10 @@ module Faraday
       @streaming.each { |handler| handler.on_response_chunk(self, response, chunk, size) }
     end
 
+    def streaming_callbacks?
+      @streaming.size > 0
+    end
+
   private
 
     def add_before_handler(*args)
@@ -133,3 +137,4 @@ module Faraday
     end
   end
 end
+

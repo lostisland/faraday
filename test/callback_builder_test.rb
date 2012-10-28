@@ -28,7 +28,11 @@ class CallbackBuilderTest < Faraday::TestCase
     def call(req)
       @builder.on_request(req)
 
-      res = response(req)
+      res = if @builder.streaming_callbacks?
+        streaming_response(req)
+      else
+        response(req)
+      end
 
       @builder.on_response(res)
 
@@ -40,13 +44,9 @@ class CallbackBuilderTest < Faraday::TestCase
         :response_headers => {"Content-Type" => "text/plain",
         'X-Body' => req.body}
     end
-  end
 
-  class StreamingAdapter < Adapter
-    def response(req)
-      res = Faraday::Response.new :status => 200, :body => nil,
-        :response_headers => {"Content-Type" => "text/plain",
-        'X-Body' => req.body}
+    def streaming_response(req)
+      res = response(req)
 
       @builder.on_response_chunk(res, 'boo', 3)
       @builder.on_response_chunk(res, 'ya', 5)
@@ -89,14 +89,13 @@ class CallbackBuilderTest < Faraday::TestCase
       b.streaming_response StreamingUpcaser do |chunk, size|
         streamed << [chunk, size]
       end
-      b.adapter StreamingAdapter
+      b.adapter Adapter
     end
 
     req = Faraday::Request.new
     req.body = 'yolo'
     res = builder.build_response(nil, req)
     assert_equal 'YOLO', res['X-Body']
-    assert_nil res.body
     assert_equal [['BOO', 3], ['YA', 5]], streamed
   end
 
