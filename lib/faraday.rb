@@ -37,6 +37,9 @@ module Faraday
     # Public: Sets the default options used when calling Faraday#new.
     attr_writer :default_connection_options
 
+    # Public: Sets the default class used for the Faraday::Connection builder.
+    attr_writer :default_builder_class
+
     # Public: Initializes a new Faraday::Connection.
     #
     # url     - The optional String base URL to use as a prefix for all
@@ -107,6 +110,13 @@ module Faraday
   # Returns a Faraday::ConnectionOptions.
   def self.default_connection_options
     @default_connection_options ||= ConnectionOptions.new
+  end
+
+  def self.default_builder_class
+    @default_builder_class ||= begin
+      require_lib 'callback_builder'
+      CallbackBuilder
+    end
   end
 
   if (!defined?(RUBY_ENGINE) || "ruby" == RUBY_ENGINE) && RUBY_VERSION < '1.9'
@@ -214,8 +224,8 @@ module Faraday
     end
   end
 
-  require_libs "utils", "options", "connection", "rack_builder", "parameters",
-    "request", "response", "upload_io", "error"
+  require_libs "utils", "options", "connection", "parameters", "upload_io",
+    "request", "response", "error"
 end
 
 # not pulling in active-support JUST for this method.  And I love this method.

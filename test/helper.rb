@@ -19,7 +19,8 @@ if ENV['LEFTRIGHT']
 end
 
 require File.expand_path('../../lib/faraday', __FILE__)
-Dir[File.expand_path('../../lib/faraday/r*/*', __FILE__)].each do |file|
+Faraday.require_lib 'rack_builder'
+Dir[File.expand_path('../../lib/faraday/rack_builder/r*/*', __FILE__)].each do |file|
   require file
 end
 
