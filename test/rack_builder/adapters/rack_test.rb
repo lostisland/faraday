@@ -3,15 +3,13 @@ require File.expand_path('../../../live_server', __FILE__)
 Faraday.require_lib 'rack_builder/adapter/rack'
 
 module RackBuilderAdapters
-  class RackTest < Faraday::TestCase
+  class RackTest < Faraday::RackBuilderTestCase
 
     def adapter() :rack end
 
     def adapter_options
       [Faraday::LiveServer]
     end
-
-    alias build_connection rack_builder_connection
 
     # no Integration.apply because this doesn't require a server as a separate process
     include Faraday::Integration::Common, Faraday::Integration::NonParallel

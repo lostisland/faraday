@@ -2,11 +2,9 @@ require File.expand_path("../../../integration_helper", __FILE__)
 Faraday.require_lib 'rack_builder/adapter/typhoeus'
 
 module RackBuilderAdapters
-  class TyphoeusTest < Faraday::TestCase
+  class TyphoeusTest < Faraday::RackBuilderTestCase
 
     def adapter() :typhoeus end
-
-    alias build_connection rack_builder_connection
 
     Faraday::Integration.apply(self, :Parallel) do
       # https://github.com/dbalatero/typhoeus/issues/75

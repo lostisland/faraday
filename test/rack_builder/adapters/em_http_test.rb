@@ -2,11 +2,9 @@ require File.expand_path("../../../integration_helper", __FILE__)
 Faraday.require_lib 'rack_builder/adapter/em_http'
 
 module RackBuilderAdapters
-  class EMHttpTest < Faraday::TestCase
+  class EMHttpTest < Faraday::RackBuilderTestCase
 
     def adapter() :em_http end
-
-    alias build_connection rack_builder_connection
 
     Faraday::Integration.apply(self, :Parallel) do
       # https://github.com/eventmachine/eventmachine/pull/289

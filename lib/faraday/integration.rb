@@ -1,8 +1,7 @@
 module Faraday
   # Adapter integration tests. To use, implement two methods:
   #
-  # `#build_connection` required.  Builds a Faraday::Connection using a hard
-  #                     coded Builder class.
+  # `#create_connection` required.  Creates a Faraday::Connection.
   # `#adapter` required. returns a symbol for the adapter middleware name
   # `#adapter_options` optional. extra arguments for building an adapter
   module Integration
@@ -176,31 +175,6 @@ module Faraday
       # extra options to pass when building the adapter
       def adapter_options
         []
-      end
-
-      def create_connection(options = {})
-        if adapter == :default
-          builder_block = nil
-        else
-          builder_block = Proc.new do |b|
-            b.request :multipart
-            b.request :url_encoded
-            b.adapter adapter, *adapter_options
-          end
-        end
-
-        server = self.class.live_server
-        url = '%s://%s:%d' % [server.scheme, server.host, server.port]
-
-        options[:ssl] ||= {}
-        options[:ssl][:ca_file] ||= ENV['SSL_FILE']
-
-        build_connection(url, options, &builder_block).tap do |conn|
-          conn.headers['X-Faraday-Adapter'] = adapter.to_s
-          adapter_handler = conn.builder.handlers.last
-          Faraday.require_lib 'rack_builder/response/raise_error'
-          conn.builder.insert_before adapter_handler, Faraday::RackBuilder::Response::RaiseError
-        end
       end
     end
   end

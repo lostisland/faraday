@@ -2,11 +2,9 @@ require File.expand_path("../../../integration_helper", __FILE__)
 Faraday.require_lib 'rack_builder/adapter/httpclient'
 
 module RackBuilderAdapters
-  class HttpclientTest < Faraday::TestCase
+  class HttpclientTest < Faraday::RackBuilderTestCase
 
     def adapter() :httpclient end
-
-    alias build_connection rack_builder_connection
 
     Faraday::Integration.apply(self, :NonParallel) do
       def test_binds_local_socket
