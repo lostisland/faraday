@@ -77,6 +77,13 @@ class OptionsTest < Faraday::TestCase
     assert_equal options, updated
   end
 
+  def test_delete
+    options = Options.new 1
+    assert_equal 1, options.a
+    assert_equal 1, options.delete(:a)
+    assert_nil options.a
+  end
+
   def test_merge
     options = Options.new 1
     assert_equal 1, options.a

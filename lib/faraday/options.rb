@@ -43,6 +43,12 @@ module Faraday
       self
     end
 
+    def delete(key)
+      value = send(key)
+      send("#{key}=", nil)
+      value
+    end
+
     def merge(value)
       dup.update(value)
     end
