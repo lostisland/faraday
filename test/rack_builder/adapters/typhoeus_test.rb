@@ -1,4 +1,4 @@
-require File.expand_path("../../../adapters_helper", __FILE__)
+require File.expand_path("../../../integration_helper", __FILE__)
 Faraday.require_lib 'rack_builder/adapter/typhoeus'
 
 module RackBuilderAdapters
@@ -8,7 +8,7 @@ module RackBuilderAdapters
 
     alias build_connection rack_builder_connection
 
-    Adapters::Integration.apply(self, :Parallel) do
+    Faraday::Integration.apply(self, :Parallel) do
       # https://github.com/dbalatero/typhoeus/issues/75
       undef :test_GET_with_body
 

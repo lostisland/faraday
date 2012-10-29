@@ -1,4 +1,4 @@
-require File.expand_path("../../../adapters_helper", __FILE__)
+require File.expand_path("../../../integration_helper", __FILE__)
 Faraday.require_lib 'rack_builder/adapter/net_http_persistent'
 
 module RackBuilderAdapters
@@ -8,11 +8,10 @@ module RackBuilderAdapters
 
     alias build_connection rack_builder_connection
 
-    Adapters::Integration.apply(self, :NonParallel) do
+    Faraday::Integration.apply(self, :NonParallel) do
       # https://github.com/drbrain/net-http-persistent/issues/33
       undef :test_timeout
     end
-
   end
 end
 

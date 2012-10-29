@@ -1,7 +1,4 @@
-require File.expand_path("../helper", __FILE__)
-Faraday.require_lib 'autoload'
-
-module Adapters
+module Faraday
   # Adapter integration tests. To use, implement two methods:
   #
   # `#build_connection` required.  Builds a Faraday::Connection using a hard
@@ -119,7 +116,7 @@ module Adapters
         resp = post('file') do |req|
           req.body = {'uploaded_file' => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
         end
-        assert_equal "file adapters_helper.rb text/x-ruby", resp.body
+        assert_equal "file #{File.basename(__FILE__)} text/x-ruby", resp.body
       end
 
       def test_PUT_send_url_encoded_params
@@ -201,6 +198,7 @@ module Adapters
         build_connection(url, options, &builder_block).tap do |conn|
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
           adapter_handler = conn.builder.handlers.last
+          Faraday.require_lib 'rack_builder/response/raise_error'
           conn.builder.insert_before adapter_handler, Faraday::RackBuilder::Response::RaiseError
         end
       end

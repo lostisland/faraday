@@ -1,4 +1,4 @@
-require File.expand_path("../../../adapters_helper", __FILE__)
+require File.expand_path("../../../integration_helper", __FILE__)
 Faraday.require_lib 'rack_builder/adapter/net_http'
 
 module RackBuilderAdapters
@@ -11,8 +11,7 @@ module RackBuilderAdapters
     behaviors = [:NonParallel]
     behaviors << :Compression if RUBY_VERSION >= '1.9'
 
-    Adapters::Integration.apply(self, *behaviors)
-
+    Faraday::Integration.apply(self, *behaviors)
   end
 end
 
