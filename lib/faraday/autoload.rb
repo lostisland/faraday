@@ -48,9 +48,9 @@ module Faraday
     end
   end
 
-  class Adapter
+  class RackBuilder::Adapter
     extend AutoloadHelper
-    autoload_all 'faraday/adapter',
+    autoload_all 'faraday/rack_builder/adapter',
       :NetHttp           => 'net_http',
       :NetHttpPersistent => 'net_http_persistent',
       :Typhoeus          => 'typhoeus',
