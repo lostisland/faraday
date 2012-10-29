@@ -126,8 +126,16 @@ class CallbackBuilderTest < Faraday::TestCase
     assert_nil builder.current_adapter
   end
 
+  def test_raises_if_lock_without_adapter
+    builder = build {}
+
+    assert_raises Faraday::CallbackBuilder::MissingAdapter do
+      builder.lock!
+    end
+  end
+
   def test_lock
-    builder = self.builder
+    builder = build { |b| b.adapter(Adapter) }
     assert !builder.locked?
 
     builder.lock!

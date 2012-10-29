@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
 
   # = MANIFEST =
   s.files = %w[
+    CONTRIBUTING.md
     Gemfile
     LICENSE.md
     README.md
@@ -36,10 +37,14 @@ Gem::Specification.new do |s|
     lib/faraday/adapter/rack.rb
     lib/faraday/adapter/test.rb
     lib/faraday/adapter/typhoeus.rb
-    lib/faraday/builder.rb
+    lib/faraday/autoload.rb
+    lib/faraday/callback_builder.rb
     lib/faraday/connection.rb
     lib/faraday/error.rb
     lib/faraday/middleware.rb
+    lib/faraday/options.rb
+    lib/faraday/parameters.rb
+    lib/faraday/rack_builder.rb
     lib/faraday/request.rb
     lib/faraday/request/authorization.rb
     lib/faraday/request/basic_authentication.rb
@@ -67,14 +72,17 @@ Gem::Specification.new do |s|
     test/adapters/test_middleware_test.rb
     test/adapters/typhoeus_test.rb
     test/authentication_middleware_test.rb
+    test/callback_builder_test.rb
     test/connection_test.rb
     test/env_test.rb
     test/helper.rb
     test/live_server.rb
     test/middleware/retry_test.rb
     test/middleware_stack_test.rb
+    test/options_test.rb
     test/request_middleware_test.rb
     test/response_middleware_test.rb
+    test/strawberry.rb
   ]
   # = MANIFEST =
 
