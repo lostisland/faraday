@@ -6,6 +6,8 @@ module Faraday
 
   Response::Middleware = RackBuilder::Response::Middleware
   Adapter = RackBuilder::Adapter
+  Middleware = RackBuilder::Middleware
+  Builder = RackBuilder
   Response.send :include, RackBuilder::Response
   Request.send :include, RackBuilder::Request
 end
