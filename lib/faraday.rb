@@ -198,18 +198,16 @@ module Faraday
       defined?(@registered_middleware) && @registered_middleware[key]
     end
 
+    def set_registered_key(key, value)
+      middleware_mutex { @registered_middleware[key] = value }
+    end
+
     def load_middleware(key)
       value = fetch_middleware(key)
       case value
       when Module then value
-      when Symbol, String
-        middleware_mutex do
-          @registered_middleware[key] = const_get(value)
-        end
-      when Proc
-        middleware_mutex do
-          @registered_middleware[key] = value.call
-        end
+      when Symbol, String then set_registered_key(key, const_get(value))
+      when Proc then set_registered_key(key, value.call)
       when Array
         middleware_mutex do
           const, path = value
