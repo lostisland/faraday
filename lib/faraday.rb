@@ -226,6 +226,8 @@ module Faraday
 
   require_libs "utils", "options", "connection", "parameters", "upload_io",
     "request", "response", "error"
+
+  require_lib('legacy') unless const_defined?(:LEGACY)
 end
 
 # not pulling in active-support JUST for this method.  And I love this method.
@@ -249,3 +251,4 @@ class Object
     self
   end unless Object.respond_to?(:tap)
 end
+

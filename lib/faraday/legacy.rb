@@ -1,6 +1,9 @@
-require File.expand_path("..", __FILE__)
+require File.expand_path("..", __FILE__) unless Object.const_defined?(:Faraday)
 
 module Faraday
+  # Makes every attempt to provide compatibility with Faraday 0.8.x
+  LEGACY = true
+
   require_libs 'rack_builder', 'autoload'
   self.default_builder_class = RackBuilder
 
