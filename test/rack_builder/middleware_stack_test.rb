@@ -17,8 +17,13 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def setup
+    Faraday.default_builder_class = Faraday::RackBuilder
     @conn = rack_builder_connection
     @builder = @conn.builder
+  end
+
+  def teardown
+    Faraday.default_builder_class = nil
   end
 
   def test_sets_default_adapter_if_none_set
@@ -141,6 +146,39 @@ class MiddlewareStackTest < Faraday::TestCase
     end
     assert_match "missing dependency for MiddlewareStackTest::Broken: ", err.message
     assert_match "zomg/i_dont/exist", err.message
+  end
+
+  def test_register_middleware
+    assert_raises Faraday::Error do
+      Faraday::RackBuilder::Middleware.lookup_middleware(:load_test)
+    end
+
+    klass = Class.new
+
+    Faraday.register_middleware :load_test => klass
+    assert_equal klass, Faraday::RackBuilder::Middleware.lookup_middleware(:load_test)
+  end
+
+  def test_register_request_middleware
+    assert_raises Faraday::Error do
+      Faraday::RackBuilder::Request.lookup_middleware(:load_test)
+    end
+
+    klass = Class.new
+
+    Faraday.register_middleware :request, :load_test => klass
+    assert_equal klass, Faraday::RackBuilder::Request.lookup_middleware(:load_test)
+  end
+
+  def test_register_response_middleware
+    assert_raises Faraday::Error do
+      Faraday::RackBuilder::Response.lookup_middleware(:load_test)
+    end
+
+    klass = Class.new
+
+    Faraday.register_middleware :response, :load_test => klass
+    assert_equal klass, Faraday::RackBuilder::Response.lookup_middleware(:load_test)
   end
 
   private

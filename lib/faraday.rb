@@ -95,7 +95,7 @@ module Faraday
   end
 
   self.root_path = File.expand_path "..", __FILE__
-  self.lib_path = File.expand_path "../faraday", __FILE__
+  self.lib_path = File.join(root_path, 'faraday')
   self.default_adapter = :net_http
 
   # Gets the default connection used for simple scripts.
@@ -222,6 +222,27 @@ module Faraday
         load_middleware(key)
       end
     end
+  end
+
+  # Public: Register middleware classes under a short name.
+  #
+  # type    - A Symbol specifying the kind of middleware (default: :middleware)
+  # mapping - A Hash mapping Symbol keys to classes. Classes can be expressed
+  #           as fully qualified constant, or a Proc that will be lazily called
+  #           to return the former.
+  #
+  # Examples
+  #
+  #   Faraday.register_middleware :aloha => MyModule::Aloha
+  #   Faraday.register_middleware :response, :boom => MyModule::Boom
+  #
+  #   # shortcuts are now available in Builder:
+  #   builder.use :aloha
+  #   builder.response :boom
+  #
+  # Returns nothing.
+  def self.register_middleware(type, mapping = nil)
+    default_builder_class.register_middleware(type, mapping)
   end
 
   require_libs "utils", "options", "connection", "parameters", "upload_io",
