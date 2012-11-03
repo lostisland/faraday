@@ -1,8 +1,8 @@
 require File.expand_path('../helper', __FILE__)
 
-class AuthenticationMiddlewareTest < Faraday::TestCase
+module AuthenticationMiddlewareTests
   def conn
-    Faraday::Connection.new('http://example.net/') do |builder|
+    build_connection('http://example.net/') do |builder|
       yield builder
       builder.adapter :test do |stub|
         stub.get('/auth-echo') do |env|
@@ -63,3 +63,4 @@ class AuthenticationMiddlewareTest < Faraday::TestCase
     assert_match /foo="42"/, response.body
   end
 end
+

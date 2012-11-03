@@ -2,6 +2,7 @@ module Faraday
   # A Builder that processes requests into responses wit
   class CallbackBuilder
     class StackLocked < RuntimeError; end
+    class MissingAdapter < RuntimeError; end
 
     attr_reader :current_adapter, :before, :after, :has_streaming_callbacks
 
@@ -48,6 +49,10 @@ module Faraday
     end
 
     def lock!
+      if !@current_adapter
+        raise MissingAdapter, "You need to setup an adapter."
+      end
+
       [
         [@before, :request], [@after, :response], [@streaming, :response_chunk]
       ].each do |(callbacks, suffix)|
