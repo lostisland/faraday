@@ -36,7 +36,9 @@ Gem::Specification.new do |s|
     lib/faraday/adapter/rack.rb
     lib/faraday/adapter/test.rb
     lib/faraday/adapter/typhoeus.rb
-    lib/faraday/builder.rb
+    lib/faraday/rack_builder.rb
+    lib/faraday/parameters.rb
+    lib/faraday/options.rb
     lib/faraday/connection.rb
     lib/faraday/error.rb
     lib/faraday/middleware.rb
