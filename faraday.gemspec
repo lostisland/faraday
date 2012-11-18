@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.authors  = ["Rick Olson"]
   s.email    = 'technoweenie@gmail.com'
   s.homepage = 'https://github.com/technoweenie/faraday'
+  s.licenses = ['MIT']
 
   s.add_dependency 'multipart-post', '~> 1.1'
   s.add_development_dependency 'rake'
