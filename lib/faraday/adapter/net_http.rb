@@ -13,6 +13,7 @@ module Faraday
         EOFError,
         Errno::ECONNABORTED,
         Errno::ECONNREFUSED,
+        Errno::ENETUNREACH,
         Errno::ECONNRESET,
         Errno::EINVAL,
         Net::HTTPBadResponse,
