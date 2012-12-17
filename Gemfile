@@ -12,7 +12,7 @@ group :test do
   gem 'net-http-persistent', '~> 2.5', :require => false
   gem 'leftright', '~> 0.9', :require => false
   gem 'rack-test', '~> 0.6', :require => 'rack/test'
-  gem 'test-unit', '~> 2.5', :platforms => [:jruby, :ruby_19]
+  gem 'minitest', '~> 4.3'
 end
 
 platforms :ruby do

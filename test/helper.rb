@@ -8,7 +8,7 @@ unless ENV['CI']
   end
 end
 
-require 'test/unit'
+require 'minitest/unit'
 
 if ENV['LEFTRIGHT']
   begin
@@ -55,7 +55,7 @@ module Faraday
     end
   end
 
-  class TestCase < Test::Unit::TestCase
+  class TestCase < MiniTest::Unit::TestCase
     extend LiveServerConfig
     self.live_server = ENV['LIVE']
 

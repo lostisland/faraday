@@ -36,7 +36,7 @@ module Adapters
       @stubs.get('/optional?a=1') { [200, {}, 'a'] }
       assert_equal 'a', @conn.get('/optional?a=1&b=1').body
       assert_equal 'a', @conn.get('/optional?a=1').body
-      assert_raise Faraday::Adapter::Test::Stubs::NotFound do
+      assert_raises Faraday::Adapter::Test::Stubs::NotFound do
         @conn.get('/optional')
       end
     end
@@ -62,7 +62,7 @@ module Adapters
     end
 
     def test_raises_an_error_if_no_stub_is_found_for_request
-      assert_raise Faraday::Adapter::Test::Stubs::NotFound do
+      assert_raises Faraday::Adapter::Test::Stubs::NotFound do
         @conn.get('/invalid'){ [200, {}, []] }
       end
     end

@@ -19,9 +19,7 @@ class ResponseMiddlewareTest < Faraday::TestCase
   end
 
   def test_success
-    assert_nothing_raised do
-      @conn.get('ok')
-    end
+    assert @conn.get('ok')
   end
 
   def test_raises_not_found
