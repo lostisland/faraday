@@ -5,9 +5,9 @@ language: ruby
 matrix:
   allow_failures:
     - rvm: ruby-head
-    # "CRASH: A fatal error has occurred."
+    # An error occured while installing eventmachine
+    - rvm: rbx-18mode
     - rvm: rbx-19mode
-      env: SSL=yes
     # "A fatal error has been detected by the Java Runtime Environment:
     #  Internal Error (sharedRuntime.cpp:843)"
     - rvm: jruby-19mode
