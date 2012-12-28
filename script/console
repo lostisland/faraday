@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# Usage: script/console
+# Starts an IRB console with this library loaded.
+
+require 'rubygems'
+require 'irb'
+require File.expand_path("../ruby", __FILE__)
+require File.expand_path("../../lib/#{MakeScript.lib_name}", __FILE__)
+IRB.start
