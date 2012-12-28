@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'irb'
+require File.expand_path("../ruby", __FILE__)
+require File.expand_path("../../lib/#{MakeScript.lib_name}", __FILE__)
+IRB.start
