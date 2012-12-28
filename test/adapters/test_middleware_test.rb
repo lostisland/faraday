@@ -2,8 +2,9 @@ require File.expand_path('../../helper', __FILE__)
 
 module Adapters
   class TestMiddleware < Faraday::TestCase
+    Stubs = Faraday::Adapter.lookup_middleware(:test)::Stubs
     def setup
-      @stubs = Faraday::Adapter::Test::Stubs.new
+      @stubs = Stubs.new
       @conn  = Faraday.new do |builder|
         builder.adapter :test, @stubs
       end
@@ -62,7 +63,7 @@ module Adapters
     end
 
     def test_raises_an_error_if_no_stub_is_found_for_request
-      assert_raise Faraday::Adapter::Test::Stubs::NotFound do
+      assert_raise Stubs::NotFound do
         @conn.get('/invalid'){ [200, {}, []] }
       end
     end
