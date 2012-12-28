@@ -1,9 +1,7 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bash
 # Usage: script/console
 # Starts an IRB console with this library loaded.
 
-require 'rubygems'
-require 'irb'
-require File.expand_path("../ruby", __FILE__)
-require File.expand_path("../../lib/#{MakeScript.lib_name}", __FILE__)
-IRB.start
+gemspec="$(ls *.gemspec | head -1)"
+
+exec bundle exec irb -r "${gemspec%.*}"
