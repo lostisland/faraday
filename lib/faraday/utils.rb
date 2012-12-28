@@ -128,14 +128,14 @@ module Faraday
         update(other)
       end
 
-      def merge_query(query, encoder=NestedParamsEncoder)
+      def merge_query(query, encoder=Utils.default_params_encoder)
         if query && !query.empty?
           update encoder.decode(query)
         end
         self
       end
 
-      def to_query(encoder=NestedParamsEncoder)
+      def to_query(encoder=Utils.default_params_encoder)
         encoder.encode(self)
       end
 
@@ -174,6 +174,12 @@ module Faraday
     def parse_nested_query(query)
       NestedParamsEncoder.decode(query)
     end
+
+    class << self
+      attr_accessor :default_params_encoder
+    end
+
+    self.default_params_encoder = FlatParamsEncoder
 
     # Stolen from Rack
     def normalize_params(params, name, v = nil)
