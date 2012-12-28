@@ -175,11 +175,13 @@ module Faraday
       NestedParamsEncoder.decode(query)
     end
 
-    class << self
-      attr_accessor :default_params_encoder
+    def default_params_encoder
+      @default_params_encoder ||= NestedParamsEncoder
     end
 
-    self.default_params_encoder = FlatParamsEncoder
+    class << self
+      attr_writer :default_params_encoder
+    end
 
     # Stolen from Rack
     def normalize_params(params, name, v = nil)

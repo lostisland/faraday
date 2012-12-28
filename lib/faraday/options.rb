@@ -92,7 +92,7 @@ module Faraday
     :oauth)
 
     def params_encoder
-      self[:params_encoder] ||= NestedParamsEncoder
+      self[:params_encoder] ||= Faraday::Utils.default_params_encoder
     end
   end
 
