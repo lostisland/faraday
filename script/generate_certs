@@ -2,7 +2,6 @@
 # Usage: generate_certs
 # Generate test certs for testing Faraday with SSL
 
-require File.expand_path("../ruby", __FILE__)
 require 'openssl'
 require 'fileutils'
 
