@@ -6,6 +6,7 @@ require File.expand_path("../ruby", __FILE__)
 require 'fileutils'
 
 FileUtils.mkdir_p File.expand_path("../../pkg", __FILE__)
-puts `script/gemspec`
-puts `gem build #{MakeScript.gemspec_file}`
-puts `mv #{MakeScript.gem_file} pkg`
+system "script/gemspec"
+system "gem build #{MakeScript.gemspec_file}"
+system "mv #{MakeScript.gem_file} pkg"
+
