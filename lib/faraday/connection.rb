@@ -314,11 +314,11 @@ module Faraday
     #   conn.get("nigiri?page=2") # accesses https://sushi.com/api/nigiri
     #
     # Returns the parsed URI from teh given input..
-    def url_prefix=(url)
+    def url_prefix=(url, encoder = nil)
       uri = @url_prefix = self.class.URI(url)
       self.path_prefix = uri.path
 
-      params.merge_query(uri.query)
+      params.merge_query(uri.query, encoder)
       uri.query = nil
 
       with_uri_credentials(uri) do |user, password|

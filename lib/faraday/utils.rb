@@ -128,15 +128,15 @@ module Faraday
         update(other)
       end
 
-      def merge_query(query, encoder=Utils.default_params_encoder)
+      def merge_query(query, encoder = nil)
         if query && !query.empty?
-          update encoder.decode(query)
+          update((encoder || Utils.default_params_encoder).decode(query))
         end
         self
       end
 
-      def to_query(encoder=Utils.default_params_encoder)
-        encoder.encode(self)
+      def to_query(encoder = nil)
+        (encoder || Utils.default_params_encoder).encode(self)
       end
 
       private

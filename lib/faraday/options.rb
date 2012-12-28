@@ -90,10 +90,6 @@ module Faraday
   class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
     :timeout, :open_timeout, :boundary,
     :oauth)
-
-    def params_encoder
-      self[:params_encoder] ||= Faraday::Utils.default_params_encoder
-    end
   end
 
   class SSLOptions < Options.new(:verify, :ca_file, :ca_path, :verify_mode,
