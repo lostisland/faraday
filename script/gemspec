@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# Usage: script/gemspec
+# Updates the gemspec's name, version, and file manifest.
+
 require File.expand_path("../ruby", __FILE__)
 
 def replace_header(head, header_name)

@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# Usage: script/release
+# Build the gem, tag a commit, push to origin, and push the gem to Rubyforge.
+
 require File.expand_path("../ruby", __FILE__)
 
 puts `script/gem`
