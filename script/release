@@ -1,10 +1,11 @@
 #!/usr/bin/env ruby
 # Usage: script/release
-# Build the gem, tag a commit, push to origin, and push the gem to Rubyforge.
+# Build the package, tag a commit, push it to origin, and then release the
+# package publicly.
 
 require File.expand_path("../ruby", __FILE__)
 
-system "script/gem"
+system "script/package"
 system "git commit --allow-empty -a -m 'Release #{MakeScript.version}'"
 system "git tag v#{MakeScript.version}"
 system "git push origin"
