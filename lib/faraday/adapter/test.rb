@@ -28,46 +28,46 @@ module Faraday
           @stack.empty?
         end
 
-        def match(request_method, path, body)
+        def match(request_method, path, headers, body)
           return false if !@stack.key?(request_method)
           stack = @stack[request_method]
           consumed = (@consumed[request_method] ||= [])
           path = normalize_path(path)
 
-          if stub = matches?(stack, path, body)
+          if stub = matches?(stack, path, headers, body)
             consumed << stack.delete(stub)
             stub
           else
-            matches?(consumed, path, body)
+            matches?(consumed, path, headers, body)
           end
         end
 
-        def get(path, &block)
-          new_stub(:get, path, &block)
+        def get(path, headers = {}, &block)
+          new_stub(:get, path, headers, &block)
         end
 
-        def head(path, &block)
-          new_stub(:head, path, &block)
+        def head(path, headers = {}, &block)
+          new_stub(:head, path, headers, &block)
         end
 
-        def post(path, body=nil, &block)
-          new_stub(:post, path, body, &block)
+        def post(path, body=nil, headers = {}, &block)
+          new_stub(:post, path, headers, body, &block)
         end
 
-        def put(path, body=nil, &block)
-          new_stub(:put, path, body, &block)
+        def put(path, body=nil, headers = {}, &block)
+          new_stub(:put, path, headers, body, &block)
         end
 
-        def patch(path, body=nil, &block)
-          new_stub(:patch, path, body, &block)
+        def patch(path, body=nil, headers = {}, &block)
+          new_stub(:patch, path, headers, body, &block)
         end
 
-        def delete(path, &block)
-          new_stub(:delete, path, &block)
+        def delete(path, headers = {}, &block)
+          new_stub(:delete, path, headers, &block)
         end
 
-        def options(path, &block)
-          new_stub(:options, path, &block)
+        def options(path, headers = {}, &block)
+          new_stub(:options, path, headers, &block)
         end
 
         # Raises an error if any of the stubbed calls have not been made.
@@ -85,12 +85,12 @@ module Faraday
 
         protected
 
-        def new_stub(request_method, path, body=nil, &block)
-          (@stack[request_method] ||= []) << Stub.new(normalize_path(path), body, block)
+        def new_stub(request_method, path, headers = {}, body=nil, &block)
+          (@stack[request_method] ||= []) << Stub.new(normalize_path(path), headers, body, block)
         end
 
-        def matches?(stack, path, body)
-          stack.detect { |stub| stub.matches?(path, body) }
+        def matches?(stack, path, headers, body)
+          stack.detect { |stub| stub.matches?(path, headers, body) }
         end
 
         # ensure leading + trailing slash
@@ -102,28 +102,35 @@ module Faraday
         end
       end
 
-      class Stub < Struct.new(:path, :params, :body, :block)
-        def initialize(full, body, block)
+      class Stub < Struct.new(:path, :params, :headers, :body, :block)
+        def initialize(full, headers, body, block)
           path, query = full.split('?')
           params = query ?
             Faraday::Utils.parse_nested_query(query) :
             {}
-          super path, params, body, block
+          super path, params, headers, body, block
         end
 
-        def matches?(request_uri, request_body)
+        def matches?(request_uri, request_headers, request_body)
           request_path, request_query = request_uri.split('?')
           request_params = request_query ?
             Faraday::Utils.parse_nested_query(request_query) :
             {}
           request_path == path &&
             params_match?(request_params) &&
-            (body.to_s.size.zero? || request_body == body)
+            (body.to_s.size.zero? || request_body == body) &&
+            headers_match?(request_headers)
         end
 
         def params_match?(request_params)
           params.keys.all? do |key|
             request_params[key] == params[key]
+          end
+        end
+
+        def headers_match?(request_headers)
+          headers.keys.all? do |key|
+            request_headers[key] == headers[key]
           end
         end
 
@@ -146,7 +153,7 @@ module Faraday
         super
         normalized_path = Faraday::Utils.normalize_path(env[:url])
 
-        if stub = stubs.match(env[:method], normalized_path, env[:body])
+        if stub = stubs.match(env[:method], normalized_path, env.request_headers, env[:body])
           env[:params] = (query = env[:url].query) ?
             Faraday::Utils.parse_nested_query(query)  :
             {}
