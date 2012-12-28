@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+require File.expand_path("../ruby", __FILE__)
+
+puts `script/gem`
+puts `git commit --allow-empty -a -m 'Release #{MakeScript.version}'`
+puts `git tag v#{MakeScript.version}`
+puts `git push origin`
+puts `git push origin v#{MakeScript.version}`
+puts `gem push pkg/#{MakeScript.gem_file}`
+
