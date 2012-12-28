@@ -4,10 +4,10 @@
 
 require File.expand_path("../ruby", __FILE__)
 
-puts `script/gem`
-puts `git commit --allow-empty -a -m 'Release #{MakeScript.version}'`
-puts `git tag v#{MakeScript.version}`
-puts `git push origin`
-puts `git push origin v#{MakeScript.version}`
-puts `gem push pkg/#{MakeScript.gem_file}`
+system "script/gem"
+system "git commit --allow-empty -a -m 'Release #{MakeScript.version}'"
+system "git tag v#{MakeScript.version}"
+system "git push origin"
+system "git push origin v#{MakeScript.version}"
+system "gem push pkg/#{MakeScript.gem_file}"
 
