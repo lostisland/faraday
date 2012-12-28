@@ -33,7 +33,7 @@ if ssl_mode = ENV['SSL'] == 'yes'
   unless ENV['SSL_KEY'] and ENV['SSL_FILE']
     key_file  = ENV['SSL_KEY']  = 'tmp/faraday-cert.key'
     cert_file = ENV['SSL_FILE'] = 'tmp/faraday-cert.crt'
-    system 'rake', key_file, cert_file
+    system 'script/generate_certs'
     abort unless $?.success?
   end
 end
