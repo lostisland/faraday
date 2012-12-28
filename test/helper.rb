@@ -8,7 +8,7 @@ unless ENV['CI']
   end
 end
 
-require 'minitest/unit'
+require 'minitest/autorun'
 
 if ENV['LEFTRIGHT']
   begin
