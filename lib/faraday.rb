@@ -181,7 +181,11 @@ module Faraday
     end
 
     def middleware_mutex(&block)
-      (@middleware_mutex ||= Monitor.new).synchronize(&block)
+      @middleware_mutex ||= begin
+        require 'monitor'
+        Monitor.new
+      end
+      @middleware_mutex.synchronize(&block)
     end
 
     def fetch_middleware(key)
