@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+# Usage: script/gem
+# Updates the gemspec and builds a new gem in the pkg directory.
+
+require File.expand_path("../ruby", __FILE__)
+require 'fileutils'
+
+FileUtils.mkdir_p File.expand_path("../../pkg", __FILE__)
+system "script/gemspec"
+system "gem build #{MakeScript.gemspec_file}"
+system "mv #{MakeScript.gem_file} pkg"
+
