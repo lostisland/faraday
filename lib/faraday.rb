@@ -181,12 +181,7 @@ module Faraday
     end
 
     def middleware_mutex(&block)
-      @middleware_mutex ||= Mutex.new
-      if @middleware_mutex.locked?
-        block.call
-      else
-        @middleware_mutex.synchronize(&block)
-      end
+      (@middleware_mutex ||= Monitor.new).synchronize(&block)
     end
 
     def fetch_middleware(key)
