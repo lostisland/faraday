@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+# Usage: script/gem
+# Updates the gemspec and builds a new gem in the pkg directory.
+
 require File.expand_path("../ruby", __FILE__)
 require 'fileutils'
 

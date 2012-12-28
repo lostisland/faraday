@@ -1,3 +1,17 @@
+# Opinionated module that picks out a ruby library's name and version based on
+# some conventions:
+#
+# * #{lib_name}.gemspec
+# * A VERSION constant defined in lib/#{lib_name}.rb
+#
+# Example:
+#
+#   # foo.gemspec
+#   # lib/foo.rb
+#   module Foo
+#     VERSION = "0.1"
+#   end
+
 module MakeScript
   extend self
 
