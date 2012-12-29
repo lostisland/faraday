@@ -1,5 +1,3 @@
-require 'uri'
-
 module Faraday
   # Public: Connection objects manage the default properties and the middleware
   # stack for fulfilling an HTTP request.
@@ -280,21 +278,6 @@ module Faraday
       @proxy = ProxyOptions.from(arg)
     end
 
-    # Public: Normalize URI() behavior across Ruby versions
-    #
-    # url - A String or URI.
-    #
-    # Returns a parsed URI.
-    def self.URI(url)
-      if url.respond_to?(:host)
-        url
-      elsif url.respond_to?(:to_str)
-        Kernel.URI(url)
-      else
-        raise ArgumentError, "bad argument (expected URI object or URI string)"
-      end
-    end
-
     def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
     def_delegator :url_prefix, :path, :path_prefix
 
@@ -315,7 +298,7 @@ module Faraday
     #
     # Returns the parsed URI from teh given input..
     def url_prefix=(url, encoder = nil)
-      uri = @url_prefix = self.class.URI(url)
+      uri = @url_prefix = Utils.URI(url)
       self.path_prefix = uri.path
 
       params.merge_query(uri.query, encoder)
