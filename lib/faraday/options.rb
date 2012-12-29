@@ -114,9 +114,9 @@ module Faraday
 
     def self.from(value)
       case value
-      when String then value = {:uri => Connection.URI(value)}
+      when String then value = {:uri => Utils.URI(value)}
       when URI then value = {:uri => value}
-      when Hash, Options then value[:uri] = Connection.URI(value[:uri])
+      when Hash, Options then value[:uri] = Utils.URI(value[:uri])
       end
       super(value)
     end

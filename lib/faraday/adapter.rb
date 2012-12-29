@@ -4,8 +4,6 @@ module Faraday
   class Adapter < Middleware
     CONTENT_LENGTH = 'Content-Length'.freeze
 
-    extend MiddlewareRegistry
-
     register_middleware File.expand_path('../adapter', __FILE__),
       :test => [:Test, 'test'],
       :net_http => [:NetHttp, 'net_http'],

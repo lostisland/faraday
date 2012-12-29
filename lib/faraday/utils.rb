@@ -1,3 +1,4 @@
+require 'uri'
 Faraday.require_libs 'parameters'
 
 module Faraday
@@ -212,9 +213,25 @@ module Faraday
       return params
     end
 
-    # Receives a URL and returns just the path with the query string sorted.
+    # Normalize URI() behavior across Ruby versions
+    #
+    # url - A String or URI.
+    #
+    # Returns a parsed URI.
+    def URI(url)
+      if url.respond_to?(:host)
+        url
+      elsif url.respond_to?(:to_str)
+        Kernel.URI(url)
+      else
+        raise ArgumentError, "bad argument (expected URI object or URI string)"
+      end
+    end
+
+    # Receives a String or URI and returns just the path with the query string sorted.
     def normalize_path(url)
-      (url.path != "" ? url.path : "/") +
+      url = URI(url)
+      (url.path.start_with?('/') ? url.path : '/' + url.path) +
       (url.query ? "?#{sort_query_params(url.query)}" : "")
     end
 
