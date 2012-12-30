@@ -81,7 +81,7 @@ module Faraday
         value = send(m)
         values << "#{m}=#{value.inspect}" if value
       end
-      values = values.empty? ? nil : (' ' << values.join(", "))
+      values = values.empty? ? ' (empty)' : (' ' << values.join(", "))
 
       %(#<#{self.class}#{values}>)
     end
