@@ -218,6 +218,15 @@ module Faraday
     end
   end
 
+  def self.const_missing(name)
+    if name.to_sym == :Builder
+      warn "Faraday::Builder is now Faraday::RackBuilder."
+      const_set name, RackBuilder
+    else
+      super
+    end
+  end
+
   require_libs "utils", "options", "connection", "rack_builder", "parameters",
     "middleware", "adapter", "request", "response", "upload_io", "error"
 end
