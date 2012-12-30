@@ -90,6 +90,14 @@ module Faraday
   class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
     :timeout, :open_timeout, :boundary,
     :oauth)
+
+    def []=(key, value)
+      if key && key.to_sym == :proxy
+        super(key, value ? ProxyOptions.from(value) : nil)
+      else
+        super(key, value)
+      end
+    end
   end
 
   class SSLOptions < Options.new(:verify, :ca_file, :ca_path, :verify_mode,
@@ -112,7 +120,10 @@ module Faraday
       case value
       when String then value = {:uri => Connection.URI(value)}
       when URI then value = {:uri => value}
-      when Hash, Options then value[:uri] = Connection.URI(value[:uri])
+      when Hash, Options
+        if uri = value.delete(:uri)
+          value[:uri] = Connection.URI(uri)
+        end
       end
       super(value)
     end

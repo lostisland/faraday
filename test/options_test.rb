@@ -6,6 +6,22 @@ class OptionsTest < Faraday::TestCase
     options :c => SubOptions
   end
 
+  def test_request_proxy_setter
+    options = Faraday::RequestOptions.new
+    assert_nil options.proxy
+
+    assert_raises NoMethodError do
+      options[:proxy] = {:booya => 1}
+    end
+
+    options[:proxy] = {:user => 'user'}
+    assert_kind_of Faraday::ProxyOptions, options.proxy
+    assert_equal 'user', options.proxy.user
+
+    options.proxy = nil
+    assert_nil options.proxy
+  end
+
   def test_from_options
     options = Options.new 1
 
