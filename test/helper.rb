@@ -8,7 +8,7 @@ unless ENV['CI']
   end
 end
 
-require 'test/unit'
+require 'minitest/autorun'
 
 if ENV['LEFTRIGHT']
   begin
@@ -19,10 +19,7 @@ if ENV['LEFTRIGHT']
 end
 
 require File.expand_path('../../lib/faraday', __FILE__)
-Faraday.require_lib 'rack_builder'
-Dir[File.expand_path('../../lib/faraday/rack_builder/r*/*', __FILE__)].each do |file|
-  require file
-end
+Faraday.require_lib 'legacy'
 
 begin
   require 'ruby-debug'
@@ -56,7 +53,7 @@ module Faraday
     end
   end
 
-  class TestCase < Test::Unit::TestCase
+  class TestCase < MiniTest::Unit::TestCase
     extend LiveServerConfig
     self.live_server = ENV['LIVE']
 

@@ -191,7 +191,11 @@ module Faraday
     end
 
     def middleware_mutex(&block)
-      (@middleware_mutex ||= Mutex.new).synchronize(&block)
+      @middleware_mutex ||= begin
+        require 'monitor'
+        Monitor.new
+      end
+      @middleware_mutex.synchronize(&block)
     end
 
     def fetch_middleware(key)
@@ -247,6 +251,15 @@ module Faraday
     "request", "response", "error"
 
   require_lib('legacy') unless const_defined?(:LEGACY)
+
+  def self.const_missing(name)
+    if name.to_sym == :Builder
+      warn "Faraday::Builder is now Faraday::RackBuilder."
+      const_set name, RackBuilder
+    else
+      super
+    end
+  end
 end
 
 # not pulling in active-support JUST for this method.  And I love this method.

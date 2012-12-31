@@ -13,6 +13,7 @@ class Faraday::RackBuilder
         EOFError,
         Errno::ECONNABORTED,
         Errno::ECONNREFUSED,
+        Errno::ENETUNREACH,
         Errno::ECONNRESET,
         Errno::EINVAL,
         Net::HTTPBadResponse,

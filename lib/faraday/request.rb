@@ -40,7 +40,7 @@ module Faraday
         path, query = path.split('?', 2)
       end
       self.path = path
-      self.params.merge_query query
+      self.params.merge_query query, options.params_encoder
       self.params.update(params) if params
     end
 

@@ -6,6 +6,33 @@ class OptionsTest < Faraday::TestCase
     options :c => SubOptions
   end
 
+  def test_request_proxy_setter
+    options = Faraday::RequestOptions.new
+    assert_nil options.proxy
+
+    assert_raises NoMethodError do
+      options[:proxy] = {:booya => 1}
+    end
+
+    options[:proxy] = {:user => 'user'}
+    assert_kind_of Faraday::ProxyOptions, options.proxy
+    assert_equal 'user', options.proxy.user
+
+    options.proxy = nil
+    assert_nil options.proxy
+  end
+
+  def test_proxy_options_from_string
+    options = Faraday::ProxyOptions.from 'http://user:pass@example.org'
+    assert_equal 'user', options.user
+    assert_equal 'pass', options.password
+    assert_kind_of URI, options.uri
+    assert_equal '', options.path
+    assert_equal 80, options.port
+    assert_equal 'example.org', options.host
+    assert_equal 'http', options.scheme
+  end
+
   def test_from_options
     options = Options.new 1
 
@@ -75,6 +102,13 @@ class OptionsTest < Faraday::TestCase
     assert_equal 2, options.a
     assert_equal 3, options.b
     assert_equal options, updated
+  end
+
+  def test_delete
+    options = Options.new 1
+    assert_equal 1, options.a
+    assert_equal 1, options.delete(:a)
+    assert_nil options.a
   end
 
   def test_merge

@@ -1,3 +1,4 @@
+require 'uri'
 Faraday.require_libs 'parameters'
 
 module Faraday
@@ -128,15 +129,15 @@ module Faraday
         update(other)
       end
 
-      def merge_query(query, encoder=NestedParamsEncoder)
+      def merge_query(query, encoder = nil)
         if query && !query.empty?
-          update encoder.decode(query)
+          update((encoder || Utils.default_params_encoder).decode(query))
         end
         self
       end
 
-      def to_query(encoder=NestedParamsEncoder)
-        encoder.encode(self)
+      def to_query(encoder = nil)
+        (encoder || Utils.default_params_encoder).encode(self)
       end
 
       private
@@ -173,6 +174,14 @@ module Faraday
 
     def parse_nested_query(query)
       NestedParamsEncoder.decode(query)
+    end
+
+    def default_params_encoder
+      @default_params_encoder ||= NestedParamsEncoder
+    end
+
+    class << self
+      attr_writer :default_params_encoder
     end
 
     # Stolen from Rack
@@ -212,9 +221,25 @@ module Faraday
       return params
     end
 
-    # Receives a URL and returns just the path with the query string sorted.
+    # Normalize URI() behavior across Ruby versions
+    #
+    # url - A String or URI.
+    #
+    # Returns a parsed URI.
+    def URI(url)
+      if url.respond_to?(:host)
+        url
+      elsif url.respond_to?(:to_str)
+        Kernel.URI(url)
+      else
+        raise ArgumentError, "bad argument (expected URI object or URI string)"
+      end
+    end
+
+    # Receives a String or URI and returns just the path with the query string sorted.
     def normalize_path(url)
-      (url.path != "" ? url.path : "/") +
+      url = URI(url)
+      (url.path.start_with?('/') ? url.path : '/' + url.path) +
       (url.query ? "?#{sort_query_params(url.query)}" : "")
     end
 

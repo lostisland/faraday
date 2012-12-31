@@ -3,8 +3,9 @@ Faraday.require_lib 'rack_builder/adapter/test'
 
 module RackBuilderAdapters
   class TestMiddleware < Faraday::TestCase
+    Stubs = Faraday::Adapter.lookup_middleware(:test)::Stubs
     def setup
-      @stubs = Faraday::RackBuilder::Adapter::Test::Stubs.new
+      @stubs = Stubs.new
       @conn  = rack_builder_connection do |builder|
         builder.adapter :test, @stubs
       end
@@ -37,9 +38,16 @@ module RackBuilderAdapters
       @stubs.get('/optional?a=1') { [200, {}, 'a'] }
       assert_equal 'a', @conn.get('/optional?a=1&b=1').body
       assert_equal 'a', @conn.get('/optional?a=1').body
-      assert_raise Faraday::RackBuilder::Adapter::Test::Stubs::NotFound do
+      assert_raises Stubs::NotFound do
         @conn.get('/optional')
       end
+    end
+
+    def test_middleware_with_http_headers
+      @stubs.get('/yo', { 'X-HELLO' => 'hello' }) { [200, {}, 'a'] }
+      @stubs.get('/yo') { [200, {}, 'b'] }
+      assert_equal 'a', @conn.get('/yo') { |env| env.headers['X-HELLO'] = 'hello' }.body
+      assert_equal 'b', @conn.get('/yo').body
     end
 
     def test_middleware_allow_different_outcomes_for_the_same_request
@@ -63,8 +71,15 @@ module RackBuilderAdapters
     end
 
     def test_raises_an_error_if_no_stub_is_found_for_request
-      assert_raise Faraday::RackBuilder::Adapter::Test::Stubs::NotFound do
+      assert_raises Stubs::NotFound do
         @conn.get('/invalid'){ [200, {}, []] }
+      end
+    end
+
+    def test_raises_an_error_if_no_stub_is_found_for_request_without_this_header
+      @stubs.get('/yo', { 'X-HELLO' => 'hello' }) { [200, {}, 'a'] }
+      assert_raises Faraday::Adapter::Test::Stubs::NotFound do
+        @conn.get('/yo')
       end
     end
   end

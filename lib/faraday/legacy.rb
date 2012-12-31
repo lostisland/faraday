@@ -13,5 +13,9 @@ module Faraday
   Builder = RackBuilder
   Response.send :include, RackBuilder::Response
   Request.send :include, RackBuilder::Request
+
+  def self.default_builder_class
+    RackBuilder
+  end
 end
 

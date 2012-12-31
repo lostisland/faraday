@@ -2,28 +2,19 @@ module Faraday
   # Subclasses Struct with some special helpers for converting from a Hash to
   # a Struct.
   class Options < Struct
+    # Public
     def self.from(value)
       value ? new.update(value) : new
     end
 
-    def self.options(mapping)
-      attribute_options.update(mapping)
-    end
-
-    def self.options_for(key)
-      attribute_options[key]
-    end
-
-    def self.attribute_options
-      @attribute_options ||= {}
-    end
-
+    # Public
     def each(&block)
       members.each do |key|
         block.call key.to_sym, send(key)
       end
     end
 
+    # Public
     def update(obj)
       obj.each do |key, value|
         next unless value
@@ -43,23 +34,35 @@ module Faraday
       self
     end
 
+    # Public
+    def delete(key)
+      value = send(key)
+      send("#{key}=", nil)
+      value
+    end
+
+    # Public
     def merge(value)
       dup.update(value)
     end
 
+    # Public
     def fetch(key, default = nil)
       send(key) || send("#{key}=", default ||
         (block_given? ? Proc.new.call : nil))
     end
 
+    # Public
     def values_at(*keys)
       keys.map { |key| send(key) }
     end
 
+    # Public
     def keys
       members.reject { |m| send(m).nil? }
     end
 
+    # Public
     def to_hash
       hash = {}
       members.each do |key|
@@ -69,15 +72,31 @@ module Faraday
       hash
     end
 
+    # Internal
     def inspect
       values = []
       members.each do |m|
         value = send(m)
         values << "#{m}=#{value.inspect}" if value
       end
-      values = values.empty? ? nil : (' ' << values.join(", "))
+      values = values.empty? ? ' (empty)' : (' ' << values.join(", "))
 
       %(#<#{self.class}#{values}>)
+    end
+
+    # Internal
+    def self.options(mapping)
+      attribute_options.update(mapping)
+    end
+
+    # Internal
+    def self.options_for(key)
+      attribute_options[key]
+    end
+
+    # Internal
+    def self.attribute_options
+      @attribute_options ||= {}
     end
   end
 
@@ -85,8 +104,12 @@ module Faraday
     :timeout, :open_timeout, :boundary,
     :oauth)
 
-    def params_encoder
-      self[:params_encoder] ||= NestedParamsEncoder
+    def []=(key, value)
+      if key && key.to_sym == :proxy
+        super(key, value ? ProxyOptions.from(value) : nil)
+      else
+        super(key, value)
+      end
     end
   end
 
@@ -104,13 +127,16 @@ module Faraday
 
   class ProxyOptions < Options.new(:uri, :user, :password)
     extend Forwardable
-    def_delegators :uri, :scheme, :scheme=, :host, :host=, :port, :port=
+    def_delegators :uri, :scheme, :scheme=, :host, :host=, :port, :port=, :path, :path=
 
     def self.from(value)
       case value
-      when String then value = {:uri => Connection.URI(value)}
+      when String then value = {:uri => Utils.URI(value)}
       when URI then value = {:uri => value}
-      when Hash, Options then value[:uri] = Connection.URI(value[:uri])
+      when Hash, Options
+        if uri = value.delete(:uri)
+          value[:uri] = Utils.URI(uri)
+        end
       end
       super(value)
     end

@@ -1,7 +1,5 @@
-require File.expand_path("../authorization", __FILE__)
-
 class Faraday::RackBuilder
-  class Request::TokenAuthentication < Request::Authorization
+  class Request::TokenAuthentication < Request.load_middleware(:authorization)
     # Public
     def self.header(token, options = nil)
       options ||= {}
