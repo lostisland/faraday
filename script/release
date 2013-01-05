@@ -12,4 +12,6 @@ git commit --allow-empty -a -m "Release $version"
 git tag "v$version"
 git push origin
 git push origin "v$version"
+git push legacy
+git push legacy "v$version"
 gem push pkg/*-${version}.gem
