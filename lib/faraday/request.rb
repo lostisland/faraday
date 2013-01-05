@@ -18,7 +18,8 @@ module Faraday
       :retry => [:Retry, 'retry'],
       :authorization => [:Authorization, 'authorization'],
       :basic_auth => [:BasicAuthentication, 'basic_authentication'],
-      :token_auth => [:TokenAuthentication, 'token_authentication']
+      :token_auth => [:TokenAuthentication, 'token_authentication'],
+      :instrumentation => [:Instrumentation, 'instrumentation']
 
     def self.create(request_method)
       new(request_method).tap do |request|
