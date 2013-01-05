@@ -14,7 +14,7 @@ module Middleware
       begin
         instrumenter = options.instrumenter
       rescue NameError => err
-        assert_match 'ActiveSupport', err.name.to_s
+        assert_match 'ActiveSupport', err.to_s
       else
         assert_equal ActiveSupport::Notifications, instrumenter
       end
