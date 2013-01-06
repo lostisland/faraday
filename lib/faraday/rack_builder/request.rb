@@ -7,5 +7,6 @@ module Faraday::RackBuilder::Request
     :retry => [:Retry, 'retry'],
     :authorization => [:Authorization, 'authorization'],
     :basic_auth => [:BasicAuthentication, 'basic_authentication'],
-    :token_auth => [:TokenAuthentication, 'token_authentication']
+    :token_auth => [:TokenAuthentication, 'token_authentication'],
+    :instrumentation => [:Instrumentation, 'instrumentation']
 end

@@ -1,3 +1,5 @@
+require 'faraday'
+
 module Faraday
   # Internal: Adds the ability for other modules to manage autoloadable
   # constants.
