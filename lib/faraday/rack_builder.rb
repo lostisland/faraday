@@ -45,6 +45,30 @@ module Faraday
       end
     end
 
+    # Public: Register middleware classes under a short name.
+    #
+    # type    - A Symbol specifying the kind of middleware (default:
+    #           :middleware)
+    # mapping - A Hash mapping Symbol keys to classes. Classes can be expressed
+    #           as fully qualified constant, or a Proc that will be lazily
+    #           called to return the former.
+    #
+    # Examples
+    #
+    #   Faraday.register_middleware :aloha => MyModule::Aloha
+    #   Faraday.register_middleware :response, :boom => MyModule::Boom
+    #
+    #   # shortcuts are now available in Builder:
+    #   builder.use :aloha
+    #   builder.response :boom
+    #
+    # Returns nothing.
+    def self.register_middleware(type, mapping = nil)
+      type, mapping = :middleware, type if mapping.nil?
+      component = self.const_get(type.to_s.capitalize)
+      component.register_middleware(mapping)
+    end
+
     def initialize(handlers = [])
       @handlers = handlers
       if block_given?
@@ -77,7 +101,7 @@ module Faraday
 
     def use(klass, *args, &block)
       if klass.is_a? Symbol
-        use_symbol(Faraday::Middleware, klass, *args, &block)
+        use_symbol(Middleware, klass, *args, &block)
       else
         raise_if_locked
         @handlers << self.class::Handler.new(klass, *args, &block)
@@ -85,15 +109,19 @@ module Faraday
     end
 
     def request(key, *args, &block)
-      use_symbol(Faraday::Request, key, *args, &block)
+      use_symbol(Request, key, *args, &block)
     end
 
     def response(key, *args, &block)
-      use_symbol(Faraday::Response, key, *args, &block)
+      use_symbol(Response, key, *args, &block)
     end
 
     def adapter(key, *args, &block)
-      use_symbol(Faraday::Adapter, key, *args, &block)
+      use_symbol(Adapter, key, *args, &block)
+    end
+
+    def request_middleware(key)
+      Request.lookup_middleware(key)
     end
 
     ## methods to push onto the various positions in the stack:
@@ -146,7 +174,7 @@ module Faraday
       @app ||= begin
         lock!
         to_app(lambda { |env|
-          response = Response.new
+          response = Faraday::Response.new
           response.finish(env) unless env.parallel?
           env.response = response
         })
@@ -205,4 +233,6 @@ module Faraday
       idx
     end
   end
+
+  require_libs *%w(middleware adapter request response).map { |suffix| "rack_builder/#{suffix}" }
 end

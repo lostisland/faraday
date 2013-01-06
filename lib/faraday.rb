@@ -37,6 +37,9 @@ module Faraday
     # Public: Sets the default options used when calling Faraday#new.
     attr_writer :default_connection_options
 
+    # Public: Sets the default class used for the Faraday::Connection builder.
+    attr_writer :default_builder_class
+
     # Public: Initializes a new Faraday::Connection.
     #
     # url     - The optional String base URL to use as a prefix for all
@@ -92,7 +95,7 @@ module Faraday
   end
 
   self.root_path = File.expand_path "..", __FILE__
-  self.lib_path = File.expand_path "../faraday", __FILE__
+  self.lib_path = File.join(root_path, 'faraday')
   self.default_adapter = :net_http
 
   # Gets the default connection used for simple scripts.
@@ -107,6 +110,13 @@ module Faraday
   # Returns a Faraday::ConnectionOptions.
   def self.default_connection_options
     @default_connection_options ||= ConnectionOptions.new
+  end
+
+  def self.default_builder_class
+    @default_builder_class ||= begin
+      require_lib 'callback_builder'
+      CallbackBuilder
+    end
   end
 
   if (!defined?(RUBY_ENGINE) || "ruby" == RUBY_ENGINE) && RUBY_VERSION < '1.9'
@@ -192,18 +202,16 @@ module Faraday
       defined?(@registered_middleware) && @registered_middleware[key]
     end
 
+    def set_registered_key(key, value)
+      middleware_mutex { @registered_middleware[key] = value }
+    end
+
     def load_middleware(key)
       value = fetch_middleware(key)
       case value
       when Module then value
-      when Symbol, String
-        middleware_mutex do
-          @registered_middleware[key] = const_get(value)
-        end
-      when Proc
-        middleware_mutex do
-          @registered_middleware[key] = value.call
-        end
+      when Symbol, String then set_registered_key(key, const_get(value))
+      when Proc then set_registered_key(key, value.call)
       when Array
         middleware_mutex do
           const, path = value
@@ -218,6 +226,32 @@ module Faraday
     end
   end
 
+  # Public: Register middleware classes under a short name.
+  #
+  # type    - A Symbol specifying the kind of middleware (default: :middleware)
+  # mapping - A Hash mapping Symbol keys to classes. Classes can be expressed
+  #           as fully qualified constant, or a Proc that will be lazily called
+  #           to return the former.
+  #
+  # Examples
+  #
+  #   Faraday.register_middleware :aloha => MyModule::Aloha
+  #   Faraday.register_middleware :response, :boom => MyModule::Boom
+  #
+  #   # shortcuts are now available in Builder:
+  #   builder.use :aloha
+  #   builder.response :boom
+  #
+  # Returns nothing.
+  def self.register_middleware(type, mapping = nil)
+    default_builder_class.register_middleware(type, mapping)
+  end
+
+  require_libs "utils", "options", "connection", "parameters", "upload_io",
+    "request", "response", "error"
+
+  require_lib('legacy') unless ENV['FARADAY_CALLBACKS'] || const_defined?(:LEGACY)
+
   def self.const_missing(name)
     if name.to_sym == :Builder
       warn "Faraday::Builder is now Faraday::RackBuilder."
@@ -226,9 +260,6 @@ module Faraday
       super
     end
   end
-
-  require_libs "utils", "options", "connection", "rack_builder", "parameters",
-    "middleware", "adapter", "request", "response", "upload_io", "error"
 end
 
 # not pulling in active-support JUST for this method.  And I love this method.
@@ -252,3 +283,4 @@ class Object
     self
   end unless Object.respond_to?(:tap)
 end
+

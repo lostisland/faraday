@@ -184,8 +184,8 @@ module Faraday
     #
     # Returns nothing.
     def basic_auth(login, pass)
-      headers[Faraday::Request::Authorization::KEY] =
-        Faraday::Request::BasicAuthentication.header(login, pass)
+      header_class = builder.request_middleware(:basic_auth)
+      headers[header_class::KEY] = header_class.header(login, pass)
     end
 
     # Public: Sets up the Authorization header with the given token.
@@ -202,8 +202,8 @@ module Faraday
     #
     # Returns nothing.
     def token_auth(token, options = nil)
-      headers[Faraday::Request::Authorization::KEY] =
-        Faraday::Request::TokenAuthentication.header(token, options)
+      header_class = builder.request_middleware(:token_auth)
+      headers[header_class::KEY] = header_class.header(token, options)
     end
 
     # Public: Sets up a custom Authorization header.
@@ -225,8 +225,8 @@ module Faraday
     #
     # Returns nothing.
     def authorization(type, token)
-      headers[Faraday::Request::Authorization::KEY] =
-        Faraday::Request::Authorization.header(type, token)
+      header_class = builder.request_middleware(:authorization)
+      headers[header_class::KEY] = header_class.header(type, token)
     end
 
     # Internal: Traverse the middleware stack in search of a

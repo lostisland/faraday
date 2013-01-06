@@ -10,17 +10,6 @@ module Faraday
   #   end
   #
   class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
-    extend MiddlewareRegistry
-
-    register_middleware File.expand_path('../request', __FILE__),
-      :url_encoded => [:UrlEncoded, 'url_encoded'],
-      :multipart => [:Multipart, 'multipart'],
-      :retry => [:Retry, 'retry'],
-      :authorization => [:Authorization, 'authorization'],
-      :basic_auth => [:BasicAuthentication, 'basic_authentication'],
-      :token_auth => [:TokenAuthentication, 'token_authentication'],
-      :instrumentation => [:Instrumentation, 'instrumentation']
-
     def self.create(request_method)
       new(request_method).tap do |request|
         yield request if block_given?
