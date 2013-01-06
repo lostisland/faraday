@@ -250,7 +250,7 @@ module Faraday
   require_libs "utils", "options", "connection", "parameters", "upload_io",
     "request", "response", "error"
 
-  require_lib('legacy') unless const_defined?(:LEGACY)
+  require_lib('legacy') unless ENV['FARADAY_CALLBACKS'] || const_defined?(:LEGACY)
 
   def self.const_missing(name)
     if name.to_sym == :Builder
