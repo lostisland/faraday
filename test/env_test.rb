@@ -184,6 +184,9 @@ class ResponseTest < Faraday::TestCase
     hash = @response.to_hash
     assert_kind_of Hash, hash
     assert_equal @env.to_hash, hash
+    assert_equal hash[:status], @response.status
+    assert_equal hash[:response_headers], @response.headers
+    assert_equal hash[:body], @response.body
   end
 end
 
