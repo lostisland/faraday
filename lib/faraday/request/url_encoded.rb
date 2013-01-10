@@ -1,6 +1,6 @@
 module Faraday
   class Request::UrlEncoded < Faraday::Middleware
-    CONTENT_TYPE = 'Content-Type'.freeze
+    CONTENT_TYPE = 'Content-Type'.freeze unless defined? CONTENT_TYPE
 
     class << self
       attr_accessor :mime_type

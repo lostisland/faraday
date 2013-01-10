@@ -3,7 +3,7 @@ require File.expand_path("../url_encoded", __FILE__)
 module Faraday
   class Request::Multipart < Request::UrlEncoded
     self.mime_type = 'multipart/form-data'.freeze
-    DEFAULT_BOUNDARY = "-----------RubyMultipartPost".freeze
+    DEFAULT_BOUNDARY = "-----------RubyMultipartPost".freeze unless defined? DEFAULT_BOUNDARY
 
     def call(env)
       match_content_type(env) do |params|

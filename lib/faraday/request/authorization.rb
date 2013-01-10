@@ -1,6 +1,6 @@
 module Faraday
   class Request::Authorization < Faraday::Middleware
-    KEY = "Authorization".freeze
+    KEY = "Authorization".freeze unless defined? KEY
 
     # Public
     def self.header(type, token)
