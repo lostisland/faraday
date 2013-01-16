@@ -62,17 +62,17 @@ end
 
 conn.get do |req|
   req.url '/search'
-  req.options.timeout = 5           # open/read timeout in seconds
-  req.options.open_timeout = 2      # connection open timeout in seconds
+  req.options[:timeout] = 5           # open/read timeout in seconds
+  req.options[:open_timeout] = 2      # connection open timeout in seconds
 
   # set proxy with string
-  req.options.proxy = "http://user:password@example.org/"
+  req.options[:proxy] = "http://user:password@example.org/"
 
   # set proxy with hash
-  req.options.proxy = { :uri => 'http://user:passwordexample.org' }
+  req.options[:proxy] = { :uri => 'http://user:passwordexample.org' }
 
   # specify proxy user/pass
-  req.options.proxy = { :uri => 'http://user:pass.org',
+  req.options[:proxy] = { :uri => 'http://user:pass.org',
     :user => 'user',
     :password => 'pass' }
 end
