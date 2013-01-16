@@ -10,6 +10,9 @@ $ script/test
 
 # run only specific files
 $ script/test excon typhoeus
+
+# run tests using SSL
+$ SSL=yes script/test
 ```
 
 We will accept middleware that:
