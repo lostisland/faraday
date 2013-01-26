@@ -4,7 +4,6 @@ language: ruby
 
 matrix:
   allow_failures:
-    - rvm: ruby-head
     # An error occured while installing eventmachine
     - rvm: rbx-18mode
     - rvm: rbx-19mode
@@ -12,6 +11,7 @@ matrix:
     #  Internal Error (sharedRuntime.cpp:843)"
     - rvm: jruby-19mode
       env: SSL=yes
+    - rvm: 2.0.0
 
 env:
   - SSL=no
@@ -25,4 +25,4 @@ rvm:
   - 1.8.7
   - 1.9.2
   - 1.9.3
-  - ruby-head
+  - 2.0.0
