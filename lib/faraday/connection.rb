@@ -57,6 +57,8 @@ module Faraday
       proxy(options.fetch(:proxy) { ENV['http_proxy'] })
 
       yield self if block_given?
+
+      @headers[:user_agent] ||= "Faraday v#{VERSION}"
     end
 
     # Public: Replace default query parameters.
