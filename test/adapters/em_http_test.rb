@@ -8,7 +8,8 @@ module Adapters
     Integration.apply(self, :Parallel) do
       # https://github.com/eventmachine/eventmachine/pull/289
       undef :test_timeout
-    end
+    end unless jruby? and ssl_mode?
+    # https://github.com/eventmachine/eventmachine/issues/180
 
   end
 end

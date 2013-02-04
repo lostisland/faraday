@@ -5,13 +5,6 @@ language: ruby
 matrix:
   allow_failures:
     - rvm: ruby-head
-  exclude:
-    # JRuby + SSL stalls indefinitely on Travis
-    # https://travis-ci.org/lostisland/faraday/builds/4568790
-    - rvm: jruby-18mode
-      env: SSL=yes
-    - rvm: jruby-19mode
-      env: SSL=yes
 
 env:
   - SSL=no
