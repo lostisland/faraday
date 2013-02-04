@@ -121,7 +121,7 @@ begin
 end until responsive.call('/echo')
 
 ENV['LIVE'] = "http#{ssl_mode ? 's' : ''}://#{host}:#{port}"
-ok = system 'ruby', '-Ilib:test', '-S', 'testrb', *test_files
+ok = system 'ruby', '-Ilib:test', '-e', 'ARGV.each {|f| load(f) }', *test_files
 
 server.respond_to?(:stop!) ? server.stop! : server.stop
 thread.join

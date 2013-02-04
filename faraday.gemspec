@@ -20,7 +20,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'multipart-post', '~> 1.1'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'simplecov'
-  spec.add_development_dependency 'test-unit'
 
   spec.files = %w(Gemfile LICENSE.md README.md Rakefile)
   spec.files += Dir.glob("lib/**/*.rb")
