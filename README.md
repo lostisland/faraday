@@ -223,7 +223,7 @@ of a major release, support for that Ruby version may be dropped.
 
 ## Copyright
 
-Copyright (c) 2009-2012 [Rick Olson](mailto:technoweenie@gmail.com), zack hobson.
+Copyright (c) 2009-2013 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
 [travis]:    http://travis-ci.org/technoweenie/faraday
