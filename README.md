@@ -208,8 +208,7 @@ implementations:
 * [JRuby][]
 * [Rubinius][]
 
-If something doesn't work on one of these interpreters, it should be considered
-a bug.
+If something doesn't work on one of these Ruby versions, it's a bug.
 
 This library may inadvertently work (or seem to work) on other Ruby
 implementations, however support will only be provided for the versions listed
@@ -218,22 +217,20 @@ above.
 If you would like this library to support another Ruby version, you may
 volunteer to be a maintainer. Being a maintainer entails making sure all tests
 run and pass on that implementation. When something breaks on your
-implementation, you will be personally responsible for providing patches in a
-timely fashion. If critical issues for a particular implementation exist at the
-time of a major release, support for that Ruby version may be dropped.
+implementation, you will be responsible for providing patches in a timely
+fashion. If critical issues for a particular implementation exist at the time
+of a major release, support for that Ruby version may be dropped.
 
 ## Copyright
 
 Copyright (c) 2009-2012 [Rick Olson](mailto:technoweenie@gmail.com), zack hobson.
 See [LICENSE][] for details.
 
-
-  [license]:   https://github.com/technoweenie/faraday/blob/master/LICENSE.md
-  [travis]:    http://travis-ci.org/technoweenie/faraday
-  [jruby]:     http://jruby.org/
-  [rubinius]:  http://rubini.us/
-  [excon]:     https://github.com/geemus/excon#readme
-  [typhoeus]:  https://github.com/typhoeus/typhoeus#readme
-  [patron]:    http://toland.github.com/patron/
-
-  [eventmachine]: https://github.com/igrigorik/em-http-request#readme
+[travis]:    http://travis-ci.org/technoweenie/faraday
+[excon]:     https://github.com/geemus/excon#readme
+[typhoeus]:  https://github.com/typhoeus/typhoeus#readme
+[patron]:    http://toland.github.com/patron/
+[eventmachine]: https://github.com/igrigorik/em-http-request#readme
+[jruby]:     http://jruby.org/
+[rubinius]:  http://rubini.us/
+[license]:   https://github.com/technoweenie/faraday/blob/master/LICENSE.md
