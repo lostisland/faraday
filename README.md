@@ -233,4 +233,4 @@ See [LICENSE][] for details.
 [eventmachine]: https://github.com/igrigorik/em-http-request#readme
 [jruby]:     http://jruby.org/
 [rubinius]:  http://rubini.us/
-[license]:   https://github.com/technoweenie/faraday/blob/master/LICENSE.md
+[license]:   LICENSE.md
