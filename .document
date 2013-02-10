@@ -1,5 +1,6 @@
-README.rdoc
-lib/**/*.rb
+CONTRIBUTING.md
+LICENSE.md
+README.md
 bin/*
-features/**/*.feature
-LICENSE
+lib/**/*.rb
+test/**/*.rb
