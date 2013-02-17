@@ -22,7 +22,13 @@ def create_self_signed_cert(bits, cn, comment)
   return [cert, rsa]
 end
 
+# One cert / CA for ease of testing when ignoring verification
 cert, key = create_self_signed_cert(1024, [['CN', 'localhost']], 'Faraday Test CA')
 FileUtils.mkdir_p 'tmp'
 File.open('tmp/faraday-cert.key', 'w') {|f| f.puts(key) }
 File.open('tmp/faraday-cert.crt', 'w') {|f| f.puts(cert.to_s) }
+
+# And a second CA to prove that verification can fail
+cert, key = create_self_signed_cert(1024, [['CN', 'real-ca.com']], 'A different CA')
+File.open('tmp/faraday-different-ca-cert.key', 'w') {|f| f.puts(key) }
+File.open('tmp/faraday-different-ca-cert.crt', 'w') {|f| f.puts(cert.to_s) }
