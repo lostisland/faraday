@@ -8,6 +8,7 @@ rescue LoadError
 end
 
 module Faraday
+  # Similar but not compatible with ::CompositeReadIO provided by multipart-post.
   class CompositeReadIO
     def initialize(*parts)
       @parts = parts.flatten
@@ -24,28 +25,32 @@ module Faraday
       @index = 0
     end
 
+    # Read from IOs in order until `length` bytes have been received.
     def read(length = nil, outbuf = nil)
-      if length.nil? || length.zero?
-        outbuf = outbuf ? outbuf.replace("") : ""
-        @ios.inject(outbuf) { |str, io| str << io.read } if length.nil?
-        outbuf
-      else
-        got_result = false
-        while part = @ios[@index]
-          if result = part.read(length)
-            unless got_result
-              outbuf = outbuf ? outbuf.replace("") : ""
-              got_result = true
-            end
-            result.force_encoding("BINARY") if result.respond_to?(:force_encoding)
-            outbuf << result
-            length -= result.length
-            break if length.zero?
-          end
-          @index += 1
+      got_result = false
+      outbuf = outbuf ? outbuf.replace("") : ""
+
+      while io = current_io
+        if result = io.read(length)
+          got_result ||= !result.nil?
+          result.force_encoding("BINARY") if result.respond_to?(:force_encoding)
+          outbuf << result
+          length -= result.length if length
+          break if length == 0
         end
-        got_result ? outbuf : nil
+        advance_io
       end
+      (!got_result && length) ? nil : outbuf
+    end
+
+    private
+
+    def current_io
+      @ios[@index]
+    end
+
+    def advance_io
+      @index += 1
     end
   end
 
