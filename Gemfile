@@ -6,7 +6,7 @@ gem 'rake'
 
 group :test do
   gem 'em-http-request', '>= 1.0', :require => 'em-http'
-  gem 'em-synchrony', '>= 1.0', :require => ['em-synchrony', 'em-synchrony/em-http'], :platforms => :ruby_19
+  gem 'em-synchrony', '>= 1.0', :require => ['em-synchrony', 'em-synchrony/em-http']
   gem 'excon', '>= 0.16.1'
   gem 'httpclient', '>= 2.2'
   gem 'leftright', '>= 0.9', :require => false
