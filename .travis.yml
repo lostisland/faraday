@@ -2,10 +2,6 @@ script: script/test
 
 language: ruby
 
-matrix:
-  allow_failures:
-    - rvm: ruby-head
-
 env:
   - SSL=no
   - SSL=yes
