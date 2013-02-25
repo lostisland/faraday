@@ -26,7 +26,7 @@ module Adapters
         ensure
           ENV['SSL_FILE'] = original_ssl_file
         end
-      end
+      end if ssl_mode?
 
     end unless jruby?
   end
