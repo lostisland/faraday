@@ -1,7 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 require 'stringio'
 
-class CompositeReadIOTest < MiniTest::Unit::TestCase
+class CompositeReadIOTest < Faraday::TestCase
   Part = Struct.new(:to_io) do
     def length() to_io.string.length end
   end
@@ -70,9 +70,13 @@ class CompositeReadIOTest < MiniTest::Unit::TestCase
     assert_equal "ab", io.read(2)
   end
 
-  if IO.respond_to?(:copy_stream)
+  # JRuby enforces types to copy_stream to be String or IO
+  if IO.respond_to?(:copy_stream) && !jruby?
     def test_compatible_with_copy_stream
       target_io = StringIO.new
+      def target_io.ensure_open_and_writable
+        # Rubinius compatibility
+      end
       io = composite_io(part("abcd"), part("1234"))
 
       Faraday::Timer.timeout(1) do

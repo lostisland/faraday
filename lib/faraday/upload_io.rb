@@ -43,6 +43,14 @@ module Faraday
       (!got_result && length) ? nil : outbuf
     end
 
+    def close
+      @ios.each { |io| io.close }
+    end
+
+    def ensure_open_and_readable
+      # Rubinius compatibility
+    end
+
     private
 
     def current_io
