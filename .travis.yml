@@ -15,7 +15,6 @@ matrix:
     #  Internal Error (sharedRuntime.cpp:843)"
     - rvm: jruby-19mode
       env: SSL=yes
-    - rvm: 2.0.0
 
 rvm:
   - rbx-18mode
