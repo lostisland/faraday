@@ -1,12 +1,11 @@
-unless ENV['CI']
-  begin
-    require 'simplecov'
-    SimpleCov.start do
-      add_filter 'test'
-    end
-  rescue LoadError
-  end
-end
+require 'simplecov'
+require 'coveralls'
+
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+  SimpleCov::Formatter::HTMLFormatter,
+  Coveralls::SimpleCov::Formatter
+]
+SimpleCov.start
 
 require 'minitest/autorun'
 
