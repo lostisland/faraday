@@ -70,14 +70,16 @@ class CompositeReadIOTest < Test::Unit::TestCase
     assert_equal "ab", io.read(2)
   end
 
-  def test_compatible_with_copy_stream
-    target_io = StringIO.new
-    io = composite_io(part("abcd"), part("1234"))
+  if IO.respond_to?(:copy_stream)
+    def test_compatible_with_copy_stream
+      target_io = StringIO.new
+      io = composite_io(part("abcd"), part("1234"))
 
-    Faraday::Timer.timeout(1) do
-      IO.copy_stream(io, target_io)
+      Faraday::Timer.timeout(1) do
+        IO.copy_stream(io, target_io)
+      end
+      assert_equal "abcd1234", target_io.string
     end
-    assert_equal "abcd1234", target_io.string
   end
 
   unless RUBY_VERSION < '1.9'
