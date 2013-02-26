@@ -29,10 +29,13 @@ module Faraday
       end
 
       def to_rack_env(faraday_env)
+        body = faraday_env.body
+        body = body.read if body.respond_to? :read
+
         @rack_client_app.build_env(faraday_env.method.to_s.upcase,
                                    faraday_env.url.to_s,
                                    faraday_env.request_headers,
-                                   faraday_env.body)
+                                   body)
       end
 
     end
