@@ -5,6 +5,8 @@ module Faraday
       dependency 'rack/client'
 
       def initialize(faraday_app, rack_client_adapter = :default, *a, &b)
+        super(faraday_app)
+
         klass = case rack_client_adapter
                 when :default then ::Rack::Client
                 when :simple  then ::Rack::Client::Simple
@@ -15,8 +17,22 @@ module Faraday
         @rack_client_app = klass.new(*a, &b)
       end
 
-      def call(env)
-        @rack_client_app.call(env)
+      def call(faraday_env)
+        rack_env      = to_rack_env(faraday_env)
+        rack_response = @rack_client_app.call(rack_env)
+
+        status, headers, body = rack_response
+
+        save_response(faraday_env, status, body.join, headers)
+
+        @app.call faraday_env
+      end
+
+      def to_rack_env(faraday_env)
+        @rack_client_app.build_env(faraday_env.method.to_s.upcase,
+                                   faraday_env.url.to_s,
+                                   faraday_env.request_headers,
+                                   faraday_env.body)
       end
 
     end
