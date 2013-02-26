@@ -18,8 +18,14 @@ module Faraday
       end
 
       def call(faraday_env)
-        rack_env      = to_rack_env(faraday_env)
-        rack_response = @rack_client_app.call(rack_env)
+        rack_env = to_rack_env(faraday_env)
+        timeout  = faraday_env[:request][:timeout] || faraday_env[:request][:open_timeout]
+
+        rack_response = if timeout
+          Timer.timeout(timeout, Faraday::Error::TimeoutError) { @rack_client_app.call(rack_env) }
+        else
+          @rack_client_app.call(rack_env)
+        end
 
         status, headers, body = rack_response
 
