@@ -8,6 +8,7 @@ module Adapters
 
     def adapter_block
       lambda do |builder|
+        builder.use Rack::Lint
         builder.run Faraday::LiveServer
       end
     end

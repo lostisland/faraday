@@ -27,9 +27,14 @@ module Faraday
           @rack_client_app.call(rack_env)
         end
 
-        status, headers, body = rack_response
+        status, headers, rack_body = rack_response.to_a
 
-        save_response(faraday_env, status, body.join, headers)
+        body = ''
+        rack_body.each {|part| body << part }
+
+        rack_body.close if rack_body.respond_to? :close
+
+        save_response(faraday_env, status, body, headers)
 
         @app.call faraday_env
       end
