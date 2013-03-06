@@ -170,7 +170,7 @@ module Faraday
       end
     end
 
-    ESCAPE_RE = /[^\w .~-]+/
+    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
 
     def escape(s)
       s.to_s.gsub(ESCAPE_RE) {
