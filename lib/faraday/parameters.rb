@@ -1,6 +1,6 @@
 module Faraday
   module NestedParamsEncoder
-    ESCAPE_RE = /[^a-z0-9 \-\.\_\~\#\@\!\$\'\(\)\*\,\;\=]/i
+    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
 
     def self.escape(s)
       return s.to_s.gsub(ESCAPE_RE) {
@@ -117,7 +117,7 @@ module Faraday
   end
 
   module FlatParamsEncoder
-    ESCAPE_RE = /[^a-z0-9 \-\.\_\~\#\@\!\$\'\(\)\*\,\;\=]/i
+    ESCAPE_RE =  /[^a-zA-Z0-9 .~_-]/
 
     def self.escape(s)
       return s.to_s.gsub(ESCAPE_RE) {
