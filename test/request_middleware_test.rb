@@ -66,6 +66,17 @@ class RequestMiddlewareTest < Faraday::TestCase
     assert err.empty?
   end
 
+  def test_url_encoded_unicode_with_kcode_set
+    previous_kcode = $KCODE
+    $KCODE = "UTF8"
+    err = capture_warnings {
+      response = @conn.post('/echo', {:str => "eé cç aã aâ"})
+      assert_equal "str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2", response.body
+    }
+    assert err.empty?
+    $KCODE = previous_kcode
+  end
+
   def test_url_encoded_nested_keys
     response = @conn.post('/echo', {'a'=>{'b'=>{'c'=>['d']}}})
     assert_equal "a%5Bb%5D%5Bc%5D%5B%5D=d", response.body

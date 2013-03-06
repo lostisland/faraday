@@ -155,7 +155,7 @@ module Faraday
       NestedParamsEncoder.encode(params)
     end
 
-    ESCAPE_RE = /[^a-z0-9\-\.\_\~]/i
+    ESCAPE_RE = /[^a-z0-9 \-\.\_\~\#\@\!\$\'\(\)\*\,\;\=]/i
 
     def escape(s)
       s.to_s.gsub(ESCAPE_RE) {
