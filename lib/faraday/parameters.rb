@@ -175,7 +175,6 @@ module Faraday
       end).compact
       return split_query.inject(empty_accumulator.dup) do |accu, pair|
         pair[0] = unescape(pair[0])
-        pair[1] = true if pair[1].nil?
         if pair[1].respond_to?(:to_str)
           pair[1] = unescape(pair[1].to_str.gsub(/\+/, " "))
         end
