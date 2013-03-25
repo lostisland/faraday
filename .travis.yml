@@ -1,4 +1,5 @@
-bundler_args: --without development
+bundler_args: --standalone --without development
+script: RUBYLIB=./bundle script/test
 
 env:
   - SSL=no
@@ -25,5 +26,3 @@ rvm:
   - 1.9.2
   - 1.9.3
   - 2.0.0
-
-script: script/test

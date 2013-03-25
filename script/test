@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env bash
 # Usage: script/test [file] [adapter]... -- [test/unit options]
 # Runs the test suite against a local server spawned automatically in a
 # thread. After tests are done, the server is shut down.
@@ -14,120 +14,127 @@
 #
 #   # Run only tests matching /ssl/ for the net_http adapter, with SSL enabled.
 #   $ SSL=yes script/test net_http -- -n /ssl/
+#
+#   # Run against multiple rbenv versions
+#   $ RBENV_VERSIONS="1.9.3-p194 ree-1.8.7-2012.02" script/test
+set -e
 
-require 'rubygems'
-require 'bundler'
-begin
-  Bundler.setup
-rescue Bundler::GemNotFound
-  $stderr.print "Error: "
-  $stderr.puts $!.message
-  warn "Run `bundle install` to install missing gems."
-  exit 1
-end
+if [[ "$RUBYOPT" != *"bundler/setup"* ]]; then
+  export RUBYOPT="-rbundler/setup $RUBYOPT"
+fi
 
-$VERBOSE = true
+port=3999
+scheme=http
 
-host      = 'localhost'
-logfile   = 'log/test.log'
-test_glob = 'test/**/*_test.rb'
+if [ "$SSL" = "yes" ]; then
+  scheme=https
+  if [ -z "$SSL_KEY" ] || [ -z "$SSL_FILE" ]; then
+    eval "$(script/generate_certs -s)"
+  fi
+fi
 
-if ssl_mode = ENV['SSL'] == 'yes'
-  unless ENV['SSL_KEY'] and ENV['SSL_FILE']
-    key_file  = ENV['SSL_KEY']  = 'tmp/faraday-cert.key'
-    cert_file = ENV['SSL_FILE'] = 'tmp/faraday-cert.crt'
-    system 'script/generate_certs'
-    abort unless $?.success?
-  end
-end
-
-require 'fileutils'
-FileUtils.mkdir_p 'log'
-
-# find available port
-require 'socket'
-port = begin
-  server = TCPServer.new(host, 0)
-  server.addr[1]
-ensure
-  server.close if server
-end
-
-server = nil
-require 'openssl' # for JRuby 1.6.7.2 in 1.9 mode on Travis
-
-Thread.abort_on_exception = true
-
-# start test server in a separate thread
-thread = Thread.new do
-  old_verbose, $VERBOSE = $VERBOSE, nil
-  begin
-    require File.expand_path('../../test/live_server', __FILE__)
-  ensure
-    $VERBOSE = old_verbose
-  end
-  require 'webrick'
-  log_io = File.open logfile, 'w'
-  log_io.sync = true
-  webrick_opts = {
-    :Port => port, :Logger => WEBrick::Log::new(log_io),
-    :AccessLog => [[log_io, "[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b"]]
-  }
-  if ssl_mode
-    require 'webrick/https'
-    webrick_opts.update \
-      :SSLEnable       => true,
-      :SSLPrivateKey   => OpenSSL::PKey::RSA.new(File.read(key_file)),
-      :SSLCertificate  => OpenSSL::X509::Certificate.new(File.read(cert_file)),
-      :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE
-  end
-  Rack::Handler::WEBrick.run(Faraday::LiveServer, webrick_opts) {|serv| server = serv }
-end
-
-# find files to test
-test_files = Dir[test_glob]
-if ARGV.any?
-  all_files, test_files = test_files, []
-  args, extra_args = ARGV, []
-  if idx = args.index('--')
-     extra_args = args[(idx+1)..-1]
-     args = args[0, idx]
-  end
-  for arg in args
-    re = /(\b|_)#{arg}(\b|_)/
-    test_files.concat all_files.select { |f| f =~ re }
-  end
-  test_files.concat extra_args
-end
-
-require 'net/https'
-conn = Net::HTTP.new host, port
-conn.open_timeout = conn.read_timeout = 0.1
-conn.use_ssl      = ssl_mode
-conn.verify_mode  = OpenSSL::SSL::VERIFY_NONE
-
-# test if test server is accepting requests
-responsive = lambda { |path|
-  begin
-    res = conn.start { conn.get(path) }
-    res.is_a?(Net::HTTPSuccess)
-  rescue Errno::ECONNREFUSED, Errno::EBADF, Timeout::Error, Net::HTTPBadResponse
-    false
-  end
+find_test_files() {
+  find "$1" -name '*_test.rb'
 }
 
-server_pings = 0
-begin
-  # block until test server is ready
-  thread.join 0.05
-  server_pings += 1
-  abort "test server didn't manage to start" if server_pings >= 50
-end until responsive.call('/echo')
+filter_matching() {
+  pattern="$1"
+  shift
+  for line in "$@"; do
+    [[ $line == *"$pattern"* ]] && echo "$line"
+  done
+}
 
-ENV['LIVE'] = "http#{ssl_mode ? 's' : ''}://#{host}:#{port}"
-ok = system 'ruby', '-Ilib:test', '-e', 'ARGV.each{|f| load f }', *test_files
+start_server() {
+  script/server -p $port >/dev/null 2>&1 &
+  echo $!
+}
 
-server.respond_to?(:stop!) ? server.stop! : server.stop
-thread.join
+server_started() {
+  lsof -i :$port >/dev/null
+}
 
-exit 1 unless ok
+timestamp() {
+  date +%s
+}
+
+wait_for_server() {
+  timeout=$(( `timestamp` + $1 ))
+  while true; do
+    if server_started; then
+      break
+    elif [ `timestamp` -gt "$timeout" ]; then
+      echo "timed out after $1 seconds" >&2
+      return 1
+    fi
+  done
+}
+
+filtered=
+IFS=$'\n' test_files=($(find_test_files "test"))
+declare -a explicit_files
+
+# Process filter arguments:
+# - test filenames as taken as-is
+# - other words are taken as pattern to match the list of known files against
+# - arguments after "--" are forwarded to the ruby process
+while [ $# -gt 0 ]; do
+  arg="$1"
+  shift
+  if [ "$arg" = "--" ]; then
+    break
+  elif [ -f "$arg" ]; then
+    filtered=true
+    explicit_files[${#explicit_files[@]}+1]="$arg"
+  else
+    filtered=true
+    IFS=$'\n' explicit_files=(
+      ${explicit_files[@]}
+      $(filter_matching "$arg" "${test_files[@]}" || true)
+    )
+  fi
+done
+
+# If there were filter args, replace test files list with the results
+if [ -n "$filtered" ]; then
+  if [ ${#explicit_files[@]} -eq 0 ]; then
+    echo "Error: no test files match" >&2
+    exit 1
+  else
+    test_files=(${explicit_files[@]})
+    echo running "${test_files[@]}"
+  fi
+fi
+
+# If there are any adapter tests, spin up the HTTP server
+if [ -n "$(filter_matching "adapters" "${test_files[@]}")" ]; then
+  if server_started; then
+    echo "aborted: another instance of server running on $port" >&2
+    exit 1
+  fi
+  server_pid=$(start_server)
+  wait_for_server 15
+  cleanup() {
+    if [ $? -ne 0 ] && [ -n "$TRAVIS" ]; then
+      cat log/test.log
+    fi
+    kill "$server_pid"
+  }
+  trap cleanup INT EXIT
+  export LIVE="${scheme}://localhost:${port}"
+fi
+
+run_test_files() {
+  ruby -e 'while f=ARGV.shift and f!="--"; load f; end' "${test_files[@]}" -- "$@"
+}
+
+if [ -n "$RBENV_VERSIONS" ]; then
+  IFS=' ' versions=($RBENV_VERSIONS)
+  for version in "${versions[@]}"; do
+    echo "[${version}]"
+    RBENV_VERSION="$version" run_test_files "$@"
+  done
+else
+  run_test_files "$@"
+fi
+

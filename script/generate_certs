@@ -5,6 +5,8 @@
 require 'openssl'
 require 'fileutils'
 
+$shell = ARGV.include? '-s'
+
 # Adapted from WEBrick::Utils. Skips cert extensions so it
 # can be used as a CA bundle
 def create_self_signed_cert(bits, cn, comment)
@@ -22,13 +24,19 @@ def create_self_signed_cert(bits, cn, comment)
   return [cert, rsa]
 end
 
+def write(file, contents, env_var)
+  FileUtils.mkdir_p(File.dirname(file))
+  File.open(file, 'w') {|f| f.puts(contents) }
+  puts %(export #{env_var}="#{file}") if $shell
+end
+
+
 # One cert / CA for ease of testing when ignoring verification
 cert, key = create_self_signed_cert(1024, [['CN', 'localhost']], 'Faraday Test CA')
-FileUtils.mkdir_p 'tmp'
-File.open('tmp/faraday-cert.key', 'w') {|f| f.puts(key) }
-File.open('tmp/faraday-cert.crt', 'w') {|f| f.puts(cert.to_s) }
+write 'tmp/faraday-cert.key', key,  'SSL_KEY'
+write 'tmp/faraday-cert.crt', cert, 'SSL_FILE'
 
 # And a second CA to prove that verification can fail
 cert, key = create_self_signed_cert(1024, [['CN', 'real-ca.com']], 'A different CA')
-File.open('tmp/faraday-different-ca-cert.key', 'w') {|f| f.puts(key) }
-File.open('tmp/faraday-different-ca-cert.crt', 'w') {|f| f.puts(cert.to_s) }
+write 'tmp/faraday-different-ca-cert.key', key,  'SSL_KEY_ALT'
+write 'tmp/faraday-different-ca-cert.crt', cert, 'SSL_FILE_ALT'

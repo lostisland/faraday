@@ -1,3 +1,5 @@
+require 'rubygems'         # rubygems/version doesn't work by itself
+require 'rubygems/version' # for simplecov-html
 require 'simplecov'
 require 'coveralls'
 
@@ -5,7 +7,9 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
   SimpleCov::Formatter::HTMLFormatter,
   Coveralls::SimpleCov::Formatter
 ]
-SimpleCov.start
+SimpleCov.start do
+  add_filter '/bundle/'
+end
 
 require 'minitest/autorun'
 
@@ -20,14 +24,6 @@ end
 require File.expand_path('../../lib/faraday', __FILE__)
 Dir[File.expand_path('../../lib/faraday/r*/*', __FILE__)].each do |file|
   require file
-end
-
-begin
-  require 'ruby-debug'
-rescue LoadError
-  # ignore
-else
-  Debugger.start
 end
 
 require 'stringio'
