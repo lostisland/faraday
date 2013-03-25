@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+# Usage: generate_certs
+# Generate test certs for testing Faraday with SSL
+
+require 'openssl'
+require 'fileutils'
+
+$shell = ARGV.include? '-s'
+
+# Adapted from WEBrick::Utils. Skips cert extensions so it
+# can be used as a CA bundle
+def create_self_signed_cert(bits, cn, comment)
+  rsa = OpenSSL::PKey::RSA.new(bits)
+  cert = OpenSSL::X509::Certificate.new
+  cert.version = 2
+  cert.serial = 1
+  name = OpenSSL::X509::Name.new(cn)
+  cert.subject = name
+  cert.issuer = name
+  cert.not_before = Time.now
+  cert.not_after = Time.now + (365*24*60*60)
+  cert.public_key = rsa.public_key
+  cert.sign(rsa, OpenSSL::Digest::SHA1.new)
+  return [cert, rsa]
+end
+
+def write(file, contents, env_var)
+  FileUtils.mkdir_p(File.dirname(file))
+  File.open(file, 'w') {|f| f.puts(contents) }
+  puts %(export #{env_var}="#{file}") if $shell
+end
+
+
+# One cert / CA for ease of testing when ignoring verification
+cert, key = create_self_signed_cert(1024, [['CN', 'localhost']], 'Faraday Test CA')
+write 'tmp/faraday-cert.key', key,  'SSL_KEY'
+write 'tmp/faraday-cert.crt', cert, 'SSL_FILE'
+
+# And a second CA to prove that verification can fail
+cert, key = create_self_signed_cert(1024, [['CN', 'real-ca.com']], 'A different CA')
+write 'tmp/faraday-different-ca-cert.key', key,  'SSL_KEY_ALT'
+write 'tmp/faraday-different-ca-cert.crt', cert, 'SSL_FILE_ALT'

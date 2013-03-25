@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+old_verbose, $VERBOSE = $VERBOSE, nil
+begin
+  require File.expand_path('../../test/live_server', __FILE__)
+ensure
+  $VERBOSE = old_verbose
+end
+require 'webrick'
+require 'fileutils'
+
+port = 4000
+if found = ARGV.index('-p')
+  port = ARGV[found + 1].to_i
+end
+
+FileUtils.mkdir_p('log')
+log_io = File.open('log/test.log', 'w')
+log_io.sync = true
+
+webrick_opts = {
+  :Port => port, :Logger => WEBrick::Log::new(log_io),
+  :AccessLog => [[log_io, "[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b"]]
+}
+
+if ENV['SSL_KEY']
+  require 'openssl'
+  require 'webrick/https'
+  webrick_opts.update \
+    :SSLEnable       => true,
+    :SSLPrivateKey   => OpenSSL::PKey::RSA.new(File.read(ENV['SSL_KEY'])),
+    :SSLCertificate  => OpenSSL::X509::Certificate.new(File.read(ENV['SSL_FILE'])),
+    :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE
+end
+
+Rack::Handler::WEBrick.run(Faraday::LiveServer, webrick_opts) do |server|
+  trap(:INT)  { server.stop }
+  trap(:TERM) { server.stop }
+end

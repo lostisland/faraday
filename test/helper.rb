@@ -3,6 +3,7 @@ unless ENV['CI']
     require 'simplecov'
     SimpleCov.start do
       add_filter 'test'
+      add_filter '/bundle/'
     end
   rescue LoadError
   end
@@ -19,14 +20,6 @@ if ENV['LEFTRIGHT']
 end
 
 require File.expand_path('../../lib/faraday', __FILE__)
-
-begin
-  require 'ruby-debug'
-rescue LoadError
-  # ignore
-else
-  Debugger.start
-end
 
 require 'stringio'
 require 'uri'

@@ -1,4 +1,5 @@
-script: script/test
+bundler_args: --standalone --without development
+script: RUBYLIB=./bundle script/test
 
 language: ruby
 
@@ -14,4 +15,4 @@ rvm:
   - 1.8.7
   - 1.9.2
   - 1.9.3
-  - ruby-head
+  - 2.0.0
