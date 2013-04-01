@@ -1,4 +1,5 @@
 require 'uri'
+require 'thread'
 Faraday.require_libs 'parameters'
 
 module Faraday
@@ -17,14 +18,18 @@ module Faraday
         self.update hash
       end
 
+      # need to synchronize concurrent writes to the shared KeyMap
+      keymap_mutex = Mutex.new
+
       # symbol -> string mapper + cache
       KeyMap = Hash.new do |map, key|
-        map[key] = if key.respond_to?(:to_str) then key
+        value = if key.respond_to?(:to_str) then key
         else
           key.to_s.split('_').            # :user_agent => %w(user agent)
             each { |w| w.capitalize! }.   # => %w(User Agent)
             join('-')                     # => "User-Agent"
         end
+        keymap_mutex.synchronize { map[key] = value }
       end
       KeyMap[:etag] = "ETag"
 
