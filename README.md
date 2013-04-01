@@ -205,6 +205,7 @@ implementations:
 * MRI 1.8.7
 * MRI 1.9.2
 * MRI 1.9.3
+* MRI 2.0.0
 * [JRuby][]
 * [Rubinius][]
 
@@ -226,7 +227,7 @@ of a major release, support for that Ruby version may be dropped.
 Copyright (c) 2009-2013 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
-[travis]:    http://travis-ci.org/technoweenie/faraday
+[travis]:    http://travis-ci.org/lostisland/faraday
 [excon]:     https://github.com/geemus/excon#readme
 [typhoeus]:  https://github.com/typhoeus/typhoeus#readme
 [patron]:    http://toland.github.com/patron/
