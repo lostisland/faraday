@@ -16,7 +16,7 @@ module Faraday
       def perform_request(http, env)
         http.request env[:url], create_request(env)
       rescue Net::HTTP::Persistent::Error => error
-        if error.message.include? 'Timeout::Error'
+        if error.message.include? 'Timeout'
           raise Faraday::Error::TimeoutError, error
         else
           raise
