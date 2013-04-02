@@ -15,15 +15,19 @@ module Faraday
     # borrowed from ActiveSupport::Dependencies::Reference &
     # ActionDispatch::MiddlewareStack::Middleware
     class Handler
+      @@constants_mutex = Mutex.new
       @@constants = Hash.new { |h, k|
-        h[k] = k.respond_to?(:constantize) ? k.constantize : Object.const_get(k)
+        value = k.respond_to?(:constantize) ? k.constantize : Object.const_get(k)
+        @@constants_mutex.synchronize { h[k] = value }
       }
 
       attr_reader :name
 
       def initialize(klass, *args, &block)
         @name = klass.to_s
-        @@constants[@name] = klass if klass.respond_to?(:name)
+        if klass.respond_to?(:name)
+          @@constants_mutex.synchronize { @@constants[@name] = klass }
+        end
         @args, @block = args, block
       end
 
