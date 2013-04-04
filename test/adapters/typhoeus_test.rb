@@ -8,6 +8,10 @@ module Adapters
     Integration.apply(self, :Parallel) do
       # https://github.com/dbalatero/typhoeus/issues/75
       undef :test_GET_with_body
+
+      # Not a Typhoeus bug, but WEBrick inability to handle "100-continue"
+      # which libcurl seems to generate for this particular request:
+      undef :test_POST_sends_files
     end unless jruby?
 
   end
