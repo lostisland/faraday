@@ -9,6 +9,10 @@ module Adapters
       # https://github.com/dbalatero/typhoeus/issues/75
       undef :test_GET_with_body
 
+      # Not a Typhoeus bug, but WEBrick inability to handle "100-continue"
+      # which libcurl seems to generate for this particular request:
+      undef :test_POST_sends_files
+
       def test_binds_local_socket
         host = '1.2.3.4'
         conn = create_connection :request => { :bind => { :host => host } }
