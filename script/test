@@ -46,7 +46,8 @@ filter_matching() {
 }
 
 start_server() {
-  script/server -p $port >/dev/null 2>&1 &
+  mkdir -p log
+  script/server -p $port >log/server.log 2>&1 &
   echo $!
 }
 
@@ -113,7 +114,10 @@ if [ -n "$(filter_matching "adapters" "${test_files[@]}")" ]; then
     exit 1
   fi
   server_pid=$(start_server)
-  wait_for_server 15
+  wait_for_server 15 || {
+    cat log/server.log
+    exit 1
+  }
   cleanup() {
     if [ $? -ne 0 ] && [ -n "$TRAVIS" ]; then
       cat log/test.log
