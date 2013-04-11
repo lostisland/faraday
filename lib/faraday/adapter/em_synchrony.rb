@@ -52,6 +52,10 @@ module Faraday
             client = block.call
           end
 
+          if e = client.error
+            raise e
+          end
+
           save_response(env, client.response_header.status, client.response) do |resp_headers|
             client.response_header.each do |name, value|
               resp_headers[name.to_sym] = value
