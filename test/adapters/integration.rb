@@ -180,6 +180,10 @@ module Adapters
         []
       end
 
+      def adapter_block
+        nil
+      end
+
       def create_connection(options = {})
         if adapter == :default
           builder_block = nil
@@ -187,7 +191,12 @@ module Adapters
           builder_block = Proc.new do |b|
             b.request :multipart
             b.request :url_encoded
-            b.adapter adapter, *adapter_options
+
+            if block = adapter_block
+              b.adapter adapter, *adapter_options, &block
+            else
+              b.adapter adapter, *adapter_options
+            end
           end
         end
 
