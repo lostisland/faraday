@@ -5,7 +5,7 @@ version = $1
 
 Gem::Specification.new do |spec|
   spec.specification_version = 2 if spec.respond_to? :specification_version=
-  spec.required_rubygems_version = '>= 1.3.6'
+  spec.required_rubygems_version = '>= 1.3.5'
 
   spec.name    = lib
   spec.version = version
