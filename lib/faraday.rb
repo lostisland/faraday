@@ -81,6 +81,15 @@ module Faraday
       end
     end
 
+    # Public: Updates default adapter while resetting
+    # #default_connection.
+    #
+    # Returns the new default_adapter.
+    def default_adapter=(adapter)
+      @default_connection = nil
+      @default_adapter = adapter
+    end
+
     alias require_lib require_libs
 
   private
