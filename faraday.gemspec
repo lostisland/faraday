@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'multipart-post', '~> 1.1'
   spec.add_development_dependency 'bundler', '~> 1.0'
 
-  spec.files = %w(.document CONTRIBUTING.md Gemfile LICENSE.md README.md Rakefile)
+  spec.files = %w(.document CHANGELOG.md CONTRIBUTING.md Gemfile LICENSE.md README.md Rakefile)
   spec.files << "#{lib}.gemspec"
   spec.files += Dir.glob("lib/**/*.rb")
   spec.files += Dir.glob("test/**/*.rb")
