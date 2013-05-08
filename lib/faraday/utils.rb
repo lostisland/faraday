@@ -187,7 +187,10 @@ module Faraday
 
     class << self
       attr_writer :default_params_encoder
+      attr_accessor :default_uri_parser
     end
+
+    self.default_uri_parser = Kernel.method(:URI)
 
     # Stolen from Rack
     def normalize_params(params, name, v = nil)
@@ -235,7 +238,7 @@ module Faraday
       if url.respond_to?(:host)
         url
       elsif url.respond_to?(:to_str)
-        Kernel.URI(url)
+        default_uri_parser.call(url)
       else
         raise ArgumentError, "bad argument (expected URI object or URI string)"
       end
