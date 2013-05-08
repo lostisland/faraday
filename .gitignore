@@ -9,6 +9,7 @@ tmp
 .rbenv*
 
 ## BUNDLER
+bin
 *.gem
 .bundle
 Gemfile.lock
