@@ -1,4 +1,3 @@
-require 'uri'
 require 'thread'
 Faraday.require_libs 'parameters'
 
@@ -235,9 +234,24 @@ module Faraday
       if url.respond_to?(:host)
         url
       elsif url.respond_to?(:to_str)
-        Kernel.URI(url)
+        default_uri_parser.call(url)
       else
         raise ArgumentError, "bad argument (expected URI object or URI string)"
+      end
+    end
+
+    def default_uri_parser
+      @default_uri_parser ||= begin
+        require 'uri'
+        Kernel.method(:URI)
+      end
+    end
+
+    def default_uri_parser=(parser)
+      @default_uri_parser = if parser.respond_to?(:call) || parser.nil?
+        parser
+      else
+        parser.method(:parse)
       end
     end
 
