@@ -1,5 +1,4 @@
 require File.expand_path('../helper', __FILE__)
-require 'uri'
 
 class TestConnection < Faraday::TestCase
 

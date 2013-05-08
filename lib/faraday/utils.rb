@@ -1,4 +1,3 @@
-require 'uri'
 require 'thread'
 Faraday.require_libs 'parameters'
 
@@ -187,10 +186,7 @@ module Faraday
 
     class << self
       attr_writer :default_params_encoder
-      attr_accessor :default_uri_parser
     end
-
-    self.default_uri_parser = Kernel.method(:URI)
 
     # Stolen from Rack
     def normalize_params(params, name, v = nil)
@@ -241,6 +237,21 @@ module Faraday
         default_uri_parser.call(url)
       else
         raise ArgumentError, "bad argument (expected URI object or URI string)"
+      end
+    end
+
+    def default_uri_parser
+      @default_uri_parser ||= begin
+        require 'uri'
+        Kernel.method(:URI)
+      end
+    end
+
+    def default_uri_parser=(parser)
+      @default_uri_parser = if parser.respond_to?(:call) || parser.nil?
+        parser
+      else
+        parser.method(:parse)
       end
     end
 
