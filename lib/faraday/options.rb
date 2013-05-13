@@ -32,6 +32,8 @@ module Faraday
       self
     end
 
+    alias merge! update
+
     # Public
     def delete(key)
       value = send(key)
