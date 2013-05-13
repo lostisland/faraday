@@ -322,6 +322,7 @@ module Faraday
     # Returns the new String path prefix.
     def path_prefix=(value)
       url_prefix.path = if value
+        @raw_base_has_trailing_slash = value =~ /\/$/
         value = value.chomp '/'
         value = '/' + value unless value[0,1] == '/'
         value
@@ -394,7 +395,7 @@ module Faraday
     def build_exclusive_url(url, params = nil)
       url = nil if url.respond_to?(:empty?) and url.empty?
       base = url_prefix
-      if url and base.path and base.path !~ /\/$/
+      if (url and base.path and base.path !~ /\/$/) or (url.nil? and base.path and @raw_base_has_trailing_slash)
         base = base.dup
         base.path = base.path + '/'  # ensure trailing slash
       end
