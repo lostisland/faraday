@@ -374,7 +374,7 @@ module Faraday
     #   conn.build_url("nigiri?page=2")      # => https://sushi.com/api/nigiri?token=abc&page=2
     #   conn.build_url("nigiri", :page => 2) # => https://sushi.com/api/nigiri?token=abc&page=2
     #
-    def build_url(url, extra_params = nil)
+    def build_url(url = nil, extra_params = nil)
       uri = build_exclusive_url(url)
 
       query_values = self.params.dup.merge_query(uri.query, options.params_encoder)
@@ -391,7 +391,7 @@ module Faraday
     #          of the resulting url (default: nil).
     #
     # Returns the resulting URI instance.
-    def build_exclusive_url(url, params = nil)
+    def build_exclusive_url(url = nil, params = nil)
       url = nil if url.respond_to?(:empty?) and url.empty?
       base = url_prefix
       if url and base.path and base.path !~ /\/$/
@@ -408,7 +408,7 @@ module Faraday
     #
     # Returns a Faraday::Connection.
     def dup
-      self.class.new(build_url(''), :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
+      self.class.new(build_url, :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
     end
 
     # Internal: Yields username and password extracted from a URI if they both exist.

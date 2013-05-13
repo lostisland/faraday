@@ -104,112 +104,108 @@ class TestConnection < Faraday::TestCase
   def test_build_url_uses_connection_host_as_default_uri_host
     conn = Faraday::Connection.new
     conn.host = 'sushi.com'
-    uri = conn.build_url("/sake.html")
+    uri = conn.build_exclusive_url("/sake.html")
     assert_equal 'sushi.com', uri.host
   end
 
   def test_build_url_overrides_connection_port_for_absolute_urls
     conn = Faraday::Connection.new
     conn.port = 23
-    uri = conn.build_url("http://sushi.com")
+    uri = conn.build_exclusive_url("http://sushi.com")
     assert_equal 80, uri.port
   end
 
   def test_build_url_uses_connection_scheme_as_default_uri_scheme
     conn = Faraday::Connection.new 'http://sushi.com'
-    uri = conn.build_url("/sake.html")
+    uri = conn.build_exclusive_url("/sake.html")
     assert_equal 'http', uri.scheme
   end
 
   def test_build_url_uses_connection_path_prefix_to_customize_path
     conn = Faraday::Connection.new
     conn.path_prefix = '/fish'
-    uri = conn.build_url("sake.html")
+    uri = conn.build_exclusive_url("sake.html")
     assert_equal '/fish/sake.html', uri.path
   end
 
   def test_build_url_uses_root_connection_path_prefix_to_customize_path
     conn = Faraday::Connection.new
     conn.path_prefix = '/'
-    uri = conn.build_url("sake.html")
+    uri = conn.build_exclusive_url("sake.html")
     assert_equal '/sake.html', uri.path
   end
 
   def test_build_url_forces_connection_path_prefix_to_be_absolute
     conn = Faraday::Connection.new
     conn.path_prefix = 'fish'
-    uri = conn.build_url("sake.html")
+    uri = conn.build_exclusive_url("sake.html")
     assert_equal '/fish/sake.html', uri.path
   end
 
   def test_build_url_ignores_connection_path_prefix_trailing_slash
     conn = Faraday::Connection.new
     conn.path_prefix = '/fish/'
-    uri = conn.build_url("sake.html")
+    uri = conn.build_exclusive_url("sake.html")
     assert_equal '/fish/sake.html', uri.path
   end
 
   def test_build_url_allows_absolute_uri_to_ignore_connection_path_prefix
     conn = Faraday::Connection.new
     conn.path_prefix = '/fish'
-    uri = conn.build_url("/sake.html")
+    uri = conn.build_exclusive_url("/sake.html")
     assert_equal '/sake.html', uri.path
   end
 
   def test_build_url_parses_url_params_into_path
     conn = Faraday::Connection.new
-    uri = conn.build_url("http://sushi.com/sake.html")
+    uri = conn.build_exclusive_url("http://sushi.com/sake.html")
     assert_equal '/sake.html', uri.path
   end
 
   def test_build_url_doesnt_add_ending_slash_given_nil_url
     conn = Faraday::Connection.new
     conn.url_prefix = "http://sushi.com/nigiri"
-    uri = conn.build_url(nil)
+    uri = conn.build_exclusive_url
     assert_equal "/nigiri", uri.path
   end
 
   def test_build_url_doesnt_add_ending_slash_given_empty_url
     conn = Faraday::Connection.new
     conn.url_prefix = "http://sushi.com/nigiri"
-    uri = conn.build_url('')
+    uri = conn.build_exclusive_url('')
     assert_equal "/nigiri", uri.path
   end
 
   def test_build_url_parses_url_params_into_query
-    conn = Faraday::Connection.new
-    uri = conn.build_url("http://sushi.com/sake.html", 'a[b]' => '1 + 2')
+    uri = build_url("http://sushi.com/sake.html", 'a[b]' => '1 + 2')
     assert_equal "a%5Bb%5D=1+%2B+2", uri.query
   end
 
   def test_build_url_escapes_per_spec
-    conn = Faraday::Connection.new
-    uri = conn.build_url('http:/', 'a' => '1+2 foo~bar.-baz')
+    uri = build_url('http:/', 'a' => '1+2 foo~bar.-baz')
     assert_equal "a=1%2B2+foo~bar.-baz", uri.query
   end
 
   def test_build_url_bracketizes_nested_params_in_query
-    conn = Faraday::Connection.new
-    uri = conn.build_url("http://sushi.com/sake.html", 'a' => {'b' => 'c'})
-    assert_equal "a%5Bb%5D=c", uri.query
+    url = build_url nil, 'a' => {'b' => 'c'}
+    assert_equal "a%5Bb%5D=c", url.query
   end
 
   def test_build_url_bracketizes_repeated_params_in_query
-    conn = Faraday::Connection.new
-    uri = conn.build_url("http://sushi.com/sake.html", 'a' => [1, 2])
+    uri = build_url("http://sushi.com/sake.html", 'a' => [1, 2])
     assert_equal "a%5B%5D=1&a%5B%5D=2", uri.query
   end
 
   def test_build_url_without_braketizing_repeated_params_in_query
-    conn = Faraday::Connection.new
-    conn.options.params_encoder = Faraday::FlatParamsEncoder
-    uri = conn.build_url("http://sushi.com/sake.html", 'a' => [1, 2])
+    uri = build_url 'http://sushi.com', 'a' => [1, 2] do |conn|
+      conn.options.params_encoder = Faraday::FlatParamsEncoder
+    end
     assert_equal "a=1&a=2", uri.query
   end
 
   def test_build_url_parses_url
     conn = Faraday::Connection.new
-    uri = conn.build_url("http://sushi.com/sake.html")
+    uri = conn.build_exclusive_url("http://sushi.com/sake.html")
     assert_equal "http",       uri.scheme
     assert_equal "sushi.com",  uri.host
     assert_equal '/sake.html', uri.path
@@ -218,13 +214,13 @@ class TestConnection < Faraday::TestCase
   def test_build_url_parses_url_and_changes_scheme
     conn = Faraday::Connection.new :url => "http://sushi.com/sushi"
     conn.scheme = 'https'
-    uri = conn.build_url("sake.html")
+    uri = conn.build_exclusive_url("sake.html")
     assert_equal 'https://sushi.com/sushi/sake.html', uri.to_s
   end
 
   def test_build_url_handles_uri_instances
     conn = Faraday::Connection.new
-    uri = conn.build_url(URI('/sake.html'))
+    uri = conn.build_exclusive_url(URI('/sake.html'))
     assert_equal '/sake.html', uri.path
   end
 
@@ -285,7 +281,7 @@ class TestConnection < Faraday::TestCase
 
     other = conn.dup
 
-    assert_equal conn.build_url(''), other.build_url('')
+    assert_equal conn.build_exclusive_url, other.build_exclusive_url
     assert_equal 'text/plain', other.headers['content-type']
     assert_equal '1', other.params['a']
 
@@ -312,6 +308,13 @@ class TestConnection < Faraday::TestCase
     }
     assert_equal 1, conn.builder.handlers.size
     assert_equal '/omnom', conn.path_prefix
+  end
+
+  def build_url(url, params)
+    conn = Faraday::Connection.new(url, :params => params)
+    yield conn if block_given?
+    req = conn.build_request(:get)
+    req.to_env(conn).url
   end
 end
 
