@@ -218,6 +218,24 @@ class TestConnection < Faraday::TestCase
     assert_equal 'https://sushi.com/sushi/sake.html', uri.to_s
   end
 
+  def test_build_url_joins_url_to_base_with_ending_slash
+    conn = Faraday::Connection.new :url => "http://sushi.com/sushi/"
+    uri = conn.build_exclusive_url("sake.html")
+    assert_equal 'http://sushi.com/sushi/sake.html', uri.to_s
+  end
+
+  def test_build_url_used_default_base_with_ending_slash
+    conn = Faraday::Connection.new :url => "http://sushi.com/sushi/"
+    uri = conn.build_exclusive_url
+    assert_equal 'http://sushi.com/sushi/', uri.to_s
+  end
+
+  def test_build_url_overrides_base
+    conn = Faraday::Connection.new :url => "http://sushi.com/sushi/"
+    uri = conn.build_exclusive_url('/sake/')
+    assert_equal 'http://sushi.com/sake/', uri.to_s
+  end
+
   def test_build_url_handles_uri_instances
     conn = Faraday::Connection.new
     uri = conn.build_exclusive_url(URI('/sake.html'))

@@ -322,7 +322,6 @@ module Faraday
     # Returns the new String path prefix.
     def path_prefix=(value)
       url_prefix.path = if value
-        value = value.chomp '/'
         value = '/' + value unless value[0,1] == '/'
         value
       end
