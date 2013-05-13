@@ -186,8 +186,7 @@ module Faraday
     #
     # Returns nothing.
     def basic_auth(login, pass)
-      headers[Faraday::Request::Authorization::KEY] =
-        Faraday::Request::BasicAuthentication.header(login, pass)
+      set_authorization_header(:basic_auth, login, pass)
     end
 
     # Public: Sets up the Authorization header with the given token.
@@ -204,8 +203,7 @@ module Faraday
     #
     # Returns nothing.
     def token_auth(token, options = nil)
-      headers[Faraday::Request::Authorization::KEY] =
-        Faraday::Request::TokenAuthentication.header(token, options)
+      set_authorization_header(:token_auth, token, options)
     end
 
     # Public: Sets up a custom Authorization header.
@@ -227,8 +225,7 @@ module Faraday
     #
     # Returns nothing.
     def authorization(type, token)
-      headers[Faraday::Request::Authorization::KEY] =
-        Faraday::Request::Authorization.header(type, token)
+      set_authorization_header(:authorization, type, token)
     end
 
     # Internal: Traverse the middleware stack in search of a
@@ -394,6 +391,12 @@ module Faraday
       if uri.user and uri.password
         yield Utils.unescape(uri.user), Utils.unescape(uri.password)
       end
+    end
+
+    def set_authorization_header(header_type, *args)
+      header = Faraday::Request.lookup_middleware(header_type).
+        header(*args)
+      headers[Faraday::Request::Authorization::KEY] = header
     end
   end
 end
