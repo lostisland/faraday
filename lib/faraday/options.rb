@@ -67,7 +67,7 @@ module Faraday
       hash = {}
       members.each do |key|
         value = send(key)
-        hash[key.to_sym] = value if value
+        hash[key.to_sym] = value unless value.nil?
       end
       hash
     end
