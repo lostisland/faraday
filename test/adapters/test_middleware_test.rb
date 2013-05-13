@@ -69,6 +69,35 @@ module Adapters
       assert_equal 'a', @conn.get('http://foo.com/hello?a=1').body
     end
 
+    def test_parses_params_with_default_encoder
+      @stubs.get '/hello' do |env|
+        assert_equal '1', env[:params]['a']['b']
+        [200, {}, 'a']
+      end
+
+      assert_equal 'a', @conn.get('http://foo.com/hello?a[b]=1').body
+    end
+
+    def test_parses_params_with_nested_encoder
+      @stubs.get '/hello' do |env|
+        assert_equal '1', env[:params]['a']['b']
+        [200, {}, 'a']
+      end
+
+      @conn.options.params_encoder = Faraday::NestedParamsEncoder
+      assert_equal 'a', @conn.get('http://foo.com/hello?a[b]=1').body
+    end
+
+    def test_parses_params_with_flat_encoder
+      @stubs.get '/hello' do |env|
+        assert_equal '1', env[:params]['a[b]']
+        [200, {}, 'a']
+      end
+
+      @conn.options.params_encoder = Faraday::FlatParamsEncoder
+      assert_equal 'a', @conn.get('http://foo.com/hello?a[b]=1').body
+    end
+
     def test_raises_an_error_if_no_stub_is_found_for_request
       assert_raises Stubs::NotFound do
         @conn.get('/invalid'){ [200, {}, []] }

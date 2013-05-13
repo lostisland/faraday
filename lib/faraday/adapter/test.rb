@@ -144,10 +144,11 @@ module Faraday
       def call(env)
         super
         normalized_path = Faraday::Utils.normalize_path(env[:url])
+        params_encoder = env.request.params_encoder || Faraday::Utils.default_params_encoder
 
         if stub = stubs.match(env[:method], normalized_path, env.request_headers, env[:body])
           env[:params] = (query = env[:url].query) ?
-            Faraday::Utils.parse_nested_query(query)  :
+            params_encoder.decode(query)  :
             {}
           status, headers, body = stub.block.call(env)
           save_response(env, status, body, headers)
