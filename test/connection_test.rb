@@ -313,6 +313,11 @@ class TestConnection < Faraday::TestCase
     assert !conn.params.key?('b')
   end
 
+  def test_initialize_with_false_option
+    conn = Faraday::Connection.new :ssl => {:verify => false}
+    assert !conn.ssl.verify?
+  end
+
   def test_init_with_block
     conn = Faraday::Connection.new { }
     assert_equal 0, conn.builder.handlers.size
