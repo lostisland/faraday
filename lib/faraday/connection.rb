@@ -312,6 +312,7 @@ module Faraday
     end
 
     # Public: Sets the path prefix and ensures that it always has a leading
+    # slash.
     #
     # value - A String.
     #
