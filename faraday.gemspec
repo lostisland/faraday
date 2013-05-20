@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.files = %w(Gemfile LICENSE.md README.md Rakefile)
   spec.files += Dir.glob("lib/**/*.rb")
-  spec.files += Dir.glob("test/**/*.rb")
+  spec.files += Dir.glob("test/**/*.{rb,txt}")
   spec.files += Dir.glob("script/*")
 
   dev_null    = File.exist?('/dev/null') ? '/dev/null' : 'NUL'
