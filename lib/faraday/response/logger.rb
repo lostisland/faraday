@@ -28,7 +28,9 @@ module Faraday
     private
 
     def dump_headers(headers)
-      headers.map { |k, v| "#{k}: #{v.inspect}" }.join("\n")
+      if headers
+        headers.map { |k, v| "#{k}: #{v.inspect}" }.join("\n")
+      end
     end
   end
 end
