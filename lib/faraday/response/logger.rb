@@ -28,7 +28,7 @@ module Faraday
     private
 
     def dump_headers(headers)
-      headers.map { |k, v| "#{k}: #{v.inspect}" }.join("\n") unless n.empty?
+      headers.map { |k, v| "#{k}: #{v.inspect}" }.join("\n") unless headers.empty?
     end
   end
 end
