@@ -12,10 +12,10 @@ module Adapters
       @conn = Faraday.new do |b|
         b.response :logger, @logger
         b.adapter :test do |stubs|
-          stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
+          stubs.post('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
         end
       end
-      @resp = @conn.get '/hello', nil, :accept => 'text/html'
+      @resp = @conn.post '/hello', 'name=Unagi', :accept => 'text/html'
     end
 
     def test_still_returns_output
@@ -23,11 +23,15 @@ module Adapters
     end
 
     def test_logs_method_and_url
-      assert_match "get http:/hello", @io.string
+      assert_match "post http:/hello", @io.string
     end
 
     def test_logs_request_headers
       assert_match %(Accept: "text/html), @io.string
+    end
+
+    def test_logs_request_body
+      assert_match %(name=Unagi), @io.string
     end
 
     def test_logs_response_headers
