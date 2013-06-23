@@ -18,7 +18,7 @@ module Faraday
     def update(obj)
       obj.each do |key, value|
         if sub_options = self.class.options_for(key)
-          value = sub_options.from(value)
+          value = sub_options.from(value) if value
         elsif Hash === value
           hash = {}
           value.each do |hash_key, hash_value|
@@ -27,7 +27,7 @@ module Faraday
           value = hash
         end
 
-        self.send("#{key}=", value)
+        self.send("#{key}=", value) unless value.nil?
       end
       self
     end
@@ -212,4 +212,3 @@ module Faraday
     end
   end
 end
-

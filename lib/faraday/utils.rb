@@ -11,10 +11,10 @@ module Faraday
         new(value)
       end
 
-      def initialize(hash={})
+      def initialize(hash = nil)
         super()
         @names = {}
-        self.update hash
+        self.update(hash || {})
       end
 
       # need to synchronize concurrent writes to the shared KeyMap

@@ -86,9 +86,8 @@ module Faraday
     # Useful for applying request params after restoring a marshalled Response.
     def apply_request(request_env)
       raise "response didn't finish yet" unless finished?
-      @env = Env.from(request_env).merge(@env)
+      @env = Env.from(request_env).update(@env)
       return self
     end
   end
 end
-

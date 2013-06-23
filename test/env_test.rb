@@ -189,4 +189,3 @@ class ResponseTest < Faraday::TestCase
     assert_equal hash[:body], @response.body
   end
 end
-
