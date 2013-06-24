@@ -6,6 +6,8 @@ module Faraday
       case env[:status]
       when 404
         raise Faraday::Error::ResourceNotFound, response_values(env)
+      when 422
+        raise Faraday::Error::UnprocessableEntity, response_values(env)
       when ClientErrorStatuses
         raise Faraday::Error::ClientError, response_values(env)
       end

@@ -35,11 +35,12 @@ module Faraday
 
   class ConnectionFailed < ClientError;   end
   class ResourceNotFound < ClientError;   end
+  class UnprocessableEntity < ClientError;   end
   class ParsingError     < ClientError;   end
   class TimeoutError < ClientError; end
 
   [:MissingDependency, :ClientError, :ConnectionFailed, :ResourceNotFound,
-   :ParsingError, :TimeoutError].each do |const|
+   :ParsingError, :TimeoutError, :UnprocessableEntity].each do |const|
     Error.const_set(const, Faraday.const_get(const))
   end
 end
