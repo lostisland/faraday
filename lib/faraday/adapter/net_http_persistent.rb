@@ -1,4 +1,6 @@
-require 'faraday/adapter/net_http'
+# Rely on autoloading instead of explicit require; helps avoid the "already
+# initialized constant" warning on Ruby 1.8.7 when NetHttp is refereced below.
+# require 'faraday/adapter/net_http'
 
 module Faraday
   class Adapter
