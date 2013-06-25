@@ -67,7 +67,7 @@ class RequestMiddlewareTest < Faraday::TestCase
       response = @conn.post('/echo', {:str => "eé cç aã aâ"})
       assert_equal "str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2", response.body
     }
-    assert err.empty?
+    assert err.empty?, "stderr did include: #{err}"
   end
 
   def test_url_encoded_unicode_with_kcode_set
@@ -76,7 +76,7 @@ class RequestMiddlewareTest < Faraday::TestCase
         response = @conn.post('/echo', {:str => "eé cç aã aâ"})
         assert_equal "str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2", response.body
       }
-      assert err.empty?
+      assert err.empty?, "stderr did include: #{err}"
     end
   end
 
