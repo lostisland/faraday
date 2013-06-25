@@ -37,9 +37,9 @@ class AuthenticationMiddlewareTest < Faraday::TestCase
     response = conn { |b|
       b.request :token_auth, 'baz', :foo => 42
     }.get('/auth-echo')
-    assert_match /^Token /, response.body
-    assert_match /token="baz"/, response.body
-    assert_match /foo="42"/, response.body
+    assert_match(/^Token /, response.body)
+    assert_match(/token="baz"/, response.body)
+    assert_match(/foo="42"/, response.body)
   end
 
   def test_token_middleware_does_not_interfere_with_existing_authorization
@@ -52,14 +52,14 @@ class AuthenticationMiddlewareTest < Faraday::TestCase
     response = conn { |b|
       b.request :authorization, 'custom', 'abc def'
     }.get('/auth-echo')
-    assert_match /^custom abc def$/, response.body
+    assert_match(/^custom abc def$/, response.body)
   end
 
   def test_authorization_middleware_with_hash
     response = conn { |b|
       b.request :authorization, 'baz', :foo => 42
     }.get('/auth-echo')
-    assert_match /^baz /, response.body
-    assert_match /foo="42"/, response.body
+    assert_match(/^baz /, response.body)
+    assert_match(/foo="42"/, response.body)
   end
 end
