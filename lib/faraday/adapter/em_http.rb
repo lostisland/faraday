@@ -7,7 +7,6 @@ module Faraday
       module Options
         def connection_config(env)
           options = {}
-          configure_ssl(options, env)
           configure_proxy(options, env)
           configure_timeout(options, env)
           configure_socket(options, env)
@@ -31,15 +30,6 @@ module Faraday
         def read_body(env)
           body = env[:body]
           body.respond_to?(:read) ? body.read : body
-        end
-
-        def configure_ssl(options, env)
-          if ssl = env[:ssl]
-            # :ssl => {
-            #   :private_key_file => '/tmp/server.key',
-            #   :cert_chain_file => '/tmp/server.crt',
-            #   :verify_peer => false
-          end
         end
 
         def configure_proxy(options, env)
