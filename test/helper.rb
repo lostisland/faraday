@@ -81,24 +81,3 @@ module Faraday
     end
   end
 end
-
-# The essential part of ActiveSupport::SafeBuffer to demonstrate
-# how it blows up when passed to Faraday::Utils.escape
-# rails/rails@ed738f7
-class FakeSafeBuffer < String
-  UNSAFE_STRING_METHODS = %w(gsub)
-
-  def to_s
-    self
-  end
-
-  UNSAFE_STRING_METHODS.each do |unsafe_method|
-    if 'String'.respond_to?(unsafe_method)
-      class_eval <<-EOT, __FILE__, __LINE__ + 1
-        def #{unsafe_method}(*args, &block)       # def capitalize(*args, &block)
-          to_str.#{unsafe_method}(*args, &block)  #   to_str.capitalize(*args, &block)
-        end                                       # end
-      EOT
-    end
-  end
-end
