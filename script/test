@@ -128,8 +128,22 @@ if [ -n "$(filter_matching "adapters" "${test_files[@]}")" ]; then
   export LIVE="${scheme}://localhost:${port}"
 fi
 
+warnings="${TMPDIR:-/tmp}/faraday-warnings.$$"
+
 run_test_files() {
-  ruby -e 'while f=ARGV.shift and f!="--"; load f; end' "${test_files[@]}" -- "$@"
+  # Save warnings on stderr to a separate file
+  RUBYOPT="$RUBYOPT -w" ruby -e 'while f=ARGV.shift and f!="--"; load f; end' "${test_files[@]}" -- "$@" \
+    2> >(tee >(grep 'warning:' >"$warnings") | grep -v 'warning:')
+}
+
+check_warnings() {
+  # Display Ruby warnings from this project's source files. Abort if any were found.
+  num="$(grep -F "$PWD" "$warnings" | grep -v "${PWD}/bundle" | sort | uniq -c | sort -rn | tee /dev/stderr | wc -l)"
+  rm -f "$warnings"
+  if [ "$num" -gt 0 ]; then
+    echo "FAILED: this test suite doesn't tolerate Ruby syntax warnings!" >&2
+    exit 1
+  fi
 }
 
 if [ -n "$RBENV_VERSIONS" ]; then
@@ -142,3 +156,4 @@ else
   run_test_files "$@"
 fi
 
+check_warnings
