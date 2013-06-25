@@ -9,6 +9,22 @@ class TestUtils < Faraday::TestCase
     Faraday::Utils.default_uri_parser = nil
   end
 
+  # emulates ActiveSupport::SafeBuffer#gsub
+  FakeSafeBuffer = Struct.new(:string) do
+    def to_s() self end
+    def gsub(regex)
+      string.gsub(regex) {
+        match, = $&, '' =~ /a/
+        yield match
+      }
+    end
+  end
+
+  def test_escaping_safe_buffer
+    str = FakeSafeBuffer.new('$32,000.00')
+    assert_equal '%2432%2C000.00', Faraday::Utils.escape(str)
+  end
+
   def test_parses_with_default
     assert_equal %(#<Method: Kernel.URI>), Faraday::Utils.default_uri_parser.to_s
     uri = normalize(@url)
