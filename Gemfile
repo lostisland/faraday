@@ -11,7 +11,7 @@ group :test do
   gem 'excon', '>= 0.16.1'
   gem 'httpclient', '>= 2.2'
   gem 'leftright', '>= 0.9', :require => false
-  gem 'minitest', '>= 4.3'
+  gem 'minitest', '~> 5.0.5'
   gem 'net-http-persistent', '>= 2.5', :require => false
   gem 'patron', '>= 0.4.2', :platforms => :ruby
   gem 'rack-test', '>= 0.6', :require => 'rack/test'

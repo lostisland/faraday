@@ -50,7 +50,7 @@ module Faraday
     end
   end
 
-  class TestCase < MiniTest::Unit::TestCase
+  class TestCase < MiniTest::Test
     extend LiveServerConfig
     self.live_server = ENV['LIVE']
 
