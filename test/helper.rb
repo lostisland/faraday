@@ -11,6 +11,11 @@ SimpleCov.start do
   add_filter '/bundle/'
 end
 
+begin
+  gem 'minitest'
+rescue NoMethodError
+  # ignore
+end
 require 'minitest/autorun'
 
 if ENV['LEFTRIGHT']
