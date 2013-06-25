@@ -5,7 +5,7 @@ module Faraday
 
       def initialize(app, &block)
         super(app)
-        @block = block if block_given?
+        @block = block
       end
 
       def call(env)

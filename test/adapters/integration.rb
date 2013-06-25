@@ -58,7 +58,7 @@ module Adapters
     module Compression
       def test_GET_handles_compression
         res = get('echo_header', :name => 'accept-encoding')
-        assert_match /gzip;.+\bdeflate\b/, res.body
+        assert_match(/gzip;.+\bdeflate\b/, res.body)
       end
     end
 

@@ -79,6 +79,7 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
+      @proxy = nil
       proxy(options.fetch(:proxy) { ENV['http_proxy'] })
 
       yield self if block_given?
