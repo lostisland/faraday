@@ -37,12 +37,16 @@ module Faraday
     end
 
     def dump_body(body)
-      if body.is_a? String
-        body
+      if body.respond_to?(:to_str)
+        body.to_str
       else
-        require 'pp'
-        body.pretty_inspect
+        pretty_inspect(body)
       end
+    end
+
+    def pretty_inspect(body)
+      require 'pp' unless body.respond_to?(:pretty_inspect)
+      body.pretty_inspect
     end
 
     def log_body?(type)
