@@ -5,7 +5,7 @@ require 'logger'
 module Adapters
   class LoggerTest < Faraday::TestCase
     def conn(logger, logger_options={})
-      rubbles = { :husband => 'Barney', :wife => 'Betty'}
+      rubbles = ['Barney', 'Betty', 'Bam Bam']
 
       Faraday.new do |b|
         b.response :logger, logger, logger_options
@@ -76,7 +76,7 @@ module Adapters
     def test_log_response_body_object
       app = conn(@logger, :bodies => true)
       app.get '/rubbles', nil, :accept => 'text/html'
-      assert_match %(:husband=>\"Barney\", :wife=>\"Betty\"), @io.string
+      assert_match %([\"Barney\", \"Betty\", \"Bam Bam\"]\n), @io.string
     end
   end
 end
