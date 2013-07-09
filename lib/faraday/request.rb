@@ -19,7 +19,8 @@ module Faraday
       :authorization => [:Authorization, 'authorization'],
       :basic_auth => [:BasicAuthentication, 'basic_authentication'],
       :token_auth => [:TokenAuthentication, 'token_authentication'],
-      :instrumentation => [:Instrumentation, 'instrumentation']
+      :instrumentation => [:Instrumentation, 'instrumentation'],
+      :proxy => [:Proxy, 'proxy']
 
     def self.create(request_method)
       new(request_method).tap do |request|
