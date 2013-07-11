@@ -4,6 +4,8 @@ module Faraday
 
     def on_complete(env)
       case env[:status]
+      when 401
+        raise Faraday::Error::Unauthorized, response_values(env)
       when 404
         raise Faraday::Error::ResourceNotFound, response_values(env)
       when 422
