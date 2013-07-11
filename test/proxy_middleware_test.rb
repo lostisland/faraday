@@ -35,6 +35,7 @@ class ProxyMiddlewareTest < Faraday::TestCase
     with_env 'HTTP_PROXY' => nil, 'http_proxy' => nil do
       response = connection{ |b| b.request :proxy }.get('/test')
       proxy_options = response.env.request.proxy
+      # assert proxy_options.is_a?(Faraday::ProxyOptions)
 
       assert_nil proxy_options
     end
@@ -169,6 +170,16 @@ class ProxyMiddlewareTest < Faraday::TestCase
   def test_proxy_set_when_ports_mismatch_in_no_proxy_list
     with_env 'HTTP_PROXY' => 'http://proxy.com', 'NO_PROXY' => 'example.com:3000' do
       response = connection('http://example.com:7171'){ |b| b.request :proxy }.get('/test')
+      proxy_options = response.env.request.proxy
+
+      refute_nil proxy_options
+      assert_equal 'http://proxy.com', proxy_options.uri.to_s
+    end
+  end
+
+  def test_proxy_set_when_url_is_nil
+    with_env 'HTTP_PROXY' => 'http://proxy.com' do
+      response = connection(nil){ |b| b.request :proxy }.get('/test')
       proxy_options = response.env.request.proxy
 
       refute_nil proxy_options

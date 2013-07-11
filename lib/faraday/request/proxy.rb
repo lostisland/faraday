@@ -87,6 +87,7 @@ module Faraday
     end
 
     def proxy_allowed_for(uri)
+      return true  if uri.nil? || uri.host.nil?
       return false unless @proxies[uri.scheme]
       return true  unless @no_proxy
 
