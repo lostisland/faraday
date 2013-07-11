@@ -35,7 +35,6 @@ class ProxyMiddlewareTest < Faraday::TestCase
     with_env 'HTTP_PROXY' => nil, 'http_proxy' => nil do
       response = connection{ |b| b.request :proxy }.get('/test')
       proxy_options = response.env.request.proxy
-      # assert proxy_options.is_a?(Faraday::ProxyOptions)
 
       assert_nil proxy_options
     end
