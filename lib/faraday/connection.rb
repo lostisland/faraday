@@ -50,7 +50,6 @@ module Faraday
     #           :request - Hash of request options.
     #           :ssl     - Hash of SSL options.
     #           :proxy   - URI, String or Hash of HTTP proxy options
-    #                     (default: "http_proxy" environment variable).
     #                     :uri      - URI or String
     #                     :user     - String (optional)
     #                     :password - String (optional)
@@ -79,7 +78,7 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      proxy(options.fetch(:proxy)) if options.include?(:proxy)
+      proxy(options.fetch(:proxy)) if options.proxy
 
       yield self if block_given?
 

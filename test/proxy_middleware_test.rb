@@ -99,6 +99,24 @@ class ProxyMiddlewareTest < Faraday::TestCase
     assert_equal 'pass',      proxy_options.password
   end
 
+  # this is to allow connection#proxy to behave as before
+  def test_http_proxy_set_via_hash
+    conn = connection { |b| b.request :proxy, 
+      {
+        :uri => 'http://proxy.com', 
+        :user => 'username',
+        :password => 'pass' 
+      }
+    }
+    response = conn.get('/test')
+    proxy_options = response.env.request.proxy
+
+    refute_nil proxy_options
+    assert_equal 'proxy.com', proxy_options.uri.host
+    assert_equal 'username',  proxy_options.user
+    assert_equal 'pass',      proxy_options.password
+  end
+
   def test_upper_case_env_trumps_lower_case
     with_env 'http_proxy' => 'http://proxy.com', 'HTTP_PROXY' => 'http://upper.proxy.com' do
       response = connection { |b| b.request :proxy }.get('/test')

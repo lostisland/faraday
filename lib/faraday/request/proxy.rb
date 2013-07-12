@@ -37,6 +37,11 @@ module Faraday
     
     private
     def parse_proxy_options(proxy, options)
+      if proxy.is_a?(Hash)
+        options = proxy
+        proxy = options.delete(:uri)
+      end
+
       parse_proxies(proxy, options)
       parse_no_proxy_list
     end

@@ -1,4 +1,5 @@
 require File.expand_path('../helper', __FILE__)
+require 'minitest/mock'
 
 class TestConnection < Faraday::TestCase
 
@@ -266,53 +267,20 @@ class TestConnection < Faraday::TestCase
     assert_equal '/sake.html', uri.path
   end
 
-  def test_proxy_accepts_string
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      conn.proxy 'http://proxy.com'
-      assert_equal 'proxy.com', conn.proxy.host
-    end
+  def test_proxy_middleware_instantiated_via_proxy_option
+    conn_no_proxy = Faraday::Connection.new
+    refute conn_no_proxy.builder.handlers.include?(Faraday::Request::Proxy)
+
+    conn_with_proxy = Faraday::Connection.new(nil, :proxy => 'http://proxy.com')
+    assert conn_with_proxy.builder.handlers.include?(Faraday::Request::Proxy)
   end
 
-  def test_proxy_accepts_uri
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      conn.proxy URI.parse('http://proxy.com')
-      assert_equal 'proxy.com', conn.proxy.host
-    end
-  end
+  def test_proxy_middleware_instantiated_via_proxy_method
+    conn = Faraday::Connection.new
+    refute conn.builder.handlers.include?(Faraday::Request::Proxy)
 
-  def test_proxy_accepts_hash_with_string_uri
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      conn.proxy :uri => 'http://proxy.com', :user => 'rick'
-      assert_equal 'proxy.com', conn.proxy.host
-      assert_equal 'rick',      conn.proxy.user
-    end
-  end
-
-  def test_proxy_accepts_hash
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      conn.proxy :uri => URI.parse('http://proxy.com'), :user => 'rick'
-      assert_equal 'proxy.com', conn.proxy.host
-      assert_equal 'rick',      conn.proxy.user
-    end
-  end
-
-  def test_proxy_accepts_http_env
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      assert_equal 'duncan.proxy.com', conn.proxy.host
-    end
-  end
-
-  def test_proxy_accepts_http_env_with_auth
-    with_env 'http_proxy', "http://a%40b:my%20pass@duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      assert_equal 'a@b',     conn.proxy.user
-      assert_equal 'my pass', conn.proxy.password
-    end
+    conn.proxy 'http://proxy.com'
+    assert conn.builder.handlers.include?(Faraday::Request::Proxy)
   end
 
   def test_proxy_accepts_env_without_scheme
