@@ -12,22 +12,24 @@ module Faraday
         require 'logger'
         ::Logger.new(STDOUT)
       end
+      @filter = []
       @options = DEFAULT_OPTIONS.merge(options)
+      yield self if block_given?
     end
 
     def_delegators :@logger, :debug, :info, :warn, :error, :fatal
 
     def call(env)
-      info "#{env.method} #{env.url.to_s}"
-      debug('request') { dump_headers env.request_headers }
-      debug('request') { dump_body(env[:body]) } if env[:body] && log_body?(:request)
+      info "#{env.method} #{apply_filters(env.url.to_s)}"
+      debug('request') { apply_filters(dump_headers env.request_headers) }
+      debug('request') { apply_filters(dump_body(env[:body])) } if env[:body] && log_body?(:request)
       super
     end
 
     def on_complete(env)
       info('Status') { env.status.to_s }
-      debug('response') { dump_headers env.response_headers }
-      debug('response') { dump_body env[:body] } if env[:body] && log_body?(:response)
+      debug('response') { apply_filters(dump_headers env.response_headers) }
+      debug('response') { apply_filters(dump_body env[:body]) } if env[:body] && log_body?(:response)
     end
 
     private
@@ -54,6 +56,13 @@ module Faraday
       when Hash then @options[:bodies][type]
       else @options[:bodies]
       end
+    end
+
+    def apply_filters(output)
+      @filter.each do |pattern, replacement|
+        output = output.to_s.gsub(pattern, replacement)
+      end
+      output
     end
   end
 end
