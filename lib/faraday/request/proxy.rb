@@ -22,10 +22,8 @@ module Faraday
   #   conn.adapter ..
   # end
   class Request::Proxy < Faraday::Middleware
-    Proxies = Struct.new(:http, :https)
-
     def initialize(app, proxy_url=nil, options={})
-      @proxies = Proxies.new
+      @proxies = {:http => nil, :https => nil}
       parse_proxy_options(proxy_url, options)
       super(app)
     end
@@ -88,12 +86,12 @@ module Faraday
     end
 
     def proxy_for(uri)
-      {:uri => @proxies[uri.scheme]} if proxy_allowed_for(uri)
+      {:uri => @proxies[uri.scheme.to_sym]} if proxy_allowed_for(uri)
     end
 
     def proxy_allowed_for(uri)
       return true  if uri.nil? || uri.host.nil?
-      return false unless @proxies[uri.scheme]
+      return false unless @proxies[uri.scheme.to_sym]
       return true  unless @no_proxy
 
       proxy_required = true
