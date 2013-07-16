@@ -81,8 +81,9 @@ module Faraday
     end
 
     def parse_no_proxy_list
+      @no_proxy ||= nil
       proxy_list = ENV['NO_PROXY'] || ENV['no_proxy']
-      @no_proxy = proxy_list.split(',') rescue false
+      @no_proxy = proxy_list.split(',') unless proxy_list.nil?
     end
 
     def proxy_for(uri)
