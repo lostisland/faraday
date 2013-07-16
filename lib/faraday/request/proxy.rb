@@ -112,7 +112,7 @@ module Faraday
           no_proxy_pattern  = "#{no_proxy_domain.host}:#{no_proxy_domain.port}"
         end
         
-        if uri_pattern.match(/#{Regexp.quote(no_proxy_pattern)}$/i)
+        if uri_pattern.downcase == no_proxy_pattern.downcase
           proxy_required = false
           break
         end
