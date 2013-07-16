@@ -117,6 +117,23 @@ class ProxyMiddlewareTest < Faraday::TestCase
     assert_equal 'pass',      proxy_options.password
   end
 
+  def test_http_proxy_with_encoded_username_and_password
+    conn = connection { |b| b.request :proxy, 
+      {
+        :uri => 'http://proxy.com', 
+        :user => '%27username%27',
+        :password => '%27password%27' 
+      }
+    }
+    response = conn.get('/test')
+    proxy_options = response.env.request.proxy
+
+    refute_nil proxy_options
+    assert_equal 'proxy.com', proxy_options.uri.host
+    assert_equal "'username'",  proxy_options.user
+    assert_equal "'password'",      proxy_options.password
+  end
+
   def test_upper_case_env_trumps_lower_case
     with_env 'http_proxy' => 'http://proxy.com', 'HTTP_PROXY' => 'http://upper.proxy.com' do
       response = connection { |b| b.request :proxy }.get('/test')
