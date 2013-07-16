@@ -99,26 +99,31 @@ module Faraday
 
       @no_proxy.each do |no_proxy_domain|
         # ignore wildcards in domain
-        no_proxy_domain = no_proxy_domain.gsub('*.','')
-        no_proxy_domain = parse_uri(no_proxy_domain)
+        no_proxy_uri = no_proxy_domain.gsub('*.','')
 
-        if no_proxy_domain.port == 80
-          # domain matching is fine
-          uri_pattern       = uri.host
-          no_proxy_pattern  = no_proxy_domain.host
-        else
-          # need to match ports exactly
-          uri_pattern       = "#{uri.host}:#{uri.port}"
-          no_proxy_pattern  = "#{no_proxy_domain.host}:#{no_proxy_domain.port}"
-        end
-        
-        if uri_pattern.downcase == no_proxy_pattern.downcase
+        if domains_match? uri, no_proxy_uri
           proxy_required = false
           break
         end
       end
 
       proxy_required
+    end
+
+    def domains_match?(uri, no_proxy_uri)
+      no_proxy_domain = parse_uri(no_proxy_uri)
+
+      if no_proxy_domain.port == 80
+        # domain matching is fine
+        uri_pattern       = uri.host
+        no_proxy_pattern  = no_proxy_domain.host
+      else
+        # need to match ports exactly
+        uri_pattern       = "#{uri.host}:#{uri.port}"
+        no_proxy_pattern  = "#{no_proxy_domain.host}:#{no_proxy_domain.port}"
+      end
+
+      uri_pattern.downcase == no_proxy_pattern.downcase
     end
 
     def parse_uri(uri='')
