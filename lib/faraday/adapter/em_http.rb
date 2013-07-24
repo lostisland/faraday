@@ -21,9 +21,6 @@ module Faraday
             # :file => 'path/to/file', # stream data off disk
           }
           configure_compression(options, env)
-          # configure_proxy_auth
-          # :proxy => {:authorization => [user, pass]}
-          # proxy[:username] && proxy[:password]
           options
         end
 
@@ -36,7 +33,8 @@ module Faraday
           if proxy = request_options(env)[:proxy]
             options[:proxy] = {
               :host => proxy[:uri].host,
-              :port => proxy[:uri].port
+              :port => proxy[:uri].port,
+              :authorization => [proxy[:user], proxy[:password]]
             }
           end
         end
