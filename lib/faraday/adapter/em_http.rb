@@ -144,6 +144,8 @@ module Faraday
         elsif msg == Errno::ECONNREFUSED
           errklass = Faraday::Error::ConnectionFailed
           msg = "connection refused"
+        elsif msg == "connection closed by server"
+          errklass = Faraday::Error::ConnectionFailed
         end
         raise errklass, msg
       end
