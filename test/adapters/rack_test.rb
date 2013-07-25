@@ -22,5 +22,8 @@ module Adapters
       rescue Faraday::Error::ClientError
       end
     end
+
+    # test not applicable
+    undef test_connection_error
   end
 end

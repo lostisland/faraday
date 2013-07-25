@@ -56,6 +56,15 @@ module Faraday
             end
           end
 
+          case resp.curl_return_code
+          when 0
+            # everything OK
+          when 7
+            raise Error::ConnectionFailed, resp.curl_error_message
+          else
+            raise Error::ClientError, resp.curl_error_message
+          end
+
           save_response(env, resp.code, resp.body) do |response_headers|
             response_headers.parse resp.headers
           end

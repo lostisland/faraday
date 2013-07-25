@@ -166,6 +166,12 @@ module Adapters
         end
       end
 
+      def test_connection_error
+        assert_raises Faraday::Error::ConnectionFailed do
+          get 'http://localhost:4'
+        end
+      end
+
       def test_empty_body_response_represented_as_blank_string
         response = get('204')
         assert_equal '', response.body
