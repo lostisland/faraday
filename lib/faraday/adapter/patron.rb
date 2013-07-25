@@ -19,12 +19,12 @@ module Faraday
         if req = env[:request]
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
           session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
-                    
+
           if proxy = req[:proxy]
-            session.proxy = proxy[:uri].to_s
-            if proxy[:user] && proxy[:password]
-              prepend_proxy_auth_string(proxy, session)
-            end
+            proxy_uri = proxy[:uri].dup
+            proxy_uri.user = proxy[:user] && Utils.escape(proxy[:user]).gsub('+', '%20')
+            proxy_uri.password = proxy[:password] && Utils.escape(proxy[:password]).gsub('+', '%20')
+            session.proxy = proxy_uri.to_s
           end
         end
 
@@ -57,10 +57,6 @@ module Faraday
         @block.call(session) if @block
         session
       end
-    end
-    
-    def prepend_proxy_auth_string(proxy, session)
-      session.proxy.insert(7, "#{proxy[:user]}:#{proxy[:password]}@")
     end
   end
 end
