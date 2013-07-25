@@ -172,6 +172,34 @@ module Adapters
         end
       end
 
+      def test_proxy
+        proxy_uri = URI(ENV['LIVE_PROXY'])
+        conn = create_connection(:proxy => proxy_uri)
+
+        res = conn.get '/echo'
+        assert_equal 'get', res.body
+
+        unless self.class.ssl_mode?
+          # proxy can't append "Via" header for HTTPS responses
+          assert_match(/:#{proxy_uri.port}$/, res['via'])
+        end
+      end
+
+      def test_proxy_auth_fail
+        proxy_uri = URI(ENV['LIVE_PROXY'])
+        proxy_uri.password = 'WRONG'
+        conn = create_connection(:proxy => proxy_uri)
+
+        err = assert_raises Faraday::Error::ConnectionFailed do
+          conn.get '/echo'
+        end
+
+        unless self.class.ssl_mode? && self.class.jruby?
+          # JRuby raises "End of file reached" which cannot be distinguished from a 407
+          assert_equal %{407 "Proxy Authentication Required "}, err.message
+        end
+      end
+
       def test_empty_body_response_represented_as_blank_string
         response = get('204')
         assert_equal '', response.body

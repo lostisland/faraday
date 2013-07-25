@@ -13,6 +13,9 @@ module Adapters
       # which libcurl seems to generate for this particular request:
       undef :test_POST_sends_files
 
+      # inconsistent outcomes ranging from successful response to connection error
+      undef :test_proxy_auth_fail if ssl_mode?
+
       def test_binds_local_socket
         host = '1.2.3.4'
         conn = create_connection :request => { :bind => { :host => host } }
