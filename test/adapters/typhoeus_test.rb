@@ -12,6 +12,9 @@ module Adapters
       # Not a Typhoeus bug, but WEBrick inability to handle "100-continue"
       # which libcurl seems to generate for this particular request:
       undef :test_POST_sends_files
+
+      # inconsistent outcomes ranging from successful response to connection error
+      undef :test_proxy_auth_fail if ssl_mode?
     end unless jruby?
 
   end
