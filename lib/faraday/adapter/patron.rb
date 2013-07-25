@@ -31,7 +31,7 @@ module Faraday
         response = begin
           data = env[:body] ? env[:body].to_s : nil
           session.request(env[:method], env[:url].to_s, env[:request_headers], :data => data)
-        rescue Errno::ECONNREFUSED
+        rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
           raise Error::ConnectionFailed, $!
         end
 

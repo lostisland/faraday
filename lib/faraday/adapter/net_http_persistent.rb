@@ -18,6 +18,8 @@ module Faraday
       rescue Net::HTTP::Persistent::Error => error
         if error.message.include? 'Timeout'
           raise Faraday::Error::TimeoutError, error
+        elsif error.message.include? 'connection refused'
+          raise Faraday::Error::ConnectionFailed, error
         else
           raise
         end

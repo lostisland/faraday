@@ -166,6 +166,12 @@ module Adapters
         end
       end
 
+      def test_connection_error
+        assert_raise Faraday::Error::ConnectionFailed do
+          get 'http://localhost:4'
+        end
+      end
+
       def adapter
         raise NotImplementedError.new("Need to override #adapter")
       end
