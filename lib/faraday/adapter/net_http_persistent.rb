@@ -8,8 +8,6 @@ module Faraday
     class NetHttpPersistent < NetHttp
       dependency 'net/http/persistent'
 
-      # TODO: investigate is it safe to create a new Persistent instance for
-      # every request, or does it defy the purpose of persistent connections
       def net_http_connection(env)
         Net::HTTP::Persistent.new 'Faraday',
           env[:request][:proxy] ? env[:request][:proxy][:uri] : nil
