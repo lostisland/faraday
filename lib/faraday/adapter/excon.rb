@@ -28,6 +28,16 @@ module Faraday
             opts[:connect_timeout]   = req[:open_timeout]
             opts[:write_timeout]     = req[:open_timeout]
           end
+
+          if req[:proxy]
+            opts[:proxy] = {
+              :host     => req[:proxy][:uri].host,
+              :port     => req[:proxy][:uri].port,
+              :scheme   => req[:proxy][:uri].scheme,
+              :user     => req[:proxy][:user],
+              :password => req[:proxy][:password]
+            }
+          end
         end
 
         conn = ::Excon.new(env[:url].to_s, opts)
