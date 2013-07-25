@@ -102,6 +102,12 @@ module Faraday
               }
           end
         end
+      rescue EventMachine::Connectify::CONNECTError => err
+        if err.message.include?("Proxy Authentication Required")
+          raise Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+        else
+          raise Error::ConnectionFailed, err
+        end
       end
 
       # TODO: reuse the connection to support pipelining

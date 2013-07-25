@@ -5,7 +5,7 @@ gem 'jruby-openssl', '~> 0.7', :platforms => :jruby
 gem 'rake'
 
 group :test do
-  gem 'em-http-request', '>= 1.0', :require => 'em-http'
+  gem 'em-http-request', '>= 1.1', :require => 'em-http'
   gem 'em-synchrony', '>= 1.0', :require => ['em-synchrony', 'em-synchrony/em-http']
   gem 'excon', '>= 0.25.3'
   gem 'leftright', '>= 0.9', :require => false

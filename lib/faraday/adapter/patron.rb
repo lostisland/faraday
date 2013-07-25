@@ -40,6 +40,12 @@ module Faraday
         @app.call env
       rescue ::Patron::TimeoutError => err
         raise Faraday::Error::TimeoutError, err
+      rescue ::Patron::Error => err
+        if err.message.include?("code 407")
+          raise Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+        else
+          raise Error::ConnectionFailed, err
+        end
       end
 
       if loaded? && defined?(::Patron::Request::VALID_ACTIONS)
