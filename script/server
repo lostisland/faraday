@@ -6,15 +6,13 @@ ensure
   $VERBOSE = old_verbose
 end
 require 'webrick'
-require 'fileutils'
 
 port = 4000
 if found = ARGV.index('-p')
   port = ARGV[found + 1].to_i
 end
 
-FileUtils.mkdir_p('log')
-log_io = File.open('log/test.log', 'w')
+log_io = $stdout
 log_io.sync = true
 
 webrick_opts = {

@@ -47,7 +47,7 @@ filter_matching() {
 
 start_server() {
   mkdir -p log
-  script/server -p $port >log/server.log 2>&1 &
+  script/server -p $port >log/test.log 2>&1 &
   echo $!
 }
 
@@ -115,7 +115,7 @@ if [ -n "$(filter_matching "adapters" "${test_files[@]}")" ]; then
   fi
   server_pid=$(start_server)
   wait_for_server 15 || {
-    cat log/server.log
+    cat log/test.log
     exit 1
   }
   cleanup() {
