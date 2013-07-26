@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'ffi-ncurses', '~> 0.3', :platforms => :jruby
-gem 'jruby-openssl', '~> 0.7', :platforms => :jruby
+gem 'jruby-openssl', '~> 0.8.8', :platforms => :jruby
 gem 'rake'
 
 group :test do
