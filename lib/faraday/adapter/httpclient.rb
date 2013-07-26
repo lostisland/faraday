@@ -39,6 +39,8 @@ module Faraday
         @app.call env
       rescue ::HTTPClient::TimeoutError
         raise Faraday::Error::TimeoutError, $!
+      rescue Errno::ECONNREFUSED
+        raise Faraday::Error::ConnectionFailed, $!
       end
 
       def configure_socket(bind)
