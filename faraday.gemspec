@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/lostisland/faraday'
   spec.licenses = ['MIT']
 
-  spec.add_dependency 'multipart-post', '~> 1.1'
+  spec.add_dependency 'multipart-post', '~> 1.2.0'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'simplecov'
 
