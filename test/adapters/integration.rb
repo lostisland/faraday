@@ -118,7 +118,7 @@ module Adapters
         resp = post('file') do |req|
           req.body = {'uploaded_file' => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
         end
-        assert_equal "file integration.rb text/x-ruby", resp.body
+        assert_equal "file integration.rb text/x-ruby #{File.size(__FILE__)}", resp.body
       end
 
       def test_PUT_send_url_encoded_params
