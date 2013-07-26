@@ -27,6 +27,7 @@ webrick_opts = {
     if username
       type, credentials = req.header['proxy-authorization'].first.to_s.split(/\s+/, 2)
       unless "Basic" == type && match_credentials.call(credentials)
+        res['proxy-authenticate'] = %{Basic realm="testing"}
         raise WEBrick::HTTPStatus::ProxyAuthenticationRequired
       end
     end
