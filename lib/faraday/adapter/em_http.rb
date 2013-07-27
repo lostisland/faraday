@@ -10,6 +10,7 @@ module Faraday
           configure_proxy(options, env)
           configure_timeout(options, env)
           configure_socket(options, env)
+          configure_ssl(options, env)
           options
         end
 
@@ -44,6 +45,15 @@ module Faraday
             options[:bind] = {
               :host => bind[:host],
               :port => bind[:port]
+            }
+          end
+        end
+
+        def configure_ssl(options, env)
+          if env[:url].scheme == 'https' && env[:ssl]
+            options[:ssl] = {
+              :cert_chain_file => env[:ssl][:ca_file],
+              :verify_peer => env[:ssl].fetch(:verify, true)
             }
           end
         end
@@ -117,6 +127,12 @@ module Faraday
           raise Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
         else
           raise Error::ConnectionFailed, err
+        end
+      rescue => err
+        if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
+          raise Faraday::SSLError, err
+        else
+          raise
         end
       end
 
@@ -211,3 +227,11 @@ module Faraday
     end
   end
 end
+
+begin
+  require 'openssl'
+rescue LoadError
+  warn "Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support"
+else
+  require 'faraday/adapter/em_http_ssl_patch'
+end if Faraday::Adapter::EMHttp.loaded?
