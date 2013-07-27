@@ -11,6 +11,9 @@ module Adapters
 
       # https://github.com/toland/patron/issues/52
       undef :test_GET_with_body
+
+      # no support for SSL peer verification
+      undef :test_GET_ssl_fails_with_bad_cert if ssl_mode?
     end unless jruby?
 
   end
