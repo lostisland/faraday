@@ -98,6 +98,32 @@ module Faraday
     def self.attribute_options
       @attribute_options ||= {}
     end
+
+    def self.memoized(key)
+      memoized_attributes[key.to_sym] = Proc.new
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        def #{key}() self[:#{key}]; end
+      RUBY
+    end
+
+    def self.memoized_attributes
+      @memoized_attributes ||= {}
+    end
+
+    def [](key)
+      key = key.to_sym
+      if method = self.class.memoized_attributes[key]
+        super(key) || (self[key] = instance_eval(&method))
+      else
+        super
+      end
+    end
+
+    def self.inherited(subclass)
+      super
+      subclass.attribute_options.update(attribute_options)
+      subclass.memoized_attributes.update(memoized_attributes)
+    end
   end
 
   class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
@@ -141,13 +167,8 @@ module Faraday
       super(value)
     end
 
-    def user
-      self[:user] ||= Utils.unescape(uri.user)
-    end
-
-    def password
-      self[:password] ||= Utils.unescape(uri.password)
-    end
+    memoized(:user) { uri.user && Utils.unescape(uri.user) }
+    memoized(:password) { uri.password && Utils.unescape(uri.password) }
   end
 
   class ConnectionOptions < Options.new(:request, :proxy, :ssl, :builder, :url,
@@ -155,17 +176,11 @@ module Faraday
 
     options :request => RequestOptions, :ssl => SSLOptions
 
-    def request
-      self[:request] ||= self.class.options_for(:request).new
-    end
+    memoized(:request) { self.class.options_for(:request).new }
 
-    def ssl
-      self[:ssl] ||= self.class.options_for(:ssl).new
-    end
+    memoized(:ssl) { self.class.options_for(:ssl).new }
 
-    def builder_class
-      self[:builder_class] ||= RackBuilder
-    end
+    memoized(:builder_class) { RackBuilder }
 
     def new_builder(block)
       builder_class.new(&block)

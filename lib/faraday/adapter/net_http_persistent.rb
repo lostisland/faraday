@@ -9,8 +9,16 @@ module Faraday
       dependency 'net/http/persistent'
 
       def net_http_connection(env)
-        Net::HTTP::Persistent.new 'Faraday',
-          env[:request][:proxy] ? env[:request][:proxy][:uri] : nil
+        if proxy = env[:request][:proxy]
+          proxy_uri = ::URI::HTTP === proxy[:uri] ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
+          proxy_uri.user = proxy_uri.password = nil
+          # awful patch for net-http-persistent 2.8 not unescaping user/password
+          (class << proxy_uri; self; end).class_eval do
+            define_method(:user) { proxy[:user] }
+            define_method(:password) { proxy[:password] }
+          end if proxy[:user]
+        end
+        Net::HTTP::Persistent.new 'Faraday', proxy_uri
       end
 
       def perform_request(http, env)
@@ -18,6 +26,8 @@ module Faraday
       rescue Net::HTTP::Persistent::Error => error
         if error.message.include? 'Timeout'
           raise Faraday::Error::TimeoutError, error
+        elsif error.message.include? 'connection refused'
+          raise Faraday::Error::ConnectionFailed, error
         else
           raise
         end

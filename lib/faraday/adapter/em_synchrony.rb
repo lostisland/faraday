@@ -52,6 +52,8 @@ module Faraday
             client = block.call
           end
 
+          raise client.error if client.error
+
           save_response(env, client.response_header.status, client.response) do |resp_headers|
             client.response_header.each do |name, value|
               resp_headers[name.to_sym] = value
@@ -62,6 +64,12 @@ module Faraday
         @app.call env
       rescue Errno::ECONNREFUSED
         raise Error::ConnectionFailed, $!
+      rescue EventMachine::Connectify::CONNECTError => err
+        if err.message.include?("Proxy Authentication Required")
+          raise Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+        else
+          raise Error::ConnectionFailed, err
+        end
       end
     end
   end

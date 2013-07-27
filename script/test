@@ -24,6 +24,7 @@ if [[ "$RUBYOPT" != *"bundler/setup"* ]]; then
 fi
 
 port=3999
+proxy_port=3998
 scheme=http
 
 if [ "$SSL" = "yes" ]; then
@@ -47,12 +48,18 @@ filter_matching() {
 
 start_server() {
   mkdir -p log
-  script/server -p $port >log/server.log 2>&1 &
+  script/server -p $port >log/test.log 2>&1 &
+  echo $!
+}
+
+start_proxy() {
+  mkdir -p log
+  script/proxy-server -p $proxy_port -u "faraday@test.local:there is cake" >log/proxy.log 2>&1 &
   echo $!
 }
 
 server_started() {
-  lsof -i :$port >/dev/null
+  lsof -i :${1?} >/dev/null
 }
 
 timestamp() {
@@ -62,7 +69,7 @@ timestamp() {
 wait_for_server() {
   timeout=$(( `timestamp` + $1 ))
   while true; do
-    if server_started; then
+    if server_started "$2"; then
       break
     elif [ `timestamp` -gt "$timeout" ]; then
       echo "timed out after $1 seconds" >&2
@@ -109,23 +116,27 @@ fi
 
 # If there are any adapter tests, spin up the HTTP server
 if [ -n "$(filter_matching "adapters" "${test_files[@]}")" ]; then
-  if server_started; then
+  if server_started $port; then
     echo "aborted: another instance of server running on $port" >&2
     exit 1
   fi
   server_pid=$(start_server)
-  wait_for_server 15 || {
-    cat log/server.log
+  proxy_pid=$(start_proxy)
+  wait_for_server 15 $port || {
+    cat log/test.log
     exit 1
   }
+  wait_for_server 5 $proxy_port
   cleanup() {
     if [ $? -ne 0 ] && [ -n "$TRAVIS" ]; then
       cat log/test.log
     fi
     kill "$server_pid"
+    kill "$proxy_pid"
   }
   trap cleanup INT EXIT
   export LIVE="${scheme}://localhost:${port}"
+  export LIVE_PROXY="http://faraday%40test.local:there%20is%20cake@localhost:${proxy_port}"
 fi
 
 warnings="${TMPDIR:-/tmp}/faraday-warnings.$$"

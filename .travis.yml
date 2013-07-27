@@ -9,9 +9,10 @@ language: ruby
 
 matrix:
   allow_failures:
-    # An error occured while installing eventmachine
+    # random crashes
     - rvm: rbx-18mode
     - rvm: rbx-19mode
+    - rvm: rbx-20mode
     # "A fatal error has been detected by the Java Runtime Environment:
     #  Internal Error (sharedRuntime.cpp:843)"
     - rvm: jruby-19mode
@@ -20,6 +21,7 @@ matrix:
 rvm:
   - rbx-18mode
   - rbx-19mode
+  - rbx-20mode
   - jruby-18mode
   - jruby-19mode
   - 1.8.7

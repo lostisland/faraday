@@ -39,6 +39,14 @@ module Faraday
         @app.call env
       rescue ::HTTPClient::TimeoutError
         raise Faraday::Error::TimeoutError, $!
+      rescue ::HTTPClient::BadResponseError => err
+        if err.message.include?('status 407')
+          raise Faraday::Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+        else
+          raise Faraday::Error::ClientError, $!
+        end
+      rescue Errno::ECONNREFUSED
+        raise Faraday::Error::ConnectionFailed, $!
       end
 
       def configure_socket(bind)

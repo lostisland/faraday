@@ -21,9 +21,6 @@ module Faraday
             # :file => 'path/to/file', # stream data off disk
           }
           configure_compression(options, env)
-          # configure_proxy_auth
-          # :proxy => {:authorization => [user, pass]}
-          # proxy[:username] && proxy[:password]
           options
         end
 
@@ -36,7 +33,8 @@ module Faraday
           if proxy = request_options(env)[:proxy]
             options[:proxy] = {
               :host => proxy[:uri].host,
-              :port => proxy[:uri].port
+              :port => proxy[:uri].port,
+              :authorization => [proxy[:user], proxy[:password]]
             }
           end
         end
@@ -114,6 +112,12 @@ module Faraday
               }
           end
         end
+      rescue EventMachine::Connectify::CONNECTError => err
+        if err.message.include?("Proxy Authentication Required")
+          raise Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+        else
+          raise Error::ConnectionFailed, err
+        end
       end
 
       # TODO: reuse the connection to support pipelining
@@ -140,6 +144,8 @@ module Faraday
         elsif msg == Errno::ECONNREFUSED
           errklass = Faraday::Error::ConnectionFailed
           msg = "connection refused"
+        elsif msg == "connection closed by server"
+          errklass = Faraday::Error::ConnectionFailed
         end
         raise errklass, msg
       end

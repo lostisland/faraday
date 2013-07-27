@@ -287,6 +287,42 @@ class TestConnection < Faraday::TestCase
     end
   end
 
+  def test_proxy_accepts_env_without_scheme
+    with_env 'http_proxy', "localhost:8888" do
+      uri = Faraday::Connection.new.proxy[:uri]
+      assert_equal 'localhost', uri.host
+      assert_equal 8888, uri.port
+    end
+  end
+
+  def test_no_proxy_from_env
+    with_env 'http_proxy', nil do
+      conn = Faraday::Connection.new
+      assert_equal nil, conn.proxy
+    end
+  end
+
+  def test_no_proxy_from_blank_env
+    with_env 'http_proxy', '' do
+      conn = Faraday::Connection.new
+      assert_equal nil, conn.proxy
+    end
+  end
+
+  def test_proxy_doesnt_accept_uppercase_env
+    with_env 'HTTP_PROXY', "http://localhost:8888/" do
+      conn = Faraday::Connection.new
+      assert_nil conn.proxy
+    end
+  end
+
+  def test_proxy_requires_uri
+    conn = Faraday::Connection.new
+    assert_raises ArgumentError do
+      conn.proxy :uri => :bad_uri, :user => 'rick'
+    end
+  end
+
   def test_dups_connection_object
     conn = Faraday::Connection.new 'http://sushi.com/foo',
       :ssl => { :verify => :none },
