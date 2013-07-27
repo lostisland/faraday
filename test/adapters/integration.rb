@@ -12,6 +12,7 @@ module Adapters
       if base.live_server?
         features = [:Common]
         features.concat extra_features
+        features << :SSL if base.ssl_mode?
         features.each {|name| base.send(:include, self.const_get(name)) }
         yield if block_given?
       elsif !defined? @warned
@@ -59,6 +60,17 @@ module Adapters
       def test_GET_handles_compression
         res = get('echo_header', :name => 'accept-encoding')
         assert_match(/gzip;.+\bdeflate\b/, res.body)
+      end
+    end
+
+    module SSL
+      def test_GET_ssl_fails_with_bad_cert
+        ca_file = 'tmp/faraday-different-ca-cert.crt'
+        conn = create_connection(:ssl => {:ca_file => ca_file})
+        err = assert_raises Faraday::SSLError do
+          conn.get('/ssl')
+        end
+        assert_includes err.message, "certificate"
       end
     end
 

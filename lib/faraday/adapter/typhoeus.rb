@@ -61,6 +61,8 @@ module Faraday
             # everything OK
           when 7
             raise Error::ConnectionFailed, resp.curl_error_message
+          when 60
+            raise Faraday::SSLError, resp.curl_error_message
           else
             raise Error::ClientError, resp.curl_error_message
           end

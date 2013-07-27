@@ -38,8 +38,11 @@ module Faraday
   class ParsingError     < ClientError;   end
   class TimeoutError < ClientError; end
 
+  class SSLError < ClientError
+  end
+
   [:MissingDependency, :ClientError, :ConnectionFailed, :ResourceNotFound,
-   :ParsingError, :TimeoutError].each do |const|
+   :ParsingError, :TimeoutError, :SSLError].each do |const|
     Error.const_set(const, Faraday.const_get(const))
   end
 end

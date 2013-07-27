@@ -58,6 +58,8 @@ module Faraday
       rescue ::Excon::Errors::SocketError => err
         if err.message =~ /\btimeout\b/
           raise Error::TimeoutError, err
+        elsif err.message =~ /\bcertificate\b/
+          raise Faraday::SSLError, err
         else
           raise Error::ConnectionFailed, err
         end

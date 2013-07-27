@@ -47,6 +47,12 @@ module Faraday
         end
       rescue Errno::ECONNREFUSED
         raise Faraday::Error::ConnectionFailed, $!
+      rescue => err
+        if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
+          raise Faraday::SSLError, err
+        else
+          raise
+        end
       end
 
       def configure_socket(bind)
