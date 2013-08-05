@@ -24,7 +24,7 @@ module Faraday
     #   end
     def initialize(app, options = nil)
       super(app)
-      @name, @instrumenter = Options.from(options).values
+      @name, @instrumenter = Options.from(options).values_at(:name, :instrumenter)
     end
 
     def call(env)
