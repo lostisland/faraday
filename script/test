@@ -122,8 +122,10 @@ if [ -n "$(filter_matching "adapters" "${test_files[@]}")" ]; then
   fi
   server_pid=$(start_server)
   proxy_pid=$(start_proxy)
-  wait_for_server 15 $port || {
+  wait_for_server 30 $port || {
     cat log/test.log
+    kill "$server_pid"
+    kill "$proxy_pid"
     exit 1
   }
   wait_for_server 5 $proxy_port
