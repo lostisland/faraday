@@ -52,8 +52,8 @@ end
 conn.get do |req|
   req.url '/search'
   req.options = { 
-    timeout: 5,      # open/read timeout in seconds
-    open_timeout: 2  # connection open timeout in seconds
+    timeout => 5,      # open/read timeout in seconds
+    open_timeout => 2  # connection open timeout in seconds
   }    
 end
 ```
