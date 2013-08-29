@@ -13,7 +13,7 @@ module Faraday
   #     conn.adapter ...
   #   end
   class Request::Retry < Faraday::Middleware
-    class Options < Faraday::Options.new(:max, :interval, :exceptions)
+    class Options < Faraday::Options.new(:max, :interval, :interval_randomness, :backoff_factor, :exceptions)
       def self.from(value)
         if Fixnum === value
           new(value)
@@ -28,6 +28,14 @@ module Faraday
 
       def interval
         (self[:interval] ||= 0).to_f
+      end
+
+      def interval_randomness
+        (self[:interval_randomness] ||= 0).to_i
+      end
+
+      def backoff_factor
+        (self[:backoff_factor] ||= 1).to_f
       end
 
       def exceptions
@@ -51,6 +59,13 @@ module Faraday
       @errmatch = build_exception_matcher(@options.exceptions)
     end
 
+    def sleep_amount(retries)
+      retry_index = @options.max - retries
+      current_interval = @options.interval * (@options.backoff_factor ** retry_index)
+      random_interval  = (rand(@options.interval_randomness + 1).to_f/100 * @options.interval)
+      current_interval + random_interval
+    end
+
     def call(env)
       retries = @options.max
       begin
@@ -58,7 +73,7 @@ module Faraday
       rescue @errmatch
         if retries > 0
           retries -= 1
-          sleep @options.interval if @options.interval > 0
+          sleep sleep_amount(retries + 1)
           retry
         end
         raise

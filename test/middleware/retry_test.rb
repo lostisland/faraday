@@ -51,6 +51,31 @@ module Middleware
       assert_in_delta 0.2, Time.now - started, 0.03
     end
 
+    def test_backoff_interval
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      started  = Time.now
+      assert_raises(Errno::ETIMEDOUT) {
+        conn(:max => 2, :interval => 0.1, :backoff_factor => 2).post("/unstable")
+      }
+      assert_in_delta 0.3, Time.now - started, 0.03
+    end
+
+    def test_interval_randomness
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      started  = Time.now
+      assert_raises(Errno::ETIMEDOUT) {
+        conn(:max => 2, :interval => 0.1, :backoff_factor => 2, :interval_randomness => 100).post("/unstable")
+      }
+      time_1 = Time.now - started
+      started  = Time.now
+      assert_raises(Errno::ETIMEDOUT) {
+        conn(:max => 2, :interval => 0.1, :backoff_factor => 2, :interval_randomness => 100).post("/unstable")
+      }
+      time_2 = Time.now - started
+      #this isn't a good test but it documents intent
+      assert time_1 != time_2
+    end
+
     def test_custom_exceptions
       @explode = lambda {|n| raise "boom!" }
       assert_raises(RuntimeError) {
