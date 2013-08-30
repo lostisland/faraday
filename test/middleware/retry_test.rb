@@ -51,29 +51,45 @@ module Middleware
       assert_in_delta 0.2, Time.now - started, 0.03
     end
 
-    def test_backoff_interval
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
-      started  = Time.now
+    def test_calls_sleep_amount
+      explode_app = MiniTest::Mock.new
+      explode_app.expect(:call, nil, [{:body=>nil}])
+      def explode_app.call(env)
+        raise Errno::ETIMEDOUT
+      end
+
+      retry_middleware = Faraday::Request::Retry.new(explode_app)
+      class << retry_middleware
+        attr_accessor :sleep_amount_retries
+
+        def sleep_amount(retries)
+          self.sleep_amount_retries.delete(retries)
+          0
+        end
+      end
+      retry_middleware.sleep_amount_retries = [2, 1]
+
       assert_raises(Errno::ETIMEDOUT) {
-        conn(:max => 2, :interval => 0.1, :backoff_factor => 2).post("/unstable")
+        retry_middleware.call({})
       }
-      assert_in_delta 0.3, Time.now - started, 0.03
+
+      assert_empty retry_middleware.sleep_amount_retries
     end
 
-    def test_interval_randomness
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
-      started  = Time.now
-      assert_raises(Errno::ETIMEDOUT) {
-        conn(:max => 2, :interval => 0.1, :backoff_factor => 2, :interval_randomness => 100).post("/unstable")
-      }
-      time_1 = Time.now - started
-      started  = Time.now
-      assert_raises(Errno::ETIMEDOUT) {
-        conn(:max => 2, :interval => 0.1, :backoff_factor => 2, :interval_randomness => 100).post("/unstable")
-      }
-      time_2 = Time.now - started
-      #this isn't a good test but it documents intent
-      assert time_1 != time_2
+    def test_exponential_backoff
+      middleware = Faraday::Request::Retry.new(nil, :max => 5, :interval => 0.1, :backoff_factor => 2)
+      assert_equal middleware.sleep_amount(5), 0.1
+      assert_equal middleware.sleep_amount(4), 0.2
+      assert_equal middleware.sleep_amount(3), 0.4
+    end
+
+    def test_random_additional_interval_amount
+      middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 100)
+      assert middleware.sleep_amount(2).between?(0.1, 0.2)
+      middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 50)
+      assert middleware.sleep_amount(2).between?(0.1, 0.15)
+      middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 25)
+      assert middleware.sleep_amount(2).between?(0.1, 0.125)
     end
 
     def test_custom_exceptions
