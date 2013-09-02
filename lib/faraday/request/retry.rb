@@ -3,15 +3,21 @@ module Faraday
   #
   # By default, it retries 2 times and handles only timeout exceptions. It can
   # be configured with an arbitrary number of retries, a list of exceptions to
-  # handle an a retry interval.
+  # handle, a retry interval, a percentage of randomness to add to the retry
+  # interval, and a backoff factor.
   #
   # Examples
   #
   #   Faraday.new do |conn|
   #     conn.request :retry, max: 2, interval: 0.05,
+  #                          interval_randomness: 50, backoff_factor: 2
   #                          exceptions: [CustomException, 'Timeout::Error']
   #     conn.adapter ...
   #   end
+  #
+  # This example will result in a first interval that is random between 0.05 and 0.075 and a second
+  # interval that is random between 0.1 and 0.15
+  #
   class Request::Retry < Faraday::Middleware
     class Options < Faraday::Options.new(:max, :interval, :interval_randomness, :backoff_factor, :exceptions)
       def self.from(value)
@@ -48,8 +54,15 @@ module Faraday
     # Public: Initialize middleware
     #
     # Options:
-    # max        - Maximum number of retries (default: 2).
-    # interval   - Pause in seconds between retries (default: 0).
+    # max        - Maximum number of retries (default: 2)
+    # interval   - Pause in seconds between retries (default: 0)
+    # interval_randomness - The maximum random interval amount to
+    #                       add to the inteval as a percentage of that
+    #                       interval
+    #                       (default: 0)
+    # backoff_factor      - The amount to multiple each successive retry's
+    #                       interval amount by in order to provide backoff
+    #                       (default: 1)
     # exceptions - The list of exceptions to handle. Exceptions can be
     #              given as Class, Module, or String. (default:
     #              [Errno::ETIMEDOUT, Timeout::Error, Error::TimeoutError])
