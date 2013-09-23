@@ -9,7 +9,7 @@ module Faraday
       when 404
         raise Faraday::Error::ResourceNotFound, response_values(env)
       when 422
-        #raise Faraday::Error::UnprocessableEntity, response_values(env)
+        # dont raise error for 422        
       when ClientErrorStatuses
         raise Faraday::Error::ClientError, response_values(env)
       end
