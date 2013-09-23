@@ -7,10 +7,10 @@ module Faraday
       module Options
         def connection_config(env)
           options = {}
-          configure_ssl(options, env)
           configure_proxy(options, env)
           configure_timeout(options, env)
           configure_socket(options, env)
+          configure_ssl(options, env)
           options
         end
 
@@ -22,9 +22,6 @@ module Faraday
             # :file => 'path/to/file', # stream data off disk
           }
           configure_compression(options, env)
-          # configure_proxy_auth
-          # :proxy => {:authorization => [user, pass]}
-          # proxy[:username] && proxy[:password]
           options
         end
 
@@ -33,20 +30,12 @@ module Faraday
           body.respond_to?(:read) ? body.read : body
         end
 
-        def configure_ssl(options, env)
-          if ssl = env[:ssl]
-            # :ssl => {
-            #   :private_key_file => '/tmp/server.key',
-            #   :cert_chain_file => '/tmp/server.crt',
-            #   :verify_peer => false
-          end
-        end
-
         def configure_proxy(options, env)
           if proxy = request_options(env)[:proxy]
             options[:proxy] = {
               :host => proxy[:uri].host,
-              :port => proxy[:uri].port
+              :port => proxy[:uri].port,
+              :authorization => [proxy[:user], proxy[:password]]
             }
           end
         end
@@ -56,6 +45,15 @@ module Faraday
             options[:bind] = {
               :host => bind[:host],
               :port => bind[:port]
+            }
+          end
+        end
+
+        def configure_ssl(options, env)
+          if env[:url].scheme == 'https' && env[:ssl]
+            options[:ssl] = {
+              :cert_chain_file => env[:ssl][:ca_file],
+              :verify_peer => env[:ssl].fetch(:verify, true)
             }
           end
         end
@@ -124,6 +122,18 @@ module Faraday
               }
           end
         end
+      rescue EventMachine::Connectify::CONNECTError => err
+        if err.message.include?("Proxy Authentication Required")
+          raise Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+        else
+          raise Error::ConnectionFailed, err
+        end
+      rescue => err
+        if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
+          raise Faraday::SSLError, err
+        else
+          raise
+        end
       end
 
       # TODO: reuse the connection to support pipelining
@@ -150,6 +160,8 @@ module Faraday
         elsif msg == Errno::ECONNREFUSED
           errklass = Faraday::Error::ConnectionFailed
           msg = "connection refused"
+        elsif msg == "connection closed by server"
+          errklass = Faraday::Error::ConnectionFailed
         end
         raise errklass, msg
       end
@@ -215,3 +227,11 @@ module Faraday
     end
   end
 end
+
+begin
+  require 'openssl'
+rescue LoadError
+  warn "Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support"
+else
+  require 'faraday/adapter/em_http_ssl_patch'
+end if Faraday::Adapter::EMHttp.loaded?

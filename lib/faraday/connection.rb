@@ -79,7 +79,14 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      proxy(options.fetch(:proxy) { ENV['http_proxy'] })
+      @proxy = nil
+      proxy(options.fetch(:proxy) {
+        uri = ENV['http_proxy']
+        if uri && !uri.empty?
+          uri = 'http://' + uri if uri !~ /^http/i
+          uri
+        end
+      })
 
       yield self if block_given?
 

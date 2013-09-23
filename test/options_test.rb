@@ -33,6 +33,20 @@ class OptionsTest < Faraday::TestCase
     assert_equal 'http', options.scheme
   end
 
+  def test_proxy_options_hash_access
+    proxy = Faraday::ProxyOptions.from 'http://a%40b:pw%20d@example.org'
+    assert_equal 'a@b', proxy[:user]
+    assert_equal 'a@b', proxy.user
+    assert_equal 'pw d', proxy[:password]
+    assert_equal 'pw d', proxy.password
+  end
+
+  def test_proxy_options_no_auth
+    proxy = Faraday::ProxyOptions.from 'http://example.org'
+    assert_nil proxy.user
+    assert_nil proxy.password
+  end
+
   def test_from_options
     options = Options.new 1
 
@@ -65,6 +79,13 @@ class OptionsTest < Faraday::TestCase
     assert_nil options.b
     assert_kind_of SubOptions, options.c
     assert_equal 1, options.c.sub
+  end
+
+  def test_inheritance
+    subclass = Class.new(Options)
+    options = subclass.from(:c => {:sub => 'hello'})
+    assert_kind_of SubOptions, options.c
+    assert_equal 'hello', options.c.sub
   end
 
   def test_from_deep_hash

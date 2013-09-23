@@ -5,7 +5,7 @@ module Faraday
 
       def initialize(app, &block)
         super(app)
-        @block = block if block_given?
+        @block = block
       end
 
       def call(env)
@@ -19,19 +19,19 @@ module Faraday
         if req = env[:request]
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
           session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
-                    
+
           if proxy = req[:proxy]
-            session.proxy = proxy[:uri].to_s
-            if proxy[:user] && proxy[:password]
-              prepend_proxy_auth_string(proxy, session)
-            end
+            proxy_uri = proxy[:uri].dup
+            proxy_uri.user = proxy[:user] && Utils.escape(proxy[:user]).gsub('+', '%20')
+            proxy_uri.password = proxy[:password] && Utils.escape(proxy[:password]).gsub('+', '%20')
+            session.proxy = proxy_uri.to_s
           end
         end
 
         response = begin
           data = env[:body] ? env[:body].to_s : nil
           session.request(env[:method], env[:url].to_s, env[:request_headers], :data => data)
-        rescue Errno::ECONNREFUSED
+        rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
           raise Error::ConnectionFailed, $!
         end
 
@@ -40,6 +40,12 @@ module Faraday
         @app.call env
       rescue ::Patron::TimeoutError => err
         raise Faraday::Error::TimeoutError, err
+      rescue ::Patron::Error => err
+        if err.message.include?("code 407")
+          raise Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+        else
+          raise Error::ConnectionFailed, err
+        end
       end
 
       if loaded? && defined?(::Patron::Request::VALID_ACTIONS)
@@ -57,10 +63,6 @@ module Faraday
         @block.call(session) if @block
         session
       end
-    end
-    
-    def prepend_proxy_auth_string(proxy, session)
-      session.proxy.insert(7, "#{proxy[:user]}:#{proxy[:password]}@")
     end
   end
 end

@@ -33,6 +33,16 @@ module Faraday
             opts[:connect_timeout]   = req[:open_timeout]
             opts[:write_timeout]     = req[:open_timeout]
           end
+
+          if req[:proxy]
+            opts[:proxy] = {
+              :host     => req[:proxy][:uri].host,
+              :port     => req[:proxy][:uri].port,
+              :scheme   => req[:proxy][:uri].scheme,
+              :user     => req[:proxy][:user],
+              :password => req[:proxy][:password]
+            }
+          end
         end
 
         conn = ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
@@ -48,6 +58,8 @@ module Faraday
       rescue ::Excon::Errors::SocketError => err
         if err.message =~ /\btimeout\b/
           raise Error::TimeoutError, err
+        elsif err.message =~ /\bcertificate\b/
+          raise Faraday::SSLError, err
         else
           raise Error::ConnectionFailed, err
         end

@@ -2,10 +2,6 @@ require File.expand_path('../helper', __FILE__)
 
 class TestConnection < Faraday::TestCase
 
-  def teardown
-    Faraday::Utils.default_params_encoder = nil
-  end
-
   def with_env(key, proxy)
     old_value = ENV.fetch(key, false)
     ENV[key] = proxy
@@ -291,6 +287,42 @@ class TestConnection < Faraday::TestCase
     end
   end
 
+  def test_proxy_accepts_env_without_scheme
+    with_env 'http_proxy', "localhost:8888" do
+      uri = Faraday::Connection.new.proxy[:uri]
+      assert_equal 'localhost', uri.host
+      assert_equal 8888, uri.port
+    end
+  end
+
+  def test_no_proxy_from_env
+    with_env 'http_proxy', nil do
+      conn = Faraday::Connection.new
+      assert_equal nil, conn.proxy
+    end
+  end
+
+  def test_no_proxy_from_blank_env
+    with_env 'http_proxy', '' do
+      conn = Faraday::Connection.new
+      assert_equal nil, conn.proxy
+    end
+  end
+
+  def test_proxy_doesnt_accept_uppercase_env
+    with_env 'HTTP_PROXY', "http://localhost:8888/" do
+      conn = Faraday::Connection.new
+      assert_nil conn.proxy
+    end
+  end
+
+  def test_proxy_requires_uri
+    conn = Faraday::Connection.new
+    assert_raises ArgumentError do
+      conn.proxy :uri => :bad_uri, :user => 'rick'
+    end
+  end
+
   def test_dups_connection_object
     conn = Faraday::Connection.new 'http://sushi.com/foo',
       :ssl => { :verify => :none },
@@ -356,6 +388,16 @@ class TestRequestParams < Faraday::TestCase
     assert_equal expected, query.split('&').sort
   end
 
+  def with_default_params_encoder(encoder)
+    old_encoder = Faraday::Utils.default_params_encoder
+    begin
+      Faraday::Utils.default_params_encoder = encoder
+      yield
+    ensure
+      Faraday::Utils.default_params_encoder = old_encoder
+    end
+  end
+
   def test_merges_connection_and_request_params
     create_connection 'http://a.co/?token=abc', :params => {'format' => 'json'}
     query = get '?page=1', :limit => 5
@@ -412,31 +454,35 @@ class TestRequestParams < Faraday::TestCase
   end
 
   def test_array_params_in_url
-    Faraday::Utils.default_params_encoder = nil
-    create_connection 'http://a.co/page1?color[]=red&color[]=blue'
-    query = get
-    assert_equal "color%5B%5D=red&color%5B%5D=blue", query
+    with_default_params_encoder(nil) do
+      create_connection 'http://a.co/page1?color[]=red&color[]=blue'
+      query = get
+      assert_equal "color%5B%5D=red&color%5B%5D=blue", query
+    end
   end
 
   def test_array_params_in_params
-    Faraday::Utils.default_params_encoder = nil
-    create_connection 'http://a.co/page1', :params => {:color => ['red', 'blue']}
-    query = get
-    assert_equal "color%5B%5D=red&color%5B%5D=blue", query
+    with_default_params_encoder(nil) do
+      create_connection 'http://a.co/page1', :params => {:color => ['red', 'blue']}
+      query = get
+      assert_equal "color%5B%5D=red&color%5B%5D=blue", query
+    end
   end
 
   def test_array_params_in_url_with_flat_params
-    Faraday::Utils.default_params_encoder = Faraday::FlatParamsEncoder
-    create_connection 'http://a.co/page1?color=red&color=blue'
-    query = get
-    assert_equal "color=red&color=blue", query
+    with_default_params_encoder(Faraday::FlatParamsEncoder) do
+      create_connection 'http://a.co/page1?color=red&color=blue'
+      query = get
+      assert_equal "color=red&color=blue", query
+    end
   end
 
   def test_array_params_in_params_with_flat_params
-    Faraday::Utils.default_params_encoder = Faraday::FlatParamsEncoder
-    create_connection 'http://a.co/page1', :params => {:color => ['red', 'blue']}
-    query = get
-    assert_equal "color=red&color=blue", query
+    with_default_params_encoder(Faraday::FlatParamsEncoder) do
+      create_connection 'http://a.co/page1', :params => {:color => ['red', 'blue']}
+      query = get
+      assert_equal "color=red&color=blue", query
+    end
   end
 
   def get(*args)

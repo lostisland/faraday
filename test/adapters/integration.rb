@@ -12,6 +12,7 @@ module Adapters
       if base.live_server?
         features = [:Common]
         features.concat extra_features
+        features << :SSL if base.ssl_mode?
         features.each {|name| base.send(:include, self.const_get(name)) }
         yield if block_given?
       elsif !defined? @warned
@@ -58,7 +59,18 @@ module Adapters
     module Compression
       def test_GET_handles_compression
         res = get('echo_header', :name => 'accept-encoding')
-        assert_match /gzip;.+\bdeflate\b/, res.body
+        assert_match(/gzip;.+\bdeflate\b/, res.body)
+      end
+    end
+
+    module SSL
+      def test_GET_ssl_fails_with_bad_cert
+        ca_file = 'tmp/faraday-different-ca-cert.crt'
+        conn = create_connection(:ssl => {:ca_file => ca_file})
+        err = assert_raises Faraday::SSLError do
+          conn.get('/ssl')
+        end
+        assert_includes err.message, "certificate"
       end
     end
 
@@ -118,7 +130,7 @@ module Adapters
         resp = post('file') do |req|
           req.body = {'uploaded_file' => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
         end
-        assert_equal "file integration.rb text/x-ruby", resp.body
+        assert_equal "file integration.rb text/x-ruby #{File.size(__FILE__)}", resp.body
       end
 
       def test_PUT_send_url_encoded_params
@@ -163,6 +175,40 @@ module Adapters
         conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
         assert_raises Faraday::Error::TimeoutError do
           conn.get '/slow'
+        end
+      end
+
+      def test_connection_error
+        assert_raises Faraday::Error::ConnectionFailed do
+          get 'http://localhost:4'
+        end
+      end
+
+      def test_proxy
+        proxy_uri = URI(ENV['LIVE_PROXY'])
+        conn = create_connection(:proxy => proxy_uri)
+
+        res = conn.get '/echo'
+        assert_equal 'get', res.body
+
+        unless self.class.ssl_mode?
+          # proxy can't append "Via" header for HTTPS responses
+          assert_match(/:#{proxy_uri.port}$/, res['via'])
+        end
+      end
+
+      def test_proxy_auth_fail
+        proxy_uri = URI(ENV['LIVE_PROXY'])
+        proxy_uri.password = 'WRONG'
+        conn = create_connection(:proxy => proxy_uri)
+
+        err = assert_raises Faraday::Error::ConnectionFailed do
+          conn.get '/echo'
+        end
+
+        unless self.class.ssl_mode? && self.class.jruby?
+          # JRuby raises "End of file reached" which cannot be distinguished from a 407
+          assert_equal %{407 "Proxy Authentication Required "}, err.message
         end
       end
 

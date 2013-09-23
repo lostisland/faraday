@@ -10,6 +10,9 @@ module Faraday
         raise Faraday::Error::ResourceNotFound, response_values(env)
       when 422
         # dont raise error for 422        
+      when 407
+        # mimic the behavior that we get with proxy requests with HTTPS
+        raise Faraday::Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
       when ClientErrorStatuses
         raise Faraday::Error::ClientError, response_values(env)
       end

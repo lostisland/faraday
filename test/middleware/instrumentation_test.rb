@@ -28,6 +28,19 @@ module Middleware
       assert_equal :boom, options(:instrumenter => :boom).instrumenter
     end
 
+    def test_instrumentation_with_default_name
+      assert_equal 0, @instrumenter.instrumentations.size
+
+      faraday = conn
+      res = faraday.get '/'
+      assert_equal 'ok', res.body
+
+      assert_equal 1, @instrumenter.instrumentations.size
+      name, env = @instrumenter.instrumentations.first
+      assert_equal 'request.faraday', name
+      assert_equal '/', env[:url].path
+    end
+
     def test_instrumentation
       assert_equal 0, @instrumenter.instrumentations.size
 

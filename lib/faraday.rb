@@ -26,7 +26,7 @@ module Faraday
 
     # Public: Gets or sets the Symbol key identifying a default Adapter to use
     # for the default Faraday::Connection.
-    attr_accessor :default_adapter
+    attr_reader :default_adapter
 
     # Public: Sets the default Faraday::Connection for simple scripts that
     # access the Faraday constant directly.

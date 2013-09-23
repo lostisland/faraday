@@ -52,6 +52,8 @@ module Faraday
             client = block.call
           end
 
+          raise client.error if client.error
+
           save_response(env, client.response_header.status, client.response) do |resp_headers|
             client.response_header.each do |name, value|
               resp_headers[name.to_sym] = value
@@ -62,6 +64,18 @@ module Faraday
         @app.call env
       rescue Errno::ECONNREFUSED
         raise Error::ConnectionFailed, $!
+      rescue EventMachine::Connectify::CONNECTError => err
+        if err.message.include?("Proxy Authentication Required")
+          raise Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+        else
+          raise Error::ConnectionFailed, err
+        end
+      rescue => err
+        if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
+          raise Faraday::SSLError, err
+        else
+          raise
+        end
       end
     end
   end
@@ -69,23 +83,10 @@ end
 
 require 'faraday/adapter/em_synchrony/parallel_manager'
 
-# add missing patch(), options() methods
-EventMachine::HTTPMethods.module_eval do
-  [:patch, :options].each do |type|
-    next if method_defined? :"a#{type}"
-    alias_method :"a#{type}", type if method_defined? type
-    module_eval %[
-      def #{type}(options = {}, &blk)
-        f = Fiber.current
-        conn = setup_request(:#{type}, options, &blk)
-        if conn.error.nil?
-          conn.callback { f.resume(conn) }
-          conn.errback  { f.resume(conn) }
-          Fiber.yield
-        else
-          conn
-        end
-      end
-    ]
-  end
-end
+begin
+  require 'openssl'
+rescue LoadError
+  warn "Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support"
+else
+  require 'faraday/adapter/em_http_ssl_patch'
+end if Faraday::Adapter::EMSynchrony.loaded?

@@ -13,24 +13,14 @@ module Adapters
       # which libcurl seems to generate for this particular request:
       undef :test_POST_sends_files
 
+      # inconsistent outcomes ranging from successful response to connection error
+      undef :test_proxy_auth_fail if ssl_mode?
+
       def test_binds_local_socket
         host = '1.2.3.4'
         conn = create_connection :request => { :bind => { :host => host } }
         assert_equal host, conn.options[:bind][:host]
       end
-
-      def test_GET_ssl_rejects_bad_hosts
-        original_ssl_file = ENV['SSL_FILE']
-        begin
-          ENV['SSL_FILE'] = 'tmp/faraday-different-ca-cert.crt'
-          conn = create_connection
-          expected = ''
-          response = conn.get('/ssl')
-          assert_equal expected, response.body
-        ensure
-          ENV['SSL_FILE'] = original_ssl_file
-        end
-      end if ssl_mode?
 
     end unless jruby?
   end

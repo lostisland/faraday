@@ -77,7 +77,7 @@ class RequestMiddlewareTest < Faraday::TestCase
       response = @conn.post('/echo', {:str => "eé cç aã aâ"})
       assert_equal "str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2", response.body
     }
-    assert err.empty?
+    assert err.empty?, "stderr did include: #{err}"
   end
 
   def test_url_encoded_unicode_with_kcode_set
@@ -86,7 +86,7 @@ class RequestMiddlewareTest < Faraday::TestCase
         response = @conn.post('/echo', {:str => "eé cç aã aâ"})
         assert_equal "str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2", response.body
       }
-      assert err.empty?
+      assert err.empty?, "stderr did include: #{err}"
     end
   end
 
@@ -106,7 +106,7 @@ class RequestMiddlewareTest < Faraday::TestCase
     response = @conn.post('/echo', payload)
 
     assert_kind_of Faraday::CompositeReadIO, response.body
-    assert_equal "multipart/form-data;boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
+    assert_equal "multipart/form-data; boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
       response.headers['Content-Type']
 
     response.body.send(:ios).map{|io| io.read}.each do |io|
@@ -116,7 +116,7 @@ class RequestMiddlewareTest < Faraday::TestCase
     end
     assert_equal [], regexes
   end
-  
+
   def test_multipart_with_arrays
     # assume params are out of order
     regexes = [
@@ -128,7 +128,7 @@ class RequestMiddlewareTest < Faraday::TestCase
     response = @conn.post('/echo', payload)
 
     assert_kind_of Faraday::CompositeReadIO, response.body
-    assert_equal "multipart/form-data;boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
+    assert_equal "multipart/form-data; boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
       response.headers['Content-Type']
 
     response.body.send(:ios).map{|io| io.read}.each do |io|
@@ -138,5 +138,5 @@ class RequestMiddlewareTest < Faraday::TestCase
     end
     assert_equal [], regexes
   end
-  
+
 end
