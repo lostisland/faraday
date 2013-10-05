@@ -98,6 +98,16 @@ class HeadersTest < Faraday::TestCase
     assert_equal 'application/xml', @headers['content-type']
   end
 
+  def test_fetch_key
+    @headers['Content-Type'] = 'application/json'
+    assert_equal 'application/json', @headers.fetch('Content-Type')
+    assert_equal 'application/json', @headers.fetch('CONTENT-TYPE')
+    assert_equal 'default', @headers.fetch('invalid', 'default')
+    assert_equal 'invalid key', @headers.fetch('invalid') {|el| "#{el} key"}
+    fetch_error = RUBY_VERSION =~ /1.8/ ? IndexError : KeyError
+    assert_raises(fetch_error) { @headers.fetch('invalid') }
+  end
+
   def test_delete_key
     @headers['Content-Type'] = 'application/json'
     assert_equal 1, @headers.size
