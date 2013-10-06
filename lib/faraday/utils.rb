@@ -45,6 +45,12 @@ module Faraday
         super k, v
       end
 
+      def fetch(k, *args, &block)
+        k = KeyMap[k]
+        key = @names.fetch(k.downcase, k)
+        super(key, *args, &block)
+      end
+
       def delete(k)
         k = KeyMap[k]
         if k = @names[k.downcase]

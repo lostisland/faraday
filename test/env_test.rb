@@ -98,6 +98,25 @@ class HeadersTest < Faraday::TestCase
     assert_equal 'application/xml', @headers['content-type']
   end
 
+  def test_fetch_key
+    @headers['Content-Type'] = 'application/json'
+    block_called = false
+    assert_equal 'application/json', @headers.fetch('content-type') { block_called = true }
+    assert_equal 'application/json', @headers.fetch('Content-Type')
+    assert_equal 'application/json', @headers.fetch('CONTENT-TYPE')
+    assert_equal 'application/json', @headers.fetch(:content_type)
+    assert_equal false, block_called
+
+    assert_equal 'default', @headers.fetch('invalid', 'default')
+    assert_equal false, @headers.fetch('invalid', false)
+    assert_nil   @headers.fetch('invalid', nil)
+
+    assert_equal 'Invalid key', @headers.fetch('Invalid') { |key| "#{key} key" }
+
+    expected_error = defined?(KeyError) ? KeyError : IndexError
+    assert_raises(expected_error) { @headers.fetch('invalid') }
+  end
+
   def test_delete_key
     @headers['Content-Type'] = 'application/json'
     assert_equal 1, @headers.size
