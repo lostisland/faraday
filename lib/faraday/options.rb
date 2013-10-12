@@ -1,16 +1,30 @@
 module Faraday
-  # Subclasses Struct with some special helpers for converting from a Hash to
-  # a Struct.
-  class Options < Struct
-    # Public
-    def self.from(value)
-      value ? new.update(value) : new
+  module Optional
+    def self.included(base)
+      super
+      base.extend(ClassMethods)
+      base.send :alias_method, :merge!, :update
     end
 
-    # Public
-    def each(&block)
-      members.each do |key|
-        block.call key.to_sym, send(key)
+    module ClassMethods
+      # Public
+      def from(value)
+        value ? new.update(value) : new
+      end
+
+      # Internal
+      def options(mapping)
+        attribute_options.update(mapping)
+      end
+
+      # Internal
+      def options_for(key)
+        attribute_options[key]
+      end
+
+      # Internal
+      def attribute_options
+        @attribute_options ||= {}
       end
     end
 
@@ -32,6 +46,24 @@ module Faraday
       self
     end
 
+    # Public
+    def merge(value)
+      dup.update(value)
+    end
+  end
+
+  # Subclasses Struct with some special helpers for converting from a Hash to
+  # a Struct.
+  class Options < Struct
+    include Optional
+
+    # Public
+    def each(&block)
+      members.each do |key|
+        block.call key.to_sym, send(key)
+      end
+    end
+
     alias merge! update
 
     # Public
@@ -39,11 +71,6 @@ module Faraday
       value = send(key)
       send("#{key}=", nil)
       value
-    end
-
-    # Public
-    def merge(value)
-      dup.update(value)
     end
 
     # Public
@@ -82,21 +109,6 @@ module Faraday
       values = values.empty? ? ' (empty)' : (' ' << values.join(", "))
 
       %(#<#{self.class}#{values}>)
-    end
-
-    # Internal
-    def self.options(mapping)
-      attribute_options.update(mapping)
-    end
-
-    # Internal
-    def self.options_for(key)
-      attribute_options[key]
-    end
-
-    # Internal
-    def self.attribute_options
-      @attribute_options ||= {}
     end
 
     def self.memoized(key)
@@ -187,8 +199,17 @@ module Faraday
     end
   end
 
-  class Env < Options.new(:method, :body, :url, :request, :request_headers,
-    :ssl, :parallel_manager, :params, :response, :response_headers, :status)
+  class Env < Hash
+    include Optional
+
+    # Simple accessors to replicate the behavior of Env when it was an Options
+    # subclass.
+    def self.hash_accessor(key)
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        def #{key}() self[:#{key}]; end
+        def #{key}=(v) self[:#{key}] = v; end
+      RUBY
+    end
 
     ContentLength = 'Content-Length'.freeze
     StatusesWithoutBody = Set.new [204, 304]
@@ -204,6 +225,29 @@ module Faraday
     extend Forwardable
 
     def_delegators :request, :params_encoder
+
+    def self.build(connection, request)
+      new.update \
+        :method => request.method,
+        :body => request.body,
+        :url => connection.build_exclusive_url(request.path, request.params),
+        :request => request.options,
+        :request_headers => request.headers,
+        :ssl => connection.ssl,
+        :parallel_manager => connection.parallel_manager
+    end
+
+    hash_accessor :method
+    hash_accessor :body
+    hash_accessor :url
+    hash_accessor :request
+    hash_accessor :request_headers
+    hash_accessor :ssl
+    hash_accessor :parallel_manager
+    hash_accessor :params
+    hash_accessor :response
+    hash_accessor :response_headers
+    hash_accessor :status
 
     def success?
       SuccessfulStatuses.include?(status)

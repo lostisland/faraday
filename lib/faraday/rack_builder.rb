@@ -187,10 +187,7 @@ module Faraday
     #     :password   - Proxy server password
     # :ssl - Hash of options for configuring SSL requests.
     def build_env(connection, request)
-      Env.new(request.method, request.body,
-        connection.build_exclusive_url(request.path, request.params),
-        request.options, request.headers, connection.ssl,
-        connection.parallel_manager)
+      Env.build(connection, request)
     end
 
     private
