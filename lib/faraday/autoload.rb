@@ -82,4 +82,3 @@ module Faraday
       :Logger     => 'logger'
   end
 end
-
