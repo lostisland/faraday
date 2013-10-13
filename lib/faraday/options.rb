@@ -205,6 +205,22 @@ module Faraday
 
     def_delegators :request, :params_encoder
 
+    def [](key)
+      if in_member_set?(key)
+        super(key)
+      else
+        custom_members[key]
+      end
+    end
+
+    def []=(key, value)
+      if in_member_set?(key)
+        super(key, value)
+      else
+        custom_members[key] = value
+      end
+    end
+
     def success?
       SuccessfulStatuses.include?(status)
     end
@@ -224,6 +240,31 @@ module Faraday
 
     def parallel?
       !!parallel_manager
+    end
+
+    def custom_members
+      @custom_members ||= {}
+    end
+
+    def in_member_set?(key)
+      member_set.include?(key.to_sym)
+    end
+
+    def member_set
+      @member_set ||= Set.new(members)
+    end
+
+    def inspect
+      attrs = [nil]
+      members.each do |mem|
+        if value = send(mem)
+          attrs << "@#{mem}=#{value.inspect}"
+        end
+      end
+      if !custom_members.empty?
+        attrs << "@custom=#{custom_members.inspect}"
+      end
+      %(#<#{self.class}#{attrs.join(" ")}>)
     end
   end
 end

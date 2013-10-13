@@ -143,5 +143,25 @@ class OptionsTest < Faraday::TestCase
     assert_equal 1, options.a
     assert_nil options.b
   end
-end
 
+  def test_env_access_member
+    e = Faraday::Env.new
+    assert_nil e.method
+    e.method = :get
+    assert_equal :get, e.method
+  end
+
+  def test_env_access_symbol_non_member
+    e = Faraday::Env.new
+    assert_nil e[:custom]
+    e[:custom] = :boom
+    assert_equal :boom, e[:custom]
+  end
+
+  def test_env_access_string_non_member
+    e = Faraday::Env.new
+    assert_nil e["custom"]
+    e["custom"] = :boom
+    assert_equal :boom, e["custom"]
+  end
+end
