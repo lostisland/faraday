@@ -268,12 +268,18 @@ module Faraday
     end
 
     # Internal
-    def in_member_set?(key)
-      member_set.include?(key.to_sym)
+    if members.first.is_a?(Symbol)
+      def in_member_set?(key)
+        self.class.member_set.include?(key.to_sym)
+      end
+    else
+      def in_member_set?(key)
+        self.class.member_set.include?(key.to_s)
+      end
     end
 
     # Internal
-    def member_set
+    def self.member_set
       @member_set ||= Set.new(members)
     end
   end
