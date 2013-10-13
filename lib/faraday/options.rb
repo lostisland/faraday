@@ -205,6 +205,7 @@ module Faraday
 
     def_delegators :request, :params_encoder
 
+    # Public
     def [](key)
       if in_member_set?(key)
         super(key)
@@ -213,6 +214,7 @@ module Faraday
       end
     end
 
+    # Public
     def []=(key, value)
       if in_member_set?(key)
         super(key, value)
@@ -221,37 +223,30 @@ module Faraday
       end
     end
 
+    # Public
     def success?
       SuccessfulStatuses.include?(status)
     end
 
+    # Public
     def needs_body?
       !body && MethodsWithBodies.include?(method)
     end
 
+    # Public
     def clear_body
       request_headers[ContentLength] = '0'
       self.body = ''
     end
 
+    # Public
     def parse_body?
       !StatusesWithoutBody.include?(status)
     end
 
+    # Public
     def parallel?
       !!parallel_manager
-    end
-
-    def custom_members
-      @custom_members ||= {}
-    end
-
-    def in_member_set?(key)
-      member_set.include?(key.to_sym)
-    end
-
-    def member_set
-      @member_set ||= Set.new(members)
     end
 
     def inspect
@@ -265,6 +260,21 @@ module Faraday
         attrs << "@custom=#{custom_members.inspect}"
       end
       %(#<#{self.class}#{attrs.join(" ")}>)
+    end
+
+    # Internal
+    def custom_members
+      @custom_members ||= {}
+    end
+
+    # Internal
+    def in_member_set?(key)
+      member_set.include?(key.to_sym)
+    end
+
+    # Internal
+    def member_set
+      @member_set ||= Set.new(members)
     end
   end
 end
