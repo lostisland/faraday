@@ -23,9 +23,6 @@ if ENV['LEFTRIGHT']
 end
 
 require File.expand_path('../../lib/faraday', __FILE__)
-Dir[File.expand_path('../../lib/faraday/r*/*', __FILE__)].each do |file|
-  require file
-end
 
 require 'stringio'
 require 'uri'
