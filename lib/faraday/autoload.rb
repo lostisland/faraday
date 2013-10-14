@@ -72,7 +72,8 @@ module Faraday
       :Timeout => 'timeout',
       :Authorization => 'authorization',
       :BasicAuthentication => 'basic_authentication',
-      :TokenAuthentication => 'token_authentication'
+      :TokenAuthentication => 'token_authentication',
+      :Instrumentation => 'instrumentation'
   end
 
   class Response
