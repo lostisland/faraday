@@ -331,6 +331,27 @@ module Faraday
       end
     end
 
+    # Public: Takes a relative url for a request and combines it with the defaults
+    # set on the connection instance.
+    #
+    #   conn = Faraday::Connection.new { ... }
+    #   conn.url_prefix = "https://sushi.com/api?token=abc"
+    #   conn.scheme      # => https
+    #   conn.path_prefix # => "/api"
+    #
+    #   conn.build_url("nigiri?page=2")      # => https://sushi.com/api/nigiri?token=abc&page=2
+    #   conn.build_url("nigiri", :page => 2) # => https://sushi.com/api/nigiri?token=abc&page=2
+    #
+    def build_url(url = nil, extra_params = nil)
+      uri = build_exclusive_url(url)
+
+      query_values = self.params.dup.merge_query(uri.query, options.params_encoder)
+      query_values.update extra_params if extra_params
+      uri.query = query_values.empty? ? nil : query_values.to_query(options.params_encoder)
+
+      uri
+    end
+
     # Builds and runs the Faraday::Request.
     #
     # method  - The Symbol HTTP method.
@@ -407,4 +428,3 @@ module Faraday
     end
   end
 end
-
