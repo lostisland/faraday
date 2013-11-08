@@ -97,109 +97,109 @@ class TestConnection < Faraday::TestCase
     assert_match(/nonce="abc"/, auth)
   end
 
-  def test_build_url_uses_connection_host_as_default_uri_host
+  def test_build_exclusive_url_uses_connection_host_as_default_uri_host
     conn = Faraday::Connection.new
     conn.host = 'sushi.com'
     uri = conn.build_exclusive_url("/sake.html")
     assert_equal 'sushi.com', uri.host
   end
 
-  def test_build_url_overrides_connection_port_for_absolute_urls
+  def test_build_exclusive_url_overrides_connection_port_for_absolute_urls
     conn = Faraday::Connection.new
     conn.port = 23
     uri = conn.build_exclusive_url("http://sushi.com")
     assert_equal 80, uri.port
   end
 
-  def test_build_url_uses_connection_scheme_as_default_uri_scheme
+  def test_build_exclusive_url_uses_connection_scheme_as_default_uri_scheme
     conn = Faraday::Connection.new 'http://sushi.com'
     uri = conn.build_exclusive_url("/sake.html")
     assert_equal 'http', uri.scheme
   end
 
-  def test_build_url_uses_connection_path_prefix_to_customize_path
+  def test_build_exclusive_url_uses_connection_path_prefix_to_customize_path
     conn = Faraday::Connection.new
     conn.path_prefix = '/fish'
     uri = conn.build_exclusive_url("sake.html")
     assert_equal '/fish/sake.html', uri.path
   end
 
-  def test_build_url_uses_root_connection_path_prefix_to_customize_path
+  def test_build_exclusive_url_uses_root_connection_path_prefix_to_customize_path
     conn = Faraday::Connection.new
     conn.path_prefix = '/'
     uri = conn.build_exclusive_url("sake.html")
     assert_equal '/sake.html', uri.path
   end
 
-  def test_build_url_forces_connection_path_prefix_to_be_absolute
+  def test_build_exclusive_url_forces_connection_path_prefix_to_be_absolute
     conn = Faraday::Connection.new
     conn.path_prefix = 'fish'
     uri = conn.build_exclusive_url("sake.html")
     assert_equal '/fish/sake.html', uri.path
   end
 
-  def test_build_url_ignores_connection_path_prefix_trailing_slash
+  def test_build_exclusive_url_ignores_connection_path_prefix_trailing_slash
     conn = Faraday::Connection.new
     conn.path_prefix = '/fish/'
     uri = conn.build_exclusive_url("sake.html")
     assert_equal '/fish/sake.html', uri.path
   end
 
-  def test_build_url_allows_absolute_uri_to_ignore_connection_path_prefix
+  def test_build_exclusive_url_allows_absolute_uri_to_ignore_connection_path_prefix
     conn = Faraday::Connection.new
     conn.path_prefix = '/fish'
     uri = conn.build_exclusive_url("/sake.html")
     assert_equal '/sake.html', uri.path
   end
 
-  def test_build_url_parses_url_params_into_path
+  def test_build_exclusive_url_parses_url_params_into_path
     conn = Faraday::Connection.new
     uri = conn.build_exclusive_url("http://sushi.com/sake.html")
     assert_equal '/sake.html', uri.path
   end
 
-  def test_build_url_doesnt_add_ending_slash_given_nil_url
+  def test_build_exclusive_url_doesnt_add_ending_slash_given_nil_url
     conn = Faraday::Connection.new
     conn.url_prefix = "http://sushi.com/nigiri"
     uri = conn.build_exclusive_url
     assert_equal "/nigiri", uri.path
   end
 
-  def test_build_url_doesnt_add_ending_slash_given_empty_url
+  def test_build_exclusive_url_doesnt_add_ending_slash_given_empty_url
     conn = Faraday::Connection.new
     conn.url_prefix = "http://sushi.com/nigiri"
     uri = conn.build_exclusive_url('')
     assert_equal "/nigiri", uri.path
   end
 
-  def test_build_url_parses_url_params_into_query
-    uri = build_url("http://sushi.com/sake.html", 'a[b]' => '1 + 2')
+  def test_env_url_parses_url_params_into_query
+    uri = env_url("http://sushi.com/sake.html", 'a[b]' => '1 + 2')
     assert_equal "a%5Bb%5D=1+%2B+2", uri.query
   end
 
-  def test_build_url_escapes_per_spec
-    uri = build_url('http:/', 'a' => '1+2 foo~bar.-baz')
+  def test_env_url_escapes_per_spec
+    uri = env_url('http:/', 'a' => '1+2 foo~bar.-baz')
     assert_equal "a=1%2B2+foo~bar.-baz", uri.query
   end
 
-  def test_build_url_bracketizes_nested_params_in_query
-    url = build_url nil, 'a' => {'b' => 'c'}
+  def test_env_url_bracketizes_nested_params_in_query
+    url = env_url nil, 'a' => {'b' => 'c'}
     assert_equal "a%5Bb%5D=c", url.query
   end
 
-  def test_build_url_bracketizes_repeated_params_in_query
-    uri = build_url("http://sushi.com/sake.html", 'a' => [1, 2])
+  def test_env_url_bracketizes_repeated_params_in_query
+    uri = env_url("http://sushi.com/sake.html", 'a' => [1, 2])
     assert_equal "a%5B%5D=1&a%5B%5D=2", uri.query
   end
 
-  def test_build_url_without_braketizing_repeated_params_in_query
-    uri = build_url 'http://sushi.com', 'a' => [1, 2] do |conn|
+  def test_env_url_without_braketizing_repeated_params_in_query
+    uri = env_url 'http://sushi.com', 'a' => [1, 2] do |conn|
       conn.options.params_encoder = Faraday::FlatParamsEncoder
     end
     assert_equal "a=1&a=2", uri.query
   end
 
-  def test_build_url_parses_url
+  def test_build_exclusive_url_parses_url
     conn = Faraday::Connection.new
     uri = conn.build_exclusive_url("http://sushi.com/sake.html")
     assert_equal "http",       uri.scheme
@@ -207,32 +207,32 @@ class TestConnection < Faraday::TestCase
     assert_equal '/sake.html', uri.path
   end
 
-  def test_build_url_parses_url_and_changes_scheme
+  def test_build_exclusive_url_parses_url_and_changes_scheme
     conn = Faraday::Connection.new :url => "http://sushi.com/sushi"
     conn.scheme = 'https'
     uri = conn.build_exclusive_url("sake.html")
     assert_equal 'https://sushi.com/sushi/sake.html', uri.to_s
   end
 
-  def test_build_url_joins_url_to_base_with_ending_slash
+  def test_build_exclusive_url_joins_url_to_base_with_ending_slash
     conn = Faraday::Connection.new :url => "http://sushi.com/sushi/"
     uri = conn.build_exclusive_url("sake.html")
     assert_equal 'http://sushi.com/sushi/sake.html', uri.to_s
   end
 
-  def test_build_url_used_default_base_with_ending_slash
+  def test_build_exclusive_url_used_default_base_with_ending_slash
     conn = Faraday::Connection.new :url => "http://sushi.com/sushi/"
     uri = conn.build_exclusive_url
     assert_equal 'http://sushi.com/sushi/', uri.to_s
   end
 
-  def test_build_url_overrides_base
+  def test_build_exclusive_url_overrides_base
     conn = Faraday::Connection.new :url => "http://sushi.com/sushi/"
     uri = conn.build_exclusive_url('/sake/')
     assert_equal 'http://sushi.com/sake/', uri.to_s
   end
 
-  def test_build_url_handles_uri_instances
+  def test_build_exclusive_url_handles_uri_instances
     conn = Faraday::Connection.new
     uri = conn.build_exclusive_url(URI('/sake.html'))
     assert_equal '/sake.html', uri.path
@@ -365,7 +365,7 @@ class TestConnection < Faraday::TestCase
     assert_equal '/omnom', conn.path_prefix
   end
 
-  def build_url(url, params)
+  def env_url(url, params)
     conn = Faraday::Connection.new(url, :params => params)
     yield conn if block_given?
     req = conn.build_request(:get)
