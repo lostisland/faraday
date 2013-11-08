@@ -10,7 +10,7 @@ module Faraday
   #
   #   Faraday.new do |conn|
   #     conn.request :retry, max: 2, interval: 0.05,
-  #                          interval_randomness: 50, backoff_factor: 2
+  #                          interval_randomness: 0.5, backoff_factor: 2
   #                          exceptions: [CustomException, 'Timeout::Error']
   #     conn.adapter ...
   #   end
@@ -56,9 +56,9 @@ module Faraday
     # Options:
     # max        - Maximum number of retries (default: 2)
     # interval   - Pause in seconds between retries (default: 0)
-    # interval_randomness - The maximum random interval amount to
-    #                       add to the inteval as a percentage of that
-    #                       interval
+    # interval_randomness - The maximum random interval amount expressed
+    #                       as a percentage of the interval to use in
+    #                       addition to the interval
     #                       (default: 0)
     # backoff_factor      - The amount to multiple each successive retry's
     #                       interval amount by in order to provide backoff
@@ -75,7 +75,7 @@ module Faraday
     def sleep_amount(retries)
       retry_index = @options.max - retries
       current_interval = @options.interval * (@options.backoff_factor ** retry_index)
-      random_interval  = (rand(@options.interval_randomness + 1).to_f/100 * @options.interval)
+      random_interval  = (rand(0.0..@options.interval_randomness.to_f) * @options.interval)
       current_interval + random_interval
     end
 

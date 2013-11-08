@@ -84,15 +84,15 @@ module Middleware
     end
 
     def test_random_additional_interval_amount
-      middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 100)
+      middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 1.0)
       sleep_amount = middleware.sleep_amount(2)
       assert_operator sleep_amount, :>=, 0.1
       assert_operator sleep_amount, :<=, 0.2
-      middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 50)
+      middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 0.5)
       sleep_amount = middleware.sleep_amount(2)
       assert_operator sleep_amount, :>=, 0.1
       assert_operator sleep_amount, :<=, 0.15
-      middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 25)
+      middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 0.25)
       sleep_amount = middleware.sleep_amount(2)
       assert_operator sleep_amount, :>=, 0.1
       assert_operator sleep_amount, :<=, 0.125
