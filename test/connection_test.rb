@@ -171,6 +171,34 @@ class TestConnection < Faraday::TestCase
     uri = conn.build_exclusive_url('')
     assert_equal "/nigiri", uri.path
   end
+  
+  def test_build_exclusive_url_doesnt_use_connection_params
+    conn = Faraday::Connection.new "http://sushi.com/nigiri"
+    conn.params = {:a => 1}
+    assert_equal "http://sushi.com/nigiri", conn.build_exclusive_url.to_s
+  end
+  
+  def test_build_exclusive_url_uses_argument_params
+    conn = Faraday::Connection.new "http://sushi.com/nigiri"
+    conn.params = {:a => 1}
+    params = Faraday::Utils::ParamsHash.new
+    params[:a] = 2
+    url = conn.build_exclusive_url(nil, params)
+    assert_equal "http://sushi.com/nigiri?a=2", url.to_s
+  end
+  
+  def test_build_url_uses_params
+    conn = Faraday::Connection.new "http://sushi.com/nigiri"
+    conn.params = {:a => 1, :b => 1}
+    assert_equal "http://sushi.com/nigiri?a=1&b=1", conn.build_url.to_s
+  end
+  
+  def test_build_url_merges_params
+    conn = Faraday::Connection.new "http://sushi.com/nigiri"
+    conn.params = {:a => 1, :b => 1}
+    url = conn.build_url(nil, :b => 2, :c => 3)
+    assert_equal "http://sushi.com/nigiri?a=1&b=2&c=3", url.to_s
+  end
 
   def test_env_url_parses_url_params_into_query
     uri = env_url("http://sushi.com/sake.html", 'a[b]' => '1 + 2')

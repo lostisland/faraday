@@ -345,7 +345,7 @@ module Faraday
     def build_url(url = nil, extra_params = nil)
       uri = build_exclusive_url(url)
 
-      query_values = self.params.dup.merge_query(uri.query, options.params_encoder)
+      query_values = params.dup.merge_query(uri.query, options.params_encoder)
       query_values.update extra_params if extra_params
       uri.query = query_values.empty? ? nil : query_values.to_query(options.params_encoder)
 
