@@ -164,4 +164,10 @@ class OptionsTest < Faraday::TestCase
     e["custom"] = :boom
     assert_equal :boom, e["custom"]
   end
+
+  def test_env_fetch_ignores_false
+    ssl = Faraday::SSLOptions.new
+    ssl.verify = false
+    assert !ssl.fetch(:verify, true)
+  end
 end
