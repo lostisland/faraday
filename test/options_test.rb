@@ -170,4 +170,33 @@ class OptionsTest < Faraday::TestCase
     ssl.verify = false
     assert !ssl.fetch(:verify, true)
   end
+
+  def test_fetch_grabs_value
+    opt = Faraday::SSLOptions.new
+    opt.verify = 1
+    assert_equal 1, opt.fetch(:verify, false) { |k| :blah }
+  end
+
+  def test_fetch_uses_falsey_default
+    opt = Faraday::SSLOptions.new
+    assert_equal false, opt.fetch(:verify, false) { |k| :blah }
+  end
+
+  def test_fetch_accepts_block
+    opt = Faraday::SSLOptions.new
+    assert_equal "yo :verify", opt.fetch(:verify) { |k| "yo #{k.inspect}"}
+  end
+
+  def test_fetch_needs_a_default_if_key_is_missing
+    opt = Faraday::SSLOptions.new
+    assert_raises KeyError do
+      opt.fetch :verify
+    end
+  end
+
+  def test_fetch_works_with_key
+    opt = Faraday::SSLOptions.new
+    opt.verify = 1
+    assert_equal 1, opt.fetch(:verify)
+  end
 end
