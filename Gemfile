@@ -9,6 +9,7 @@ group :test do
   gem 'em-synchrony', '>= 1.0', :require => ['em-synchrony', 'em-synchrony/em-http']
   gem 'excon', '>= 0.27.4'
   gem 'leftright', '>= 0.9', :require => false
+  gem 'mime-types', '~> 1.25', :platforms => [:jruby, :ruby_18]
   gem 'net-http-persistent', '>= 2.5', :require => false
   gem 'patron', '>= 0.4.2', :platforms => :ruby
   gem 'rack-test', '>= 0.6', :require => 'rack/test'
