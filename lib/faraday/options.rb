@@ -48,8 +48,9 @@ module Faraday
 
     # Public
     def fetch(key, default = nil)
-      send(key) || send("#{key}=", default ||
-        (block_given? ? Proc.new.call : nil))
+      return send(key) if keys.include?(key)
+
+      send("#{key}=", default || (block_given? ? Proc.new.call : nil))
     end
 
     # Public
