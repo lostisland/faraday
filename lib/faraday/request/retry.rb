@@ -75,7 +75,7 @@ module Faraday
     def sleep_amount(retries)
       retry_index = @options.max - retries
       current_interval = @options.interval * (@options.backoff_factor ** retry_index)
-      random_interval  = (rand(0.0..@options.interval_randomness.to_f) * @options.interval)
+      random_interval  = rand * @options.interval_randomness.to_f * @options.interval
       current_interval + random_interval
     end
 
