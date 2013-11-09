@@ -3,17 +3,23 @@ module Faraday
   #
   # By default, it retries 2 times and handles only timeout exceptions. It can
   # be configured with an arbitrary number of retries, a list of exceptions to
-  # handle an a retry interval.
+  # handle, a retry interval, a percentage of randomness to add to the retry
+  # interval, and a backoff factor.
   #
   # Examples
   #
   #   Faraday.new do |conn|
   #     conn.request :retry, max: 2, interval: 0.05,
+  #                          interval_randomness: 0.5, backoff_factor: 2
   #                          exceptions: [CustomException, 'Timeout::Error']
   #     conn.adapter ...
   #   end
+  #
+  # This example will result in a first interval that is random between 0.05 and 0.075 and a second
+  # interval that is random between 0.1 and 0.15
+  #
   class Request::Retry < Faraday::Middleware
-    class Options < Faraday::Options.new(:max, :interval, :exceptions)
+    class Options < Faraday::Options.new(:max, :interval, :interval_randomness, :backoff_factor, :exceptions)
       def self.from(value)
         if Fixnum === value
           new(value)
@@ -30,6 +36,14 @@ module Faraday
         (self[:interval] ||= 0).to_f
       end
 
+      def interval_randomness
+        (self[:interval_randomness] ||= 0).to_i
+      end
+
+      def backoff_factor
+        (self[:backoff_factor] ||= 1).to_f
+      end
+
       def exceptions
         Array(self[:exceptions] ||= [Errno::ETIMEDOUT, 'Timeout::Error',
                                      Error::TimeoutError])
@@ -40,8 +54,15 @@ module Faraday
     # Public: Initialize middleware
     #
     # Options:
-    # max        - Maximum number of retries (default: 2).
-    # interval   - Pause in seconds between retries (default: 0).
+    # max        - Maximum number of retries (default: 2)
+    # interval   - Pause in seconds between retries (default: 0)
+    # interval_randomness - The maximum random interval amount expressed
+    #                       as a percentage of the interval to use in
+    #                       addition to the interval
+    #                       (default: 0)
+    # backoff_factor      - The amount to multiple each successive retry's
+    #                       interval amount by in order to provide backoff
+    #                       (default: 1)
     # exceptions - The list of exceptions to handle. Exceptions can be
     #              given as Class, Module, or String. (default:
     #              [Errno::ETIMEDOUT, Timeout::Error, Error::TimeoutError])
@@ -51,14 +72,23 @@ module Faraday
       @errmatch = build_exception_matcher(@options.exceptions)
     end
 
+    def sleep_amount(retries)
+      retry_index = @options.max - retries
+      current_interval = @options.interval * (@options.backoff_factor ** retry_index)
+      random_interval  = (rand(0.0..@options.interval_randomness.to_f) * @options.interval)
+      current_interval + random_interval
+    end
+
     def call(env)
       retries = @options.max
+      request_body = env[:body]
       begin
+        env[:body] = request_body # after failure env[:body] is set to the response body
         @app.call(env)
       rescue @errmatch
         if retries > 0
           retries -= 1
-          sleep @options.interval if @options.interval > 0
+          sleep sleep_amount(retries + 1)
           retry
         end
         raise
