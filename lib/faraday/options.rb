@@ -48,7 +48,7 @@ module Faraday
 
     # Public
     def fetch(key, *args)
-      return send(key) if keys.include?(key)
+      return send(key) if symbolized_key_set.include?(key.to_sym)
 
       key_setter = "#{key}="
 
@@ -128,6 +128,10 @@ module Faraday
       else
         super
       end
+    end
+
+    def symbolized_key_set
+      @symbolized_key_set ||= Set.new(keys.map { |k| k.to_sym })
     end
 
     def self.inherited(subclass)
