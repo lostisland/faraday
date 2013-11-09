@@ -47,9 +47,20 @@ module Faraday
     end
 
     # Public
-    def fetch(key, default = nil)
-      send(key) || send("#{key}=", default ||
-        (block_given? ? Proc.new.call : nil))
+    def fetch(key, *args)
+      return send(key) if keys.include?(key)
+
+      key_setter = "#{key}="
+
+      if args.size > 0
+        return send(key_setter, args.first)
+      end
+
+      if block_given?
+        return send(key_setter, Proc.new.call(key))
+      end
+
+      raise KeyError, "key not found: #{key.inspect}"
     end
 
     # Public

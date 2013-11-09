@@ -2,7 +2,7 @@ require File.expand_path('../helper', __FILE__)
 
 class OptionsTest < Faraday::TestCase
   class SubOptions < Faraday::Options.new(:sub); end
-  class Options < Faraday::Options.new(:a, :b, :c)
+  class ParentOptions < Faraday::Options.new(:a, :b, :c)
     options :c => SubOptions
   end
 
@@ -48,17 +48,17 @@ class OptionsTest < Faraday::TestCase
   end
 
   def test_from_options
-    options = Options.new 1
+    options = ParentOptions.new 1
 
-    value = Options.from(options)
+    value = ParentOptions.from(options)
     assert_equal 1, value.a
     assert_nil value.b
   end
 
   def test_from_options_with_sub_object
     sub = SubOptions.new 1
-    options = Options.from :a => 1, :c => sub
-    assert_kind_of Options, options
+    options = ParentOptions.from :a => 1, :c => sub
+    assert_kind_of ParentOptions, options
     assert_equal 1, options.a
     assert_nil options.b
     assert_kind_of SubOptions, options.c
@@ -66,15 +66,15 @@ class OptionsTest < Faraday::TestCase
   end
 
   def test_from_hash
-    options = Options.from :a => 1
-    assert_kind_of Options, options
+    options = ParentOptions.from :a => 1
+    assert_kind_of ParentOptions, options
     assert_equal 1, options.a
     assert_nil options.b
   end
 
   def test_from_hash_with_sub_object
-    options = Options.from :a => 1, :c => {:sub => 1}
-    assert_kind_of Options, options
+    options = ParentOptions.from :a => 1, :c => {:sub => 1}
+    assert_kind_of ParentOptions, options
     assert_equal 1, options.a
     assert_nil options.b
     assert_kind_of SubOptions, options.c
@@ -82,7 +82,7 @@ class OptionsTest < Faraday::TestCase
   end
 
   def test_inheritance
-    subclass = Class.new(Options)
+    subclass = Class.new(ParentOptions)
     options = subclass.from(:c => {:sub => 'hello'})
     assert_kind_of SubOptions, options.c
     assert_equal 'hello', options.c.sub
@@ -90,7 +90,7 @@ class OptionsTest < Faraday::TestCase
 
   def test_from_deep_hash
     hash = {:b => 1}
-    options = Options.from :a => hash
+    options = ParentOptions.from :a => hash
     assert_equal 1, options.a[:b]
 
     hash[:b] = 2
@@ -102,20 +102,20 @@ class OptionsTest < Faraday::TestCase
   end
 
   def test_from_nil
-    options = Options.from(nil)
-    assert_kind_of Options, options
+    options = ParentOptions.from(nil)
+    assert_kind_of ParentOptions, options
     assert_nil options.a
     assert_nil options.b
   end
 
   def test_invalid_key
     assert_raises NoMethodError do
-      Options.from :invalid => 1
+      ParentOptions.from :invalid => 1
     end
   end
 
   def test_update
-    options = Options.new 1
+    options = ParentOptions.new 1
     assert_equal 1, options.a
     assert_nil options.b
 
@@ -126,14 +126,14 @@ class OptionsTest < Faraday::TestCase
   end
 
   def test_delete
-    options = Options.new 1
+    options = ParentOptions.new 1
     assert_equal 1, options.a
     assert_equal 1, options.delete(:a)
     assert_nil options.a
   end
 
   def test_merge
-    options = Options.new 1
+    options = ParentOptions.new 1
     assert_equal 1, options.a
     assert_nil options.b
 
@@ -163,5 +163,40 @@ class OptionsTest < Faraday::TestCase
     assert_nil e["custom"]
     e["custom"] = :boom
     assert_equal :boom, e["custom"]
+  end
+
+  def test_env_fetch_ignores_false
+    ssl = Faraday::SSLOptions.new
+    ssl.verify = false
+    assert !ssl.fetch(:verify, true)
+  end
+
+  def test_fetch_grabs_value
+    opt = Faraday::SSLOptions.new
+    opt.verify = 1
+    assert_equal 1, opt.fetch(:verify, false) { |k| :blah }
+  end
+
+  def test_fetch_uses_falsey_default
+    opt = Faraday::SSLOptions.new
+    assert_equal false, opt.fetch(:verify, false) { |k| :blah }
+  end
+
+  def test_fetch_accepts_block
+    opt = Faraday::SSLOptions.new
+    assert_equal "yo :verify", opt.fetch(:verify) { |k| "yo #{k.inspect}"}
+  end
+
+  def test_fetch_needs_a_default_if_key_is_missing
+    opt = Faraday::SSLOptions.new
+    assert_raises KeyError do
+      opt.fetch :verify
+    end
+  end
+
+  def test_fetch_works_with_key
+    opt = Faraday::SSLOptions.new
+    opt.verify = 1
+    assert_equal 1, opt.fetch(:verify)
   end
 end
