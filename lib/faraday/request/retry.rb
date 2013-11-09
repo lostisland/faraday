@@ -54,18 +54,18 @@ module Faraday
     # Public: Initialize middleware
     #
     # Options:
-    # max        - Maximum number of retries (default: 2)
-    # interval   - Pause in seconds between retries (default: 0)
+    # max                 - Maximum number of retries (default: 2)
+    # interval            - Pause in seconds between retries (default: 0)
     # interval_randomness - The maximum random interval amount expressed
-    #                       as a percentage of the interval to use in
-    #                       addition to the interval
-    #                       (default: 0)
+    #                       as a float between 0 and 1 to use in addition to the
+    #                       interval. (default: 0)
     # backoff_factor      - The amount to multiple each successive retry's
     #                       interval amount by in order to provide backoff
     #                       (default: 1)
-    # exceptions - The list of exceptions to handle. Exceptions can be
-    #              given as Class, Module, or String. (default:
-    #              [Errno::ETIMEDOUT, Timeout::Error, Error::TimeoutError])
+    # exceptions          - The list of exceptions to handle. Exceptions can be
+    #                       given as Class, Module, or String. (default:
+    #                       [Errno::ETIMEDOUT, Timeout::Error,
+    #                       Error::TimeoutError])
     def initialize(app, options = nil)
       super(app)
       @options = Options.from(options)
