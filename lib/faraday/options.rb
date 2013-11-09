@@ -60,7 +60,7 @@ module Faraday
         return send(key_setter, Proc.new.call(key))
       end
 
-      raise KeyError, "key not found: #{key.inspect}"
+      raise self.class.fetch_error_class, "key not found: #{key.inspect}"
     end
 
     # Public
@@ -134,6 +134,14 @@ module Faraday
       super
       subclass.attribute_options.update(attribute_options)
       subclass.memoized_attributes.update(memoized_attributes)
+    end
+
+    def self.fetch_error_class
+      @fetch_error_class ||= if Object.const_defined?(:KeyError)
+        ::KeyError
+      else
+        ::IndexError
+      end
     end
   end
 

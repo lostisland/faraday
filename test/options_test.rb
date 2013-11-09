@@ -189,7 +189,7 @@ class OptionsTest < Faraday::TestCase
 
   def test_fetch_needs_a_default_if_key_is_missing
     opt = Faraday::SSLOptions.new
-    assert_raises KeyError do
+    assert_raises Faraday::Options.fetch_error_class do
       opt.fetch :verify
     end
   end
