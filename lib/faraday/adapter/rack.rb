@@ -46,10 +46,11 @@ module Faraday
           execute_request(env, rack_env)
         end
 
-        if want_streaming?(env)
-          warn "Streaming downloads for Rack are not yet implemented."
-          env[:on_data].call(response.body, response.body.bytesize)
+        if (req = env[:request]).stream_response?
+          warn "Streaming downloads for #{self.class.name} are not yet implemented."
+          req.on_data.call(response.body, response.body.bytesize)
         end
+
         save_response(env, response.status, response.body, response.headers)
         @app.call env
       end
