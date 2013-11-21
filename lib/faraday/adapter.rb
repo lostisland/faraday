@@ -28,6 +28,7 @@ module Faraday
     end
 
     extend Parallelism
+
     self.supports_parallel = false
 
     def call(env)
@@ -41,10 +42,6 @@ module Faraday
         response_headers.update headers unless headers.nil?
         yield response_headers if block_given?
       end
-    end
-
-    def want_streaming?(env)
-      env[:on_data].kind_of? Proc
     end
   end
 end
