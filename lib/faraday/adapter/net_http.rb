@@ -72,12 +72,11 @@ module Faraday
       end
 
       def perform_request(http, env)
-        request = env[:request]
-        if request.stream_response?
+        if env[:request].stream_response?
           size = 0
           http_response = perform_request_with_wrapped_block(http, env) do |chunk|
             size += chunk.bytesize
-            request.on_data.call(chunk, size)
+            env[:request].on_data.call(chunk, size)
           end
           # Net::HTTP returns something, but it's not meaningful according to the docs.
           http_response.body = nil

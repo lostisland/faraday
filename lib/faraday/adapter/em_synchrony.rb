@@ -28,7 +28,7 @@ module Faraday
           env[:parallel_manager].add(request, http_method, request_config(env)) do |resp|
             if (req = env[:request]).stream_response?
               warn "Streaming downloads for #{self.class.name} are not yet implemented."
-              req.on_data.call(client.response, client.response.bytesize)
+              req.on_data.call(resp.response, resp.response.bytesize)
             end
 
             save_response(env, resp.response_header.status, resp.response) do |resp_headers|

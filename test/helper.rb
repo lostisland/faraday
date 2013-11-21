@@ -77,5 +77,14 @@ module Faraday
     def self.ssl_mode?
       ENV['SSL'] == 'yes'
     end
+
+    def self.big_string
+      kb = 1024
+      (32..126).map{|i| i.chr}.cycle.take(50*kb).join
+    end
+
+    def big_string
+      self.class.big_string
+    end
   end
 end

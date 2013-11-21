@@ -85,13 +85,14 @@ module Adapters
       def test_GET_streaming
         response, streamed = streaming_request(create_connection, :get, 'stream')
         check_streaming_response(streamed, :chunk_size => 16*1024)
-        assert_nil response.body
+        assert_equal "", response.body
       end
 
       def test_non_GET_streaming
         response, streamed = streaming_request(create_connection, :get, 'stream')
         check_streaming_response(streamed, :chunk_size => 16*1024)
-        assert_nil response.body
+
+        assert_equal "", response.body
       end
     end
 
@@ -111,6 +112,7 @@ module Adapters
         err = capture_warnings do
           response, streamed = streaming_request(create_connection, :get, 'stream')
         end
+
         assert_match(/Streaming .+ not yet implemented/, err)
 
         check_streaming_response(streamed, :streaming? => false)
@@ -315,7 +317,7 @@ module Adapters
       def streaming_request(connection, method, path, options={})
         streamed = []
         response = connection.send(method, path) do |req|
-          req.on_data = Proc.new{|*args| streamed << args}
+          req.options.on_data = Proc.new{|*args| streamed << args}
         end
 
         [response, streamed]
