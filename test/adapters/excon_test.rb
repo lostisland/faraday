@@ -5,7 +5,7 @@ module Adapters
 
     def adapter() :excon end
 
-    Integration.apply(self, :NonParallel) do
+    Integration.apply(self, :NonParallel, :NonStreaming) do
       # https://github.com/geemus/excon/issues/126 ?
       undef :test_timeout if ssl_mode?
 

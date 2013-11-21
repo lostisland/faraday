@@ -9,7 +9,7 @@ module Faraday
   #     req.body = 'abc'
   #   end
   #
-  class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
+  class Request < Struct.new(:method, :path, :params, :headers, :body, :options, :on_data)
     extend MiddlewareRegistry
 
     register_middleware File.expand_path('../request', __FILE__),
@@ -79,6 +79,7 @@ module Faraday
     #     :user       - Proxy server username
     #     :password   - Proxy server password
     # :ssl - Hash of options for configuring SSL requests.
+    # :on_data - Proc for streaming
     def to_env(connection)
       Env.new(method, body, connection.build_exclusive_url(path, params),
         options, headers, connection.ssl, connection.parallel_manager)
