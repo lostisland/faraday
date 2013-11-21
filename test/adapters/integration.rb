@@ -322,7 +322,32 @@ module Adapters
       end
 
       def check_streaming_response(streamed, options={})
+        opts = {
+          :prefix => '',
+          :streaming? => true
+        }.merge(options)
+        expected_response = opts[:prefix] + big_string
 
+        chunks, sizes = streamed.transpose
+
+        # Check that the total size of the chunks (via the last size returned)
+        # is the same size as the expected_response
+        assert_equal sizes.last, expected_response.size
+
+        start_index = 0
+        expected_chunks = []
+        chunks.each do |actual_chunk|
+          expected_chunk = expected_response[start_index..((start_index + actual_chunk.bytesize)-1)]
+          expected_chunks << expected_chunk
+          start_index += expected_chunk.bytesize
+        end
+
+        # it's easier to read a smaller portion, so we check that first
+        assert_equal expected_chunks[0][0..255], chunks[0][0..255]
+
+        [expected_chunks, chunks].transpose.each do |expected, actual|
+          assert_equal expected, actual
+        end
       end
     end
   end
