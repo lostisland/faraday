@@ -5,7 +5,7 @@ module Adapters
 
     def adapter() :typhoeus end
 
-    Integration.apply(self, :Parallel) do
+    Integration.apply(self, :Parallel, :NonStreaming, :ParallelNonStreaming) do
       # https://github.com/dbalatero/typhoeus/issues/75
       undef :test_GET_with_body
 
