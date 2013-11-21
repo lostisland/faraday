@@ -5,7 +5,7 @@ module Adapters
 
     def adapter() :patron end
 
-    Integration.apply(self, :NonParallel) do
+    Integration.apply(self, :NonParallel, :NonStreaming) do
       # https://github.com/toland/patron/issues/34
       undef :test_PATCH_send_url_encoded_params
 

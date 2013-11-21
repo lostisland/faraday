@@ -16,6 +16,7 @@ module Faraday
 
         session = @session ||= create_session
 
+
         if req = env[:request]
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
           session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
@@ -33,6 +34,11 @@ module Faraday
           session.request(env[:method], env[:url].to_s, env[:request_headers], :data => data)
         rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
           raise Error::ConnectionFailed, $!
+        end
+
+        if (req = env[:request]).stream_response?
+          warn "Streaming downloads for #{self.class.name} are not yet implemented."
+          req.on_data.call(response.body, response.body.bytesize)
         end
 
         save_response(env, response.status, response.body, response.headers)

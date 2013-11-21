@@ -5,7 +5,7 @@ module Adapters
 
     def adapter() :default end
 
-    Integration.apply(self, :NonParallel) do
+    Integration.apply(self, :NonParallel, :Streaming) do
       # default stack is not configured with Multipart
       undef :test_POST_sends_files
     end
