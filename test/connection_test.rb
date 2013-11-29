@@ -2,21 +2,6 @@ require File.expand_path('../helper', __FILE__)
 require 'minitest/mock'
 
 class TestConnection < Faraday::TestCase
-
-  def with_env(key, proxy)
-    old_value = ENV.fetch(key, false)
-    ENV[key] = proxy
-    begin
-      yield
-    ensure
-      if old_value == false
-        ENV.delete key
-      else
-        ENV[key] = old_value
-      end
-    end
-  end
-
   def test_initialize_parses_host_out_of_given_url
     conn = Faraday::Connection.new "http://sushi.com"
     assert_equal 'sushi.com', conn.host
@@ -281,42 +266,6 @@ class TestConnection < Faraday::TestCase
 
     conn.proxy 'http://proxy.com'
     assert conn.builder.handlers.include?(Faraday::Request::Proxy)
-  end
-
-  def test_proxy_accepts_env_without_scheme
-    with_env 'http_proxy', "localhost:8888" do
-      uri = Faraday::Connection.new.proxy[:uri]
-      assert_equal 'localhost', uri.host
-      assert_equal 8888, uri.port
-    end
-  end
-
-  def test_no_proxy_from_env
-    with_env 'http_proxy', nil do
-      conn = Faraday::Connection.new
-      assert_equal nil, conn.proxy
-    end
-  end
-
-  def test_no_proxy_from_blank_env
-    with_env 'http_proxy', '' do
-      conn = Faraday::Connection.new
-      assert_equal nil, conn.proxy
-    end
-  end
-
-  def test_proxy_doesnt_accept_uppercase_env
-    with_env 'HTTP_PROXY', "http://localhost:8888/" do
-      conn = Faraday::Connection.new
-      assert_nil conn.proxy
-    end
-  end
-
-  def test_proxy_requires_uri
-    conn = Faraday::Connection.new
-    assert_raises ArgumentError do
-      conn.proxy :uri => :bad_uri, :user => 'rick'
-    end
   end
 
   def test_dups_connection_object

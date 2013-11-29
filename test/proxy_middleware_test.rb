@@ -32,7 +32,7 @@ class ProxyMiddlewareTest < Faraday::TestCase
   end
 
   def test_no_proxy_set_by_default
-    with_env 'HTTP_PROXY' => nil, 'http_proxy' => nil do
+    with_env 'HTTP_PROXY' => '', 'http_proxy' => nil do
       response = connection{ |b| b.request :proxy }.get('/test')
       proxy_options = response.env.request.proxy
 
@@ -43,6 +43,17 @@ class ProxyMiddlewareTest < Faraday::TestCase
   def test_raise_when_non_http_or_https_proxy_passed_in
     conn = connection('http://example.com'){ |b| b.request :proxy, 'ftp://example.com'}
     assert_raises TypeError do conn.get('/test') end
+  end
+
+  def test_proxy_accepts_env_without_scheme
+    with_env 'http_proxy' => "localhost:8888" do
+      response = connection { |b| b.request :proxy }.get('/test')
+      proxy_options = response.env.request.proxy
+
+      refute_nil proxy_options
+      assert_equal 'localhost', proxy_options.uri.host
+      assert_equal 8888,      proxy_options.uri.port
+    end
   end
 
   def test_http_proxy_in_env_is_set
@@ -87,7 +98,7 @@ class ProxyMiddlewareTest < Faraday::TestCase
   end
 
   def test_http_proxy_set_explicitly_with_username_and_password
-    conn = connection { |b| b.request :proxy, 'http://proxy.com', 
+    conn = connection { |b| b.request :proxy, 'http://proxy.com',
                                       :user => 'username',
                                       :password => 'pass' }
     response = conn.get('/test')
@@ -101,11 +112,11 @@ class ProxyMiddlewareTest < Faraday::TestCase
 
   # this is to allow connection#proxy to behave as before
   def test_http_proxy_set_via_hash
-    conn = connection { |b| b.request :proxy, 
+    conn = connection { |b| b.request :proxy,
       {
-        :uri => 'http://proxy.com', 
+        :uri => 'http://proxy.com',
         :user => 'username',
-        :password => 'pass' 
+        :password => 'pass'
       }
     }
     response = conn.get('/test')
@@ -118,11 +129,11 @@ class ProxyMiddlewareTest < Faraday::TestCase
   end
 
   def test_http_proxy_with_encoded_username_and_password
-    conn = connection { |b| b.request :proxy, 
+    conn = connection { |b| b.request :proxy,
       {
-        :uri => 'http://proxy.com', 
+        :uri => 'http://proxy.com',
         :user => '%27username%27',
-        :password => '%27password%27' 
+        :password => '%27password%27'
       }
     }
     response = conn.get('/test')
