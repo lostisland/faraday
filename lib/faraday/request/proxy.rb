@@ -2,37 +2,38 @@ module Faraday
   # Uses Environment variables to set proxies on a per-connection basis.
   #
   # If a proxy is not explicitly set, the following environment variables
-  # are used (lower case instances are used in the absence of upper case equivalents).
+  # are used:
   #   HTTP_PROXY, HTTPS_PROXY, NO_PROXY
+  # (lower case instances are used in the absence of upper case equivalents)
   #
-  # The NO_PROXY list specifies a comma-separated list of domains 
+  # The NO_PROXY list specifies a comma-separated list of domains
   # (and optionally ports) for which the proxy should not be used.
   #
   # Examples:
-  # # uses environment variables
-  # Faraday.new do |conn|
-  #   conn.request :proxy
-  #   conn.adapter ..
-  # end
+  #   # uses environment variables
+  #   Faraday.new do |conn|
+  #     conn.request :proxy
+  #     conn.adapter ..
+  #   end
   #
-  # # ignores environment variables
-  # Faraday.new do |conn|
-  #   conn.request :proxy 'http://my.proxy.com', /
-  #                :user => 'dan', :password => '123' 
-  #   conn.adapter ..
-  # end
+  #   # ignores environment variables
+  #   Faraday.new do |conn|
+  #     conn.request :proxy 'http://my.proxy.com', /
+  #                  :user => 'dan', :password => '123'
+  #     conn.adapter ..
+  #   end
   class Request::Proxy < Faraday::Middleware
     def initialize(app, proxy_url=nil, options={})
       @proxies = {:http => nil, :https => nil}
       parse_proxy_options(proxy_url, options)
       super(app)
     end
-    
+
     def call(env)
       env[:request][:proxy] = proxy_for(env.url)
       @app.call(env)
     end
-    
+
     private
     def parse_proxy_options(proxy, options)
       if proxy.is_a?(Hash)
