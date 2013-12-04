@@ -51,7 +51,7 @@ module Faraday
         end
 
         @app.call env
-      rescue Timeout::Error => err
+      rescue Timeout::Error, Errno::ETIMEDOUT => err
         raise Faraday::Error::TimeoutError, err
       end
 

@@ -70,6 +70,8 @@ module Faraday
         else
           raise Error::ConnectionFailed, err
         end
+      rescue Errno::ETIMEDOUT => err
+        raise Error::TimeoutError, err
       rescue => err
         if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
           raise Faraday::SSLError, err
