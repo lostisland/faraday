@@ -11,7 +11,7 @@ group :test do
   gem 'excon', ['>= 0.25.3', '< 0.27.3']
   gem 'httpclient', '>= 2.2'
   gem 'leftright', '>= 0.9', :require => false
-  gem 'mime-types', '~> 1.25', :platforms => :ruby_18
+  gem 'mime-types', '~> 1.25', :platforms => [:jruby, :ruby_18]
   gem 'minitest', '~> 5.0.5'
   gem 'net-http-persistent', '>= 2.5', :require => false
   gem 'patron', '>= 0.4.2', :platforms => :ruby
@@ -19,6 +19,11 @@ group :test do
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 0.3.3', :platforms => :ruby
+end
+
+platforms :rbx do
+  gem 'rubinius-coverage'
+  gem 'rubysl'
 end
 
 gemspec
