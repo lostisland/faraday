@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/lostisland/faraday'
   spec.licenses = ['MIT']
 
-  spec.add_dependency 'multipart-post', '~> 1.2.0'
+  spec.add_dependency 'multipart-post', '~> 2.0.0'
   spec.add_development_dependency 'bundler', '~> 1.0'
 
   spec.files = %w(.document CHANGELOG.md CONTRIBUTING.md Gemfile LICENSE.md README.md Rakefile)
