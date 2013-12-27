@@ -17,6 +17,8 @@ matrix:
       env: SSL=yes
     - rvm: jruby-20mode
       env: SSL=yes
+    - rvm: jruby-21mode
+      env: SSL=yes
     - rvm: jruby-head
     # random crashes
     - rvm: rbx
@@ -27,8 +29,10 @@ rvm:
   - 1.9.2
   - 1.9.3
   - 2.0.0
+  - 2.1.0
   - jruby-18mode
   - jruby-19mode
   - jruby-20mode
+  - jruby-21mode
   - jruby-head
   - rbx
