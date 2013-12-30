@@ -1,3 +1,8 @@
+before_install:
+  - gem update bundler
+  - bundle --version
+  - gem update --system 2.1.11
+  - gem --version
 bundler_args: --standalone --without development
 script: RUBYLIB=./bundle script/test
 
