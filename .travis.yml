@@ -1,3 +1,4 @@
+before_install: gem update bundler
 bundler_args: --standalone --without development
 script: RUBYLIB=./bundle script/test
 
