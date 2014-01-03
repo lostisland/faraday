@@ -73,7 +73,8 @@ module Faraday
       :Authorization => 'authorization',
       :BasicAuthentication => 'basic_authentication',
       :TokenAuthentication => 'token_authentication',
-      :Instrumentation => 'instrumentation'
+      :Instrumentation => 'instrumentation',
+      :Proxy => 'proxy'
   end
 
   class Response
