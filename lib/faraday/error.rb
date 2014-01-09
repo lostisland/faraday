@@ -36,7 +36,12 @@ module Faraday
   class ConnectionFailed < ClientError;   end
   class ResourceNotFound < ClientError;   end
   class ParsingError     < ClientError;   end
-  class TimeoutError < ClientError; end
+
+  class TimeoutError < ClientError
+    def initialize(ex = nil)
+      super(ex || "timeout")
+    end
+  end
 
   class SSLError < ClientError
   end
