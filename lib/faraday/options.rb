@@ -8,9 +8,9 @@ module Faraday
     end
 
     # Public
-    def each(&block)
+    def each
       members.each do |key|
-        block.call key.to_sym, send(key)
+        yield(key.to_sym, send(key))
       end
     end
 
