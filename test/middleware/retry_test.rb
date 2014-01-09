@@ -48,7 +48,7 @@ module Middleware
       assert_raises(Errno::ETIMEDOUT) {
         conn(:max => 2, :interval => 0.1).post("/unstable")
       }
-      assert_in_delta 0.2, Time.now - started, 0.03
+      assert_in_delta 0.2, Time.now - started, 0.04
     end
 
     def test_calls_sleep_amount

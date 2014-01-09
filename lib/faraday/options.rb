@@ -48,19 +48,17 @@ module Faraday
 
     # Public
     def fetch(key, *args)
-      return send(key) if symbolized_key_set.include?(key.to_sym)
-
-      key_setter = "#{key}="
-
-      if args.size > 0
-        return send(key_setter, args.first)
+      unless symbolized_key_set.include?(key.to_sym)
+        key_setter = "#{key}="
+        if args.size > 0
+          send(key_setter, args.first)
+        elsif block_given?
+          send(key_setter, Proc.new.call(key))
+        else
+          raise self.class.fetch_error_class, "key not found: #{key.inspect}"
+        end
       end
-
-      if block_given?
-        return send(key_setter, Proc.new.call(key))
-      end
-
-      raise self.class.fetch_error_class, "key not found: #{key.inspect}"
+      send(key)
     end
 
     # Public
