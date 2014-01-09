@@ -171,13 +171,13 @@ class TestConnection < Faraday::TestCase
     uri = conn.build_exclusive_url('')
     assert_equal "/nigiri", uri.path
   end
-  
+
   def test_build_exclusive_url_doesnt_use_connection_params
     conn = Faraday::Connection.new "http://sushi.com/nigiri"
     conn.params = {:a => 1}
     assert_equal "http://sushi.com/nigiri", conn.build_exclusive_url.to_s
   end
-  
+
   def test_build_exclusive_url_uses_argument_params
     conn = Faraday::Connection.new "http://sushi.com/nigiri"
     conn.params = {:a => 1}
@@ -186,13 +186,13 @@ class TestConnection < Faraday::TestCase
     url = conn.build_exclusive_url(nil, params)
     assert_equal "http://sushi.com/nigiri?a=2", url.to_s
   end
-  
+
   def test_build_url_uses_params
     conn = Faraday::Connection.new "http://sushi.com/nigiri"
     conn.params = {:a => 1, :b => 1}
     assert_equal "http://sushi.com/nigiri?a=1&b=1", conn.build_url.to_s
   end
-  
+
   def test_build_url_merges_params
     conn = Faraday::Connection.new "http://sushi.com/nigiri"
     conn.params = {:a => 1, :b => 1}
@@ -395,7 +395,7 @@ class TestConnection < Faraday::TestCase
 
   def env_url(url, params)
     conn = Faraday::Connection.new(url, :params => params)
-    yield conn if block_given?
+    yield(conn) if block_given?
     req = conn.build_request(:get)
     req.to_env(conn).url
   end
@@ -404,7 +404,7 @@ end
 class TestRequestParams < Faraday::TestCase
   def create_connection(*args)
     @conn = Faraday::Connection.new(*args) do |conn|
-      yield conn if block_given?
+      yield(conn) if block_given?
       class << conn.builder
         undef app
         def app() lambda { |env| env } end
@@ -515,7 +515,7 @@ class TestRequestParams < Faraday::TestCase
 
   def get(*args)
     env = @conn.get(*args) do |req|
-      yield req if block_given?
+      yield(req) if block_given?
     end
     env[:url].query
   end

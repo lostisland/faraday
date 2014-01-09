@@ -104,8 +104,10 @@ module Faraday
       (class << matcher; self; end).class_eval do
         define_method(:===) do |error|
           exceptions.any? do |ex|
-            if ex.is_a? Module then error.is_a? ex
-            else error.class.to_s == ex.to_s
+            if ex.is_a? Module
+              error.is_a? ex
+            else
+              error.class.to_s == ex.to_s
             end
           end
         end

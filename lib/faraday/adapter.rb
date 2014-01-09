@@ -39,7 +39,7 @@ module Faraday
       env.body = body
       env.response_headers = Utils::Headers.new.tap do |response_headers|
         response_headers.update headers unless headers.nil?
-        yield response_headers if block_given?
+        yield(response_headers) if block_given?
       end
     end
   end

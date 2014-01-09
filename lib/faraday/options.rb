@@ -180,8 +180,10 @@ module Faraday
 
     def self.from(value)
       case value
-      when String then value = {:uri => Utils.URI(value)}
-      when URI then value = {:uri => value}
+      when String
+        value = {:uri => Utils.URI(value)}
+      when URI
+        value = {:uri => value}
       when Hash, Options
         if uri = value.delete(:uri)
           value[:uri] = Utils.URI(uri)

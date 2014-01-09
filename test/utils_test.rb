@@ -11,7 +11,7 @@ class TestUtils < Faraday::TestCase
     def gsub(regex)
       string.gsub(regex) {
         match, = $&, '' =~ /a/
-        yield match
+        yield(match)
       }
     end
   end

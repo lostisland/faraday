@@ -54,7 +54,7 @@ module Faraday
       if not finished?
         @on_complete_callbacks << Proc.new
       else
-        yield env
+        yield(env)
       end
       return self
     end
