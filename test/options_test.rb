@@ -6,6 +6,52 @@ class OptionsTest < Faraday::TestCase
     options :c => SubOptions
   end
 
+  def test_clear
+    options = SubOptions.new(1)
+    assert !options.empty?
+    assert options.clear
+    assert options.empty?
+  end
+
+  def test_empty
+    options = SubOptions.new
+    assert options.empty?
+    options.sub = 1
+    assert !options.empty?
+    options.delete(:sub)
+    assert options.empty?
+  end
+
+  def test_each_key
+    options = ParentOptions.new(1, 2, 3)
+    enum = options.each_key
+    assert_equal enum.next, :a
+    assert_equal enum.next, :b
+    assert_equal enum.next, :c
+  end
+
+  def test_key?
+    options = SubOptions.new
+    assert !options.key?(:sub)
+    options.sub = 1
+    assert options.key?(:sub)
+  end
+
+  def test_each_value
+    options = ParentOptions.new(1, 2, 3)
+    enum = options.each_value
+    assert_equal enum.next, 1
+    assert_equal enum.next, 2
+    assert_equal enum.next, 3
+  end
+
+  def test_value?
+    options = SubOptions.new
+    assert !options.value?(1)
+    options.sub = 1
+    assert options.value?(1)
+  end
+
   def test_request_proxy_setter
     options = Faraday::RequestOptions.new
     assert_nil options.proxy
@@ -48,7 +94,7 @@ class OptionsTest < Faraday::TestCase
   end
 
   def test_from_options
-    options = ParentOptions.new 1
+    options = ParentOptions.new(1)
 
     value = ParentOptions.from(options)
     assert_equal 1, value.a
@@ -56,7 +102,7 @@ class OptionsTest < Faraday::TestCase
   end
 
   def test_from_options_with_sub_object
-    sub = SubOptions.new 1
+    sub = SubOptions.new(1)
     options = ParentOptions.from :a => 1, :c => sub
     assert_kind_of ParentOptions, options
     assert_equal 1, options.a
@@ -115,7 +161,7 @@ class OptionsTest < Faraday::TestCase
   end
 
   def test_update
-    options = ParentOptions.new 1
+    options = ParentOptions.new(1)
     assert_equal 1, options.a
     assert_nil options.b
 
@@ -126,14 +172,14 @@ class OptionsTest < Faraday::TestCase
   end
 
   def test_delete
-    options = ParentOptions.new 1
+    options = ParentOptions.new(1)
     assert_equal 1, options.a
     assert_equal 1, options.delete(:a)
     assert_nil options.a
   end
 
   def test_merge
-    options = ParentOptions.new 1
+    options = ParentOptions.new(1)
     assert_equal 1, options.a
     assert_nil options.b
 

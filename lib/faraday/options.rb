@@ -9,6 +9,7 @@ module Faraday
 
     # Public
     def each
+      return to_enum(:each) unless block_given?
       members.each do |key|
         yield(key.to_sym, send(key))
       end
@@ -42,6 +43,11 @@ module Faraday
     end
 
     # Public
+    def clear
+      members.each { |member| delete(member) }
+    end
+
+    # Public
     def merge(value)
       dup.update(value)
     end
@@ -68,8 +74,43 @@ module Faraday
 
     # Public
     def keys
-      members.reject { |m| send(m).nil? }
+      members.reject { |member| send(member).nil? }
     end
+
+    # Public
+    def empty?
+      keys.empty?
+    end
+
+    # Public
+    def each_key
+      return to_enum(:each_key) unless block_given?
+      keys.each do |key|
+        yield(key)
+      end
+    end
+
+    # Public
+    def key?(key)
+      keys.include?(key)
+    end
+
+    alias has_key? key?
+
+    # Public
+    def each_value
+      return to_enum(:each_value) unless block_given?
+      values.each do |value|
+        yield(value)
+      end
+    end
+
+    # Public
+    def value?(value)
+      values.include?(value)
+    end
+
+    alias has_value? value?
 
     # Public
     def to_hash
@@ -84,9 +125,9 @@ module Faraday
     # Internal
     def inspect
       values = []
-      members.each do |m|
-        value = send(m)
-        values << "#{m}=#{value.inspect}" if value
+      members.each do |member|
+        value = send(member)
+        values << "#{member}=#{value.inspect}" if value
       end
       values = values.empty? ? ' (empty)' : (' ' << values.join(", "))
 
