@@ -25,16 +25,20 @@ class OptionsTest < Faraday::TestCase
   def test_each_key
     options = ParentOptions.new(1, 2, 3)
     enum = options.each_key
-    assert_equal enum.next, :a
-    assert_equal enum.next, :b
-    assert_equal enum.next, :c
+    assert_equal enum.next.to_sym, :a
+    assert_equal enum.next.to_sym, :b
+    assert_equal enum.next.to_sym, :c
   end
 
   def test_key?
     options = SubOptions.new
     assert !options.key?(:sub)
     options.sub = 1
-    assert options.key?(:sub)
+    if RUBY_VERSION >= '1.9'
+      assert options.key?(:sub)
+    else
+      assert options.key?("sub")
+    end
   end
 
   def test_each_value
