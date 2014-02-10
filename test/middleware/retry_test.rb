@@ -105,5 +105,24 @@ module Middleware
       }
       assert_equal 3, @times_called
     end
+
+    def test_should_stop_retrying_if_block_returns_false_checking_env
+      @explode = lambda {|n| raise Errno::ECONNREFUSED }
+      check = lambda { |env,exception| env[:method] != :post }
+      assert_raises(Errno::ECONNREFUSED) {
+        conn(:retry_if => check).post("/unstable")
+      }
+      assert_equal 1, @times_called
+    end
+
+    def test_should_stop_retrying_if_block_returns_false_checking_exception
+      @explode = lambda {|n| raise Errno::ECONNREFUSED }
+      check = lambda { |env,exception| !exception.kind_of?(Errno::ECONNREFUSED) }
+      assert_raises(Errno::ECONNREFUSED) {
+        conn(:retry_if => check).post("/unstable")
+      }
+      assert_equal 1, @times_called
+    end
+
   end
 end
