@@ -17,9 +17,7 @@ matrix:
     # "A fatal error has been detected by the Java Runtime Environment:
     #  Internal Error (sharedRuntime.cpp:843)"
     - rvm: jruby-18mode
-      env: SSL=yes
     - rvm: jruby-19mode
-      env: SSL=yes
     - rvm: jruby-head
     # random crashes
     - rvm: rbx
