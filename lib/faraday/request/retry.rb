@@ -19,9 +19,11 @@ module Faraday
   # interval that is random between 0.1 and 0.15
   #
   class Request::Retry < Faraday::Middleware
-    class Options < Faraday::Options.new(:max, :interval, :interval_randomness, :backoff_factor, :exceptions, :retry_if)
 
-      DEFAULT_CHECK = lambda { |env,exception| true }
+    IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
+
+    class Options < Faraday::Options.new(:max, :interval, :interval_randomness, :backoff_factor, :exceptions, :retry_if)
+      DEFAULT_CHECK = lambda { |env,exception| false }
 
       def self.from(value)
         if Fixnum === value
@@ -78,7 +80,7 @@ module Faraday
     #                       not independent of the retry count. This would be useful
     #                       if the exception produced is non-recoverable or if the
     #                       the HTTP method called is not idempotent.
-    #                       (defaults to return true)
+    #                       (defaults to return false)
     def initialize(app, options = nil)
       super(app)
       @options = Options.from(options)
@@ -131,7 +133,7 @@ module Faraday
     private
 
     def retry_request?(env, exception)
-      @options.retry_if.call(env, exception)
+      IDEMPOTENT_METHODS.include?(env[:method]) || @options.retry_if.call(env, exception)
     end
 
   end
