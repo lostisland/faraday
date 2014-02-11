@@ -11,6 +11,7 @@ Faraday supports these adapters:
 * [Typhoeus][]
 * [Patron][]
 * [EventMachine][]
+* [HTTPClient][]
 
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
@@ -211,6 +212,7 @@ See [LICENSE][] for details.
 [typhoeus]:  https://github.com/typhoeus/typhoeus#readme
 [patron]:    http://toland.github.com/patron/
 [eventmachine]: https://github.com/igrigorik/em-http-request#readme
+[httpclient]: https://github.com/nahi/httpclient
 [jruby]:     http://jruby.org/
 [rubinius]:  http://rubini.us/
 [license]:   LICENSE.md
