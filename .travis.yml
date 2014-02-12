@@ -3,17 +3,6 @@ script: bundle exec script/test
 
 language: ruby
 
-matrix:
-  allow_failures:
-    # "A fatal error has been detected by the Java Runtime Environment:
-    #  Internal Error (sharedRuntime.cpp:843)"
-    - rvm: jruby-18mode
-    - rvm: jruby-19mode
-    - rvm: jruby-head
-    # random crashes
-    - rvm: rbx
-  fast_finish: true
-
 rvm:
   - 1.8.7
   - 1.9.2
@@ -23,7 +12,18 @@ rvm:
   - jruby-18mode
   - jruby-19mode
   - jruby-head
-  - rbx
+  - rbx-2
+
+matrix:
+  allow_failures:
+    # "A fatal error has been detected by the Java Runtime Environment:
+    #  Internal Error (sharedRuntime.cpp:843)"
+    - rvm: jruby-18mode
+    - rvm: jruby-19mode
+    - rvm: jruby-head
+    # random crashes
+    - rvm: rbx-2
+  fast_finish: true
 
 env:
   matrix:

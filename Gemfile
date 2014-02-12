@@ -21,9 +21,4 @@ group :test do
   gem 'typhoeus', '~> 0.3.3', :platforms => :ruby
 end
 
-platforms :rbx do
-  gem 'rubinius-coverage'
-  gem 'rubysl'
-end
-
 gemspec
