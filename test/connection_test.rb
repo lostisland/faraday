@@ -408,6 +408,8 @@ class TestRequestParams < Faraday::TestCase
       class << conn.builder
         undef app
         def app() lambda { |env| env } end
+        undef dup
+        def dup() clone end
       end
     end
   end
