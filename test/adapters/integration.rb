@@ -113,6 +113,13 @@ module Adapters
         assert_equal expected, get('ssl').body
       end
 
+      def test_GET_passes_basic_auth_with_connection_credentials
+        conn = create_connection
+        conn.basic_auth('user', 'pass')
+        response = conn.get('basic-auth/user/pass')
+        refute_equal 401, response.status
+      end
+
       def test_POST_send_url_encoded_params
         assert_equal %(post {"name"=>"zack"}), post('echo', :name => 'zack').body
       end

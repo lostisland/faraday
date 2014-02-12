@@ -56,6 +56,17 @@ class LiveServer < Sinatra::Base
     request.secure?.to_s
   end
 
+  get '/basic-auth/:user/:password' do
+    required_credentials = [params[:user], params[:password]]
+    auth = Rack::Auth::Basic::Request.new(request.env)
+
+    if auth.provided? && auth.basic? && auth.credentials == required_credentials
+      halt 200, "Authorized\n"
+    else
+      halt 401, "Not authorized\n"
+    end
+  end
+
   error do |e|
     "#{e.class}\n#{e.to_s}\n#{e.backtrace.join("\n")}"
   end
