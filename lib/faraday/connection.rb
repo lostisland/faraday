@@ -420,7 +420,7 @@ module Faraday
     #
     # Returns a Faraday::Connection.
     def dup(url = nil)
-      self.class.new(build_exclusive_url(url), :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
+      self.class.new(build_exclusive_url(url), :headers => headers.dup, :params => params.dup, :builder => builder.clone, :ssl => ssl.dup)
     end
 
     # Internal: Yields username and password extracted from a URI if they both exist.

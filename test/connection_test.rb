@@ -481,6 +481,24 @@ class TestRequestParams < Faraday::TestCase
     assert_query_equal %w[b=b], query
   end
 
+  def test_inherits_basic_auth
+    header_name = Faraday::Request::Authorization::KEY
+    conn = create_connection
+    conn.basic_auth('before', 'before')
+    get '?a=1' do |req|
+      assert_equal conn.headers[header_name], req.headers[header_name]
+    end
+  end
+
+  def test_overrides_basic_auth
+    header_name = Faraday::Request::Authorization::KEY
+    conn = create_connection
+    conn.basic_auth('before', 'before')
+    get 'http://after:after@domain.com' do |req|
+      refute_equal conn.headers[header_name], req.headers[header_name]
+    end
+  end
+
   def test_array_params_in_url
     with_default_params_encoder(nil) do
       create_connection 'http://a.co/page1?color[]=red&color[]=blue'
