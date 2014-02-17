@@ -8,7 +8,9 @@ module Faraday
     def call(env)
       match_content_type(env) do |params|
         env.request.boundary ||= DEFAULT_BOUNDARY
-        env.request_headers[CONTENT_TYPE] += "; boundary=#{env.request.boundary}"
+        request_headers = env[:request_headers]
+        boundary = "; boundary=#{env[:request][:boundary]}"
+        request_headers[CONTENT_TYPE] += boundary unless request_headers[CONTENT_TYPE].include?(boundary)
         env.body = create_multipart(env, params)
       end
       @app.call env
@@ -40,6 +42,7 @@ module Faraday
       parts << Faraday::Parts::EpiloguePart.new(boundary)
 
       body = Faraday::CompositeReadIO.new(parts)
+      body.rewind if env[:retry] #rewind all ios when retry request
       env.request_headers[Faraday::Env::ContentLength] = body.length.to_s
       return body
     end
