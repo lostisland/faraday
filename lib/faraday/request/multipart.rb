@@ -42,7 +42,7 @@ module Faraday
       parts << Faraday::Parts::EpiloguePart.new(boundary)
 
       body = Faraday::CompositeReadIO.new(parts)
-      body.rewind if env[:retry] #rewind all ios when retry request
+      body.rewind #rewind required if we do retry for multipart request
       env.request_headers[Faraday::Env::ContentLength] = body.length.to_s
       return body
     end
