@@ -11,18 +11,14 @@ module Middleware
         b.request :multipart
         b.request :retry, *retry_args
         b.adapter :test do |stub|
-          ['get', 'post'].each do |method|
-            stub.send(method, '/unstable') {
+          ['get', 'post', 'put'].each do |method|
+            stub.send(method, '/unstable') do |env|
+              posted_as = env[:request_headers]['Content-Type']
+              [200, {'Content-Type' => posted_as}, env[:body]]
               @times_called += 1
               @explode.call @times_called
-            }
+            end
 
-          end
-          stub.put('/echo') do |env|
-            posted_as = env[:request_headers]['Content-Type']
-            [200, {'Content-Type' => posted_as}, env[:body]]
-            @times_called += 1
-            @explode.call @times_called
           end
         end
       end
@@ -161,7 +157,7 @@ module Middleware
       end
       file = Faraday::UploadIO.new(__FILE__, 'text/x-ruby')
       payload = {:file => file}
-      response = conn(:max => 2, :exceptions => RuntimeError).put('/echo', payload)
+      response = conn(:max => 2, :exceptions => RuntimeError).put('/unstable', payload)
 
       assert_equal 'multipart/form-data; boundary=-----------RubyMultipartPost', response.env[:request_headers]['Content-Type']
     end
