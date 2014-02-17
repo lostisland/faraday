@@ -9,7 +9,7 @@ module Faraday
       match_content_type(env) do |params|
         env.request.boundary ||= DEFAULT_BOUNDARY
         request_headers = env[:request_headers]
-        boundary = "; boundary=#{env[:request][:boundary]}"
+        boundary = "; boundary=#{env.request.boundary}"
         request_headers[CONTENT_TYPE] += boundary unless request_headers[CONTENT_TYPE].include?(boundary)
         env.body = create_multipart(env, params)
       end
