@@ -160,7 +160,7 @@ module Middleware
         end
       end
       file = Faraday::UploadIO.new(__FILE__, 'text/x-ruby')
-      payload = {file: file}
+      payload = {:file => file}
       response = conn(:max => 2, :exceptions => RuntimeError).put('/echo', payload)
 
       assert_equal 'multipart/form-data; boundary=-----------RubyMultipartPost', response.env[:request_headers]['Content-Type']
