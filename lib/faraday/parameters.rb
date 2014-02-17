@@ -52,8 +52,12 @@ module Faraday
           end
           return buffer.chop
         else
-          encoded_value = escape(value)
-          return "#{parent}=#{encoded_value}"
+          if value == nil
+            return parent
+          else
+            encoded_value = escape(value)
+            return "#{parent}=#{encoded_value}"
+          end
         end
       end
 
