@@ -30,7 +30,7 @@ end
 response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
 response.body
 
-conn.get '/nigiri', { :name => 'Maguro' }   # GET /nigiri?name=Maguro
+conn.get '/nigiri', { :name => 'Maguro' }   # GET http://sushi.com/nigiri?name=Maguro
 
 conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
   req.url '/search', :page => 2
