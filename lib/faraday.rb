@@ -220,7 +220,7 @@ module Faraday
           if root = @middleware_autoload_path
             path = "#{root}/#{path}"
           end
-          require(path)
+          require(path) unless defined?(const)
           @registered_middleware[key] = const
         end
         load_middleware(key)
