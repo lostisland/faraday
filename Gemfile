@@ -13,17 +13,12 @@ group :test do
   gem 'leftright', '>= 0.9', :require => false
   gem 'mime-types', '~> 1.25', :platforms => [:jruby, :ruby_18]
   gem 'minitest', '>= 5.0.5'
-  gem 'net-http-persistent', '>= 2.5', :require => false
+  gem 'net-http-persistent', '>= 2.9.4'
   gem 'patron', '>= 0.4.2', :platforms => :ruby
   gem 'rack-test', '>= 0.6', :require => 'rack/test'
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 0.3.3', :platforms => :ruby
-end
-
-platforms :rbx do
-  gem 'rubinius-coverage'
-  gem 'rubysl'
 end
 
 gemspec
