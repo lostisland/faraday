@@ -201,6 +201,21 @@ class OptionsTest < Faraday::TestCase
     assert_equal :get, e.method
   end
 
+  def test_env_from_hash
+    e = Faraday::Env.from({ :method => :get })
+    assert_equal :get, e.method
+  end
+
+  def test_env_from_env
+    e = Faraday::Env.from({ :method => :get })
+    e[:custom] = :boom
+
+    env = Faraday::Env.from(e)
+    assert_equal env.method, e.method
+    assert_equal env[:custom], e[:custom]
+    assert_equal env.object_id, e.object_id
+  end
+
   def test_env_access_symbol_non_member
     e = Faraday::Env.new
     assert_nil e[:custom]

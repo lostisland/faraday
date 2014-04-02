@@ -269,6 +269,15 @@ module Faraday
 
     def_delegators :request, :params_encoder
 
+    def self.from(value)
+      case value
+      when Env
+        value
+      else
+        super(value)
+      end
+    end
+
     # Public
     def [](key)
       if in_member_set?(key)
