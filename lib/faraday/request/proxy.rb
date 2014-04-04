@@ -3,10 +3,10 @@ module Faraday
   #
   # If a proxy is not explicitly set, the following environment variables
   # are used:
-  #   HTTP_PROXY, HTTPS_PROXY, NO_PROXY
-  # (lower case instances are used in the absence of upper case equivalents)
+  #   http_proxy, https_proxy, no_proxy
+  # (upper case instances are used in the absence of lower case equivalents)
   #
-  # The NO_PROXY list specifies a comma-separated list of domains
+  # The no_proxy list specifies a comma-separated list of domains
   # (and optionally ports) for which the proxy should not be used.
   #
   # Examples:
@@ -64,7 +64,7 @@ module Faraday
     end
 
     def parse_proxy_uri(proxy_type, uri, options)
-      proxy = uri || ENV[proxy_type.upcase] || ENV[proxy_type.downcase]
+      proxy = uri || ENV[proxy_type.downcase] || ENV[proxy_type.upcase]
 
       proxy_uri = parse_uri(proxy)
 
@@ -83,7 +83,7 @@ module Faraday
 
     def parse_no_proxy_list
       @no_proxy ||= nil
-      proxy_list = ENV['NO_PROXY'] || ENV['no_proxy']
+      proxy_list = ENV['no_proxy'] || ENV['NO_PROXY']
       @no_proxy = proxy_list.split(',') unless proxy_list.nil?
     end
 

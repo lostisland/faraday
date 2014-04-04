@@ -145,13 +145,13 @@ class ProxyMiddlewareTest < Faraday::TestCase
     assert_equal "'password'",      proxy_options.password
   end
 
-  def test_upper_case_env_trumps_lower_case
+  def test_lower_case_env_trumps_upper_case
     with_env 'http_proxy' => 'http://proxy.com', 'HTTP_PROXY' => 'http://upper.proxy.com' do
       response = connection { |b| b.request :proxy }.get('/test')
       proxy_options = response.env.request.proxy
 
       refute_nil proxy_options
-      assert_equal 'http://upper.proxy.com', proxy_options.uri.to_s
+      assert_equal 'http://proxy.com', proxy_options.uri.to_s
     end
   end
 
@@ -257,6 +257,36 @@ class ProxyMiddlewareTest < Faraday::TestCase
       proxy_options = response.env.request.proxy
 
       assert_nil proxy_options
+    end
+  end
+
+  def test_https_ignored_given_domain
+    with_env 'https_proxy' => 'http://proxy.com', 'no_proxy' => 'github.com' do
+      %w(www.github.com pages.github.com).each do |url|
+        response = connection("https://#{url}"){ |b| b.request :proxy }.get('/test')
+        proxy_options = response.env.request.proxy
+      
+        assert_nil proxy_options
+      end
+    end
+  end
+
+  def test_https_ignored_given_match_subdomain
+    with_env 'https_proxy' => 'http://proxy.com', 'no_proxy' => 'pages.github.com' do
+      response = connection('https://pages.github.com'){ |b| b.request :proxy }.get('/test')
+      proxy_options = response.env.request.proxy
+
+      assert_nil proxy_options
+    end
+  end
+
+  def test_https_set_given_match_subdomain
+    with_env 'https_proxy' => 'http://proxy.com', 'no_proxy' => 'pages.github.com' do
+      response = connection('https://github.com'){ |b| b.request :proxy }.get('/test')
+      proxy_options = response.env.request.proxy
+      
+      refute_nil proxy_options
+      assert_equal 'http://proxy.com', proxy_options.uri.to_s
     end
   end
 end
