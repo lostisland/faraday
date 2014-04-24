@@ -5,8 +5,21 @@ class AuthenticationMiddlewareTest < Faraday::TestCase
     Faraday::Connection.new('http://example.net/') do |builder|
       yield(builder)
       builder.adapter :test do |stub|
-        stub.get('/auth-echo') do |env|
-          [200, {}, env[:request_headers]['Authorization']]
+        %w[
+          /auth-echo
+          /auth-echo/
+          /auth-echo/test
+          /auth-echo-test
+          /no-auth
+          http://example.org/auth-echo
+          http://example.org/auth-echo/
+          http://example.org/auth-echo/test
+          http://example.org/auth-echo-test
+          http://example.org/no-auth
+        ].each do |path|
+          stub.get(path) do |env|
+            [200, {}, env[:request_headers]['Authorization'] || '']
+          end
         end
       end
     end
@@ -15,6 +28,53 @@ class AuthenticationMiddlewareTest < Faraday::TestCase
   def test_basic_middleware_adds_basic_header
     response = conn { |b| b.request :basic_auth, 'aladdin', 'opensesame' }.get('/auth-echo')
     assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', response.body
+  end
+
+  def test_basic_middleware_adds_basic_header_only_for_specified_urls
+    c = conn { |b|
+      b.request :basic_auth, 'aladdin', 'opensesame', 'http://example.net/auth-echo'
+      b.request :basic_auth, 'aladdin', 'nosesame',   'http://example.org/auth-echo'
+    }
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', c.get('/auth-echo').body
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', c.get('/auth-echo/').body
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', c.get('/auth-echo/test').body
+    assert_equal '',                               c.get('/auth-echo-test').body
+    assert_equal '',                               c.get('/no-auth').body
+    assert_equal 'Basic YWxhZGRpbjpub3Nlc2FtZQ==', c.get('http://example.org/auth-echo').body
+    assert_equal 'Basic YWxhZGRpbjpub3Nlc2FtZQ==', c.get('http://example.org/auth-echo/').body
+    assert_equal 'Basic YWxhZGRpbjpub3Nlc2FtZQ==', c.get('http://example.org/auth-echo/test').body
+    assert_equal '',                               c.get('http://example.org/auth-echo-test').body
+    assert_equal '',                               c.get('http://example.org/no-auth').body
+
+    c = conn { |b|
+      b.request :basic_auth, 'aladdin', 'opensesame', 'http://example.net/auth-echo/'
+      b.request :basic_auth, 'aladdin', 'nosesame',   'http://example.org/auth-echo/'
+    }
+    assert_equal '',                               c.get('/auth-echo').body
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', c.get('/auth-echo/').body
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', c.get('/auth-echo/test').body
+    assert_equal '',                               c.get('/auth-echo-test').body
+    assert_equal '',                               c.get('/no-auth').body
+    assert_equal '',                               c.get('http://example.org/auth-echo').body
+    assert_equal 'Basic YWxhZGRpbjpub3Nlc2FtZQ==', c.get('http://example.org/auth-echo/').body
+    assert_equal 'Basic YWxhZGRpbjpub3Nlc2FtZQ==', c.get('http://example.org/auth-echo/test').body
+    assert_equal '',                               c.get('http://example.org/auth-echo-test').body
+    assert_equal '',                               c.get('http://example.org/no-auth').body
+
+    c = conn { |b|
+      b.request :basic_auth, 'aladdin', 'opensesame', 'http://example.net'
+      b.request :basic_auth, 'aladdin', 'nosesame',   'http://example.org'
+    }
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', c.get('/auth-echo').body
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', c.get('/auth-echo/').body
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', c.get('/auth-echo/test').body
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', c.get('/auth-echo-test').body
+    assert_equal 'Basic YWxhZGRpbjpvcGVuc2VzYW1l', c.get('/no-auth').body
+    assert_equal 'Basic YWxhZGRpbjpub3Nlc2FtZQ==', c.get('http://example.org/auth-echo').body
+    assert_equal 'Basic YWxhZGRpbjpub3Nlc2FtZQ==', c.get('http://example.org/auth-echo/').body
+    assert_equal 'Basic YWxhZGRpbjpub3Nlc2FtZQ==', c.get('http://example.org/auth-echo/test').body
+    assert_equal 'Basic YWxhZGRpbjpub3Nlc2FtZQ==', c.get('http://example.org/auth-echo-test').body
+    assert_equal 'Basic YWxhZGRpbjpub3Nlc2FtZQ==', c.get('http://example.org/no-auth').body
   end
 
   def test_basic_middleware_adds_basic_header_correctly_with_long_values
