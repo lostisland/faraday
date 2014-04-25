@@ -33,6 +33,8 @@ module Faraday
           raise ArgumentError, "origin must be an absolute HTTP URL: #{origin.inspect}"
         uri += '/' if uri.path.empty?
         @origin = uri
+      else
+        @origin = nil
       end
       super(app)
     end
