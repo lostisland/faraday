@@ -31,7 +31,7 @@ module Faraday
         uri = URI(origin)
         URI::HTTP === uri && uri.host or
           raise ArgumentError, "origin must be an absolute HTTP URL: #{origin.inspect}"
-        uri += '/' if uri.path.empty?
+        uri.path = '/' if uri.path.empty?
         @origin = uri
       else
         @origin = nil
