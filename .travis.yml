@@ -11,6 +11,8 @@ rvm:
   - 2.1.0
   - jruby-18mode
   - jruby-19mode
+  - jruby-20mode
+  - jruby-21mode
   - jruby-head
   - rbx-2
 
