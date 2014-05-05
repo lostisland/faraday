@@ -65,6 +65,7 @@ module Faraday
 
       def replace(other)
         clear
+        @names.clear
         self.update other
         self
       end
