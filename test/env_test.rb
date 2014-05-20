@@ -166,6 +166,14 @@ class ResponseTest < Faraday::TestCase
     end
   end
 
+  def test_body_is_parsed_on_finish
+    response = Faraday::Response.new
+    response.on_complete { |env| env[:body] = env[:body].upcase }
+    response.finish(@env)
+
+    assert_equal "YIKES", response.body
+  end
+
   def test_not_success
     assert !@response.success?
   end
