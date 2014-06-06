@@ -3,8 +3,8 @@ module Faraday
     ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
 
     def self.escape(s)
-      return s.to_s.gsub(ESCAPE_RE) {
-        '%' + $&.unpack('H2' * $&.bytesize).join('%').upcase
+      s.to_s.gsub(ESCAPE_RE) {|match|
+        '%' + match.unpack('H2' * match.bytesize).join('%').upcase
       }.tr(' ', '+')
     end
 
