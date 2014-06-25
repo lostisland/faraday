@@ -1,5 +1,9 @@
 # Faraday Changelog
 
+## Unreleased
+
+* Add `Response#redirect?` to check for HTTP status codes in 3xx (@nathanl)
+
 ## v0.9.1
 
 * Refactor Net:HTTP adapter so that with_net_http_connection can be overridden to allow pooled connections. (@Ben-M)

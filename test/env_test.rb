@@ -178,6 +178,10 @@ class ResponseTest < Faraday::TestCase
     assert !@response.success?
   end
 
+  def test_not_redirect
+    assert !@response.redirect?
+  end
+
   def test_status
     assert_equal 404, @response.status
   end

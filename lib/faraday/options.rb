@@ -257,6 +257,7 @@ module Faraday
     ContentLength = 'Content-Length'.freeze
     StatusesWithoutBody = Set.new [204, 304]
     SuccessfulStatuses = 200..299
+    RedirectStatuses = 300..399
 
     # A Set of HTTP verbs that typically send a body.  If no body is set for
     # these requests, the Content-Length header is set to 0.
@@ -290,6 +291,11 @@ module Faraday
     # Public
     def success?
       SuccessfulStatuses.include?(status)
+    end
+
+    # Public
+    def redirect?
+      RedirectStatuses.include?(status)
     end
 
     # Public
