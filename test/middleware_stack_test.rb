@@ -161,7 +161,7 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def assert_handlers(list)
-    echoed_list = @conn.get('/').body.to_s.split(':')
+    echoed_list = @conn.get('/').response_body.to_s.split(':')
     echoed_list.shift if echoed_list.first == ''
     assert_equal list, echoed_list
   end

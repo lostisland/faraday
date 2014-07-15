@@ -31,12 +31,12 @@ module Adapters
           resp1 = connection.get('echo?a=1')
           resp2 = connection.get('echo?b=2')
           assert connection.in_parallel?
-          assert_nil resp1.body
-          assert_nil resp2.body
+          assert_nil resp1.response_body
+          assert_nil resp2.response_body
         end
         assert !connection.in_parallel?
-        assert_equal 'get ?{"a"=>"1"}', resp1.body
-        assert_equal 'get ?{"b"=>"2"}', resp2.body
+        assert_equal 'get ?{"a"=>"1"}', resp1.response_body
+        assert_equal 'get ?{"b"=>"2"}', resp2.response_body
       end
     end
 
@@ -47,7 +47,7 @@ module Adapters
 
         err = capture_warnings do
           connection.in_parallel do
-            response = connection.get('echo').body
+            response = connection.get('echo').response_body
           end
         end
         assert response
@@ -59,7 +59,7 @@ module Adapters
     module Compression
       def test_GET_handles_compression
         res = get('echo_header', :name => 'accept-encoding')
-        assert_match(/gzip;.+\bdeflate\b/, res.body)
+        assert_match(/gzip;.+\bdeflate\b/, res.response_body)
       end
     end
 
@@ -79,11 +79,11 @@ module Adapters
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
 
       def test_GET_retrieves_the_response_body
-        assert_equal 'get', get('echo').body
+        assert_equal 'get', get('echo').response_body
       end
 
       def test_GET_send_url_encoded_params
-        assert_equal %(get ?{"name"=>"zack"}), get('echo', :name => 'zack').body
+        assert_equal %(get ?{"name"=>"zack"}), get('echo', :name => 'zack').response_body
       end
 
       def test_GET_retrieves_the_response_headers
@@ -98,28 +98,28 @@ module Adapters
 
       def test_GET_with_body
         response = get('echo') do |req|
-          req.body = {'bodyrock' => true}
+          req.request_body = {'bodyrock' => true}
         end
-        assert_equal %(get {"bodyrock"=>"true"}), response.body
+        assert_equal %(get {"bodyrock"=>"true"}), response.response_body
       end
 
       def test_GET_sends_user_agent
         response = get('echo_header', {:name => 'user-agent'}, :user_agent => 'Agent Faraday')
-        assert_equal 'Agent Faraday', response.body
+        assert_equal 'Agent Faraday', response.response_body
       end
 
       def test_GET_ssl
         expected = self.class.ssl_mode?.to_s
-        assert_equal expected, get('ssl').body
+        assert_equal expected, get('ssl').response_body
       end
 
       def test_POST_send_url_encoded_params
-        assert_equal %(post {"name"=>"zack"}), post('echo', :name => 'zack').body
+        assert_equal %(post {"name"=>"zack"}), post('echo', :name => 'zack').response_body
       end
 
       def test_POST_send_url_encoded_nested_params
         resp = post('echo', 'name' => {'first' => 'zack'})
-        assert_equal %(post {"name"=>{"first"=>"zack"}}), resp.body
+        assert_equal %(post {"name"=>{"first"=>"zack"}}), resp.response_body
       end
 
       def test_POST_retrieves_the_response_headers
@@ -128,18 +128,18 @@ module Adapters
 
       def test_POST_sends_files
         resp = post('file') do |req|
-          req.body = {'uploaded_file' => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
+          req.request_body = {'uploaded_file' => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
         end
-        assert_equal "file integration.rb text/x-ruby #{File.size(__FILE__)}", resp.body
+        assert_equal "file integration.rb text/x-ruby #{File.size(__FILE__)}", resp.response_body
       end
 
       def test_PUT_send_url_encoded_params
-        assert_equal %(put {"name"=>"zack"}), put('echo', :name => 'zack').body
+        assert_equal %(put {"name"=>"zack"}), put('echo', :name => 'zack').response_body
       end
 
       def test_PUT_send_url_encoded_nested_params
         resp = put('echo', 'name' => {'first' => 'zack'})
-        assert_equal %(put {"name"=>{"first"=>"zack"}}), resp.body
+        assert_equal %(put {"name"=>{"first"=>"zack"}}), resp.response_body
       end
 
       def test_PUT_retrieves_the_response_headers
@@ -147,16 +147,16 @@ module Adapters
       end
 
       def test_PATCH_send_url_encoded_params
-        assert_equal %(patch {"name"=>"zack"}), patch('echo', :name => 'zack').body
+        assert_equal %(patch {"name"=>"zack"}), patch('echo', :name => 'zack').response_body
       end
 
       def test_OPTIONS
         resp = run_request(:options, 'echo', nil, {})
-        assert_equal 'options', resp.body
+        assert_equal 'options', resp.response_body
       end
 
       def test_HEAD_retrieves_no_response_body
-        assert_equal '', head('echo').body
+        assert_equal '', head('echo').response_body
       end
 
       def test_HEAD_retrieves_the_response_headers
@@ -168,7 +168,7 @@ module Adapters
       end
 
       def test_DELETE_retrieves_the_body
-        assert_equal %(delete), delete('echo').body
+        assert_equal %(delete), delete('echo').response_body
       end
 
       def test_timeout
@@ -189,7 +189,7 @@ module Adapters
         conn = create_connection(:proxy => proxy_uri)
 
         res = conn.get '/echo'
-        assert_equal 'get', res.body
+        assert_equal 'get', res.response_body
 
         unless self.class.ssl_mode?
           # proxy can't append "Via" header for HTTPS responses
@@ -214,7 +214,7 @@ module Adapters
 
       def test_empty_body_response_represented_as_blank_string
         response = get('204')
-        assert_equal '', response.body
+        assert_equal '', response.response_body
       end
 
       def adapter

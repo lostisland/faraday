@@ -94,7 +94,7 @@ module Faraday
         end
       end
 
-      class Stub < Struct.new(:path, :params, :headers, :body, :block)
+      class Stub < Struct.new(:path, :params, :headers, :response_body, :block)
         def initialize(full, headers, body, block)
           path, query = full.split('?')
           params = query ?
@@ -110,7 +110,7 @@ module Faraday
             {}
           request_path == path &&
             params_match?(request_params) &&
-            (body.to_s.size.zero? || request_body == body) &&
+            (response_body.to_s.size.zero? || request_body == response_body) &&
             headers_match?(request_headers)
         end
 
@@ -127,7 +127,7 @@ module Faraday
         end
 
         def to_s
-          "#{path} #{body}"
+          "#{path} #{response_body}"
         end
       end
 
@@ -146,14 +146,14 @@ module Faraday
         normalized_path = Faraday::Utils.normalize_path(env[:url])
         params_encoder = env.request.params_encoder || Faraday::Utils.default_params_encoder
 
-        if stub = stubs.match(env[:method], normalized_path, env.request_headers, env[:body])
+        if stub = stubs.match(env[:method], normalized_path, env.request_headers, env[:request_body])
           env[:params] = (query = env[:url].query) ?
             params_encoder.decode(query)  :
             {}
           status, headers, body = stub.block.call(env)
           save_response(env, status, body, headers)
         else
-          raise Stubs::NotFound, "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"
+          raise Stubs::NotFound, "no stubbed request for #{env[:method]} #{normalized_path} #{env[:request_body]}"
         end
         @app.call(env)
       end

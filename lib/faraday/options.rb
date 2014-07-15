@@ -251,7 +251,7 @@ module Faraday
     end
   end
 
-  class Env < Options.new(:method, :body, :url, :request, :request_headers,
+  class Env < Options.new(:method, :request_body, :response_body, :url, :request, :request_headers,
     :ssl, :parallel_manager, :params, :response, :response_headers, :status)
 
     ContentLength = 'Content-Length'.freeze
@@ -294,13 +294,13 @@ module Faraday
 
     # Public
     def needs_body?
-      !body && MethodsWithBodies.include?(method)
+      !request_body && MethodsWithBodies.include?(method)
     end
 
     # Public
     def clear_body
       request_headers[ContentLength] = '0'
-      self.body = ''
+      self.request_body = ''
     end
 
     # Public

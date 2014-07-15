@@ -123,7 +123,7 @@ module Faraday
     #   conn.get '/twitter/tweet/_search' do |req|
     #     req.headers[:content_type] = 'application/json'
     #     req.params[:routing] = 'kimchy'
-    #     req.body = JSON.generate(:query => {...})
+    #     req.request_body = JSON.generate(:query => {...})
     #   end
     #
     # Yields a Faraday::Response for further request customizations.
@@ -370,7 +370,7 @@ module Faraday
       request = build_request(method) do |req|
         req.url(url)                if url
         req.headers.update(headers) if headers
-        req.body = body             if body
+        req.request_body = body     if body
         yield(req) if block_given?
       end
 

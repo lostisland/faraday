@@ -40,7 +40,7 @@ class ResponseMiddlewareTest < Faraday::TestCase
 
   def test_upcase
     @conn.builder.insert(0, ResponseUpcaser)
-    assert_equal '<BODY></BODY>', @conn.get('ok').body
+    assert_equal '<BODY></BODY>', @conn.get('ok').response_body
   end
 end
 
@@ -63,10 +63,10 @@ class ResponseNoBodyMiddleWareTest < Faraday::TestCase
   end
 
   def test_204
-    assert_equal nil, @conn.get('no_content').body
+    assert_equal nil, @conn.get('no_content').response_body
   end
 
   def test_304
-    assert_equal nil, @conn.get('not_modified').body
+    assert_equal nil, @conn.get('not_modified').response_body
   end
 end

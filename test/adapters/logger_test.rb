@@ -19,7 +19,7 @@ module Adapters
     end
 
     def test_still_returns_output
-      assert_equal 'hello', @resp.body
+      assert_equal 'hello', @resp.response_body
     end
 
     def test_logs_method_and_url

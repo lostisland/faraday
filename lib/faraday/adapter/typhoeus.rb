@@ -27,7 +27,7 @@ module Faraday
 
       # TODO: support streaming requests
       def read_body(env)
-        env[:body] = env[:body].read if env[:body].respond_to? :read
+        env[:request_body] = env[:request_body].read if env[:request_body].respond_to? :read
       end
 
       def request(env)
@@ -38,7 +38,7 @@ module Faraday
 
         req = ::Typhoeus::Request.new env[:url].to_s,
           :method  => method,
-          :body    => env[:body],
+          :body    => env[:request_body],
           :headers => env[:request_headers],
           :disable_ssl_peer_verification => (env[:ssl] && env[:ssl].disable?)
 

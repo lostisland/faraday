@@ -12,7 +12,7 @@ module Faraday
         super
 
         # TODO: support streaming requests
-        env[:body] = env[:body].read if env[:body].respond_to? :read
+        env[:request_body] = env[:request_body].read if env[:request_body].respond_to? :read
 
         session = @session ||= create_session
 
@@ -29,7 +29,7 @@ module Faraday
         end
 
         response = begin
-          data = env[:body] ? env[:body].to_s : nil
+          data = env[:request_body] ? env[:request_body].to_s : nil
           session.request(env[:method], env[:url].to_s, env[:request_headers], :data => data)
         rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
           raise Error::ConnectionFailed, $!
