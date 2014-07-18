@@ -126,9 +126,9 @@ module Faraday
       alias_method :key?, :include?
 
       def update(params)
-        params.try(:each) do |key, value|
+        params.each do |key, value|
           self[key] = value
-        end
+        end unless params.nil?
         self
       end
       alias_method :merge!, :update
