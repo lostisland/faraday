@@ -141,20 +141,20 @@ later, response. Some keys are:
 ```ruby
 # It's possible to define stubbed request outside a test adapter block.
 stubs = Faraday::Adapter::Test::Stubs.new do |stub|
-  stub.get('/tamago') { [200, {}, 'egg'] }
+  stub.get('/tamago') { |env| [200, {}, 'egg'] }
 end
 
 # You can pass stubbed request to the test adapter or define them in a block
 # or a combination of the two.
 test = Faraday.new do |builder|
   builder.adapter :test, stubs do |stub|
-    stub.get('/ebi') {[ 200, {}, 'shrimp' ]}
+    stub.get('/ebi') { |env| [ 200, {}, 'shrimp' ]}
   end
 end
 
 # It's also possible to stub additional requests after the connection has
 # been initialized. This is useful for testing.
-stubs.get('/uni') {[ 200, {}, 'urchin' ]}
+stubs.get('/uni') { |env| [ 200, {}, 'urchin' ]}
 
 resp = test.get '/tamago'
 resp.body # => 'egg'
