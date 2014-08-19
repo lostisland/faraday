@@ -23,6 +23,9 @@ module Faraday
 
     # Public: Gets or sets the path that the Faraday libs are loaded from.
     attr_accessor :lib_path
+    
+    # Public: Gets or sets the options that the Faraday libs required.
+    attr_accessor :opts
 
     # Public: Gets or sets the Symbol key identifying a default Adapter to use
     # for the default Faraday::Connection.
@@ -62,12 +65,24 @@ module Faraday
     #
     #   Faraday.new :url => 'http://faraday.com',
     #     :params => {:page => 1}
+    
+    #set the options and it can be used by any connection
+    def set_options(options)
+     @opts = options ? default_connection_options.merge(options) : default_connection_options.dup
+    end
+    
     #
     # Returns a Faraday::Connection.
     def new(url = nil, options = nil)
       block = block_given? ? Proc.new : nil
-      options = options ? default_connection_options.merge(options) : default_connection_options.dup
+      options = @opts#options ? default_connection_options.merge(options) : default_connection_options.dup
       Faraday::Connection.new(url, options, &block)
+    end
+    
+    #common method to pass the url and get the response
+    def get_response(url)
+      Faraday.new(:url => url).post do 
+      end
     end
 
     # Internal: Requires internal Faraday libraries.
