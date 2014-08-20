@@ -55,6 +55,14 @@ conn.get do |req|
   req.options.timeout = 5           # open/read timeout in seconds
   req.options.open_timeout = 2      # connection open timeout in seconds
 end
+
+## AUTHENTICATION ##
+
+## Basic authentication
+conn.basic_auth('user', 'password')
+
+## Token authentication
+conn.token_auth('user-token')
 ```
 
 If you don't need to set up anything, you can roll with just the bare minimum:
