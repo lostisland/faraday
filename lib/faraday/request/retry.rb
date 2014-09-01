@@ -42,7 +42,7 @@ module Faraday
       end
 
       def interval_randomness
-        (self[:interval_randomness] ||= 0).to_i
+        (self[:interval_randomness] ||= 0).to_f
       end
 
       def backoff_factor
