@@ -19,7 +19,12 @@ module Faraday
   # interval that is random between 0.1 and 0.15
   #
   class Request::Retry < Faraday::Middleware
-    class Options < Faraday::Options.new(:max, :interval, :interval_randomness, :backoff_factor, :exceptions)
+
+    IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
+
+    class Options < Faraday::Options.new(:max, :interval, :interval_randomness, :backoff_factor, :exceptions, :retry_if)
+      DEFAULT_CHECK = lambda { |env,exception| false }
+
       def self.from(value)
         if Fixnum === value
           new(value)
@@ -49,6 +54,10 @@ module Faraday
                                      Error::TimeoutError])
       end
 
+      def retry_if
+        self[:retry_if] ||= DEFAULT_CHECK
+      end
+
     end
 
     # Public: Initialize middleware
@@ -66,6 +75,12 @@ module Faraday
     #                       given as Class, Module, or String. (default:
     #                       [Errno::ETIMEDOUT, Timeout::Error,
     #                       Error::TimeoutError])
+    # retry_if            - block that will receive the env object and the exception raised
+    #                       and should decide if the code should retry still the action or
+    #                       not independent of the retry count. This would be useful
+    #                       if the exception produced is non-recoverable or if the
+    #                       the HTTP method called is not idempotent.
+    #                       (defaults to return false)
     def initialize(app, options = nil)
       super(app)
       @options = Options.from(options)
@@ -85,8 +100,8 @@ module Faraday
       begin
         env[:body] = request_body # after failure env[:body] is set to the response body
         @app.call(env)
-      rescue @errmatch
-        if retries > 0
+      rescue @errmatch => exception
+        if retries > 0 && retry_request?(env, exception)
           retries -= 1
           sleep sleep_amount(retries + 1)
           retry
@@ -104,13 +119,22 @@ module Faraday
       (class << matcher; self; end).class_eval do
         define_method(:===) do |error|
           exceptions.any? do |ex|
-            if ex.is_a? Module then error.is_a? ex
-            else error.class.to_s == ex.to_s
+            if ex.is_a? Module
+              error.is_a? ex
+            else
+              error.class.to_s == ex.to_s
             end
           end
         end
       end
       matcher
     end
+
+    private
+
+    def retry_request?(env, exception)
+      IDEMPOTENT_METHODS.include?(env[:method]) || @options.retry_if.call(env, exception)
+    end
+
   end
 end

@@ -14,7 +14,7 @@ require 'forwardable'
 #   conn.get '/'
 #
 module Faraday
-  VERSION = "0.9.0.rc6"
+  VERSION = "0.9.0"
 
   class << self
     # Public: Gets or sets the root path that Faraday is being loaded from.
@@ -204,7 +204,8 @@ module Faraday
     def load_middleware(key)
       value = fetch_middleware(key)
       case value
-      when Module then value
+      when Module
+        value
       when Symbol, String
         middleware_mutex do
           @registered_middleware[key] = const_get(value)
@@ -261,7 +262,7 @@ class Object
   # Yields self.
   # Returns self.
   def tap
-    yield self
+    yield(self)
     self
   end unless Object.respond_to?(:tap)
 end

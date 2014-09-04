@@ -1,14 +1,14 @@
-require 'rubygems'         # rubygems/version doesn't work by itself
-require 'rubygems/version' # for simplecov-html
-require 'simplecov'
-require 'coveralls'
+if RUBY_VERSION >= '1.9'
+  require 'simplecov'
+  require 'coveralls'
 
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
-  SimpleCov::Formatter::HTMLFormatter,
-  Coveralls::SimpleCov::Formatter
-]
-SimpleCov.start do
-  add_filter '/bundle/'
+  SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, Coveralls::SimpleCov::Formatter]
+
+  SimpleCov.start do
+    add_filter '/bundle/'
+    add_filter '/test/'
+    minimum_coverage(87.27)
+  end
 end
 
 gem 'minitest' if defined? Bundler

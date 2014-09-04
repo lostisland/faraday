@@ -8,9 +8,10 @@ module Faraday
     end
 
     # Public
-    def each(&block)
+    def each
+      return to_enum(:each) unless block_given?
       members.each do |key|
-        block.call key.to_sym, send(key)
+        yield(key.to_sym, send(key))
       end
     end
 
@@ -42,25 +43,28 @@ module Faraday
     end
 
     # Public
+    def clear
+      members.each { |member| delete(member) }
+    end
+
+    # Public
     def merge(value)
       dup.update(value)
     end
 
     # Public
     def fetch(key, *args)
-      return send(key) if symbolized_key_set.include?(key.to_sym)
-
-      key_setter = "#{key}="
-
-      if args.size > 0
-        return send(key_setter, args.first)
+      unless symbolized_key_set.include?(key.to_sym)
+        key_setter = "#{key}="
+        if args.size > 0
+          send(key_setter, args.first)
+        elsif block_given?
+          send(key_setter, Proc.new.call(key))
+        else
+          raise self.class.fetch_error_class, "key not found: #{key.inspect}"
+        end
       end
-
-      if block_given?
-        return send(key_setter, Proc.new.call(key))
-      end
-
-      raise self.class.fetch_error_class, "key not found: #{key.inspect}"
+      send(key)
     end
 
     # Public
@@ -70,8 +74,43 @@ module Faraday
 
     # Public
     def keys
-      members.reject { |m| send(m).nil? }
+      members.reject { |member| send(member).nil? }
     end
+
+    # Public
+    def empty?
+      keys.empty?
+    end
+
+    # Public
+    def each_key
+      return to_enum(:each_key) unless block_given?
+      keys.each do |key|
+        yield(key)
+      end
+    end
+
+    # Public
+    def key?(key)
+      keys.include?(key)
+    end
+
+    alias has_key? key?
+
+    # Public
+    def each_value
+      return to_enum(:each_value) unless block_given?
+      values.each do |value|
+        yield(value)
+      end
+    end
+
+    # Public
+    def value?(value)
+      values.include?(value)
+    end
+
+    alias has_value? value?
 
     # Public
     def to_hash
@@ -86,9 +125,9 @@ module Faraday
     # Internal
     def inspect
       values = []
-      members.each do |m|
-        value = send(m)
-        values << "#{m}=#{value.inspect}" if value
+      members.each do |member|
+        value = send(member)
+        values << "#{member}=#{value.inspect}" if value
       end
       values = values.empty? ? ' (empty)' : (' ' << values.join(", "))
 
@@ -180,8 +219,10 @@ module Faraday
 
     def self.from(value)
       case value
-      when String then value = {:uri => Utils.URI(value)}
-      when URI then value = {:uri => value}
+      when String
+        value = {:uri => Utils.URI(value)}
+      when URI
+        value = {:uri => value}
       when Hash, Options
         if uri = value.delete(:uri)
           value[:uri] = Utils.URI(uri)

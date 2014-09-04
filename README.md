@@ -11,6 +11,7 @@ Faraday supports these adapters:
 * [Typhoeus][]
 * [Patron][]
 * [EventMachine][]
+* [HTTPClient][]
 
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
@@ -29,7 +30,7 @@ end
 response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
 response.body
 
-conn.get '/nigiri', { :name => 'Maguro' }   # GET /nigiri?name=Maguro
+conn.get '/nigiri', { :name => 'Maguro' }   # GET http://sushi.com/nigiri?name=Maguro
 
 conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
   req.url '/search', :page => 2
@@ -140,20 +141,20 @@ later, response. Some keys are:
 ```ruby
 # It's possible to define stubbed request outside a test adapter block.
 stubs = Faraday::Adapter::Test::Stubs.new do |stub|
-  stub.get('/tamago') { [200, {}, 'egg'] }
+  stub.get('/tamago') { |env| [200, {}, 'egg'] }
 end
 
 # You can pass stubbed request to the test adapter or define them in a block
 # or a combination of the two.
 test = Faraday.new do |builder|
   builder.adapter :test, stubs do |stub|
-    stub.get('/ebi') {[ 200, {}, 'shrimp' ]}
+    stub.get('/ebi') { |env| [ 200, {}, 'shrimp' ]}
   end
 end
 
 # It's also possible to stub additional requests after the connection has
 # been initialized. This is useful for testing.
-stubs.get('/uni') {[ 200, {}, 'urchin' ]}
+stubs.get('/uni') { |env| [ 200, {}, 'urchin' ]}
 
 resp = test.get '/tamago'
 resp.body # => 'egg'
@@ -184,6 +185,7 @@ implementations:
 * MRI 1.9.2
 * MRI 1.9.3
 * MRI 2.0.0
+* MRI 2.1.0
 * [JRuby][]
 * [Rubinius][]
 
@@ -210,6 +212,7 @@ See [LICENSE][] for details.
 [typhoeus]:  https://github.com/typhoeus/typhoeus#readme
 [patron]:    http://toland.github.com/patron/
 [eventmachine]: https://github.com/igrigorik/em-http-request#readme
+[httpclient]: https://github.com/nahi/httpclient
 [jruby]:     http://jruby.org/
 [rubinius]:  http://rubini.us/
 [license]:   LICENSE.md

@@ -5,8 +5,10 @@ module Faraday
     # Public
     def self.header(type, token)
       case token
-      when String, Symbol then "#{type} #{token}"
-      when Hash then build_hash(type.to_s, token)
+      when String, Symbol
+        "#{type} #{token}"
+      when Hash
+        build_hash(type.to_s, token)
       else
         raise ArgumentError, "Can't build an Authorization #{type} header from #{token.inspect}"
       end
