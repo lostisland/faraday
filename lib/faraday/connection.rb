@@ -81,11 +81,8 @@ module Faraday
 
       @proxy = nil
       proxy(options.fetch(:proxy) {
-        uri = ENV['http_proxy']
-        if uri && !uri.empty?
-          uri = 'http://' + uri if uri !~ /^http/i
-          uri
-        end
+        uri = URI(url_prefix).find_proxy
+        uri.instance_of?(URI::Generic) ? URI("http://#{uri}") : uri
       })
 
       yield(self) if block_given?

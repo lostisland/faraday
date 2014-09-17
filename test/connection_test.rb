@@ -2,16 +2,19 @@ require File.expand_path('../helper', __FILE__)
 
 class TestConnection < Faraday::TestCase
 
-  def with_env(key, proxy)
-    old_value = ENV.fetch(key, false)
-    ENV[key] = proxy
+  def with_env(*args)
+    values = args.size == 1 ? args.first : Hash[*args]
+    before = ENV.to_hash
+    ENV.update(values)
     begin
       yield
     ensure
-      if old_value == false
-        ENV.delete key
-      else
-        ENV[key] = old_value
+      values.each_key do |key|
+        if before.key? key
+          ENV[key] = before[key]
+        else
+          ENV.delete key
+        end
       end
     end
   end
@@ -340,6 +343,17 @@ class TestConnection < Faraday::TestCase
   def test_proxy_doesnt_accept_uppercase_env
     with_env 'HTTP_PROXY', "http://localhost:8888/" do
       conn = Faraday::Connection.new
+      assert_nil conn.proxy
+    end
+  end
+
+  def test_proxy_respects_no_proxy_env
+    env = {
+      'http_proxy' => "http://duncan.proxy.com:80",
+      'no_proxy' => "mylocaldomain"
+    }
+    with_env env do
+      conn = Faraday::Connection.new url: "http://mylocaldomain"
       assert_nil conn.proxy
     end
   end
