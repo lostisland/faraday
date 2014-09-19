@@ -4,7 +4,7 @@ if RUBY_VERSION >= '1.9'
   SimpleCov.start do
     add_filter '/bundle/'
     add_filter '/test/'
-    minimum_coverage(89.73)
+    minimum_coverage(88.74)
   end
 end
 
