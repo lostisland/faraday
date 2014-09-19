@@ -18,6 +18,8 @@ matrix:
     - rvm: rbx-18mode
     - rvm: rbx-19mode
     - rvm: rbx-20mode
+    - rvm: jruby-18mode
+    - rvm: jruby-19mode
 
 rvm:
   - rbx-18mode
