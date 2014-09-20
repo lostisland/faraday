@@ -1,11 +1,10 @@
-unless ENV['CI']
-  begin
-    require 'simplecov'
-    SimpleCov.start do
-      add_filter 'test'
-      add_filter '/bundle/'
-    end
-  rescue LoadError
+if RUBY_VERSION >= '1.9'
+  require 'simplecov'
+
+  SimpleCov.start do
+    add_filter '/bundle/'
+    add_filter '/test/'
+    minimum_coverage(88.74)
   end
 end
 
