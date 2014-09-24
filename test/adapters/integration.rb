@@ -114,6 +114,11 @@ module Adapters
         assert_equal expected, get('ssl').body
       end
 
+      def test_GET_reason_phrase
+        response = get('echo')
+        assert_equal "OK", response.reason_phrase
+      end
+
       def test_POST_send_url_encoded_params
         assert_equal %(post {"name"=>"zack"}), post('echo', :name => 'zack').body
       end

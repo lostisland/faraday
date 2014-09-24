@@ -252,7 +252,8 @@ module Faraday
   end
 
   class Env < Options.new(:method, :body, :url, :request, :request_headers,
-    :ssl, :parallel_manager, :params, :response, :response_headers, :status)
+    :ssl, :parallel_manager, :params, :response, :response_headers, :status,
+    :reason_phrase)
 
     ContentLength = 'Content-Length'.freeze
     StatusesWithoutBody = Set.new [204, 304]
