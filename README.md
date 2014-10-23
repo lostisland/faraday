@@ -57,10 +57,10 @@ conn.get do |req|
 end
 ```
 
-If you don't need to set up anything, you can roll with just the bare minimum:
+If you don't need to set up anything, you can roll with just the default middleware
+stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.com/lostisland/faraday/blob/master/lib/faraday/rack_builder.rb)):
 
 ```ruby
-# using the default stack:
 response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 ```
 
