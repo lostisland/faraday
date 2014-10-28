@@ -57,7 +57,7 @@ module Faraday
           :headers => env[:request_headers],
           :body    => read_body(env)
 
-        save_response(env, resp.status.to_i, resp.body, resp.headers)
+        save_response(env, resp.status.to_i, resp.body, resp.headers, resp.reason_phrase)
 
         @app.call env
       rescue ::Excon::Errors::SocketError => err
