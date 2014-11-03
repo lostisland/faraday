@@ -107,11 +107,13 @@ Middleware are classes that implement a `call` instance method. They hook into
 the request/response cycle.
 
 ```ruby
-def call(env)
+def call(request_env)
   # do something with the request
+  # request_env[:request_headers].merge!(...)
 
-  @app.call(env).on_complete do
+  @app.call(request_env).on_complete do |response_env|
     # do something with the response
+    # response_env[:response_headers].merge!(...)
   end
 end
 ```
