@@ -69,7 +69,6 @@ module Faraday
       :UrlEncoded => 'url_encoded',
       :Multipart => 'multipart',
       :Retry => 'retry',
-      :Timeout => 'timeout',
       :Authorization => 'authorization',
       :BasicAuthentication => 'basic_authentication',
       :TokenAuthentication => 'token_authentication',

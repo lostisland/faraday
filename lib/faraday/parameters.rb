@@ -1,15 +1,10 @@
+require "forwardable"
+
 module Faraday
   module NestedParamsEncoder
-    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
-
-    def self.escape(s)
-      s.to_s.gsub(ESCAPE_RE) {|match|
-        '%' + match.unpack('H2' * match.bytesize).join('%').upcase
-      }.tr(' ', '+')
-    end
-
-    def self.unescape(s)
-      CGI.unescape(s.to_s)
+    class << self
+      extend Forwardable
+      def_delegators :'Faraday::Utils', :escape, :unescape
     end
 
     def self.encode(params)
@@ -117,16 +112,9 @@ module Faraday
   end
 
   module FlatParamsEncoder
-    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
-
-    def self.escape(s)
-      return s.to_s.gsub(ESCAPE_RE) {
-        '%' + $&.unpack('H2' * $&.bytesize).join('%').upcase
-      }.tr(' ', '+')
-    end
-
-    def self.unescape(s)
-      CGI.unescape(s.to_s)
+    class << self
+      extend Forwardable
+      def_delegators :'Faraday::Utils', :escape, :unescape
     end
 
     def self.encode(params)

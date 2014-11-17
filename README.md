@@ -57,10 +57,10 @@ conn.get do |req|
 end
 ```
 
-If you don't need to set up anything, you can roll with just the bare minimum:
+If you don't need to set up anything, you can roll with just the default middleware
+stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.com/lostisland/faraday/blob/master/lib/faraday/rack_builder.rb)):
 
 ```ruby
-# using the default stack:
 response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 ```
 
@@ -107,11 +107,13 @@ Middleware are classes that implement a `call` instance method. They hook into
 the request/response cycle.
 
 ```ruby
-def call(env)
+def call(request_env)
   # do something with the request
+  # request_env[:request_headers].merge!(...)
 
-  @app.call(env).on_complete do
+  @app.call(request_env).on_complete do |response_env|
     # do something with the response
+    # response_env[:response_headers].merge!(...)
   end
 end
 ```
