@@ -181,9 +181,7 @@ module Adapters
       def test_timeout_before_open
         conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
         assert_raises Faraday::Error::TimeoutError do
-          conn.get '/slow' do
-            sleep(1)
-          end
+          conn.get '/slow'
         end
       end
 
