@@ -182,7 +182,7 @@ module Adapters
         valid_but_inexistent_host = 'http://10.255.255.1'
         conn = create_connection(
           :url => valid_but_inexistent_host,
-          :request => {:open_timeout => 0}
+          :request => {:open_timeout => 1}
         )
         assert_raises Faraday::Error::TimeoutError do
           conn.get '/slow'
