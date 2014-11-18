@@ -18,9 +18,7 @@ module Faraday
 
         if req = env[:request]
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
-          if req[:open_timeout]
-            session.connect_timeout = req[:open_timeout] > 0 ? req[:open_timeout] : 1
-          end
+          session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
 
           if proxy = req[:proxy]
             proxy_uri = proxy[:uri].dup
