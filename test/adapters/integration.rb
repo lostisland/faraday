@@ -179,7 +179,7 @@ module Adapters
       end
 
       def test_timeout_before_open
-        valid_but_inexistent_host = 'http://127.0.0.255'
+        valid_but_inexistent_host = 'http://10.255.255.254'
         conn = create_connection(
           :url => valid_but_inexistent_host,
           :request => {:open_timeout => 1}
