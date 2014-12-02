@@ -56,7 +56,7 @@ module Faraday
       end
 
       def methods
-        Array(self[:methods] ||= Faraday::Request::Retry::IDEMPOTENT_METHODS)
+        Array(self[:methods] ||= IDEMPOTENT_METHODS)
       end
 
       def retry_if
