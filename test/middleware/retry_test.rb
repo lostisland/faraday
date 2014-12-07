@@ -38,10 +38,22 @@ module Middleware
       assert_equal 2, @times_called
     end
 
+    def test_legacy_max_negative_retries
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      assert_raises(Errno::ETIMEDOUT) { conn(-9).get("/unstable") }
+      assert_equal 1, @times_called
+    end
+
     def test_new_max_retries
       @explode = lambda {|n| raise Errno::ETIMEDOUT }
       assert_raises(Errno::ETIMEDOUT) { conn(:max => 3).get("/unstable") }
       assert_equal 4, @times_called
+    end
+
+    def test_new_max_negative_retries
+      @explode = lambda { |n| raise Errno::ETIMEDOUT }
+      assert_raises(Errno::ETIMEDOUT) { conn(:max => -9).get("/unstable") }
+      assert_equal 1, @times_called
     end
 
     def test_interval
