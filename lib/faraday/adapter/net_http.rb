@@ -25,6 +25,7 @@ module Faraday
       ]
 
       NET_HTTP_EXCEPTIONS << OpenSSL::SSL::SSLError if defined?(OpenSSL)
+      NET_HTTP_EXCEPTIONS << Net::OpenTimeout if defined?(Net::OpenTimeout)
 
       def call(env)
         super
