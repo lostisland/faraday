@@ -18,7 +18,7 @@ module Faraday
     # Public
     def update(obj)
       obj.each do |key, value|
-        if sub_options = self.class.options_for(key)
+        if sub_options = self.class.options_for(key.to_sym)
           value = sub_options.from(value) if value
         elsif Hash === value
           hash = {}
