@@ -19,7 +19,8 @@ We will accept middleware that:
 
 1. is useful to a broader audience, but can be implemented relatively
    simple; and
-2. which isn't already present in [faraday_middleware][] project.
+2. which isn't already present in the [faraday_middleware](https://github.com/lostisland/faraday_middleware/wiki)
+   project.
 
 We will accept adapters that:
 
