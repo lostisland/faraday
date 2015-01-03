@@ -8,13 +8,17 @@ module Middleware
 
     def conn(*retry_args)
       Faraday.new do |b|
+        b.request :multipart
         b.request :retry, *retry_args
         b.adapter :test do |stub|
-          ['get', 'post'].each do |method|
-            stub.send(method, '/unstable') {
+          ['get', 'post', 'put'].each do |method|
+            stub.send(method, '/unstable') do |env|
+              posted_as = env[:request_headers]['Content-Type']
+              [200, {'Content-Type' => posted_as}, env[:body]]
               @times_called += 1
               @explode.call @times_called
-            }
+            end
+
           end
         end
       end
@@ -153,6 +157,21 @@ module Middleware
         conn.post("/unstable")
       }
       assert_equal 1, @times_called
+    end
+
+    def test_retry_should_not_add_multiple_boundary_to_headers
+      @explode = lambda do |n|
+        if n == 1
+          raise 'Error'
+        else
+          nil
+        end
+      end
+      file = Faraday::UploadIO.new(__FILE__, 'text/x-ruby')
+      payload = {:file => file}
+      response = conn(:max => 2, :exceptions => RuntimeError).put('/unstable', payload)
+
+      assert_equal 'multipart/form-data; boundary=-----------RubyMultipartPost', response.env[:request_headers]['Content-Type']
     end
 
   end
