@@ -29,26 +29,27 @@ module Faraday
 
       def call(env)
         super
-        http = net_http_connection(env)
-        configure_ssl(http, env[:ssl]) if env[:url].scheme == 'https' and env[:ssl]
+        with_net_http_connection(env) do |http|
+          configure_ssl(http, env[:ssl]) if env[:url].scheme == 'https' and env[:ssl]
 
-        req = env[:request]
-        http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
-        http.open_timeout = req[:open_timeout]                if req[:open_timeout]
+          req = env[:request]
+          http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
+          http.open_timeout = req[:open_timeout]                if req[:open_timeout]
 
-        begin
-          http_response = perform_request(http, env)
-        rescue *NET_HTTP_EXCEPTIONS => err
-          if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
-            raise Faraday::SSLError, err
-          else
-            raise Error::ConnectionFailed, err
+          begin
+            http_response = perform_request(http, env)
+          rescue *NET_HTTP_EXCEPTIONS => err
+            if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
+              raise Faraday::SSLError, err
+            else
+              raise Error::ConnectionFailed, err
+            end
           end
-        end
 
-        save_response(env, http_response.code.to_i, http_response.body || '') do |response_headers|
-          http_response.each_header do |key, value|
-            response_headers[key] = value
+          save_response(env, http_response.code.to_i, http_response.body || '') do |response_headers|
+            http_response.each_header do |key, value|
+              response_headers[key] = value
+            end
           end
         end
 
@@ -80,6 +81,10 @@ module Faraday
         else
           http.request create_request(env)
         end
+      end
+
+      def with_net_http_connection(env)
+        yield net_http_connection(env)
       end
 
       def net_http_connection(env)
