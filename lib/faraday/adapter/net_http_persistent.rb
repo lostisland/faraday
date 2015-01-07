@@ -8,7 +8,7 @@ module Faraday
     class NetHttpPersistent < NetHttp
       dependency 'net/http/persistent'
 
-      def net_http_connection(env)
+      def with_net_http_connection(env)
         if proxy = env[:request][:proxy]
           proxy_uri = ::URI::HTTP === proxy[:uri] ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
           proxy_uri.user = proxy_uri.password = nil
@@ -18,7 +18,8 @@ module Faraday
             define_method(:password) { proxy[:password] }
           end if proxy[:user]
         end
-        Net::HTTP::Persistent.new 'Faraday', proxy_uri
+
+        yield Net::HTTP::Persistent.new 'Faraday', proxy_uri
       end
 
       def perform_request(http, env)

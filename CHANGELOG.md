@@ -1,5 +1,9 @@
 # Faraday Changelog
 
+## v0.9.1
+
+* Refactor Net:HTTP adapter so that with_net_http_connection can be overridden to allow pooled connections. (@Ben-M)
+
 ## v0.9.0
 
 * Add HTTPClient adapter (@hakanensari)
