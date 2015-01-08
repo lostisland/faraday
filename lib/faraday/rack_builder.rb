@@ -172,7 +172,8 @@ module Faraday
 
     # ENV Keys
     # :method - a symbolized request method (:get, :post)
-    # :body   - the request body that will eventually be converted to a string.
+    # :request_body - the request body that will eventually be converted to a string.
+    # :response_body - the response body
     # :url    - URI instance for the current request.
     # :status           - HTTP response status code
     # :request_headers  - hash of HTTP Headers to be sent to the server
@@ -187,7 +188,7 @@ module Faraday
     #     :password   - Proxy server password
     # :ssl - Hash of options for configuring SSL requests.
     def build_env(connection, request)
-      Env.new(request.method, request.body,
+      Env.new(request.method, request.request_body, nil,
         connection.build_exclusive_url(request.path, request.params),
         request.options, request.headers, connection.ssl,
         connection.parallel_manager)

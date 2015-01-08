@@ -6,10 +6,10 @@ module Faraday
   #     req.headers['b'] = '2' # Header
   #     req.params['c']  = '3' # GET Param
   #     req['b']         = '2' # also Header
-  #     req.body = 'abc'
+  #     req.request_body = 'abc'
   #   end
   #
-  class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
+  class Request < Struct.new(:method, :path, :params, :headers, :request_body, :options)
     extend MiddlewareRegistry
 
     register_middleware File.expand_path('../request', __FILE__),
@@ -69,7 +69,8 @@ module Faraday
 
     # ENV Keys
     # :method - a symbolized request method (:get, :post)
-    # :body   - the request body that will eventually be converted to a string.
+    # :request_body - the request body that will eventually be converted to a string.
+    # :response_body - the response body
     # :url    - URI instance for the current request.
     # :status           - HTTP response status code
     # :request_headers  - hash of HTTP Headers to be sent to the server
@@ -84,7 +85,7 @@ module Faraday
     #     :password   - Proxy server password
     # :ssl - Hash of options for configuring SSL requests.
     def to_env(connection)
-      Env.new(method, body, connection.build_exclusive_url(path, params),
+      Env.new(method, request_body, nil, connection.build_exclusive_url(path, params),
         options, headers, connection.ssl, connection.parallel_manager)
     end
   end

@@ -10,7 +10,7 @@ module Faraday
     def call(env)
       match_content_type(env) do |data|
         params = Faraday::Utils::ParamsHash[data]
-        env.body = params.to_query(env.params_encoder)
+        env.request_body = params.to_query(env.params_encoder)
       end
       @app.call env
     end
@@ -18,13 +18,13 @@ module Faraday
     def match_content_type(env)
       if process_request?(env)
         env.request_headers[CONTENT_TYPE] ||= self.class.mime_type
-        yield(env.body) unless env.body.respond_to?(:to_str)
+        yield(env.request_body) unless env.request_body.respond_to?(:to_str)
       end
     end
 
     def process_request?(env)
       type = request_type(env)
-      env.body and (type.empty? or type == self.class.mime_type)
+      env.request_body and (type.empty? or type == self.class.mime_type)
     end
 
     def request_type(env)

@@ -33,7 +33,7 @@ module Middleware
 
       faraday = conn
       res = faraday.get '/'
-      assert_equal 'ok', res.body
+      assert_equal 'ok', res.response_body
 
       assert_equal 1, @instrumenter.instrumentations.size
       name, env = @instrumenter.instrumentations.first
@@ -46,7 +46,7 @@ module Middleware
 
       faraday = conn :name => 'booya'
       res = faraday.get '/'
-      assert_equal 'ok', res.body
+      assert_equal 'ok', res.response_body
 
       assert_equal 1, @instrumenter.instrumentations.size
       name, env = @instrumenter.instrumentations.first

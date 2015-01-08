@@ -73,7 +73,7 @@ module Faraday
 
       # TODO: support streaming requests
       def read_body(env)
-        env[:body].respond_to?(:read) ? env[:body].read : env[:body]
+        env[:request_body].respond_to?(:read) ? env[:request_body].read : env[:request_body]
       end
     end
   end

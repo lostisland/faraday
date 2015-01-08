@@ -35,9 +35,9 @@ class EnvTest < Faraday::TestCase
 
   def test_request_create_stores_body
     env = make_env do |req|
-      req.body = 'hi'
+      req.request_body = 'hi'
     end
-    assert_equal 'hi', env.body
+    assert_equal 'hi', env.request_body
   end
 
   def test_global_request_options
@@ -151,7 +151,7 @@ end
 class ResponseTest < Faraday::TestCase
   def setup
     @env = Faraday::Env.from \
-      :status => 404, :body => 'yikes',
+      :status => 404, :response_body => 'yikes',
       :response_headers => {'Content-Type' => 'text/plain'}
     @response = Faraday::Response.new @env
   end
@@ -168,10 +168,10 @@ class ResponseTest < Faraday::TestCase
 
   def test_body_is_parsed_on_finish
     response = Faraday::Response.new
-    response.on_complete { |env| env[:body] = env[:body].upcase }
+    response.on_complete { |env| env[:response_body] = env[:response_body].upcase }
     response.finish(@env)
 
-    assert_equal "YIKES", response.body
+    assert_equal "YIKES", response.response_body
   end
 
   def test_not_success
@@ -183,7 +183,7 @@ class ResponseTest < Faraday::TestCase
   end
 
   def test_body
-    assert_equal 'yikes', @response.body
+    assert_equal 'yikes', @response.response_body
   end
 
   def test_headers
@@ -192,8 +192,8 @@ class ResponseTest < Faraday::TestCase
   end
 
   def test_apply_request
-    @response.apply_request :body => 'a=b', :method => :post
-    assert_equal 'yikes', @response.body
+    @response.apply_request :request_body => 'a=b', :method => :post
+    assert_equal 'yikes', @response.response_body
     assert_equal :post, @response.env[:method]
   end
 
@@ -204,7 +204,7 @@ class ResponseTest < Faraday::TestCase
 
     loaded = Marshal.load Marshal.dump(@response)
     assert_nil loaded.env[:params]
-    assert_equal %w[body response_headers status], loaded.env.keys.map { |k| k.to_s }.sort
+    assert_equal %w[response_body response_headers status], loaded.env.keys.map { |k| k.to_s }.sort
   end
 
   def test_hash
@@ -213,6 +213,6 @@ class ResponseTest < Faraday::TestCase
     assert_equal @env.to_hash, hash
     assert_equal hash[:status], @response.status
     assert_equal hash[:response_headers], @response.headers
-    assert_equal hash[:body], @response.body
+    assert_equal hash[:response_body], @response.response_body
   end
 end

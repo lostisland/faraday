@@ -9,15 +9,15 @@ module Faraday
       match_content_type(env) do |params|
         env.request.boundary ||= DEFAULT_BOUNDARY
         env.request_headers[CONTENT_TYPE] += "; boundary=#{env.request.boundary}"
-        env.body = create_multipart(env, params)
+        env.request_body = create_multipart(env, params)
       end
       @app.call env
     end
 
     def process_request?(env)
       type = request_type(env)
-      env.body.respond_to?(:each_key) and !env.body.empty? and (
-        (type.empty? and has_multipart?(env.body)) or
+      env.request_body.respond_to?(:each_key) and !env.request_body.empty? and (
+        (type.empty? and has_multipart?(env.request_body)) or
         type == self.class.mime_type
       )
     end

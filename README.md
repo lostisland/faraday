@@ -28,7 +28,7 @@ end
 ## GET ##
 
 response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
-response.body
+response.response_body
 
 conn.get '/nigiri', { :name => 'Maguro' }   # GET http://sushi.com/nigiri?name=Maguro
 
@@ -45,7 +45,7 @@ conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi
 conn.post do |req|
   req.url '/nigiri'
   req.headers['Content-Type'] = 'application/json'
-  req.body = '{ "name": "Unagi" }'
+  req.request_body = '{ "name": "Unagi" }'
 end
 
 ## Per-request options ##
@@ -129,12 +129,12 @@ later, response. Some keys are:
 # request phase
 :method - :get, :post, ...
 :url    - URI for the current request; also contains GET parameters
-:body   - POST parameters for :post/:put requests
+:request_body   - POST parameters for :post/:put requests
 :request_headers
 
 # response phase
 :status - HTTP response status code, such as 200
-:body   - the response body
+:response_body   - the response body
 :response_headers
 ```
 
@@ -159,11 +159,11 @@ end
 stubs.get('/uni') { |env| [ 200, {}, 'urchin' ]}
 
 resp = test.get '/tamago'
-resp.body # => 'egg'
+resp.response_body # => 'egg'
 resp = test.get '/ebi'
-resp.body # => 'shrimp'
+resp.response_body # => 'shrimp'
 resp = test.get '/uni'
-resp.body # => 'urchin'
+resp.response_body # => 'urchin'
 resp = test.get '/else' #=> raises "no such stub" error
 
 # If you like, you can treat your stubs as mocks by verifying that all of

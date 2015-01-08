@@ -28,10 +28,10 @@ module Faraday
 
         # TODO Don't stream yet.
         # https://github.com/nahi/httpclient/pull/90
-        env[:body] = env[:body].read if env[:body].respond_to? :read
+        env[:request_body] = env[:request_body].read if env[:request_body].respond_to? :read
 
         resp = client.request env[:method], env[:url],
-          :body   => env[:body],
+          :body   => env[:request_body],
           :header => env[:request_headers]
 
         save_response env, resp.status, resp.body, resp.headers

@@ -26,7 +26,7 @@ module Faraday
         end
 
         def read_body(env)
-          body = env[:body]
+          body = env[:request_body]
           body.respond_to?(:read) ? body.read : body
         end
 

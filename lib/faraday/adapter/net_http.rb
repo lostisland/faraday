@@ -61,21 +61,21 @@ module Faraday
       def create_request(env)
         request = Net::HTTPGenericRequest.new \
           env[:method].to_s.upcase,    # request method
-          !!env[:body],                # is there request body
+          !!env[:request_body],        # is there request body
           :head != env[:method],       # is there response body
           env[:url].request_uri,       # request uri path
           env[:request_headers]        # request headers
 
-        if env[:body].respond_to?(:read)
-          request.body_stream = env[:body]
+        if env[:request_body].respond_to?(:read)
+          request.body_stream = env[:request_body]
         else
-          request.body = env[:body]
+          request.body = env[:request_body]
         end
         request
       end
 
       def perform_request(http, env)
-        if :get == env[:method] and !env[:body]
+        if :get == env[:method] and !env[:request_body]
           # prefer `get` to `request` because the former handles gzip (ruby 1.9)
           http.get env[:url].request_uri, env[:request_headers]
         else

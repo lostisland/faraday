@@ -13,7 +13,7 @@ module Faraday
       # Override this to modify the environment after the response has finished.
       # Calls the `parse` method if defined
       def on_complete(env)
-        env.body = parse(env.body) if respond_to?(:parse) && env.parse_body?
+        env.response_body = parse(env.response_body) if respond_to?(:parse) && env.parse_body?
       end
     end
 
@@ -42,8 +42,8 @@ module Faraday
     end
     def_delegator :headers, :[]
 
-    def body
-      finished? ? env.body : nil
+    def response_body
+      finished? ? env.response_body : nil
     end
 
     def finished?
@@ -73,7 +73,7 @@ module Faraday
     # because @on_complete_callbacks cannot be marshalled
     def marshal_dump
       !finished? ? nil : {
-        :status => @env.status, :body => @env.body,
+        :status => @env.status, :response_body => @env.response_body,
         :response_headers => @env.response_headers
       }
     end

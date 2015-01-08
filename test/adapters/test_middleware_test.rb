@@ -21,22 +21,22 @@ module Adapters
     end
 
     def test_middleware_with_simple_path_sets_body
-      assert_equal 'hello', @resp.body
+      assert_equal 'hello', @resp.response_body
     end
 
     def test_middleware_can_be_called_several_times
-      assert_equal 'hello', @conn.get("/hello").body
+      assert_equal 'hello', @conn.get("/hello").response_body
     end
 
     def test_middleware_with_get_params
       @stubs.get('/param?a=1') { [200, {}, 'a'] }
-      assert_equal 'a', @conn.get('/param?a=1').body
+      assert_equal 'a', @conn.get('/param?a=1').response_body
     end
 
     def test_middleware_ignores_unspecified_get_params
       @stubs.get('/optional?a=1') { [200, {}, 'a'] }
-      assert_equal 'a', @conn.get('/optional?a=1&b=1').body
-      assert_equal 'a', @conn.get('/optional?a=1').body
+      assert_equal 'a', @conn.get('/optional?a=1&b=1').response_body
+      assert_equal 'a', @conn.get('/optional?a=1').response_body
       assert_raises Faraday::Adapter::Test::Stubs::NotFound do
         @conn.get('/optional')
       end
@@ -45,15 +45,15 @@ module Adapters
     def test_middleware_with_http_headers
       @stubs.get('/yo', { 'X-HELLO' => 'hello' }) { [200, {}, 'a'] }
       @stubs.get('/yo') { [200, {}, 'b'] }
-      assert_equal 'a', @conn.get('/yo') { |env| env.headers['X-HELLO'] = 'hello' }.body
-      assert_equal 'b', @conn.get('/yo').body
+      assert_equal 'a', @conn.get('/yo') { |env| env.headers['X-HELLO'] = 'hello' }.response_body
+      assert_equal 'b', @conn.get('/yo').response_body
     end
 
     def test_middleware_allow_different_outcomes_for_the_same_request
       @stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
       @stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'world'] }
-      assert_equal 'hello', @conn.get("/hello").body
-      assert_equal 'world', @conn.get("/hello").body
+      assert_equal 'hello', @conn.get("/hello").response_body
+      assert_equal 'world', @conn.get("/hello").response_body
     end
 
     def test_yields_env_to_stubs
@@ -66,7 +66,7 @@ module Adapters
       end
 
       @conn.headers['Accept'] = 'text/plain'
-      assert_equal 'a', @conn.get('http://foo.com/hello?a=1').body
+      assert_equal 'a', @conn.get('http://foo.com/hello?a=1').response_body
     end
 
     def test_parses_params_with_default_encoder
@@ -75,7 +75,7 @@ module Adapters
         [200, {}, 'a']
       end
 
-      assert_equal 'a', @conn.get('http://foo.com/hello?a[b]=1').body
+      assert_equal 'a', @conn.get('http://foo.com/hello?a[b]=1').response_body
     end
 
     def test_parses_params_with_nested_encoder
@@ -85,7 +85,7 @@ module Adapters
       end
 
       @conn.options.params_encoder = Faraday::NestedParamsEncoder
-      assert_equal 'a', @conn.get('http://foo.com/hello?a[b]=1').body
+      assert_equal 'a', @conn.get('http://foo.com/hello?a[b]=1').response_body
     end
 
     def test_parses_params_with_flat_encoder
@@ -95,7 +95,7 @@ module Adapters
       end
 
       @conn.options.params_encoder = Faraday::FlatParamsEncoder
-      assert_equal 'a', @conn.get('http://foo.com/hello?a[b]=1').body
+      assert_equal 'a', @conn.get('http://foo.com/hello?a[b]=1').response_body
     end
 
     def test_raises_an_error_if_no_stub_is_found_for_request
