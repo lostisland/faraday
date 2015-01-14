@@ -17,5 +17,7 @@ module Adapters
         assert_equal host, conn.options[:bind][:host]
       end
     end
+
+    Integration.apply(self, :Compression)
   end
 end
