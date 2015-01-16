@@ -179,6 +179,18 @@ module Adapters
         end
       end
 
+      def test_timeout_before_open
+        valid_but_inexistent_host = 'http://127.0.0.255'
+
+        conn = create_connection(
+          :url => valid_but_inexistent_host,
+          :request => { :open_timeout => 0.01 }
+        )
+        assert_raises Faraday::Error::TimeoutError do
+          conn.get '/slow'
+        end
+      end
+
       def test_connection_error
         assert_raises Faraday::Error::ConnectionFailed do
           get 'http://localhost:4'
@@ -239,7 +251,7 @@ module Adapters
         end
 
         server = self.class.live_server
-        url = '%s://%s:%d' % [server.scheme, server.host, server.port]
+        url = options[:url] || '%s://%s:%d' % [server.scheme, server.host, server.port]
 
         options[:ssl] ||= {}
         options[:ssl][:ca_file] ||= ENV['SSL_FILE']
