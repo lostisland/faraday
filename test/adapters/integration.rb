@@ -179,10 +179,11 @@ module Adapters
       end
 
       def test_timeout_before_open
-        valid_but_inexistent_host = 'http://10.255.255.254'
+        valid_but_inexistent_host = 'http://127.0.0.255'
+
         conn = create_connection(
           :url => valid_but_inexistent_host,
-          :request => {:open_timeout => 1}
+          :request => { :open_timeout => 0.01 }
         )
         assert_raises Faraday::Error::TimeoutError do
           conn.get '/slow'
