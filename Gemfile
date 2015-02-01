@@ -19,7 +19,7 @@ group :test do
   gem 'rest-client', '~> 1.6.0', :platforms => [:jruby, :ruby_18]
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
-  gem 'typhoeus', '~> 0.3.3', :platforms => :ruby
+  gem 'typhoeus', '~> 0.3.3', :platforms => [:ruby_18, :ruby_19, :ruby_20, :ruby_21]
 end
 
 gemspec
