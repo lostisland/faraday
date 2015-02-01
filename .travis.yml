@@ -10,8 +10,11 @@ rvm:
   - 1.9.3
   - 2.0.0
   - 2.1
+  - 2.2
   - jruby-18mode
   - jruby-19mode
+  - jruby-20mode
+  - jruby-21mode
   - jruby-head
   - rbx-2
 
@@ -21,6 +24,8 @@ matrix:
     #  Internal Error (sharedRuntime.cpp:843)"
     - rvm: jruby-18mode
     - rvm: jruby-19mode
+    - rvm: jruby-20mode
+    - rvm: jruby-21mode
     - rvm: jruby-head
     # random crashes
     - rvm: rbx-2
