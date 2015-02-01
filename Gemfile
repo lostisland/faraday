@@ -15,7 +15,7 @@ group :test do
   gem 'rack-test', '>= 0.6', :require => 'rack/test'
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
-  gem 'typhoeus', '~> 0.3.3', :platforms => :ruby
+  gem 'typhoeus', '~> 0.3.3', :platforms => [:ruby_18, :ruby_19, :ruby_20, :ruby_21]
 end
 
 gemspec

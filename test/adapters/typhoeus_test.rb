@@ -15,7 +15,7 @@ module Adapters
 
       # inconsistent outcomes ranging from successful response to connection error
       undef :test_proxy_auth_fail if ssl_mode?
-    end unless jruby?
+    end unless jruby? or ruby_22_plus?
 
   end
 end
