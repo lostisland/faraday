@@ -22,7 +22,7 @@ module Adapters
         assert_equal host, conn.options[:bind][:host]
       end
 
-    end unless jruby?
+    end unless jruby? or ruby_22?
   end
 end
 
