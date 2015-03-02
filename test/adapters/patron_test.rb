@@ -11,7 +11,7 @@ module Adapters
 
       # https://github.com/toland/patron/issues/52
       undef :test_GET_with_body
-    end unless jruby?
+    end unless RUBY_VERSION < '1.9' or jruby?
 
   end
 end
