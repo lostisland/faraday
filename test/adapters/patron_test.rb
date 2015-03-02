@@ -14,7 +14,7 @@ module Adapters
 
       # no support for SSL peer verification
       undef :test_GET_ssl_fails_with_bad_cert if ssl_mode?
-    end unless jruby?
+    end  unless RUBY_VERSION < '1.9' or jruby?
 
   end
 end
