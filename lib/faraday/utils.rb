@@ -149,8 +149,8 @@ module Faraday
         self
       end
 
-      def to_query(encoder = nil)
-        (encoder || Utils.default_params_encoder).encode(self)
+      def to_query(encoder = nil, sort_params = true)
+        (encoder || Utils.default_params_encoder).encode(self, sort_params)
       end
 
       private
