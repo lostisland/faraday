@@ -349,7 +349,7 @@ module Faraday
 
       query_values = params.dup.merge_query(uri.query, options.params_encoder)
       query_values.update extra_params if extra_params
-      uri.query = query_values.empty? ? nil : query_values.to_query(options.params_encoder)
+      uri.query = query_values.empty? ? nil : query_values.to_query(options.params_encoder, @sort_params)
 
       uri
     end
@@ -389,6 +389,15 @@ module Faraday
       end
     end
 
+    # Indicates whether to sort parameters. By default parameters are sorted.
+    #
+    # conn = Faraday::Connection.new { ... }
+    # conn.sort_params = false
+    #
+    def sort_params=(value)
+      @sort_params = value
+    end
+
     # Internal: Build an absolute URL based on url_prefix.
     #
     # url    - A String or URI-like object
@@ -404,7 +413,7 @@ module Faraday
         base.path = base.path + '/'  # ensure trailing slash
       end
       uri = url ? base + url : base
-      uri.query = params.to_query(options.params_encoder) if params
+      uri.query = params.to_query(options.params_encoder, @sort_params) if params
       uri.query = nil if uri.query and uri.query.empty?
       uri
     end

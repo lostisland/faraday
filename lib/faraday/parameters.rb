@@ -7,7 +7,7 @@ module Faraday
       def_delegators :'Faraday::Utils', :escape, :unescape
     end
 
-    def self.encode(params)
+    def self.encode(params, sort_params = true)
       return nil if params == nil
 
       if !params.is_a?(Array)
@@ -22,7 +22,9 @@ module Faraday
         end
         # Useful default for OAuth and caching.
         # Only to be used for non-Array inputs. Arrays should preserve order.
-        params.sort!
+        if sort_params
+          params.sort!
+        end
       end
 
       # Helper lambda
@@ -117,7 +119,7 @@ module Faraday
       def_delegators :'Faraday::Utils', :escape, :unescape
     end
 
-    def self.encode(params)
+    def self.encode(params, sort_params = true)
       return nil if params == nil
 
       if !params.is_a?(Array)
@@ -132,7 +134,9 @@ module Faraday
         end
         # Useful default for OAuth and caching.
         # Only to be used for non-Array inputs. Arrays should preserve order.
-        params.sort!
+        if sort_params
+          params.sort!
+        end
       end
 
       # The params have form [['key1', 'value1'], ['key2', 'value2']].
