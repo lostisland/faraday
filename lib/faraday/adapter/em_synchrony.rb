@@ -70,6 +70,8 @@ module Faraday
         else
           raise Error::ConnectionFailed, err
         end
+      rescue Errno::ETIMEDOUT => err
+        raise Error::TimeoutError, err
       rescue RuntimeError => err
         if err.message == "connection closed by server"
           raise Error::ConnectionFailed, err
