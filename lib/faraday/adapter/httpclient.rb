@@ -10,6 +10,9 @@ module Faraday
       def call(env)
         super
 
+        # enable compression
+        client.transparent_gzip_decompression = true
+
         if req = env[:request]
           if proxy = req[:proxy]
             configure_proxy proxy

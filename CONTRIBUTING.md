@@ -28,9 +28,9 @@ We will accept adapters that:
 2. if they have features not present in included adapters.
 
 We are pushing towards a 1.0 release, when we will have to follow [Semantic
-Versioning][semver].  If your patch includes changes to break compatiblitity,
+Versioning][semver].  If your patch includes changes to break compatibility,
 note that so we can add it to the [Changelog][].
 
 [semver]:    http://semver.org/
-[changelog]: https://github.com/technoweenie/faraday/wiki/Changelog
-[faraday_middleware]: https://github.com/pengwynn/faraday_middleware/wiki
+[changelog]: https://github.com/lostisland/faraday/wiki/Changelog
+[faraday_middleware]: https://github.com/lostisland/faraday_middleware/wiki

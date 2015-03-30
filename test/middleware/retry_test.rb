@@ -38,10 +38,22 @@ module Middleware
       assert_equal 2, @times_called
     end
 
+    def test_legacy_max_negative_retries
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      assert_raises(Errno::ETIMEDOUT) { conn(-9).get("/unstable") }
+      assert_equal 1, @times_called
+    end
+
     def test_new_max_retries
       @explode = lambda {|n| raise Errno::ETIMEDOUT }
       assert_raises(Errno::ETIMEDOUT) { conn(:max => 3).get("/unstable") }
       assert_equal 4, @times_called
+    end
+
+    def test_new_max_negative_retries
+      @explode = lambda { |n| raise Errno::ETIMEDOUT }
+      assert_raises(Errno::ETIMEDOUT) { conn(:max => -9).get("/unstable") }
+      assert_equal 1, @times_called
     end
 
     def test_interval
@@ -126,7 +138,7 @@ module Middleware
       assert_equal 1, @times_called
     end
 
-    def test_should_not_call_retry_if_for_idempotent_methods
+    def test_should_not_call_retry_if_for_idempotent_methods_if_methods_unspecified
       @explode = lambda {|n| raise Errno::ETIMEDOUT }
       check = lambda { |env,exception| raise "this should have never been called" }
       assert_raises(Errno::ETIMEDOUT) {
@@ -135,12 +147,30 @@ module Middleware
       assert_equal 3, @times_called
     end
 
-    def test_should_not_retry_for_non_idempotent_method
+    def test_should_not_retry_for_non_idempotent_method_if_methods_unspecified
       @explode = lambda {|n| raise Errno::ETIMEDOUT }
       assert_raises(Errno::ETIMEDOUT) {
         conn.post("/unstable")
       }
       assert_equal 1, @times_called
+    end
+
+    def test_should_not_call_retry_if_for_specified_methods
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      check = lambda { |env,exception| raise "this should have never been called" }
+      assert_raises(Errno::ETIMEDOUT) {
+        conn(:retry_if => check, :methods => [:post]).post("/unstable")
+      }
+      assert_equal 3, @times_called
+    end
+
+    def test_should_call_retry_if_for_empty_method_list
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      check = lambda { |env,exception| @times_called < 2 }
+      assert_raises(Errno::ETIMEDOUT) {
+        conn(:retry_if => check, :methods => []).get("/unstable")
+      }
+      assert_equal 2, @times_called
     end
 
   end

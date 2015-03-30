@@ -22,7 +22,8 @@ module Faraday
 
     IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
 
-    class Options < Faraday::Options.new(:max, :interval, :interval_randomness, :backoff_factor, :exceptions, :retry_if)
+    class Options < Faraday::Options.new(:max, :interval, :interval_randomness, :backoff_factor,
+                                         :exceptions, :methods, :retry_if)
       DEFAULT_CHECK = lambda { |env,exception| false }
 
       def self.from(value)
@@ -54,6 +55,10 @@ module Faraday
                                      Error::TimeoutError])
       end
 
+      def methods
+        Array(self[:methods] ||= IDEMPOTENT_METHODS)
+      end
+
       def retry_if
         self[:retry_if] ||= DEFAULT_CHECK
       end
@@ -75,6 +80,9 @@ module Faraday
     #                       given as Class, Module, or String. (default:
     #                       [Errno::ETIMEDOUT, Timeout::Error,
     #                       Error::TimeoutError])
+    # methods             - A list of HTTP methods to retry without calling retry_if.  Pass
+    #                       an empty Array to call retry_if for all exceptions.
+    #                       (defaults to the idempotent HTTP methods in IDEMPOTENT_METHODS)
     # retry_if            - block that will receive the env object and the exception raised
     #                       and should decide if the code should retry still the action or
     #                       not independent of the retry count. This would be useful
@@ -133,7 +141,7 @@ module Faraday
     private
 
     def retry_request?(env, exception)
-      IDEMPOTENT_METHODS.include?(env[:method]) || @options.retry_if.call(env, exception)
+      @options.methods.include?(env[:method]) || @options.retry_if.call(env, exception)
     end
 
   end
