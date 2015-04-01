@@ -83,8 +83,11 @@ module Faraday
       proxy(options.fetch(:proxy) {
         uri = ENV['http_proxy']
         if uri && !uri.empty?
-          uri = 'http://' + uri if uri !~ /^http/i
-          uri
+          no_proxy = ENV['no_proxy']
+          if no_proxy.nil? || !no_proxy.split(",").include?(self.host)
+            uri = 'http://' + uri if uri !~ /^http/i
+            uri
+          end
         end
       })
 
