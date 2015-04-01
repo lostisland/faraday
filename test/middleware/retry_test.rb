@@ -173,5 +173,19 @@ module Middleware
       assert_equal 2, @times_called
     end
 
+    def test_adds_info_to_env
+      @explode = lambda do |n|
+        if n <= 2
+          puts "raise!"
+          raise Errno::ETIMEDOUT
+        else
+          [200, {}, ""]
+        end
+      end
+
+      response = conn.get("/unstable")
+      assert_equal 2, response.env[:retries]
+    end
+
   end
 end
