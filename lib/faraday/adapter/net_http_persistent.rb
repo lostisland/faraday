@@ -23,6 +23,10 @@ module Faraday
       end
 
       def perform_request(http, env)
+        # see: http://docs.seattlerb.org/net-http-persistent/Net/HTTP/Persistent.html#attribute-i-idle_timeout
+        req = env[:request]
+        http.idle_timeout = req[:idle_timeout] if req[:idle_timeout]
+
         http.request env[:url], create_request(env)
       rescue Net::HTTP::Persistent::Error => error
         if error.message.include? 'Timeout'
