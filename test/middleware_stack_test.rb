@@ -143,6 +143,15 @@ class MiddlewareStackTest < Faraday::TestCase
     assert_match "zomg/i_dont/exist", err.message
   end
 
+  def test_env_stored_on_middleware_response_has_reference_to_the_response
+    env = response = nil
+    build_stack Struct.new(:app) {
+      define_method(:call) { |e| env, response = e, app.call(e) }
+    }
+    @conn.get("/")
+    assert_same env.response, response.env.response
+  end
+
   private
 
   # make a stack with test adapter that reflects the order of middleware
