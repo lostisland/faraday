@@ -200,6 +200,20 @@ class TestConnection < Faraday::TestCase
     assert_equal "http://sushi.com/nigiri?a=1&b=2&c=3", url.to_s
   end
 
+  def test_request_header_change_does_not_modify_connection_header
+    connection = Faraday.new(:url => "https://asushi.com/sake.html")
+    connection.headers = { "Authorization"=>"token abc123" }
+
+    request = connection.build_request(:get)
+    request.headers.delete("Authorization")
+
+    assert_equal connection.headers.keys.sort, ["Authorization"]
+    assert connection.headers.include?("Authorization")
+
+    assert_equal request.headers.keys.sort, []
+    assert !request.headers.include?("Authorization")
+  end
+
   def test_env_url_parses_url_params_into_query
     uri = env_url("http://sushi.com/sake.html", 'a[b]' => '1 + 2')
     assert_equal "a%5Bb%5D=1+%2B+2", uri.query
