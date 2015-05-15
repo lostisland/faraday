@@ -212,6 +212,20 @@ class TestConnection < Faraday::TestCase
     assert_equal '/sake.html', uri.path
   end
 
+  def test_request_header_change_does_not_modify_connection_header
+    connection = Faraday.new(:url => "https://asushi.com/sake.html")
+    connection.headers = { "Authorization"=>"token abc123" }
+
+    request = connection.build_request(:get)
+    request.headers.delete("Authorization")
+
+    assert_equal connection.headers.keys.sort, ["Authorization"]
+    assert connection.headers.include?("Authorization")
+
+    assert_equal request.headers.keys.sort, []
+    assert !request.headers.include?("Authorization")
+  end
+
   def test_proxy_accepts_string
     with_env 'http_proxy', "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new

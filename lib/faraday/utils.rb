@@ -12,6 +12,12 @@ module Faraday
         self.update hash
       end
 
+      # on dup/clone, we need to duplicate @names hash
+      def initialize_copy(other)
+        super
+        @names = other.names.dup
+      end
+
       # symbol -> string mapper + cache
       KeyMap = Hash.new do |map, key|
         map[key] = if key.respond_to?(:to_str) then key
@@ -83,6 +89,12 @@ module Faraday
             else self[key] = value
             end
           }
+      end
+
+      protected
+
+      def names
+        @names
       end
     end
 
