@@ -11,53 +11,53 @@ module Middleware
         b.request :retry, *retry_args
         b.adapter :test do |stub|
           ['get', 'post'].each do |method|
-            stub.send(method, '/unstable') {
+            stub.send(method, '/unstable') do |env|
               @times_called += 1
-              @explode.call @times_called
-            }
+              @explode.call(env, @times_called)
+            end
           end
         end
       end
     end
 
     def test_unhandled_error
-      @explode = lambda {|n| raise "boom!" }
+      @explode = lambda {|env, number_of_times_called| raise "boom!" }
       assert_raises(RuntimeError) { conn.get("/unstable") }
       assert_equal 1, @times_called
     end
 
     def test_handled_error
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       assert_raises(Errno::ETIMEDOUT) { conn.get("/unstable") }
       assert_equal 3, @times_called
     end
 
     def test_legacy_max_retries
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       assert_raises(Errno::ETIMEDOUT) { conn(1).get("/unstable") }
       assert_equal 2, @times_called
     end
 
     def test_legacy_max_negative_retries
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       assert_raises(Errno::ETIMEDOUT) { conn(-9).get("/unstable") }
       assert_equal 1, @times_called
     end
 
     def test_new_max_retries
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       assert_raises(Errno::ETIMEDOUT) { conn(:max => 3).get("/unstable") }
       assert_equal 4, @times_called
     end
 
     def test_new_max_negative_retries
-      @explode = lambda { |n| raise Errno::ETIMEDOUT }
+      @explode = lambda { |env, number_of_times_called| raise Errno::ETIMEDOUT }
       assert_raises(Errno::ETIMEDOUT) { conn(:max => -9).get("/unstable") }
       assert_equal 1, @times_called
     end
 
     def test_interval
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       started  = Time.now
       assert_raises(Errno::ETIMEDOUT) {
         conn(:max => 2, :interval => 0.1).get("/unstable")
@@ -113,15 +113,32 @@ module Middleware
     end
 
     def test_custom_exceptions
-      @explode = lambda {|n| raise "boom!" }
+      @explode = lambda {|env, number_of_times_called| raise "boom!" }
       assert_raises(RuntimeError) {
         conn(:exceptions => StandardError).get("/unstable")
       }
       assert_equal 3, @times_called
     end
 
+    def test_should_retry_with_body_if_block_returns_true_for_non_idempotent_request
+      body = { :foo => :bar }
+      @explode = lambda do |env, number_of_times_called|
+        if env[:body] != body
+          raise Exception, "Body of POST wasn't preserved!"
+        else
+          env[:body] = nil # pretend the response body is now set to nil
+          raise Errno::ETIMEDOUT
+        end
+      end
+      check = lambda { |env,exception| true }
+      assert_raises(Errno::ETIMEDOUT) {
+        conn(:retry_if => check).post("/unstable", body)
+      }
+      assert_equal 3, @times_called
+    end
+
     def test_should_stop_retrying_if_block_returns_false_checking_env
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       check = lambda { |env,exception| env[:method] != :post }
       assert_raises(Errno::ETIMEDOUT) {
         conn(:retry_if => check).post("/unstable")
@@ -130,7 +147,7 @@ module Middleware
     end
 
     def test_should_stop_retrying_if_block_returns_false_checking_exception
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       check = lambda { |env,exception| !exception.kind_of?(Errno::ETIMEDOUT) }
       assert_raises(Errno::ETIMEDOUT) {
         conn(:retry_if => check).post("/unstable")
@@ -139,7 +156,7 @@ module Middleware
     end
 
     def test_should_not_call_retry_if_for_idempotent_methods_if_methods_unspecified
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       check = lambda { |env,exception| raise "this should have never been called" }
       assert_raises(Errno::ETIMEDOUT) {
         conn(:retry_if => check).get("/unstable")
@@ -148,7 +165,7 @@ module Middleware
     end
 
     def test_should_not_retry_for_non_idempotent_method_if_methods_unspecified
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       assert_raises(Errno::ETIMEDOUT) {
         conn.post("/unstable")
       }
@@ -156,7 +173,7 @@ module Middleware
     end
 
     def test_should_not_call_retry_if_for_specified_methods
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       check = lambda { |env,exception| raise "this should have never been called" }
       assert_raises(Errno::ETIMEDOUT) {
         conn(:retry_if => check, :methods => [:post]).post("/unstable")
@@ -165,7 +182,7 @@ module Middleware
     end
 
     def test_should_call_retry_if_for_empty_method_list
-      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      @explode = lambda {|env, number_of_times_called| raise Errno::ETIMEDOUT }
       check = lambda { |env,exception| @times_called < 2 }
       assert_raises(Errno::ETIMEDOUT) {
         conn(:retry_if => check, :methods => []).get("/unstable")
