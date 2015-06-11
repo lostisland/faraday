@@ -4,6 +4,7 @@ module Middleware
   class RetryTest < Faraday::TestCase
     def setup
       @times_called = 0
+      @envs = []
     end
 
     def conn(*retry_args)
@@ -11,10 +12,12 @@ module Middleware
         b.request :retry, *retry_args
         b.adapter :test do |stub|
           ['get', 'post'].each do |method|
-            stub.send(method, '/unstable') {
+            stub.send(method, '/unstable') do |env|
               @times_called += 1
+              @envs << env.dup
+              env[:body] = nil # simulate blanking out response body
               @explode.call @times_called
-            }
+            end
           end
         end
       end
@@ -122,19 +125,13 @@ module Middleware
 
     def test_should_retry_with_body_if_block_returns_true_for_non_idempotent_request
       body = { :foo => :bar }
-      @explode = lambda do |env, number_of_times_called|
-        if env[:body] != body
-          raise Exception, "Body of POST wasn't preserved!"
-        else
-          env[:body] = nil # pretend the response body is now set to nil
-          raise Errno::ETIMEDOUT
-        end
-      end
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
       check = lambda { |env,exception| true }
       assert_raises(Errno::ETIMEDOUT) {
         conn(:retry_if => check).post("/unstable", body)
       }
       assert_equal 3, @times_called
+      assert @envs.all? { |env| env[:body] === body }
     end
 
     def test_should_stop_retrying_if_block_returns_false_checking_env
