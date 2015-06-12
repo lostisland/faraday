@@ -56,8 +56,14 @@ module Faraday
         # HAX: helps but doesn't work completely
         # https://github.com/toland/patron/issues/34
         ::Patron::Request::VALID_ACTIONS.tap do |actions|
-          actions << :patch unless actions.include? :patch
-          actions << :options unless actions.include? :options
+          if actions[0].is_a?(Symbol)
+            actions << :patch unless actions.include? :patch
+            actions << :options unless actions.include? :options
+          else
+            # Patron 0.4.20 and up
+            actions << "PATCH" unless actions.include? "PATCH"
+            actions << "OPTIONS" unless actions.include? "OPTIONS"
+          end
         end
       end
 
