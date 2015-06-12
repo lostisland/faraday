@@ -61,6 +61,11 @@ class TestConnection < Faraday::TestCase
     assert_equal({'a' => '1'}, conn.params)
   end
 
+  def test_initialize_stores_default_params_from_uri_like_rack
+    conn = Faraday::Connection.new "http://sushi.com/fish?a[][one]=1&a[][two]=2"
+    assert_equal({"a"=>[{"one"=>"1", "two"=>"2"}]}, conn.params)
+  end
+
   def test_initialize_stores_default_params_from_uri_and_options
     conn = Faraday::Connection.new "http://sushi.com/fish?a=1&b=2", :params => {'a' => 3}
     assert_equal({'a' => 3, 'b' => '2'}, conn.params)
