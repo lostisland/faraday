@@ -64,6 +64,19 @@ stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.
 response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 ```
 
+## Requests with duplicate parameters ##
+
+Sometimes you need to send the same URL parameter multiple times with different values. This requires manually setting the
+parameter encoder and can be done on a per connection basis.
+
+```ruby
+conn.options.params_encoder = Faraday::FlatParamsEncoder
+conn.get do |req|
+  req.params['roll'] = ['california', 'philadelphia']
+end
+# GET 'http://sushi.com?roll=california&roll=philadelphia'
+```
+
 ## Advanced middleware usage
 
 The order in which middleware is stacked is important. Like with Rack, the
