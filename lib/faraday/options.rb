@@ -8,9 +8,10 @@ module Faraday
     end
 
     # Public
-    def each(&block)
+    def each
+      return to_enum(:each) unless block_given?
       members.each do |key|
-        block.call key.to_sym, send(key)
+        yield(key.to_sym, send(key))
       end
     end
 
@@ -42,14 +43,28 @@ module Faraday
     end
 
     # Public
+    def clear
+      members.each { |member| delete(member) }
+    end
+
+    # Public
     def merge(value)
       dup.update(value)
     end
 
     # Public
-    def fetch(key, default = nil)
-      send(key) || send("#{key}=", default ||
-        (block_given? ? Proc.new.call : nil))
+    def fetch(key, *args)
+      unless symbolized_key_set.include?(key.to_sym)
+        key_setter = "#{key}="
+        if args.size > 0
+          send(key_setter, args.first)
+        elsif block_given?
+          send(key_setter, Proc.new.call(key))
+        else
+          raise self.class.fetch_error_class, "key not found: #{key.inspect}"
+        end
+      end
+      send(key)
     end
 
     # Public
@@ -59,8 +74,43 @@ module Faraday
 
     # Public
     def keys
-      members.reject { |m| send(m).nil? }
+      members.reject { |member| send(member).nil? }
     end
+
+    # Public
+    def empty?
+      keys.empty?
+    end
+
+    # Public
+    def each_key
+      return to_enum(:each_key) unless block_given?
+      keys.each do |key|
+        yield(key)
+      end
+    end
+
+    # Public
+    def key?(key)
+      keys.include?(key)
+    end
+
+    alias has_key? key?
+
+    # Public
+    def each_value
+      return to_enum(:each_value) unless block_given?
+      values.each do |value|
+        yield(value)
+      end
+    end
+
+    # Public
+    def value?(value)
+      values.include?(value)
+    end
+
+    alias has_value? value?
 
     # Public
     def to_hash
@@ -75,9 +125,9 @@ module Faraday
     # Internal
     def inspect
       values = []
-      members.each do |m|
-        value = send(m)
-        values << "#{m}=#{value.inspect}" if value
+      members.each do |member|
+        value = send(member)
+        values << "#{member}=#{value.inspect}" if value
       end
       values = values.empty? ? ' (empty)' : (' ' << values.join(", "))
 
@@ -119,10 +169,22 @@ module Faraday
       end
     end
 
+    def symbolized_key_set
+      @symbolized_key_set ||= Set.new(keys.map { |k| k.to_sym })
+    end
+
     def self.inherited(subclass)
       super
       subclass.attribute_options.update(attribute_options)
       subclass.memoized_attributes.update(memoized_attributes)
+    end
+
+    def self.fetch_error_class
+      @fetch_error_class ||= if Object.const_defined?(:KeyError)
+        ::KeyError
+      else
+        ::IndexError
+      end
     end
   end
 
@@ -140,7 +202,7 @@ module Faraday
   end
 
   class SSLOptions < Options.new(:verify, :ca_file, :ca_path, :verify_mode,
-    :cert_store, :client_cert, :client_key, :verify_depth, :version)
+    :cert_store, :client_cert, :client_key, :certificate, :private_key, :verify_depth, :version)
 
     def verify?
       verify != false
@@ -157,8 +219,10 @@ module Faraday
 
     def self.from(value)
       case value
-      when String then value = {:uri => Utils.URI(value)}
-      when URI then value = {:uri => value}
+      when String
+        value = {:uri => Utils.URI(value)}
+      when URI
+        value = {:uri => value}
       when Hash, Options
         if uri = value.delete(:uri)
           value[:uri] = Utils.URI(uri)
@@ -205,25 +269,82 @@ module Faraday
 
     def_delegators :request, :params_encoder
 
+    # Public
+    def [](key)
+      if in_member_set?(key)
+        super(key)
+      else
+        custom_members[key]
+      end
+    end
+
+    # Public
+    def []=(key, value)
+      if in_member_set?(key)
+        super(key, value)
+      else
+        custom_members[key] = value
+      end
+    end
+
+    # Public
     def success?
       SuccessfulStatuses.include?(status)
     end
 
+    # Public
     def needs_body?
       !body && MethodsWithBodies.include?(method)
     end
 
+    # Public
     def clear_body
       request_headers[ContentLength] = '0'
       self.body = ''
     end
 
+    # Public
     def parse_body?
       !StatusesWithoutBody.include?(status)
     end
 
+    # Public
     def parallel?
       !!parallel_manager
+    end
+
+    def inspect
+      attrs = [nil]
+      members.each do |mem|
+        if value = send(mem)
+          attrs << "@#{mem}=#{value.inspect}"
+        end
+      end
+      if !custom_members.empty?
+        attrs << "@custom=#{custom_members.inspect}"
+      end
+      %(#<#{self.class}#{attrs.join(" ")}>)
+    end
+
+    # Internal
+    def custom_members
+      @custom_members ||= {}
+    end
+
+    # Internal
+    if members.first.is_a?(Symbol)
+      def in_member_set?(key)
+        self.class.member_set.include?(key.to_sym)
+      end
+    else
+      def in_member_set?(key)
+        self.class.member_set.include?(key.to_s)
+      end
+    end
+
+    # Internal
+    def self.member_set
+      @member_set ||= Set.new(members)
     end
   end
 end

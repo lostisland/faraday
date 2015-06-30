@@ -63,7 +63,7 @@ module Faraday
     def build(options = {})
       raise_if_locked
       @handlers.clear unless options[:keep]
-      yield self if block_given?
+      yield(self) if block_given?
     end
 
     def [](idx)

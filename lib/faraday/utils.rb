@@ -22,7 +22,8 @@ module Faraday
 
       # symbol -> string mapper + cache
       KeyMap = Hash.new do |map, key|
-        value = if key.respond_to?(:to_str) then key
+        value = if key.respond_to?(:to_str)
+          key
         else
           key.to_s.split('_').            # :user_agent => %w(user agent)
             each { |w| w.capitalize! }.   # => %w(User Agent)
@@ -42,14 +43,20 @@ module Faraday
         k = (@names[k.downcase] ||= k)
         # join multiple values with a comma
         v = v.to_ary.join(', ') if v.respond_to? :to_ary
-        super k, v
+        super(k, v)
+      end
+
+      def fetch(k, *args, &block)
+        k = KeyMap[k]
+        key = @names.fetch(k.downcase, k)
+        super(key, *args, &block)
       end
 
       def delete(k)
         k = KeyMap[k]
         if k = @names[k.downcase]
           @names.delete k.downcase
-          super k
+          super(k)
         end
       end
 
@@ -87,8 +94,10 @@ module Faraday
           map  { |h| h.split(/:\s+/, 2) }.reject { |p| p[0].nil? }. # split key and value, ignore blank lines
           each { |key, value|
             # join multiple values with a comma
-            if self[key] then self[key] << ', ' << value
-            else self[key] = value
+            if self[key]
+              self[key] << ', ' << value
+            else
+              self[key] = value
             end
           }
       end

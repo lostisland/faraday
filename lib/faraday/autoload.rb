@@ -69,10 +69,10 @@ module Faraday
       :UrlEncoded => 'url_encoded',
       :Multipart => 'multipart',
       :Retry => 'retry',
-      :Timeout => 'timeout',
       :Authorization => 'authorization',
       :BasicAuthentication => 'basic_authentication',
-      :TokenAuthentication => 'token_authentication'
+      :TokenAuthentication => 'token_authentication',
+      :Instrumentation => 'instrumentation'
   end
 
   class Response
@@ -82,4 +82,3 @@ module Faraday
       :Logger     => 'logger'
   end
 end
-

@@ -149,7 +149,7 @@ class MiddlewareStackTest < Faraday::TestCase
   def build_stack(*handlers)
     @builder.build do |b|
       handlers.each { |handler| b.use(*handler) }
-      yield b if block_given?
+      yield(b) if block_given?
 
       b.adapter :test do |stub|
         stub.get '/' do |env|

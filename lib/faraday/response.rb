@@ -54,15 +54,15 @@ module Faraday
       if not finished?
         @on_complete_callbacks << Proc.new
       else
-        yield env
+        yield(env)
       end
       return self
     end
 
     def finish(env)
       raise "response already finished" if finished?
-      @env = Env.from(env)
       @on_complete_callbacks.each { |callback| callback.call(env) }
+      @env = Env.from(env)
       return self
     end
 

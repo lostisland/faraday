@@ -88,7 +88,7 @@ module Faraday
         end
       })
 
-      yield self if block_given?
+      yield(self) if block_given?
 
       @headers[:user_agent] ||= "Faraday v#{VERSION}"
     end
@@ -139,7 +139,7 @@ module Faraday
         def #{method}(url = nil, params = nil, headers = nil)
           run_request(:#{method}, url, nil, headers) { |request|
             request.params.update(params) if params
-            yield request if block_given?
+            yield(request) if block_given?
           }
         end
       RUBY
@@ -247,8 +247,10 @@ module Faraday
           h.klass.respond_to?(:supports_parallel?) and h.klass.supports_parallel?
         end
 
-        if handler then handler.klass.setup_parallel_manager
-        elsif block_given? then yield
+        if handler
+          handler.klass.setup_parallel_manager
+        elsif block_given?
+          yield
         end
       end
     end
@@ -331,6 +333,27 @@ module Faraday
       end
     end
 
+    # Public: Takes a relative url for a request and combines it with the defaults
+    # set on the connection instance.
+    #
+    #   conn = Faraday::Connection.new { ... }
+    #   conn.url_prefix = "https://sushi.com/api?token=abc"
+    #   conn.scheme      # => https
+    #   conn.path_prefix # => "/api"
+    #
+    #   conn.build_url("nigiri?page=2")      # => https://sushi.com/api/nigiri?token=abc&page=2
+    #   conn.build_url("nigiri", :page => 2) # => https://sushi.com/api/nigiri?token=abc&page=2
+    #
+    def build_url(url = nil, extra_params = nil)
+      uri = build_exclusive_url(url)
+
+      query_values = params.dup.merge_query(uri.query, options.params_encoder)
+      query_values.update extra_params if extra_params
+      uri.query = query_values.empty? ? nil : query_values.to_query(options.params_encoder)
+
+      uri
+    end
+
     # Builds and runs the Faraday::Request.
     #
     # method  - The Symbol HTTP method.
@@ -348,7 +371,7 @@ module Faraday
         req.url(url)                if url
         req.headers.update(headers) if headers
         req.body = body             if body
-        yield req if block_given?
+        yield(req) if block_given?
       end
 
       builder.build_response(self, request)
@@ -362,7 +385,7 @@ module Faraday
         req.params  = self.params.dup
         req.headers = self.headers.dup
         req.options = self.options.merge(:proxy => self.proxy)
-        yield req if block_given?
+        yield(req) if block_given?
       end
     end
 
@@ -396,7 +419,7 @@ module Faraday
     # Internal: Yields username and password extracted from a URI if they both exist.
     def with_uri_credentials(uri)
       if uri.user and uri.password
-        yield Utils.unescape(uri.user), Utils.unescape(uri.password)
+        yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
       end
     end
 
@@ -407,4 +430,3 @@ module Faraday
     end
   end
 end
-

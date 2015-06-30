@@ -23,21 +23,25 @@ module Faraday
 
     def self.create(request_method)
       new(request_method).tap do |request|
-        yield request if block_given?
+        yield(request) if block_given?
       end
     end
 
     # Public: Replace params, preserving the existing hash type
     def params=(hash)
-      if params then params.replace hash
-      else super
+      if params
+        params.replace hash
+      else
+        super
       end
     end
 
     # Public: Replace request headers, preserving the existing hash type
     def headers=(hash)
-      if headers then headers.replace hash
-      else super
+      if headers
+        headers.replace hash
+      else
+        super
       end
     end
 

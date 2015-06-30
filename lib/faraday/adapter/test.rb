@@ -21,7 +21,7 @@ module Faraday
         def initialize
           # {:get => [Stub, Stub]}
           @stack, @consumed = {}, {}
-          yield self if block_given?
+          yield(self) if block_given?
         end
 
         def empty?
@@ -100,7 +100,7 @@ module Faraday
           params = query ?
             Faraday::Utils.parse_nested_query(query) :
             {}
-          super path, params, headers, body, block
+          super(path, params, headers, body, block)
         end
 
         def matches?(request_uri, request_headers, request_body)
@@ -138,7 +138,7 @@ module Faraday
       end
 
       def configure
-        yield stubs
+        yield(stubs)
       end
 
       def call(env)

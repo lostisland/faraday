@@ -3,7 +3,7 @@ require File.expand_path('../helper', __FILE__)
 class AuthenticationMiddlewareTest < Faraday::TestCase
   def conn
     Faraday::Connection.new('http://example.net/') do |builder|
-      yield builder
+      yield(builder)
       builder.adapter :test do |stub|
         stub.get('/auth-echo') do |env|
           [200, {}, env[:request_headers]['Authorization']]
