@@ -100,6 +100,14 @@ module Middleware
       assert_equal middleware.sleep_amount(3), 0.4
     end
 
+    def test_exponential_backoff_with_max_interval
+      middleware = Faraday::Request::Retry.new(nil, :max => 5, :interval => 1, :max_interval => 3, :backoff_factor => 2)
+      assert_equal middleware.sleep_amount(5), 1
+      assert_equal middleware.sleep_amount(4), 2
+      assert_equal middleware.sleep_amount(3), 3
+      assert_equal middleware.sleep_amount(2), 3
+    end
+
     def test_random_additional_interval_amount
       middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 1.0)
       sleep_amount = middleware.sleep_amount(2)
