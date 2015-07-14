@@ -6,13 +6,16 @@ processing the request/response cycle.
 
 Faraday supports these adapters:
 
-* [`Net::HTTP`][]
-* [`Net::HTTP::Persistent`][]
+* [`Net::HTTP`][net_http]
+* [`Net::HTTP::Persistent`][net_http_persistent]
 * [Excon][]
 * [Typhoeus][]
 * [Patron][]
 * [EventMachine][]
 * [HTTPClient][]
+
+[net_http]: http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
+[net_http_persistent]: https://github.com/drbrain/net-http-persistent
 
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
