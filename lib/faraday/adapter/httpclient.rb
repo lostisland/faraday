@@ -72,14 +72,14 @@ module Faraday
 
       def configure_ssl(ssl)
         ssl_config = client.ssl_config
+        ssl_config.verify_mode = ssl_verify_mode(ssl)
+        ssl_config.cert_store = ssl_cert_store(ssl)
 
         ssl_config.add_trust_ca ssl[:ca_file]        if ssl[:ca_file]
         ssl_config.add_trust_ca ssl[:ca_path]        if ssl[:ca_path]
-        ssl_config.cert_store   = ssl[:cert_store]   if ssl[:cert_store]
         ssl_config.client_cert  = ssl[:client_cert]  if ssl[:client_cert]
         ssl_config.client_key   = ssl[:client_key]   if ssl[:client_key]
         ssl_config.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
-        ssl_config.verify_mode  = ssl_verify_mode(ssl)
       end
 
       def configure_timeouts(req)
@@ -93,6 +93,14 @@ module Faraday
           client.connect_timeout   = req[:open_timeout]
           client.send_timeout      = req[:open_timeout]
         end
+      end
+
+      def ssl_cert_store(ssl)
+        return ssl[:cert_store] if ssl[:cert_store]
+        # Use the default cert store by default, i.e. system ca certs
+        cert_store = OpenSSL::X509::Store.new
+        cert_store.set_default_paths
+        cert_store
       end
 
       def ssl_verify_mode(ssl)
