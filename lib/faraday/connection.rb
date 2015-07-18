@@ -1,3 +1,5 @@
+require 'uri'
+
 module Faraday
   # Public: Connection objects manage the default properties and the middleware
   # stack for fulfilling an HTTP request.
@@ -81,10 +83,8 @@ module Faraday
 
       @proxy = nil
       proxy(options.fetch(:proxy) {
-        uri = ENV['http_proxy']
-        if uri && !uri.empty?
-          uri = 'http://' + uri if uri !~ /^http/i
-          uri
+        if ENV.has_key?('http_proxy') || ENV.has_key?('HTTP_PROXY')
+          URI(url).find_proxy
         end
       })
 
