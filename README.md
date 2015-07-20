@@ -45,7 +45,7 @@ conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi
 conn.post do |req|
   req.url '/nigiri'
   req.headers['Content-Type'] = 'application/json'
-  req.body = '{ "name": "Unagi" }'
+  req.body = { name: 'Unagi' }.to_json
 end
 
 ## Per-request options ##
