@@ -14,9 +14,6 @@ Faraday supports these adapters:
 * [EventMachine][]
 * [HTTPClient][]
 
-[net_http]: http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
-[net_http_persistent]: https://github.com/drbrain/net-http-persistent
-
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
 
@@ -213,12 +210,14 @@ of a major release, support for that Ruby version may be dropped.
 Copyright (c) 2009-2013 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
-[travis]:    http://travis-ci.org/lostisland/faraday
-[excon]:     https://github.com/geemus/excon#readme
-[typhoeus]:  https://github.com/typhoeus/typhoeus#readme
-[patron]:    http://toland.github.com/patron/
-[eventmachine]: https://github.com/igrigorik/em-http-request#readme
-[httpclient]: https://github.com/nahi/httpclient
-[jruby]:     http://jruby.org/
-[rubinius]:  http://rubini.us/
-[license]:   LICENSE.md
+[net_http]:            http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
+[net_http_persistent]: https://github.com/drbrain/net-http-persistent
+[travis]:              http://travis-ci.org/lostisland/faraday
+[excon]:               https://github.com/geemus/excon#readme
+[typhoeus]:            https://github.com/typhoeus/typhoeus#readme
+[patron]:              http://toland.github.com/patron/
+[eventmachine]:        https://github.com/igrigorik/em-http-request#readme
+[httpclient]:          https://github.com/nahi/httpclient
+[jruby]:               http://jruby.org/
+[rubinius]:            http://rubini.us/
+[license]:             LICENSE.md
