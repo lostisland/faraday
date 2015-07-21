@@ -1,13 +1,13 @@
 # Faraday
 
 Faraday is an HTTP client lib that provides a common interface over many
-adapters (such as `Net::HTTP`) and embraces the concept of Rack middleware when
+adapters (such as Net::HTTP) and embraces the concept of Rack middleware when
 processing the request/response cycle.
 
 Faraday supports these adapters:
 
-* [`Net::HTTP`][net_http] _(default)_
-* [`Net::HTTP::Persistent`][net_http_persistent]
+* [Net::HTTP][net_http] _(default)_
+* [Net::HTTP::Persistent][net_http_persistent]
 * [Excon][]
 * [Typhoeus][]
 * [Patron][]
