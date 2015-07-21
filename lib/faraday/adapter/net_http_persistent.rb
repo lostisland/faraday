@@ -4,7 +4,6 @@
 
 module Faraday
   class Adapter
-    # Experimental adapter for net-http-persistent
     class NetHttpPersistent < NetHttp
       dependency 'net/http/persistent'
 
