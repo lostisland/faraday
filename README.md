@@ -6,7 +6,7 @@ processing the request/response cycle.
 
 Faraday supports these adapters:
 
-* [`Net::HTTP`][net_http] _(the default adapter)_
+* [`Net::HTTP`][net_http] _(default)_
 * [`Net::HTTP::Persistent`][net_http_persistent]
 * [Excon][]
 * [Typhoeus][]
