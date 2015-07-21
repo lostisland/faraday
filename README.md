@@ -7,7 +7,7 @@ processing the request/response cycle.
 Faraday supports these adapters:
 
 * [Net::HTTP][net_http] _(default)_
-* [Net::HTTP::Persistent][net_http_persistent]
+* [Net::HTTP::Persistent][persistent]
 * [Excon][]
 * [Typhoeus][]
 * [Patron][]
@@ -210,14 +210,14 @@ of a major release, support for that Ruby version may be dropped.
 Copyright (c) 2009-2013 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
-[net_http]:            http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
-[net_http_persistent]: https://github.com/drbrain/net-http-persistent
-[travis]:              http://travis-ci.org/lostisland/faraday
-[excon]:               https://github.com/geemus/excon#readme
-[typhoeus]:            https://github.com/typhoeus/typhoeus#readme
-[patron]:              http://toland.github.com/patron/
-[eventmachine]:        https://github.com/igrigorik/em-http-request#readme
-[httpclient]:          https://github.com/nahi/httpclient
-[jruby]:               http://jruby.org/
-[rubinius]:            http://rubini.us/
-[license]:             LICENSE.md
+[net_http]:     http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
+[persistent]:   https://github.com/drbrain/net-http-persistent
+[travis]:       http://travis-ci.org/lostisland/faraday
+[excon]:        https://github.com/geemus/excon#readme
+[typhoeus]:     https://github.com/typhoeus/typhoeus#readme
+[patron]:       http://toland.github.com/patron/
+[eventmachine]: https://github.com/igrigorik/em-http-request#readme
+[httpclient]:   https://github.com/nahi/httpclient
+[jruby]:        http://jruby.org/
+[rubinius]:     http://rubini.us/
+[license]:      LICENSE.md
