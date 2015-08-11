@@ -65,6 +65,10 @@ stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.
 response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 ```
 
+## Documentation
+
+Available at [rubydoc.info](http://www.rubydoc.info/gems/faraday).
+
 ## Advanced middleware usage
 
 The order in which middleware is stacked is important. Like with Rack, the
