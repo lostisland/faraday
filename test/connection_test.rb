@@ -355,7 +355,8 @@ class TestConnection < Faraday::TestCase
     conn = Faraday::Connection.new 'http://sushi.com/foo',
       :ssl => { :verify => :none },
       :headers => {'content-type' => 'text/plain'},
-      :params => {'a'=>'1'}
+      :params => {'a'=>'1'},
+      :request => {:timeout => 5}
 
     other = conn.dup
 
@@ -366,11 +367,14 @@ class TestConnection < Faraday::TestCase
     other.basic_auth('', '')
     other.headers['content-length'] = 12
     other.params['b'] = '2'
+    other.options[:open_timeout] = 10
 
     assert_equal 2, other.builder.handlers.size
     assert_equal 2, conn.builder.handlers.size
     assert !conn.headers.key?('content-length')
     assert !conn.params.key?('b')
+    assert_equal 5, other.options[:timeout]
+    assert_nil conn.options[:open_timeout]
   end
 
   def test_initialize_with_false_option
