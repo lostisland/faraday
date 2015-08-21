@@ -188,7 +188,7 @@ module Faraday
       }.tr(' ', '+')
     end
 
-    def unescape(s) CGI.unescape s.to_s end
+    def unescape(s) CGI.unescape s.to_s.force_encoding(Encoding::BINARY) end
 
     DEFAULT_SEP = /[&;] */n
 
