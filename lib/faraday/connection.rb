@@ -367,6 +367,10 @@ module Faraday
         raise ArgumentError, "unknown http method: #{method}"
       end
 
+      if conflicts_with_uri?(url)
+        return dup(url).run_request(method, '', body, headers)
+      end
+
       request = build_request(method) do |req|
         req.url(url)                if url
         req.headers.update(headers) if headers
@@ -410,10 +414,13 @@ module Faraday
     end
 
     # Internal: Creates a duplicate of this Faraday::Connection.
+    # Accepts an optional parameter to modify clone's url.
+    #
+    # url - A String or URI-like object
     #
     # Returns a Faraday::Connection.
-    def dup
-      self.class.new(build_exclusive_url, :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
+    def dup(url = nil)
+      self.class.new(build_exclusive_url(url), :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
     end
 
     # Internal: Yields username and password extracted from a URI if they both exist.
@@ -421,6 +428,13 @@ module Faraday
       if uri.user and uri.password
         yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
       end
+    end
+
+    # Internal: Detects when a given URI requires a change in connection state,
+    # i.e. in-URL basic authentication is given.
+    # 
+    def conflicts_with_uri?(uri)
+      uri ? !!Utils.URI(uri).userinfo : false
     end
 
     def set_authorization_header(header_type, *args)

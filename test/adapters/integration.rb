@@ -114,6 +114,21 @@ module Adapters
         assert_equal expected, get('ssl').body
       end
 
+      def test_GET_passes_basic_auth_with_connection_credentials
+        conn = create_connection
+        conn.basic_auth('user', 'pass')
+        response = conn.get('basic-auth/user/pass')
+        refute_equal 401, response.status
+      end
+
+      def test_GET_passes_basic_auth_with_url_credentials
+        conn = create_connection
+        url = live_server_url(:userinfo => 'user:pass',
+                              :path => '/basic-auth/user/pass')
+        response = conn.get(url)
+        refute_equal 401, response.status
+      end
+
       def test_POST_send_url_encoded_params
         assert_equal %(post {"name"=>"zack"}), post('echo', :name => 'zack').body
       end
@@ -238,8 +253,7 @@ module Adapters
           end
         end
 
-        server = self.class.live_server
-        url = '%s://%s:%d' % [server.scheme, server.host, server.port]
+        url = live_server_url
 
         options[:ssl] ||= {}
         options[:ssl][:ca_file] ||= ENV['SSL_FILE']
@@ -249,6 +263,15 @@ module Adapters
           adapter_handler = conn.builder.handlers.last
           conn.builder.insert_before adapter_handler, Faraday::Response::RaiseError
         end
+      end
+
+      def live_server_url(options = {})
+        server = self.class.live_server
+        defaults = {:scheme => server.scheme,
+                    :host => server.host,
+                    :port => server.port}
+
+        URI::Generic.build(defaults.merge(options)).to_s
       end
     end
   end
