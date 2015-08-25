@@ -188,7 +188,11 @@ module Faraday
       }.tr(' ', '+')
     end
 
-    def unescape(s) CGI.unescape s.to_s.force_encoding(Encoding::BINARY) end
+    def unescape(s)
+      string = s.to_s
+      string.force_encoding(Encoding::BINARY) if RUBY_VERSION >= '1.9'
+      CGI.unescape string
+    end
 
     DEFAULT_SEP = /[&;] */n
 
