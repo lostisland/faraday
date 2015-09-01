@@ -134,6 +134,12 @@ module Adapters
         assert_equal "file integration.rb text/x-ruby #{File.size(__FILE__)}", resp.body
       end
 
+      def test_save_request_body
+        resp = post('echo') { |req| req.body = {"mah" => "body"} }
+
+        assert_equal "mah=body", resp.env.request_body
+      end
+
       def test_PUT_send_url_encoded_params
         assert_equal %(put {"name"=>"zack"}), put('echo', :name => 'zack').body
       end

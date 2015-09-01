@@ -35,8 +35,9 @@ module Faraday
     end
 
     def save_response(env, status, body, headers = nil)
-      env.status = status
-      env.body = body
+      env.status       = status
+      env.request_body = env.body
+      env.body         = body
       env.response_headers = Utils::Headers.new.tap do |response_headers|
         response_headers.update headers unless headers.nil?
         yield(response_headers) if block_given?
