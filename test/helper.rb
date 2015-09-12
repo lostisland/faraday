@@ -1,3 +1,5 @@
+require 'bundler/setup'
+
 if RUBY_VERSION >= '1.9'
   require 'simplecov'
   require 'coveralls'
@@ -11,18 +13,11 @@ if RUBY_VERSION >= '1.9'
   end
 end
 
-gem 'minitest' if defined? Bundler
 require 'minitest/autorun'
 
-if ENV['LEFTRIGHT']
-  begin
-    require 'leftright'
-  rescue LoadError
-    puts "Run `gem install leftright` to install leftright."
-  end
-end
+require 'leftright' if ENV['LEFTRIGHT']
 
-require File.expand_path('../../lib/faraday', __FILE__)
+require 'faraday'
 
 require 'stringio'
 require 'uri'

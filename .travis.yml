@@ -1,7 +1,6 @@
 sudo: false
 language: ruby
 script: bundle exec script/test
-bundler_args: --without development --path vendor/bundle --jobs=3 --retry=3
 cache: bundler
 
 rvm:
