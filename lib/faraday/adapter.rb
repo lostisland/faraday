@@ -14,7 +14,8 @@ module Faraday
       :em_http => [:EMHttp, 'em_http'],
       :excon => [:Excon, 'excon'],
       :rack => [:Rack, 'rack'],
-      :httpclient => [:HTTPClient, 'httpclient']
+      :httpclient => [:HTTPClient, 'httpclient'],
+      :api_auth => [:ApiAuth, 'api_auth']
 
     # Public: This module marks an Adapter as supporting parallel requests.
     module Parallelism
