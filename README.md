@@ -65,6 +65,31 @@ stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.
 response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 ```
 
+## Using Faraday With HTTPS
+
+``` ruby
+# verify_mode is automatically set to OpenSSL::SSL::VERIFY_PEER
+connection = Faraday.new 'https://example.com'
+ 
+# turn off SSL
+# (no use-case for this, really)
+connection = Faraday.new 'https://example.com', :ssl => false
+ 
+# turn off peer verification. You don't want to do this most
+# of the time!
+connection = Faraday.new 'https://example.com', :ssl => {:verify => false}
+ 
+# Provide private (client) key, certificate, CA certificate and related
+connection = Faraday.new 'https://example.com', :ssl => {
+    :client_cert  => ...,
+    :client_key   => ...,
+    :ca_file      => ...,
+    :ca_path      => ...,
+    :cert_store   => ...
+  }
+```
+
+
 ## Advanced middleware usage
 
 The order in which middleware is stacked is important. Like with Rack, the
