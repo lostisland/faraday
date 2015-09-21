@@ -270,6 +270,17 @@ module Faraday
     def_delegators :request, :params_encoder
 
     # Public
+    def self.from(value)
+      env = super(value)
+      if value.kind_of?(self)
+        value.custom_members.each do |custom_key, custom_value|
+          env[custom_key] = custom_value
+        end
+      end
+      env
+    end
+
+    # Public
     def [](key)
       if in_member_set?(key)
         super(key)

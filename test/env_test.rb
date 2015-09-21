@@ -70,6 +70,15 @@ class EnvTest < Faraday::TestCase
     assert_equal 'proxy.com', env.request.proxy.host
   end
 
+  def test_custom_headers_are_retained
+    env = make_env
+    env[:foo] = "custom 1"
+    env[:bar] = :custom_2
+    env2 = Faraday::Env.from(env)
+    assert_equal "custom 1", env2[:foo]
+    assert_equal :custom_2,  env2[:bar]
+  end
+
   private
 
   def make_env(method = :get, connection = @conn, &block)
