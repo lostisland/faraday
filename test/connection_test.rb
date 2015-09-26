@@ -517,6 +517,24 @@ class TestRequestParams < Faraday::TestCase
     end
   end
 
+  class FooBarEncoder
+    def self.encode(params)
+      "foo=bar"
+    end
+
+    def self.decode(param_string)
+      {"foo" => "bar"} 
+    end
+  end
+
+  def test_params_with_connection_options
+    create_connection 'http://a.co/page1', :params => {:color => 'blue'}
+    query = get do |req|
+      req.options.params_encoder = FooBarEncoder
+    end
+    assert_equal "foo=bar", query
+  end
+
   def get(*args)
     env = @conn.get(*args) do |req|
       yield(req) if block_given?
