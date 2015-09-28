@@ -9,7 +9,6 @@ class EnvTest < Faraday::TestCase
     @conn.options.timeout      = 3
     @conn.options.open_timeout = 5
     @conn.ssl.verify           = false
-    @conn.proxy 'http://proxy.com'
   end
 
   def test_request_create_stores_method
@@ -63,11 +62,6 @@ class EnvTest < Faraday::TestCase
   def test_request_create_stores_ssl_options
     env = make_env
     assert_equal false, env.ssl.verify
-  end
-
-  def test_request_create_stores_proxy_options
-    env = make_env
-    assert_equal 'proxy.com', env.request.proxy.host
   end
 
   private
