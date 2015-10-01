@@ -132,6 +132,7 @@ if [ -n "$(filter_matching "adapters" "${test_files[@]}")" ]; then
   cleanup() {
     if [ $? -ne 0 ] && [ -n "$TRAVIS" ]; then
       cat log/test.log
+      cat log/proxy.log
     fi
     kill "$server_pid"
     kill "$proxy_pid"
