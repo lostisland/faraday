@@ -24,23 +24,38 @@ module Adapters
       @logger.level = Logger::DEBUG
 
       @conn = conn(@logger)
-      @resp = @conn.get '/hello', nil, :accept => 'text/html'
     end
 
     def test_still_returns_output
-      assert_equal 'hello', @resp.body
+      resp = @conn.get '/hello', nil, :accept => 'text/html'
+      assert_equal 'hello', resp.body
     end
 
     def test_logs_method_and_url
+      @conn.get '/hello', nil, :accept => 'text/html'
       assert_match "get http:/hello", @io.string
     end
 
-    def test_logs_request_headers
+    def test_logs_request_headers_by_default
+      @conn.get '/hello', nil, :accept => 'text/html'
       assert_match %(Accept: "text/html), @io.string
     end
 
-    def test_logs_response_headers
+    def test_logs_response_headers_by_default
+      @conn.get '/hello', nil, :accept => 'text/html'
       assert_match %(Content-Type: "text/html), @io.string
+    end
+
+    def test_does_not_log_request_headers_if_option_is_false
+      app = conn(@logger, :headers => { :request => false })
+      app.get '/hello', nil, :accept => 'text/html'
+      refute_match %(Accept: "text/html), @io.string
+    end
+
+    def test_does_log_response_headers_if_option_is_false
+      app = conn(@logger, :headers => { :response => false })
+      app.get '/hello', nil, :accept => 'text/html'
+      refute_match %(Content-Type: "text/html), @io.string
     end
 
     def test_does_not_log_request_body_by_default
