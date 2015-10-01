@@ -272,10 +272,8 @@ module Faraday
     # Public
     def self.from(value)
       env = super(value)
-      if value.kind_of?(self)
-        value.custom_members.each do |custom_key, custom_value|
-          env[custom_key] = custom_value
-        end
+      if value.respond_to?(:custom_members)
+        env.custom_members.update(value.custom_members)
       end
       env
     end
