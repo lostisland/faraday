@@ -17,6 +17,12 @@ module Faraday
         self.update(hash || {})
       end
 
+      # on dup/clone, we need to duplicate @names hash
+      def initialize_copy(other)
+        super
+        @names = other.names.dup
+      end
+
       # need to synchronize concurrent writes to the shared KeyMap
       keymap_mutex = Mutex.new
 
@@ -101,6 +107,12 @@ module Faraday
               self[key] = value
             end
           }
+      end
+
+      protected
+
+      def names
+        @names
       end
     end
 
