@@ -69,6 +69,12 @@ class TestParameters < Faraday::TestCase
     assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
   end
 
+  def test_decode_nested_array_mixed_types
+    query = "a[][one]=1&a[]=2&a[]=&a[]"
+    expected = Rack::Utils.parse_nested_query(query)
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
   def test_decode_nested_ignores_invalid_array
     query = "[][a]=1&b=2"
     expected = {"a" => "1", "b" => "2"}
