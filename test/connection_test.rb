@@ -517,6 +517,19 @@ class TestRequestParams < Faraday::TestCase
     end
   end
 
+  def test_params_with_connection_options
+    encoder = Object.new
+    def encoder.encode(params)
+      params.map { |k,v| "#{k.upcase}-#{v.upcase}" }.join(',')
+    end
+
+    create_connection :params => {:color => 'red'}
+    query = get('', :feeling => 'blue') do |req|
+      req.options.params_encoder = encoder
+    end
+    assert_equal ["COLOR-RED", "FEELING-BLUE"], query.split(",").sort
+  end
+
   def get(*args)
     env = @conn.get(*args) do |req|
       yield(req) if block_given?
