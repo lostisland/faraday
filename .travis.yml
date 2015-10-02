@@ -36,7 +36,4 @@ env:
     - SSL=no
     - SSL=yes
   global:
-    - AMAZON_S3_BUCKET=ci-cache
-    - AMAZON_ACCESS_KEY_ID=AKIAJQCVTDEWQHRPBPGQ
     - JRUBY_OPTS="$JRUBY_OPTS --debug"
-    - secure: "fgk+vBuCp9GW2AlNAcWy5Axl+UEjXTTCwZa6boa5lvg6yBaBKHxqT4XH31U5My3SxJEaQpPDNE/ObHv8InV9DOP5ZI7c8s3cVrBx5a8LZSd25UZBozUHxMeZmFGlgc3syYkLjoeAE+4YmhmTnuKncb0xhke90wJw5T4Z5+GPmzI="
