@@ -184,13 +184,9 @@ stubs.verify_stubbed_calls
 This library aims to support and is [tested against][travis] the following Ruby
 implementations:
 
-* MRI 1.8.7
-* MRI 1.9.2
-* MRI 1.9.3
-* MRI 2.0.0
-* MRI 2.1.0
-* [JRuby][]
-* [Rubinius][]
+* Ruby 1.8.7+
+* [JRuby][] 1.7+
+* [Rubinius][] 2+
 
 If something doesn't work on one of these Ruby versions, it's a bug.
 
