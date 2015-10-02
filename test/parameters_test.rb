@@ -81,6 +81,24 @@ class TestParameters < Faraday::TestCase
     assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
   end
 
+  def test_decode_nested_ignores_repeated_array_notation
+    query = "a[][][]=1"
+    expected = {"a" => ["1"]}
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_decode_nested_ignores_malformed_keys
+    query = "=1&[]=2"
+    expected = {}
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_decode_nested_subkeys_dont_have_to_be_in_brackets
+    query = "a[b]c[d]e=1"
+    expected = {"a" => {"b" => {"c" => {"d" => {"e" => "1"}}}}}
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
   def test_decode_nested_raises_error_when_expecting_hash
     error = assert_raises TypeError do
       Faraday::NestedParamsEncoder.decode("a=1&a[b]=2")
@@ -96,6 +114,11 @@ class TestParameters < Faraday::TestCase
       Faraday::NestedParamsEncoder.decode("a[b]=1&a[]=2")
     end
     assert_equal "expected Array (got Hash) for param `a'", error.message
+
+    error = assert_raises TypeError do
+      Faraday::NestedParamsEncoder.decode("a=1&a[]=2")
+    end
+    assert_equal "expected Array (got String) for param `a'", error.message
 
     error = assert_raises TypeError do
       Faraday::NestedParamsEncoder.decode("a[b]=1&a[b][c]=2")
