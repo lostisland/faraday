@@ -89,19 +89,35 @@ module Faraday
           value = unescape(value.gsub(/\+/, ' '))
         end
 
-        array_notation = !!(key =~ /\[\]$/)
-        subkeys = key.split(/[\[\]]+/)
-        current_hash = accu
-        for i in 0...(subkeys.size - 1)
-          subkey = subkeys[i]
-          current_hash[subkey] = {} unless current_hash[subkey]
-          current_hash = current_hash[subkey]
-        end
-        if array_notation
-          current_hash[subkeys.last] = [] unless current_hash[subkeys.last]
-          current_hash[subkeys.last] << value
-        else
-          current_hash[subkeys.last] = value
+        subkeys = key.split("[").map { |k| k.chomp("]") }
+        context = accu
+        subkeys.each_with_index do |subkey, i|
+          if context.is_a?(Array) && !subkey.empty?
+            if !context.last.is_a?(Hash) || context.last.has_key?(subkey)
+              context << {}
+            end
+            context = context.last
+          end
+
+          if i < subkeys.length - 1
+            unless subkey.empty?
+              value_type = subkeys[i+1].empty?? Array : Hash
+              if context[subkey] && !context[subkey].is_a?(value_type)
+                raise TypeError, "expected %s (got %s) for param `%s'" % [
+                  value_type.name,
+                  context[subkey].class.name,
+                  subkey
+                ]
+              end
+              context = (context[subkey] ||= value_type.new)
+            end
+          else
+            if subkey.empty?
+              context << value
+            else
+              context[subkey] = value
+            end
+          end
         end
         accu
       end).inject(empty_accumulator.dup) do |accu, (key, value)|
