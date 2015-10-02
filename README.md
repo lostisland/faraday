@@ -68,15 +68,27 @@ response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 
 Sometimes you need to send the same URL parameter multiple times with different
 values. This requires manually setting the parameter encoder and can be done on
-a per-connection basis.
+either per-connection or per-request basis.
 
 ```ruby
-conn.options.params_encoder = Faraday::FlatParamsEncoder
+# per-connection setting
+conn = Faraday.new :params_encoder => Faraday::FlatParamsEncoder
+
 conn.get do |req|
+  # per-request setting:
+  # req.options.params_encoder = my_encoder
   req.params['roll'] = ['california', 'philadelphia']
 end
 # GET 'http://sushi.com?roll=california&roll=philadelphia'
 ```
+
+The value of Faraday `params_encoder` can be any object that responds to:
+
+* `encode(hash) #=> String`
+* `decode(string) #=> Hash`
+
+The encoder will affect both how query strings are processed and how POST bodies
+get serialized. The default encoder is Faraday::NestedParamsEncoder.
 
 ## Advanced middleware usage
 
