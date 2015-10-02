@@ -56,7 +56,7 @@ class TestParameters < Faraday::TestCase
   end
 
   def test_encode_nil_nested
-    assert_equal "a=", Faraday::NestedParamsEncoder.encode("a" => nil)
+    assert_equal "a", Faraday::NestedParamsEncoder.encode("a" => nil)
   end
 
   def test_encode_nil_flat

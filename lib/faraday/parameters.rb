@@ -46,6 +46,8 @@ module Faraday
             buffer << "#{to_query.call(new_parent, val)}&"
           end
           return buffer.chop
+        elsif value.nil?
+          return parent
         else
           encoded_value = escape(value)
           return "#{parent}=#{encoded_value}"
