@@ -63,6 +63,7 @@ module Faraday
 
     def self.decode(query)
       return nil if query == nil
+      query.gsub!(/\[\]/).with_index { |val, key| "[#{key.to_s}]" }
       # Recursive helper lambda
       dehash = lambda do |hash|
         hash.each do |(key, value)|
