@@ -71,6 +71,7 @@ module Faraday
           end
         end
         # Numeric keys implies an array
+        # FIXME: this is not compatible with Rack::Utils.parse_nested_query
         if hash != {} && hash.keys.all? { |key| key =~ /^\d+$/ }
           hash.sort.inject([]) do |accu, (_, value)|
             accu << value; accu
