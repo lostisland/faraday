@@ -207,8 +207,10 @@ module Adapters
           conn.get '/echo'
         end
 
-        unless self.class.ssl_mode? && self.class.jruby?
+        unless self.class.ssl_mode? && (self.class.jruby? ||
+            adapter == :em_http || adapter == :em_synchrony)
           # JRuby raises "End of file reached" which cannot be distinguished from a 407
+          # EM raises "connection closed by server" due to https://github.com/igrigorik/em-socksify/pull/19
           assert_equal %{407 "Proxy Authentication Required "}, err.message
         end
       end
