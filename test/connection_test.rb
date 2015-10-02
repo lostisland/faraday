@@ -517,22 +517,17 @@ class TestRequestParams < Faraday::TestCase
     end
   end
 
-  class FooBarEncoder
-    def self.encode(params)
-      "foo=bar"
-    end
-
-    def self.decode(param_string)
-      {"foo" => "bar"} 
-    end
-  end
-
   def test_params_with_connection_options
-    create_connection 'http://a.co/page1', :params => {:color => 'blue'}
-    query = get do |req|
-      req.options.params_encoder = FooBarEncoder
+    encoder = Object.new
+    def encoder.encode(params)
+      params.map { |k,v| "#{k.upcase}-#{v.upcase}" }.join(',')
     end
-    assert_equal "foo=bar", query
+
+    create_connection :params => {:color => 'red'}
+    query = get('', :feeling => 'blue') do |req|
+      req.options.params_encoder = encoder
+    end
+    assert_equal ["COLOR-RED", "FEELING-BLUE"], query.split(",").sort
   end
 
   def get(*args)
