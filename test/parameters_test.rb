@@ -104,8 +104,9 @@ class TestParameters < Faraday::TestCase
   end
 
   def test_encode_rack_compat_nested
-    params = { :a => [{:one => "1", :two => "2"}] }
+    params = { :a => [{:one => "1", :two => "2"}, "3", ""] }
     expected = Rack::Utils.build_nested_query(params)
-    assert_equal expected, Faraday::Utils.unescape(Faraday::NestedParamsEncoder.encode(params))
+    assert_equal expected.split("&").sort,
+      Faraday::Utils.unescape(Faraday::NestedParamsEncoder.encode(params)).split("&").sort
   end
 end
