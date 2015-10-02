@@ -189,6 +189,7 @@ implementations:
 * MRI 1.9.3
 * MRI 2.0.0
 * MRI 2.1.0
+* MRI 2.2.0
 * [JRuby][]
 * [Rubinius][]
 
