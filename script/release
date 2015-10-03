@@ -8,10 +8,7 @@ set -e
 version="$(script/package | grep Version: | awk '{print $2}')"
 [ -n "$version" ] || exit 1
 
-git commit --allow-empty -a -m "Release $version"
-git tag "v$version"
-git push origin
-git push origin "v$version"
-git push legacy
-git push legacy "v$version"
+git commit -a -m "faraday $version"
+git tag "v${version}"
+git push origin "v${version}" HEAD
 gem push pkg/*-${version}.gem

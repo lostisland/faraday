@@ -396,7 +396,7 @@ module Faraday
     #          of the resulting url (default: nil).
     #
     # Returns the resulting URI instance.
-    def build_exclusive_url(url = nil, params = nil)
+    def build_exclusive_url(url = nil, params = nil, params_encoder = nil)
       url = nil if url.respond_to?(:empty?) and url.empty?
       base = url_prefix
       if url and base.path and base.path !~ /\/$/
@@ -404,7 +404,7 @@ module Faraday
         base.path = base.path + '/'  # ensure trailing slash
       end
       uri = url ? base + url : base
-      uri.query = params.to_query(options.params_encoder) if params
+      uri.query = params.to_query(params_encoder || options.params_encoder) if params
       uri.query = nil if uri.query and uri.query.empty?
       uri
     end
@@ -413,7 +413,12 @@ module Faraday
     #
     # Returns a Faraday::Connection.
     def dup
-      self.class.new(build_exclusive_url, :headers => headers.dup, :params => params.dup, :builder => builder.dup, :ssl => ssl.dup)
+      self.class.new(build_exclusive_url,
+                     :headers => headers.dup,
+                     :params => params.dup,
+                     :builder => builder.dup,
+                     :ssl => ssl.dup,
+                     :request => options.dup)
     end
 
     # Internal: Yields username and password extracted from a URI if they both exist.

@@ -6,7 +6,8 @@ processing the request/response cycle.
 
 Faraday supports these adapters:
 
-* Net::HTTP
+* [Net::HTTP][net_http] _(default)_
+* [Net::HTTP::Persistent][persistent]
 * [Excon][]
 * [Typhoeus][]
 * [Patron][]
@@ -63,6 +64,32 @@ stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.
 ```ruby
 response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 ```
+
+### Changing how parameters are serialized
+
+Sometimes you need to send the same URL parameter multiple times with different
+values. This requires manually setting the parameter encoder and can be done on
+either per-connection or per-request basis.
+
+```ruby
+# per-connection setting
+conn = Faraday.new :params_encoder => Faraday::FlatParamsEncoder
+
+conn.get do |req|
+  # per-request setting:
+  # req.options.params_encoder = my_encoder
+  req.params['roll'] = ['california', 'philadelphia']
+end
+# GET 'http://sushi.com?roll=california&roll=philadelphia'
+```
+
+The value of Faraday `params_encoder` can be any object that responds to:
+
+* `encode(hash) #=> String`
+* `decode(string) #=> Hash`
+
+The encoder will affect both how query strings are processed and how POST bodies
+get serialized. The default encoder is Faraday::NestedParamsEncoder.
 
 ## Advanced middleware usage
 
@@ -183,13 +210,9 @@ stubs.verify_stubbed_calls
 This library aims to support and is [tested against][travis] the following Ruby
 implementations:
 
-* MRI 1.8.7
-* MRI 1.9.2
-* MRI 1.9.3
-* MRI 2.0.0
-* MRI 2.1.0
-* [JRuby][]
-* [Rubinius][]
+* Ruby 1.8.7+
+* [JRuby][] 1.7+
+* [Rubinius][] 2+
 
 If something doesn't work on one of these Ruby versions, it's a bug.
 
@@ -209,12 +232,14 @@ of a major release, support for that Ruby version may be dropped.
 Copyright (c) 2009-2013 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
-[travis]:    http://travis-ci.org/lostisland/faraday
-[excon]:     https://github.com/geemus/excon#readme
-[typhoeus]:  https://github.com/typhoeus/typhoeus#readme
-[patron]:    http://toland.github.com/patron/
+[net_http]:     http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
+[persistent]:   https://github.com/drbrain/net-http-persistent
+[travis]:       http://travis-ci.org/lostisland/faraday
+[excon]:        https://github.com/geemus/excon#readme
+[typhoeus]:     https://github.com/typhoeus/typhoeus#readme
+[patron]:       http://toland.github.com/patron/
 [eventmachine]: https://github.com/igrigorik/em-http-request#readme
-[httpclient]: https://github.com/nahi/httpclient
-[jruby]:     http://jruby.org/
-[rubinius]:  http://rubini.us/
-[license]:   LICENSE.md
+[httpclient]:   https://github.com/nahi/httpclient
+[jruby]:        http://jruby.org/
+[rubinius]:     http://rubini.us/
+[license]:      LICENSE.md

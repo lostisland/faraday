@@ -4,4 +4,4 @@
 
 gemspec="$(ls *.gemspec | head -1)"
 
-exec bundle exec irb -r "${gemspec%.*}"
+exec bundle exec irb -r "${gemspec%.*}" "$@"

@@ -7,20 +7,12 @@ if RUBY_VERSION >= '1.9'
   SimpleCov.start do
     add_filter '/bundle/'
     add_filter '/test/'
-    minimum_coverage(87.27)
+    minimum_coverage(87)
   end
 end
 
 gem 'minitest' if defined? Bundler
 require 'minitest/autorun'
-
-if ENV['LEFTRIGHT']
-  begin
-    require 'leftright'
-  rescue LoadError
-    puts "Run `gem install leftright` to install leftright."
-  end
-end
 
 require File.expand_path('../../lib/faraday', __FILE__)
 

@@ -41,6 +41,7 @@ module Faraday
           if req[:proxy]
             opts[:proxy] = {
               :host     => req[:proxy][:uri].host,
+              :hostname => req[:proxy][:uri].hostname,
               :port     => req[:proxy][:uri].port,
               :scheme   => req[:proxy][:uri].scheme,
               :user     => req[:proxy][:user],

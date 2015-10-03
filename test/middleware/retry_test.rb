@@ -4,6 +4,7 @@ module Middleware
   class RetryTest < Faraday::TestCase
     def setup
       @times_called = 0
+      @envs = []
     end
 
     def conn(*retry_args)
@@ -11,10 +12,12 @@ module Middleware
         b.request :retry, *retry_args
         b.adapter :test do |stub|
           ['get', 'post'].each do |method|
-            stub.send(method, '/unstable') {
+            stub.send(method, '/unstable') do |env|
               @times_called += 1
+              @envs << env.dup
+              env[:body] = nil # simulate blanking out response body
               @explode.call @times_called
-            }
+            end
           end
         end
       end
@@ -97,6 +100,14 @@ module Middleware
       assert_equal middleware.sleep_amount(3), 0.4
     end
 
+    def test_exponential_backoff_with_max_interval
+      middleware = Faraday::Request::Retry.new(nil, :max => 5, :interval => 1, :max_interval => 3, :backoff_factor => 2)
+      assert_equal middleware.sleep_amount(5), 1
+      assert_equal middleware.sleep_amount(4), 2
+      assert_equal middleware.sleep_amount(3), 3
+      assert_equal middleware.sleep_amount(2), 3
+    end
+
     def test_random_additional_interval_amount
       middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 1.0)
       sleep_amount = middleware.sleep_amount(2)
@@ -118,6 +129,17 @@ module Middleware
         conn(:exceptions => StandardError).get("/unstable")
       }
       assert_equal 3, @times_called
+    end
+
+    def test_should_retry_with_body_if_block_returns_true_for_non_idempotent_request
+      body = { :foo => :bar }
+      @explode = lambda {|n| raise Errno::ETIMEDOUT }
+      check = lambda { |env,exception| true }
+      assert_raises(Errno::ETIMEDOUT) {
+        conn(:retry_if => check).post("/unstable", body)
+      }
+      assert_equal 3, @times_called
+      assert @envs.all? { |env| env[:body] === body }
     end
 
     def test_should_stop_retrying_if_block_returns_false_checking_env

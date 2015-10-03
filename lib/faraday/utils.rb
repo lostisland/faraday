@@ -1,5 +1,4 @@
 require 'thread'
-Faraday.require_libs 'parameters'
 
 module Faraday
   module Utils
@@ -15,6 +14,12 @@ module Faraday
         super()
         @names = {}
         self.update(hash || {})
+      end
+
+      # on dup/clone, we need to duplicate @names hash
+      def initialize_copy(other)
+        super
+        @names = other.names.dup
       end
 
       # need to synchronize concurrent writes to the shared KeyMap
@@ -81,6 +86,7 @@ module Faraday
 
       def replace(other)
         clear
+        @names.clear
         self.update other
         self
       end
@@ -100,6 +106,12 @@ module Faraday
               self[key] = value
             end
           }
+      end
+
+      protected
+
+      def names
+        @names
       end
     end
 

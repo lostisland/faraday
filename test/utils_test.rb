@@ -41,6 +41,15 @@ class TestUtils < Faraday::TestCase
     end
   end
 
+  def test_replace_header_hash
+    headers = Faraday::Utils::Headers.new('authorization' => 't0ps3cr3t!')
+    assert headers.include?('authorization')
+
+    headers.replace({'content-type' => 'text/plain'})
+
+    assert !headers.include?('authorization')
+  end
+
   def normalize(url)
     Faraday::Utils::URI(url)
   end

@@ -200,6 +200,20 @@ class TestConnection < Faraday::TestCase
     assert_equal "http://sushi.com/nigiri?a=1&b=2&c=3", url.to_s
   end
 
+  def test_request_header_change_does_not_modify_connection_header
+    connection = Faraday.new(:url => "https://asushi.com/sake.html")
+    connection.headers = { "Authorization"=>"token abc123" }
+
+    request = connection.build_request(:get)
+    request.headers.delete("Authorization")
+
+    assert_equal connection.headers.keys.sort, ["Authorization"]
+    assert connection.headers.include?("Authorization")
+
+    assert_equal request.headers.keys.sort, []
+    assert !request.headers.include?("Authorization")
+  end
+
   def test_env_url_parses_url_params_into_query
     uri = env_url("http://sushi.com/sake.html", 'a[b]' => '1 + 2')
     assert_equal "a%5Bb%5D=1+%2B+2", uri.query
@@ -355,7 +369,8 @@ class TestConnection < Faraday::TestCase
     conn = Faraday::Connection.new 'http://sushi.com/foo',
       :ssl => { :verify => :none },
       :headers => {'content-type' => 'text/plain'},
-      :params => {'a'=>'1'}
+      :params => {'a'=>'1'},
+      :request => {:timeout => 5}
 
     other = conn.dup
 
@@ -366,11 +381,14 @@ class TestConnection < Faraday::TestCase
     other.basic_auth('', '')
     other.headers['content-length'] = 12
     other.params['b'] = '2'
+    other.options[:open_timeout] = 10
 
     assert_equal 2, other.builder.handlers.size
     assert_equal 2, conn.builder.handlers.size
     assert !conn.headers.key?('content-length')
     assert !conn.params.key?('b')
+    assert_equal 5, other.options[:timeout]
+    assert_nil conn.options[:open_timeout]
   end
 
   def test_initialize_with_false_option
@@ -511,6 +529,19 @@ class TestRequestParams < Faraday::TestCase
       query = get
       assert_equal "color=red&color=blue", query
     end
+  end
+
+  def test_params_with_connection_options
+    encoder = Object.new
+    def encoder.encode(params)
+      params.map { |k,v| "#{k.upcase}-#{v.upcase}" }.join(',')
+    end
+
+    create_connection :params => {:color => 'red'}
+    query = get('', :feeling => 'blue') do |req|
+      req.options.params_encoder = encoder
+    end
+    assert_equal ["COLOR-RED", "FEELING-BLUE"], query.split(",").sort
   end
 
   def get(*args)

@@ -70,6 +70,12 @@ module Faraday
         else
           raise Error::ConnectionFailed, err
         end
+      rescue RuntimeError => err
+        if err.message == "connection closed by server"
+          raise Error::ConnectionFailed, err
+        else
+          raise
+        end
       rescue => err
         if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
           raise Faraday::SSLError, err

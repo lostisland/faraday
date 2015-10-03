@@ -270,6 +270,15 @@ module Faraday
     def_delegators :request, :params_encoder
 
     # Public
+    def self.from(value)
+      env = super(value)
+      if value.respond_to?(:custom_members)
+        env.custom_members.update(value.custom_members)
+      end
+      env
+    end
+
+    # Public
     def [](key)
       if in_member_set?(key)
         super(key)

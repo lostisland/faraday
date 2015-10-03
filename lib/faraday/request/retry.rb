@@ -22,8 +22,8 @@ module Faraday
 
     IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
 
-    class Options < Faraday::Options.new(:max, :interval, :interval_randomness, :backoff_factor,
-                                         :exceptions, :methods, :retry_if)
+    class Options < Faraday::Options.new(:max, :interval, :max_interval, :interval_randomness,
+                                         :backoff_factor, :exceptions, :methods, :retry_if)
       DEFAULT_CHECK = lambda { |env,exception| false }
 
       def self.from(value)
@@ -40,6 +40,10 @@ module Faraday
 
       def interval
         (self[:interval] ||= 0).to_f
+      end
+
+      def max_interval
+        (self[:max_interval] ||= Float::MAX).to_f
       end
 
       def interval_randomness
@@ -73,6 +77,7 @@ module Faraday
     # interval_randomness - The maximum random interval amount expressed
     #                       as a float between 0 and 1 to use in addition to the
     #                       interval. (default: 0)
+    # max_interval        - An upper limit for the interval (default: Float::MAX)
     # backoff_factor      - The amount to multiple each successive retry's
     #                       interval amount by in order to provide backoff
     #                       (default: 1)
@@ -98,6 +103,7 @@ module Faraday
     def sleep_amount(retries)
       retry_index = @options.max - retries
       current_interval = @options.interval * (@options.backoff_factor ** retry_index)
+      current_interval = [current_interval, @options.max_interval].min
       random_interval  = rand * @options.interval_randomness.to_f * @options.interval
       current_interval + random_interval
     end
