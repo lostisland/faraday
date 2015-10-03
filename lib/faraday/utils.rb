@@ -1,5 +1,4 @@
 require 'thread'
-Faraday.require_libs 'parameters'
 
 module Faraday
   module Utils
