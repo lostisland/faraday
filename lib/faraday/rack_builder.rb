@@ -151,8 +151,9 @@ module Faraday
         lock!
         to_app(lambda { |env|
           response = Response.new
-          response.finish(env) unless env.parallel?
           env.response = response
+          response.finish(env) unless env.parallel?
+          response
         })
       end
     end
