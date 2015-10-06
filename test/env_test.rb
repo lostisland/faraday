@@ -185,6 +185,23 @@ class ResponseTest < Faraday::TestCase
     assert_equal "YIKES", response.body
   end
 
+  def test_response_body_is_available_during_on_complete
+    response = Faraday::Response.new
+    response.on_complete { |env| env[:body] = response.body.upcase }
+    response.finish(@env)
+
+    assert_equal "YIKES", response.body
+  end
+
+  def test_env_in_on_complete_is_identical_to_response_env
+    response = Faraday::Response.new
+    callback_env = nil
+    response.on_complete { |env| callback_env = env }
+    response.finish({})
+
+    assert_same response.env, callback_env
+  end
+
   def test_not_success
     assert !@response.success?
   end
