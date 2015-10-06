@@ -1,4 +1,5 @@
 require File.expand_path("../helper", __FILE__)
+require "rack/utils"
 
 class TestParameters < Faraday::TestCase
   # emulates ActiveSupport::SafeBuffer#gsub
@@ -55,10 +56,86 @@ class TestParameters < Faraday::TestCase
   end
 
   def test_encode_nil_nested
-    assert_equal "a=", Faraday::NestedParamsEncoder.encode("a" => nil)
+    assert_equal "a", Faraday::NestedParamsEncoder.encode("a" => nil)
   end
 
   def test_encode_nil_flat
     assert_equal "a", Faraday::FlatParamsEncoder.encode("a" => nil)
+  end
+
+  def test_decode_nested_array_rack_compat
+    query = "a[][one]=1&a[][two]=2&a[][one]=3&a[][two]=4"
+    expected = Rack::Utils.parse_nested_query(query)
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_decode_nested_array_mixed_types
+    query = "a[][one]=1&a[]=2&a[]=&a[]"
+    expected = Rack::Utils.parse_nested_query(query)
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_decode_nested_ignores_invalid_array
+    query = "[][a]=1&b=2"
+    expected = {"a" => "1", "b" => "2"}
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_decode_nested_ignores_repeated_array_notation
+    query = "a[][][]=1"
+    expected = {"a" => ["1"]}
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_decode_nested_ignores_malformed_keys
+    query = "=1&[]=2"
+    expected = {}
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_decode_nested_subkeys_dont_have_to_be_in_brackets
+    query = "a[b]c[d]e=1"
+    expected = {"a" => {"b" => {"c" => {"d" => {"e" => "1"}}}}}
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_decode_nested_raises_error_when_expecting_hash
+    error = assert_raises TypeError do
+      Faraday::NestedParamsEncoder.decode("a=1&a[b]=2")
+    end
+    assert_equal "expected Hash (got String) for param `a'", error.message
+
+    error = assert_raises TypeError do
+      Faraday::NestedParamsEncoder.decode("a[]=1&a[b]=2")
+    end
+    assert_equal "expected Hash (got Array) for param `a'", error.message
+
+    error = assert_raises TypeError do
+      Faraday::NestedParamsEncoder.decode("a[b]=1&a[]=2")
+    end
+    assert_equal "expected Array (got Hash) for param `a'", error.message
+
+    error = assert_raises TypeError do
+      Faraday::NestedParamsEncoder.decode("a=1&a[]=2")
+    end
+    assert_equal "expected Array (got String) for param `a'", error.message
+
+    error = assert_raises TypeError do
+      Faraday::NestedParamsEncoder.decode("a[b]=1&a[b][c]=2")
+    end
+    assert_equal "expected Hash (got String) for param `b'", error.message
+  end
+
+  def test_decode_nested_final_value_overrides_any_type
+    query = "a[b][c]=1&a[b]=2"
+    expected = {"a" => {"b" => "2"}}
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_encode_rack_compat_nested
+    params = { :a => [{:one => "1", :two => "2"}, "3", ""] }
+    expected = Rack::Utils.build_nested_query(params)
+    assert_equal expected.split("&").sort,
+      Faraday::Utils.unescape(Faraday::NestedParamsEncoder.encode(params)).split("&").sort
   end
 end

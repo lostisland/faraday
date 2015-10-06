@@ -46,6 +46,8 @@ module Faraday
             buffer << "#{to_query.call(new_parent, val)}&"
           end
           return buffer.chop
+        elsif value.nil?
+          return parent
         else
           encoded_value = escape(value)
           return "#{parent}=#{encoded_value}"
@@ -63,50 +65,64 @@ module Faraday
 
     def self.decode(query)
       return nil if query == nil
-      # Recursive helper lambda
-      dehash = lambda do |hash|
-        hash.each do |(key, value)|
-          if value.kind_of?(Hash)
-            hash[key] = dehash.call(value)
+
+      params = {}
+      query.split("&").each do |pair|
+        next if pair.empty?
+        key, value = pair.split("=", 2)
+        key = unescape(key)
+        value = unescape(value.gsub(/\+/, ' ')) if value
+
+        subkeys = key.scan(/[^\[\]]+(?:\]?\[\])?/)
+        context = params
+        subkeys.each_with_index do |subkey, i|
+          is_array = subkey =~ /[\[\]]+\Z/
+          subkey = $` if is_array
+          last_subkey = i == subkeys.length - 1
+
+          if !last_subkey || is_array
+            value_type = is_array ? Array : Hash
+            if context[subkey] && !context[subkey].is_a?(value_type)
+              raise TypeError, "expected %s (got %s) for param `%s'" % [
+                value_type.name,
+                context[subkey].class.name,
+                subkey
+              ]
+            end
+            context = (context[subkey] ||= value_type.new)
           end
-        end
-        # Numeric keys implies an array
-        if hash != {} && hash.keys.all? { |key| key =~ /^\d+$/ }
-          hash.sort.inject([]) do |accu, (_, value)|
-            accu << value; accu
+
+          if context.is_a?(Array) && !is_array
+            if !context.last.is_a?(Hash) || context.last.has_key?(subkey)
+              context << {}
+            end
+            context = context.last
           end
-        else
-          hash
+
+          if last_subkey
+            if is_array
+              context << value
+            else
+              context[subkey] = value
+            end
+          end
         end
       end
 
-      empty_accumulator = {}
-      return ((query.split('&').map do |pair|
-        pair.split('=', 2) if pair && !pair.empty?
-      end).compact.inject(empty_accumulator.dup) do |accu, (key, value)|
-        key = unescape(key)
-        if value.kind_of?(String)
-          value = unescape(value.gsub(/\+/, ' '))
-        end
+      dehash(params, 0)
+    end
 
-        array_notation = !!(key =~ /\[\]$/)
-        subkeys = key.split(/[\[\]]+/)
-        current_hash = accu
-        for i in 0...(subkeys.size - 1)
-          subkey = subkeys[i]
-          current_hash[subkey] = {} unless current_hash[subkey]
-          current_hash = current_hash[subkey]
-        end
-        if array_notation
-          current_hash[subkeys.last] = [] unless current_hash[subkeys.last]
-          current_hash[subkeys.last] << value
-        else
-          current_hash[subkeys.last] = value
-        end
-        accu
-      end).inject(empty_accumulator.dup) do |accu, (key, value)|
-        accu[key] = value.kind_of?(Hash) ? dehash.call(value) : value
-        accu
+    # Internal: convert a nested hash with purely numeric keys into an array.
+    # FIXME: this is not compatible with Rack::Utils.parse_nested_query
+    def self.dehash(hash, depth)
+      hash.each do |key, value|
+        hash[key] = dehash(value, depth + 1) if value.kind_of?(Hash)
+      end
+
+      if depth > 0 && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
+        hash.keys.sort.inject([]) { |all, key| all << hash[key] }
+      else
+        hash
       end
     end
   end
