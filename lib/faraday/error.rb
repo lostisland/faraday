@@ -29,7 +29,17 @@ module Faraday
     end
 
     def inspect
-      %(#<#{self.class}>)
+      inner = ''
+      if @wrapped_exception
+        inner << " wrapped=#{@wrapped_exception.inspect}"
+      end
+      if @response
+        inner << " response=#{@response.inspect}"
+      end
+      if inner.empty?
+        inner << " #{super}"
+      end
+      %(#<#{self.class}#{inner}>)
     end
   end
 
