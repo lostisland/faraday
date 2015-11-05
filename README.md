@@ -234,10 +234,10 @@ See [LICENSE][] for details.
 
 [net_http]:     http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
 [persistent]:   https://github.com/drbrain/net-http-persistent
-[travis]:       http://travis-ci.org/lostisland/faraday
-[excon]:        https://github.com/geemus/excon#readme
+[travis]:       https://travis-ci.org/lostisland/faraday
+[excon]:        https://github.com/excon/excon#readme
 [typhoeus]:     https://github.com/typhoeus/typhoeus#readme
-[patron]:       http://toland.github.com/patron/
+[patron]:       http://toland.github.io/patron/
 [eventmachine]: https://github.com/igrigorik/em-http-request#readme
 [httpclient]:   https://github.com/nahi/httpclient
 [jruby]:        http://jruby.org/
