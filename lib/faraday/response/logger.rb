@@ -18,7 +18,7 @@ module Faraday
     def_delegators :@logger, :debug, :info, :warn, :error, :fatal
 
     def call(env)
-      info "#{env.method} #{env.url.to_s}"
+      info "#{env.method} #{env.url}"
       debug('request') { dump_headers env.request_headers }
       debug('request') { dump_body(env[:body]) } if env[:body] && log_body?(:request)
       super
