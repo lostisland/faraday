@@ -35,7 +35,8 @@ module Faraday
             options[:proxy] = {
               :host => proxy[:uri].host,
               :port => proxy[:uri].port,
-              :authorization => [proxy[:user], proxy[:password]]
+              :authorization => [proxy[:user], proxy[:password]],
+              :type => (proxy[:uri].scheme || 'http').to_sym
             }
           end
         end
