@@ -42,7 +42,12 @@ module Faraday
         http.certificate  = ssl[:client_cert]  if ssl[:client_cert]
         http.private_key  = ssl[:client_key]   if ssl[:client_key]
         http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
+        http.ca_path      = ssl[:ca_path]      if ssl[:ca_path]
+        http.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
         http.ssl_version  = ssl[:version]      if ssl[:version]
+        http.ciphers      = ssl[:ciphers]      if ssl[:ciphers]
+        http.verify_callback = ssl[:verify_callback] if ssl[:verify_callback]
+        http.ssl_timeout  = ssl[:ssl_timeout]  if ssl[:ssl_timeout]
       end
     end
   end
