@@ -14,6 +14,9 @@ module Adapters
     include Integration::Common
     include Integration::NonParallel
 
+    # Rack::MockResponse doesn't provide any way to access the reason phrase
+    undef :test_GET_reason_phrase
+
     # not using shared test because error is swallowed by Sinatra
     def test_timeout
       conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
