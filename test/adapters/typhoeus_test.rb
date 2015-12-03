@@ -6,6 +6,9 @@ module Adapters
     def adapter() :typhoeus end
 
     Integration.apply(self, :Parallel) do
+      # Typhoeus::Response doesn't provide an easy way to access the reason phrase
+      undef :test_GET_reason_phrase
+
       # https://github.com/dbalatero/typhoeus/issues/75
       undef :test_GET_with_body
 
