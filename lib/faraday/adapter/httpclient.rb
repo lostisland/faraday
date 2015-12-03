@@ -37,7 +37,7 @@ module Faraday
           :body   => env[:body],
           :header => env[:request_headers]
 
-        save_response env, resp.status, resp.body, resp.headers
+        save_response env, resp.status, resp.body, resp.headers, resp.reason
 
         @app.call env
       rescue ::HTTPClient::TimeoutError, Errno::ETIMEDOUT

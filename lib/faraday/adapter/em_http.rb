@@ -140,7 +140,9 @@ module Faraday
       def perform_single_request(env)
         req = EventMachine::HttpRequest.new(env[:url], connection_config(env))
         req.setup_request(env[:method], request_config(env)).callback { |client|
-          save_response(env, client.response_header.status, client.response) do |resp_headers|
+          status = client.response_header.status
+          reason = client.response_header.http_reason
+          save_response(env, status, client.response, nil, reason) do |resp_headers|
             client.response_header.each do |name, value|
               resp_headers[name.to_sym] = value
             end
