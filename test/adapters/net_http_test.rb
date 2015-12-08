@@ -41,5 +41,22 @@ module Adapters
       assert_equal 1234, http.port
     end
 
+    def test_accepts_file_paths_insted_of_objects_for_ssl_connections
+      `script/generate_certs`
+      url = URI('https://example.com:1234')
+      ssl = {
+        client_cert: 'tmp/faraday-cert.crt',
+        client_key: 'tmp/faraday-cert.key'
+      }
+      env = { ssl: ssl, url: url, request: {} }
+
+      adapter = Faraday::Adapter::NetHttp.new
+      http = adapter.net_http_connection(env)
+      adapter.configure_ssl(http, env[:ssl])
+
+      assert_equal OpenSSL::X509::Certificate, http.cert.class
+      assert_equal OpenSSL::PKey::RSA, http.key.class
+    end
+
   end
 end

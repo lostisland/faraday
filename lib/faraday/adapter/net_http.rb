@@ -100,6 +100,13 @@ module Faraday
         http.verify_mode  = ssl_verify_mode(ssl)
         http.cert_store   = ssl_cert_store(ssl)
 
+        if ssl[:client_cert].class == String
+          ssl[:client_cert] = OpenSSL::X509::Certificate.new(File.read(ssl[:client_cert]))
+        end
+        if ssl[:client_key].class == String
+          ssl[:client_key] = OpenSSL::PKey::RSA.new(File.read(ssl[:client_key]))
+        end
+
         http.cert         = ssl[:client_cert]  if ssl[:client_cert]
         http.key          = ssl[:client_key]   if ssl[:client_key]
         http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
