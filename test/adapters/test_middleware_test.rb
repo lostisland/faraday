@@ -4,11 +4,13 @@ module Adapters
   class TestMiddleware < Faraday::TestCase
     Stubs = Faraday::Adapter.lookup_middleware(:test)::Stubs
     def setup
-      @stubs = Stubs.new
+      @stubs = Stubs.new do |stub|
+        stub.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
+        stub.get(/\A\/resources\/\d+(?:\?|\z)/) { [200, {'Content-Type' => 'text/html'}, 'show'] }
+      end
       @conn  = Faraday.new do |builder|
         builder.adapter :test, @stubs
       end
-      @stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
       @resp = @conn.get('/hello')
     end
 
@@ -26,6 +28,10 @@ module Adapters
 
     def test_middleware_can_be_called_several_times
       assert_equal 'hello', @conn.get("/hello").body
+    end
+
+    def test_middleware_can_handle_regular_expression_path
+      assert_equal 'show', @conn.get("/resources/1").body
     end
 
     def test_middleware_with_get_params
