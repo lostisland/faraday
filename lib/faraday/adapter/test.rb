@@ -85,7 +85,7 @@ module Faraday
         protected
 
         def new_stub(request_method, path, headers = {}, body=nil, &block)
-          normalized_path = (path.is_a? Regexp) ? path : Faraday::Utils.normalize_path(path) 
+          normalized_path = (path.is_a? Regexp) ? path : Faraday::Utils.normalize_path(path)
           (@stack[request_method] ||= []) << Stub.new(normalized_path, headers, body, block)
         end
 
