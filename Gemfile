@@ -8,6 +8,7 @@ group :test do
   gem 'coveralls', :require => false
   gem 'em-http-request', '>= 1.1', :require => 'em-http'
   gem 'em-synchrony', '>= 1.0.3', :require => ['em-synchrony', 'em-synchrony/em-http']
+  gem 'addressable', '< 2.4.0'
   gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
   gem 'mime-types', '~> 1.25', :platforms => [:jruby, :ruby_18]
