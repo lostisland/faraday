@@ -5,6 +5,9 @@ automatically starts a test server in background. Only tests in
 `test/adapters/*_test.rb` require a server, though.
 
 ``` sh
+# setup development dependencies
+$ script/bootstrap
+
 # run the whole suite
 $ script/test
 

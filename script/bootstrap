@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+if ! bundle config build.eventmachine | grep -q 'cppflags='; then
+  if openssl_dir="$(brew --prefix openssl 2>/dev/null)"; then
+    bundle config --local build.eventmachine \
+      --with-cppflags="-I${openssl_dir}/include" \
+      --with-ldflags="-L${openssl_dir}/lib"
+  fi
+fi
+
+bundle install --path vendor/bundle --jobs 4
