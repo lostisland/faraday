@@ -33,12 +33,12 @@ module Faraday
           stack = @stack[request_method]
           consumed = (@consumed[request_method] ||= [])
 
-          if stub = matches?(stack, path, headers, body)
+          stub, meta = matches?(stack, path, headers, body)
+          if stub
             consumed << stack.delete(stub)
-            stub
-          else
-            matches?(consumed, path, headers, body)
+            return stub, meta
           end
+          matches?(consumed, path, headers, body)
         end
 
         def get(path, headers = {}, &block)
@@ -90,7 +90,11 @@ module Faraday
         end
 
         def matches?(stack, path, headers, body)
-          stack.detect { |stub| stub.matches?(path, headers, body) }
+          stack.each do |stub|
+            match_result, meta = stub.matches?(path, headers, body)
+            return stub, meta if match_result
+          end
+          nil
         end
       end
 
@@ -108,15 +112,18 @@ module Faraday
           request_params = request_query ?
             Faraday::Utils.parse_nested_query(request_query) :
             {}
-          path_match?(request_path) &&
+          # meta is a hash use as carrier
+          # that will be yielded to consumer block
+          meta = {}
+          return path_match?(request_path, meta) &&
             params_match?(request_params) &&
             (body.to_s.size.zero? || request_body == body) &&
-            headers_match?(request_headers)
+            headers_match?(request_headers), meta
         end
 
-        def path_match?(request_path)
+        def path_match?(request_path, meta)
           if path.is_a? Regexp
-            path =~ request_path
+            !!(meta[:match_data] = path.match(request_path))
           else
             path == request_path
           end
@@ -154,11 +161,11 @@ module Faraday
         normalized_path = Faraday::Utils.normalize_path(env[:url])
         params_encoder = env.request.params_encoder || Faraday::Utils.default_params_encoder
 
-        if stub = stubs.match(env[:method], normalized_path, env.request_headers, env[:body])
+        stub, meta = stubs.match(env[:method], normalized_path, env.request_headers, env[:body])
+        if stub
           env[:params] = (query = env[:url].query) ?
-            params_encoder.decode(query)  :
-            {}
-          status, headers, body = stub.block.call(env)
+            params_encoder.decode(query) : {}
+          status, headers, body = stub.block.call(*[env, meta].take(stub.block.arity))
           save_response(env, status, body, headers)
         else
           raise Stubs::NotFound, "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"
