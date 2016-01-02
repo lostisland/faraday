@@ -190,7 +190,10 @@ module Faraday
         if stub
           env[:params] = (query = env[:url].query) ?
             params_encoder.decode(query) : {}
-          status, headers, body = stub.block.call(*[env, meta].take(stub.block.arity))
+          block_arity = stub.block.arity
+          status, headers, body = (block_arity >= 0) ?
+            stub.block.call(*[env, meta].take(block_arity)) :
+            stub.block.call(env, meta)
           save_response(env, status, body, headers)
         else
           raise Stubs::NotFound, "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"
