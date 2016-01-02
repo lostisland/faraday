@@ -85,7 +85,7 @@ module Faraday
         protected
 
         def new_stub(request_method, path, headers = {}, body=nil, &block)
-          normalized_path = (path.is_a? Regexp) ? path : Faraday::Utils.normalize_path(path)
+          normalized_path = path.is_a?(Regexp) ? path : Faraday::Utils.normalize_path(path)
           (@stack[request_method] ||= []) << Stub.new(normalized_path, headers, body, block)
         end
 
@@ -96,7 +96,7 @@ module Faraday
 
       class Stub < Struct.new(:path, :params, :headers, :body, :block)
         def initialize(full, headers, body, block)
-          path, query = (full.is_a? Regexp) ? full : full.split('?')
+          path, query = full.respond_to?(:split) ? full.split("?") : full
           params = query ?
             Faraday::Utils.parse_nested_query(query) :
             {}
