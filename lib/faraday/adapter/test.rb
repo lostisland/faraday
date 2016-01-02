@@ -1,16 +1,41 @@
 module Faraday
   class Adapter
-    # test = Faraday::Connection.new do
-    #   use Faraday::Adapter::Test do |stub|
-    #     stub.get '/nigiri/sake.json' do
-    #       [200, {}, 'hi world']
+    # Examples
+    #
+    #   test = Faraday::Connection.new do
+    #     use Faraday::Adapter::Test do |stub|
+    #       # simply define matcher to match the request
+    #       stub.get '/resource.json' do
+    #         # return static content
+    #         [200, {'Content-Type' => 'application/json'}, 'hi world']
+    #       end
+    #       
+    #       # response with content generated based on request
+    #       stub.get '/showget' do |env|
+    #         [200, {'Content-Type' => 'text/plain'}, env[:method].to_s]
+    #       end
+    #       
+    #       # regular expression can be used as matching filter
+    #       stub.get /\A\/items\/(\d+)\z/ do |env, meta|
+    #         # in case regular expression is used an instance of MatchData can be received
+    #         [200, {'Content-Type' => 'text/plain'}, "showing item: #{meta[:match_data][1]}"]
+    #       end
     #     end
     #   end
-    # end
+    #   
+    #   resp = test.get '/resource.json'
+    #   resp.body # => 'hi world'
+    #   
+    #   resp = test.get '/showget'
+    #   resp.body # => 'get'
+    #   
+    #   resp = test.get '/items/1'
+    #   resp.body # => 'showing item: 1'
+    #   
+    #   resp = test.get '/items/2'
+    #   resp.body # => 'showing item: 2'
     #
-    # resp = test.get '/nigiri/sake.json'
-    # resp.body # => 'hi world'
-    #
+
     class Test < Faraday::Adapter
       attr_accessor :stubs
 
