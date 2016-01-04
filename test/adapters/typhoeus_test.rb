@@ -6,9 +6,6 @@ module Adapters
     def adapter() :typhoeus end
 
     Integration.apply(self, :Parallel) do
-      # Typhoeus::Response doesn't provide an easy way to access the reason phrase
-      undef :test_GET_reason_phrase
-
       # https://github.com/dbalatero/typhoeus/issues/75
       undef :test_GET_with_body
 
@@ -18,6 +15,13 @@ module Adapters
 
       # inconsistent outcomes ranging from successful response to connection error
       undef :test_proxy_auth_fail if ssl_mode?
+
+      # Typhoeus::Response doesn't provide an easy way to access the reason phrase,
+      # so override the shared test from Common.
+      def test_GET_reason_phrase
+        response = get('echo')
+        assert_nil response.reason_phrase
+      end
 
       def test_binds_local_socket
         host = '1.2.3.4'
