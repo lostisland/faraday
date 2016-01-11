@@ -92,6 +92,10 @@ module Faraday
 
     alias require_lib require_libs
 
+    def respond_to?(symbol)
+      default_connection.respond_to?(symbol) || super
+    end
+
   private
     # Internal: Proxies method calls on the Faraday constant to
     # #default_connection.
