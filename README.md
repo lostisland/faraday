@@ -63,6 +63,7 @@ stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.
 
 ```ruby
 response = Faraday.get 'http://sushi.com/nigiri/sake.json'
+response = Faraday.post url, body, headers
 ```
 
 ### Changing how parameters are serialized
