@@ -223,7 +223,7 @@ end
 stub = stub_request(:post, "example.com")
   .with(body: "hello world", status: 200)
   .to_return(body: "a response to post")
-expect(stub).to_have_been_requested
+expect(stub).to have_been_requested
 
 expect(
   a_request(:get, "example.com")
