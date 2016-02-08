@@ -200,6 +200,37 @@ resp = test.get '/else' #=> raises "no such stub" error
 stubs.verify_stubbed_calls
 ```
 
+### Faraday Testing With WebMock
+
+[WebMock](https://github.com/bblimke/webmock) is a library for stubbing HTTP requests.
+
+Here's an example of testing Faraday with WebMock in an RSpec test suite:
+
+```ruby
+# In your code:
+Faraday.post do |req|
+  req.body = "hello world"
+  req.url = "http://example.com/"
+end
+
+Faraday.get do |req|
+  req.url = "http://example.com/"
+  req.params['a'] = 1
+  req.params['b'] = 2
+end
+
+# In the RSpec file:
+stub = stub_request(:post, "example.com")
+  .with(body: "hello world", status: 200)
+  .to_return(body: "a response to post")
+expect(stub).to_have_been_requested
+
+expect(
+  a_request(:get, "example.com")
+    .with(query: { a: 1, b: 2 })
+).to have_been_made.once
+```
+
 ## TODO
 
 * support streaming requests/responses
