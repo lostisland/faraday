@@ -18,20 +18,23 @@ module EmHttpSslPatch
       rescue OpenSSL::X509::StoreError => e
         raise e unless e.message == 'cert already in hash table'
       end
-      true
-    else
-      raise OpenSSL::SSL::SSLError.new(%(unable to verify the server certificate for "#{host}"))
     end
+
+    true
   end
 
   def ssl_handshake_completed
     return true unless verify_peer?
 
+    unless certificate_store.verify(@last_seen_cert)
+      raise OpenSSL::SSL::SSLError.new(%(unable to verify the server certificate for "#{host}"))
+    end
+
     unless OpenSSL::SSL.verify_certificate_identity(@last_seen_cert, host)
       raise OpenSSL::SSL::SSLError.new(%(host "#{host}" does not match the server certificate))
-    else
-      true
     end
+
+    true
   end
 
   def verify_peer?
