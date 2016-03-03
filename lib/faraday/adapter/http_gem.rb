@@ -3,6 +3,14 @@ module Faraday
     class HttpGem < Faraday::Adapter
       dependency 'http'
 
+      HTTP_EXCEPTIONS = [
+        HTTP::ConnectionError
+      ]
+
+      HTTP_EXCEPTIONS << OpenSSL::SSL::SSLError if defined?(OpenSSL)
+      HTTP_EXCEPTIONS << Java::JavaNet::ConnectException if defined?(Java)
+
+
       def initialize(app, options = {})
         @client = ::HTTP::Client.new options
         super(app)
@@ -21,10 +29,12 @@ module Faraday
               :headers => env[:request_headers],
               :proxy => proxy_options(env)
             }.merge(socket_options(env)))
-        rescue HTTP::ConnectionError => e
-          raise Faraday::Error::ConnectionFailed, e
-        rescue OpenSSL::SSL::SSLError => e
-          raise Faraday::SSLError, e
+        rescue *HTTP_EXCEPTIONS => err
+          if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
+            raise Faraday::SSLError, err
+          else
+            raise Faraday::Error::ConnectionFailed, err
+          end
         end
 
         save_response env, res.status, res.to_s, res.headers.to_h
