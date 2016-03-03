@@ -14,7 +14,9 @@ module Faraday
       :em_http => [:EMHttp, 'em_http'],
       :excon => [:Excon, 'excon'],
       :rack => [:Rack, 'rack'],
-      :httpclient => [:HTTPClient, 'httpclient']
+      :httpclient => [:HTTPClient, 'httpclient'],
+      :http_gem => [:HttpGem, 'http_gem'],
+      :http_gem_celluloid_io => [:HttpGemCelluloidIO, 'http_gem_celluloid_io']
 
     # Public: This module marks an Adapter as supporting parallel requests.
     module Parallelism
