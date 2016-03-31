@@ -6,6 +6,6 @@ module Adapters
 
     Integration.apply(self, :NonParallel) do
       def test_timeout; end
-    end
+    end unless RUBY_VERSION < '2.0'
   end
 end
