@@ -15,7 +15,7 @@ module Faraday
       def socket_options(env)
         rv = super(env)
         
-        if env[:url].scheme == 'https' && ssl = env[:ssl]
+        if env[:url].scheme == 'https' && env[:ssl]
           rv.merge!( :ssl_socket_class => Celluloid::IO::SSLSocket )
         else
           rv.merge!( :socket_class => Celluloid::IO::TCPSocket )
