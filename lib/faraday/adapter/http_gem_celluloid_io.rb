@@ -6,6 +6,7 @@ module Faraday
     class HttpGemCelluloidIO < HttpGem
 
       dependency 'http'
+      dependency 'celluloid/current'
       dependency 'celluloid/io'
 
 
