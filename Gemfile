@@ -2,13 +2,8 @@ source 'https://rubygems.org'
 
 gem 'ffi-ncurses', '~> 0.3', :platforms => :jruby
 gem 'jruby-openssl', '~> 0.8.8', :platforms => :jruby
-
 # Newer versions drop support for Ruby < 1.9.3, but we still support them.
-if RUBY_VERSION >= '1.9.3'
-  gem 'rake'
-else
-  gem 'rake', '< 11.0.0'
-end
+gem 'rake', '< 11.0.0'
 
 group :test do
   gem 'coveralls', :require => false
