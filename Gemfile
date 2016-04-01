@@ -20,8 +20,10 @@ group :test do
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 0.3.3', :platforms => [:ruby_18, :ruby_19, :ruby_20, :ruby_21]
-  gem 'celluloid-io', :platforms => [:jruby, :ruby_20, :ruby_21, :ruby_22]
-  gem 'http', '>= 0.6', :platforms => [:jruby, :ruby_20, :ruby_21, :ruby_22]
+  unless RUBY_VERSION < '2.0'
+    gem 'celluloid-io'
+    gem 'http', '>= 0.6'
+  end
 end
 
 gemspec
