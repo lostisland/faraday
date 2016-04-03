@@ -412,9 +412,6 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_respond_to
-    assert Faraday.default_connection.respond_to?(:get)
-    assert Faraday.default_connection.respond_to?(:post)
-
     assert Faraday.respond_to?(:get)
     assert Faraday.respond_to?(:post)
   end
