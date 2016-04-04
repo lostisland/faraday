@@ -35,12 +35,17 @@ module Faraday
     def create_multipart(env, params)
       boundary = env.request.boundary
       parts = process_params(params) do |key, value|
-        Faraday::Parts::Part.new(boundary, key, value)
+        part = Faraday::Parts::Part.new(boundary, key, value)
+        # use content-length of given part
+        if value.is_a?(UploadIO) && value.opts[:use_part_content_length] == key
+          env.request_headers[Faraday::Env::ContentLength] = (part.length - 2).to_s
+        end
+        part
       end
       parts << Faraday::Parts::EpiloguePart.new(boundary)
-
       body = Faraday::CompositeReadIO.new(parts)
-      env.request_headers[Faraday::Env::ContentLength] = body.length.to_s
+      # set content-length when not set for the uploaded part
+      env.request_headers[Faraday::Env::ContentLength] ||= body.length.to_s
       return body
     end
 
