@@ -411,6 +411,11 @@ class TestConnection < Faraday::TestCase
     assert_equal '/omnom', conn.path_prefix
   end
 
+  def test_respond_to
+    assert Faraday.respond_to?(:get)
+    assert Faraday.respond_to?(:post)
+  end
+
   def env_url(url, params)
     conn = Faraday::Connection.new(url, :params => params)
     yield(conn) if block_given?
