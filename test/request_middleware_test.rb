@@ -136,6 +136,15 @@ class RequestMiddlewareTest < Faraday::TestCase
       response.headers['Content-Type']
   end
 
+  def test_multipart_with_content_length_limit_multivalue
+    payload = {a: 1, b: 2, c: Faraday::UploadIO.new(__FILE__, 'text/x-ruby', 'request_middleware_test.rb', use_part_content_length: :c), d: "1"}
+    response = @conn.post('/echo', payload)
+    # validate content-length
+    parts = response.env.body.instance_variable_get("@parts")
+    content_length = response.env.request_headers["Content-Length"]
+    assert_equal (parts.to_a[2].length - 2).to_s, content_length
+  end
+
   def test_multipart_with_arrays
     # assume params are out of order
     regexes = [
