@@ -138,6 +138,28 @@ later, response. Some keys are:
 :response_headers
 ```
 
+## Registering custom middleware
+
+Custom middleware classes need to be registered with Faraday before they can be
+referenced in the middleware stack. The `Faraday::Request` and
+`Faraday::Response` classes both extend `Faraday::MiddlewareRegistry`, which
+exposes a `register_middleware` method that can be used to register custom
+middleware classes.
+
+A simple example is shown below. Refer to the documentation on
+the `Faraday::MiddlewareRegistry#register_middleware` method for all of the
+supported usages.
+
+```ruby
+class MyMiddleware < Faraday::Middleware
+  def call(env)
+    # do something with the request
+  end
+end
+
+Faraday::Request.register_middleware(my_middleware: MyMiddleware)
+```
+
 ## Using Faraday for testing
 
 ```ruby
