@@ -416,6 +416,18 @@ class TestConnection < Faraday::TestCase
     assert Faraday.respond_to?(:post)
   end
 
+  def test_default_connection_options
+    Faraday.default_connection_options.request.timeout = 10
+    conn = Faraday.new 'http://sushi.com/foo'
+    assert_equal 10, conn.options.timeout
+  end
+
+  def test_default_connection_options_without_url
+    Faraday.default_connection_options.request.timeout = 10
+    conn = Faraday.new url: 'http://sushi.com/foo'
+    assert_equal 10, conn.options.timeout
+  end
+
   def env_url(url, params)
     conn = Faraday::Connection.new(url, :params => params)
     yield(conn) if block_given?
