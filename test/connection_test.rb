@@ -424,7 +424,7 @@ class TestConnection < Faraday::TestCase
 
   def test_default_connection_options_without_url
     Faraday.default_connection_options.request.timeout = 10
-    conn = Faraday.new url: 'http://sushi.com/foo'
+    conn = Faraday.new :url => 'http://sushi.com/foo'
     assert_equal 10, conn.options.timeout
   end
 
