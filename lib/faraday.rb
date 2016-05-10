@@ -66,11 +66,7 @@ module Faraday
     # Returns a Faraday::Connection.
     def new(url = nil, options = nil)
       block = block_given? ? Proc.new : nil
-      if url.is_a?(Hash)
-        url = default_connection_options.merge(url)
-      else
-        options = options ? default_connection_options.merge(options) : default_connection_options.dup
-      end
+      options = options ? default_connection_options.merge(options) : default_connection_options.dup
       Faraday::Connection.new(url, options, &block)
     end
 
