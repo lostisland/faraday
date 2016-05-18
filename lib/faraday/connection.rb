@@ -126,7 +126,7 @@ module Faraday
     #     req.body = JSON.generate(:query => {...})
     #   end
     #
-    # Yields a Faraday::Response for further request customizations.
+    # Yields a Faraday::Request for further request customizations.
     # Returns a Faraday::Response.
     #
     # Signature
@@ -163,7 +163,7 @@ module Faraday
     #     req.body = JSON.generate(:user => 'kimchy', ...)
     #   end
     #
-    # Yields a Faraday::Response for further request customizations.
+    # Yields a Faraday::Request for further request customizations.
     # Returns a Faraday::Response.
     #
     # Signature
