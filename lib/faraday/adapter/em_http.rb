@@ -140,6 +140,11 @@ module Faraday
       def perform_single_request(env)
         req = EventMachine::HttpRequest.new(env[:url], connection_config(env))
         req.setup_request(env[:method], request_config(env)).callback { |client|
+          if env[:request].stream_response?
+            warn "Streaming downloads for #{self.class.name} are not yet implemented."
+            env[:request].on_data.call(client.response, client.response.bytesize)
+          end
+
           save_response(env, client.response_header.status, client.response) do |resp_headers|
             client.response_header.each do |name, value|
               resp_headers[name.to_sym] = value
