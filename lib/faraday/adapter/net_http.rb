@@ -21,6 +21,7 @@ module Faraday
         Net::HTTPHeaderSyntaxError,
         Net::ProtocolError,
         SocketError,
+        Zlib::BufError,
         Zlib::GzipFile::Error,
       ]
 
