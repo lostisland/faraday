@@ -70,6 +70,10 @@ module Faraday
       finished? && env.success?
     end
 
+    def redirect?
+      finished? && env.redirect?
+    end
+
     # because @on_complete_callbacks cannot be marshalled
     def marshal_dump
       !finished? ? nil : {
