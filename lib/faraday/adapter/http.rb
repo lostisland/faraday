@@ -44,9 +44,9 @@ module Faraday
         # Returns a OpenSSL::SSL::SSLContext or NilClass if
         # the env doesn't have SSL information.
         def context
-          return unless env[:url].scheme == 'https' && env[:ssl]
+          return unless @env[:url].scheme == 'https' && @env[:ssl]
 
-          ssl = env[:ssl]
+          ssl = @env[:ssl]
           ctx = OpenSSL::SSL::SSLContext.new
 
           ctx.verify_mode  = verify_mode(ssl)
@@ -63,8 +63,6 @@ module Faraday
         end
 
         private
-
-        attr_reader :env
 
         # Private: Gets the certificate storage item from the env.
         #
@@ -131,13 +129,11 @@ module Faraday
 
           save_response(env, status, body, headers)
 
-          app.call env
+          @app.call env
         end
       end
 
       private
-
-      attr_reader :app, :options
 
       # Private: Controls possible errors during the request and
       # raises the equivalent Faraday::Error instances.
@@ -161,7 +157,7 @@ module Faraday
       #
       # Returns an HTTP::Client instance.
       def build_client(env)
-        ::HTTP::Client.new options.merge(SSL.new(env).to_h)
+        ::HTTP::Client.new @options.merge(SSL.new(env).to_h)
       end
 
       # Private: Sets the proxy information in the http client.
