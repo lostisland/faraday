@@ -25,6 +25,11 @@ module Faraday
     end
 
     def on_complete(env)
+      # Not ideal, but better than a cryptic error: https://github.com/lostisland/faraday/issues/317
+      if env.status.nil?
+        raise 'Response data is empty! Did you forget to explicitly specify an adapter?'
+      end
+
       info('Status') { env.status.to_s }
       debug('response') { dump_headers env.response_headers }
       debug('response') { dump_body env[:body] } if env[:body] && log_body?(:response)

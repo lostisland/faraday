@@ -79,5 +79,17 @@ module Adapters
       app.get '/rubbles', nil, :accept => 'text/html'
       assert_match %([\"Barney\", \"Betty\", \"Bam Bam\"]\n), @io.string
     end
+
+    def test_helpful_error_on_missing_adapter
+      app = Faraday.new do |b|
+        b.response :logger, @logger
+      end
+
+      error = assert_raises do
+        app.get '/test'
+      end
+
+      assert_match /specify an adapter/, error.message
+    end
   end
 end
