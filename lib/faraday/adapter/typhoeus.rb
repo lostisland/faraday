@@ -67,6 +67,11 @@ module Faraday
             raise Error::ClientError, resp.curl_error_message
           end
 
+          if env[:request].stream_response?
+            warn "Streaming downloads for #{self.class.name} are not yet implemented."
+            env[:request].on_data.call(resp.body, resp.body.bytesize)
+          end
+
           save_response(env, resp.code, resp.body) do |response_headers|
             response_headers.parse resp.headers
           end

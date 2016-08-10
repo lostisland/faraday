@@ -28,6 +28,7 @@ module Faraday
     end
 
     extend Parallelism
+
     self.supports_parallel = false
 
     def call(env)

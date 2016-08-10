@@ -1,4 +1,5 @@
 require 'sinatra/base'
+load 'test/helper.rb'
 
 module Faraday
 class LiveServer < Sinatra::Base
@@ -15,6 +16,17 @@ class LiveServer < Sinatra::Base
 
       content_type 'text/plain'
       return out
+    end
+  end
+
+  [:get, :post].each do |method|
+    send(method, '/stream') do
+      content_type :txt
+      stream do |out|
+        out << request.GET.inspect if request.GET.any?
+        out << request.POST.inspect if request.POST.any?
+        out << Faraday::TestCase.big_string
+      end
     end
   end
 

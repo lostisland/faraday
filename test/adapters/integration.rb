@@ -56,6 +56,70 @@ module Adapters
       end
     end
 
+    module ParallelNonStreaming
+      def test_callback_is_called_in_parallel_with_no_streaming_support
+        resp1, resp2 = nil, nil
+        streamed1, streamed2 = nil, nil
+
+        connection = create_connection
+        err = capture_warnings do
+          connection.in_parallel do
+            resp1, streamed1 = streaming_request(connection, :get, 'stream?a=1')
+            resp2, streamed2 = streaming_request(connection, :get, 'stream?b=2', :chunk_size => 16*1024)
+            assert connection.in_parallel?
+            assert_nil resp1.body
+            assert_nil resp2.body
+            assert_equal [], streamed1
+            assert_equal [], streamed2
+          end
+        end
+        assert !connection.in_parallel?
+        assert_match(/Streaming .+ not yet implemented/, err)
+        opts = {:streaming? => false, :chunk_size => 16*1024}
+        check_streaming_response(streamed1, opts.merge(:prefix => '{"a"=>"1"}'))
+        check_streaming_response(streamed2, opts.merge(:prefix => '{"b"=>"2"}'))
+      end
+    end
+
+    module Streaming
+      def test_GET_streaming
+        response, streamed = streaming_request(create_connection, :get, 'stream')
+        check_streaming_response(streamed, :chunk_size => 16*1024)
+        assert_equal "", response.body
+      end
+
+      def test_non_GET_streaming
+        response, streamed = streaming_request(create_connection, :get, 'stream')
+        check_streaming_response(streamed, :chunk_size => 16*1024)
+
+        assert_equal "", response.body
+      end
+    end
+
+    module NonStreaming
+      def test_GET_streaming
+        response, streamed = nil
+        err = capture_warnings do
+          response, streamed = streaming_request(create_connection, :get, 'stream')
+        end
+        assert_match(/Streaming .+ not yet implemented/, err)
+        check_streaming_response(streamed, :streaming? => false)
+        assert_equal big_string, response.body
+      end
+
+      def test_non_GET_streaming
+        response, streamed = nil
+        err = capture_warnings do
+          response, streamed = streaming_request(create_connection, :get, 'stream')
+        end
+
+        assert_match(/Streaming .+ not yet implemented/, err)
+
+        check_streaming_response(streamed, :streaming? => false)
+        assert_equal big_string, response.body
+      end
+    end
+
     module Compression
       def test_GET_handles_compression
         res = get('echo_header', :name => 'accept-encoding')
@@ -250,6 +314,44 @@ module Adapters
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
           adapter_handler = conn.builder.handlers.last
           conn.builder.insert_before adapter_handler, Faraday::Response::RaiseError
+        end
+      end
+
+      def streaming_request(connection, method, path, options={})
+        streamed = []
+        response = connection.send(method, path) do |req|
+          req.options.on_data = Proc.new{|*args| streamed << args}
+        end
+
+        [response, streamed]
+      end
+
+      def check_streaming_response(streamed, options={})
+        opts = {
+          :prefix => '',
+          :streaming? => true
+        }.merge(options)
+        expected_response = opts[:prefix] + big_string
+
+        chunks, sizes = streamed.transpose
+
+        # Check that the total size of the chunks (via the last size returned)
+        # is the same size as the expected_response
+        assert_equal sizes.last, expected_response.size
+
+        start_index = 0
+        expected_chunks = []
+        chunks.each do |actual_chunk|
+          expected_chunk = expected_response[start_index..((start_index + actual_chunk.bytesize)-1)]
+          expected_chunks << expected_chunk
+          start_index += expected_chunk.bytesize
+        end
+
+        # it's easier to read a smaller portion, so we check that first
+        assert_equal expected_chunks[0][0..255], chunks[0][0..255]
+
+        [expected_chunks, chunks].transpose.each do |expected, actual|
+          assert_equal expected, actual
         end
       end
     end
