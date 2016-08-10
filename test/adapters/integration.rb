@@ -181,7 +181,7 @@ module Adapters
 
       def test_connection_error
         assert_raises Faraday::Error::ConnectionFailed do
-          get 'http://localhost:4'
+          create_connection.get 'http://localhost:4'
         end
       end
 
