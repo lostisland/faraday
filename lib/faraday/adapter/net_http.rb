@@ -46,7 +46,7 @@ module Faraday
             end
           end
 
-          save_response(env, http_response.code.to_i, http_response.body || '') do |response_headers|
+          save_response(env, http_response.code.to_i, http_response.body || '', nil, http_response.message) do |response_headers|
             http_response.each_header do |key, value|
               response_headers[key] = value
             end

@@ -35,7 +35,10 @@ module Faraday
           raise Error::ConnectionFailed, $!
         end
 
-        save_response(env, response.status, response.body, response.headers)
+        # Remove the "HTTP/1.1 200", leaving just the reason phrase
+        reason_phrase = response.status_line.gsub(/^.* \d{3} /, '')
+
+        save_response(env, response.status, response.body, response.headers, reason_phrase)
 
         @app.call env
       rescue ::Patron::TimeoutError => err
