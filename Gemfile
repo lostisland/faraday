@@ -2,8 +2,7 @@ source 'https://rubygems.org'
 
 gem 'ffi-ncurses', '~> 0.3', :platforms => :jruby
 gem 'jruby-openssl', '~> 0.8.8', :platforms => :jruby
-# Newer versions drop support for Ruby < 1.9.3, but we still support them.
-gem 'rake', '< 11.0.0'
+gem 'rake'
 
 group :test do
   gem 'coveralls', :require => false
@@ -21,6 +20,16 @@ group :test do
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 0.3.3', :platforms => [:ruby_18, :ruby_19, :ruby_20, :ruby_21]
+
+  # Below are dependencies of the gems we actually care about that have
+  # dropped support for older Rubies. Because they are not first-level
+  # dependencies, we don't need to specify an unconstrained version, so we can
+  # lump them together here.
+
+  if RUBY_VERSION < '2'
+    gem 'json', '< 2'
+    gem 'tins', '< 1.7.0'
+  end
 end
 
 gemspec
