@@ -56,7 +56,7 @@ module Faraday
     #                     :password - String (optional)
     def initialize(url = nil, options = nil)
       if url.is_a?(Hash)
-        options = ConnectionOptions.from(url)
+        options = options ? options.merge(url) : ConnectionOptions.from(url)
         url     = options.url
       else
         options = ConnectionOptions.from(options)
