@@ -358,7 +358,7 @@ module Faraday
     #
     # method  - The Symbol HTTP method.
     # url     - The String or URI to access.
-    # body    - The String body
+    # body    - The request body that will eventually be converted to a string.
     # headers - Hash of unencoded HTTP header key/value pairs.
     #
     # Returns a Faraday::Response.
