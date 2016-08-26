@@ -34,11 +34,7 @@ class OptionsTest < Faraday::TestCase
     options = SubOptions.new
     assert !options.key?(:sub)
     options.sub = 1
-    if RUBY_VERSION >= '1.9'
-      assert options.key?(:sub)
-    else
-      assert options.key?("sub")
-    end
+    assert options.key?(:sub)
   end
 
   def test_each_value
