@@ -210,7 +210,7 @@ stubs.verify_stubbed_calls
 This library aims to support and is [tested against][travis] the following Ruby
 implementations:
 
-* Ruby 1.8.7+
+* Ruby 1.9.3+
 * [JRuby][] 1.7+
 * [Rubinius][] 2+
 
