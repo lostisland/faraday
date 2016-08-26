@@ -122,15 +122,6 @@ module Faraday
     @default_connection_options ||= ConnectionOptions.new
   end
 
-  if (!defined?(RUBY_ENGINE) || "ruby" == RUBY_ENGINE) && RUBY_VERSION < '1.9'
-    begin
-      require 'system_timer'
-      Timer = SystemTimer
-    rescue LoadError
-      warn "Faraday: you may want to install system_timer for reliable timeouts"
-    end
-  end
-
   unless const_defined? :Timer
     require 'timeout'
     Timer = Timeout

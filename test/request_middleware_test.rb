@@ -17,20 +17,6 @@ class RequestMiddlewareTest < Faraday::TestCase
     end
   end
 
-  def with_utf8
-    if defined?(RUBY_VERSION) && RUBY_VERSION.match(/1.8.\d/)
-      begin
-        previous_kcode = $KCODE
-        $KCODE = "UTF8"
-        yield
-      ensure
-        $KCODE = previous_kcode
-      end
-    else
-      yield
-    end
-  end
-
   def test_does_nothing_without_payload
     response = @conn.post('/echo')
     assert_nil response.headers['Content-Type']
@@ -78,16 +64,6 @@ class RequestMiddlewareTest < Faraday::TestCase
       assert_equal "str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2", response.body
     }
     assert err.empty?, "stderr did include: #{err}"
-  end
-
-  def test_url_encoded_unicode_with_kcode_set
-    with_utf8 do
-      err = capture_warnings {
-        response = @conn.post('/echo', {:str => "eé cç aã aâ"})
-        assert_equal "str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2", response.body
-      }
-      assert err.empty?, "stderr did include: #{err}"
-    end
   end
 
   def test_url_encoded_nested_keys

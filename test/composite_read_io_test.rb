@@ -86,21 +86,19 @@ class CompositeReadIOTest < Faraday::TestCase
     end
   end
 
-  unless RUBY_VERSION < '1.9'
-    def test_read_from_multibyte
-      File.open(File.dirname(__FILE__) + '/multibyte.txt') do |utf8|
-        io = composite_io(part("\x86"), Part.new(utf8))
-        assert_equal bin("\x86\xE3\x83\x95\xE3\x82\xA1\xE3\x82\xA4\xE3\x83\xAB\n"), io.read
-      end
+  def test_read_from_multibyte
+    File.open(File.dirname(__FILE__) + '/multibyte.txt') do |utf8|
+      io = composite_io(part("\x86"), Part.new(utf8))
+      assert_equal bin("\x86\xE3\x83\x95\xE3\x82\xA1\xE3\x82\xA4\xE3\x83\xAB\n"), io.read
     end
+  end
 
-    def test_limited_from_multibyte
-      File.open(File.dirname(__FILE__) + '/multibyte.txt') do |utf8|
-        io = composite_io(part("\x86"), Part.new(utf8))
-        assert_equal bin("\x86\xE3\x83"), io.read(3)
-        assert_equal bin("\x95\xE3\x82"), io.read(3)
-        assert_equal bin("\xA1\xE3\x82\xA4\xE3\x83\xAB\n"), io.read(8)
-      end
+  def test_limited_from_multibyte
+    File.open(File.dirname(__FILE__) + '/multibyte.txt') do |utf8|
+      io = composite_io(part("\x86"), Part.new(utf8))
+      assert_equal bin("\x86\xE3\x83"), io.read(3)
+      assert_equal bin("\x95\xE3\x82"), io.read(3)
+      assert_equal bin("\xA1\xE3\x82\xA4\xE3\x83\xAB\n"), io.read(8)
     end
   end
 

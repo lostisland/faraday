@@ -20,11 +20,7 @@
 set -e
 
 if [[ "$RUBYOPT" != *"bundler/setup"* ]]; then
-  if [[ "$(ruby -v)" == "ruby 1.8."* ]]; then
-    exec bundle exec "$0"
-  else
-    export RUBYOPT="-rbundler/setup $RUBYOPT"
-  fi
+  export RUBYOPT="-rbundler/setup $RUBYOPT"
 fi
 
 port=3999

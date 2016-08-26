@@ -1,14 +1,12 @@
-if RUBY_VERSION >= '1.9'
-  require 'simplecov'
-  require 'coveralls'
+require 'simplecov'
+require 'coveralls'
 
-  SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, Coveralls::SimpleCov::Formatter]
+SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, Coveralls::SimpleCov::Formatter]
 
-  SimpleCov.start do
-    add_filter '/bundle/'
-    add_filter '/test/'
-    minimum_coverage(87)
-  end
+SimpleCov.start do
+  add_filter '/bundle/'
+  add_filter '/test/'
+  minimum_coverage(87)
 end
 
 gem 'minitest' if defined? Bundler
