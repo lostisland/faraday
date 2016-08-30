@@ -96,6 +96,16 @@ module Adapters
 
         assert_equal "", response.body
       end
+
+      def test_GET_streaming_empty_response
+        _, streamed = streaming_request(create_connection, :get, 'empty_stream')
+        assert_equal [["", 0]], streamed
+      end
+
+      def test_non_GET_streaming_empty_response
+        _, streamed = streaming_request(create_connection, :post, 'empty_stream')
+        assert_equal [["", 0]], streamed
+      end
     end
 
     module NonStreaming
@@ -345,7 +355,7 @@ module Adapters
 
         # Check that the total size of the chunks (via the last size returned)
         # is the same size as the expected_response
-        assert_equal sizes.last, expected_response.size
+        assert_equal sizes.last, expected_response.bytesize
 
         start_index = 0
         expected_chunks = []

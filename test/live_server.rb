@@ -30,6 +30,15 @@ class LiveServer < Sinatra::Base
     end
   end
 
+  [:get, :post].each do |method|
+    send(method, '/empty_stream') do
+      content_type :txt
+      stream do |out|
+        out << ""
+      end
+    end
+  end
+
   get '/echo_header' do
     header = "HTTP_#{params[:name].tr('-', '_').upcase}"
     request.env.fetch(header) { 'NONE' }
