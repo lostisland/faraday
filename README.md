@@ -102,6 +102,19 @@ conn.get do |req|
   req.options.timeout = 5           # open/read timeout in seconds
   req.options.open_timeout = 2      # connection open timeout in seconds
 end
+
+## Streaming responses ##
+
+streamed = []                       # A buffer to store the streamed data
+conn.get('/nigiri/sake.json') do |req|
+  # Set a callback which will receive tuples of chunk Strings
+  # and the sum of characters received so far
+  req.options.on_data = Proc.new do |chunk, overall_received_bytes|
+    puts "Received #{overall_received_bytes} characters"
+    streamed << chunk
+  end
+end
+streamed.join
 ```
 
 And you can inject arbitrary data into the request using the `context` option:
