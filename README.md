@@ -73,7 +73,7 @@ either per-connection or per-request basis.
 
 ```ruby
 # per-connection setting
-conn = Faraday.new :params_encoder => Faraday::FlatParamsEncoder
+conn = Faraday.new :request => { :params_encoder => Faraday::FlatParamsEncoder }
 
 conn.get do |req|
   # per-request setting:
