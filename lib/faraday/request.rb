@@ -46,12 +46,16 @@ module Faraday
     end
 
     def url(path, params = nil)
-      path = Utils.URI(path)
-      if query = path.query
-        path = path.dup
-        path.query = nil
+      if path.respond_to? :query
+        if query = path.query
+          path = path.dup
+          path.query = nil
+        end
+      else
+        anchor_index = path.index('#')
+        path = path.slice(0, anchor_index) unless anchor_index.nil?
+        path, query = path.split('?', 2)
       end
-
       self.path = path
       self.params.merge_query query, options.params_encoder
       self.params.update(params) if params

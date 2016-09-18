@@ -28,7 +28,7 @@ class EnvTest < Faraday::TestCase
     env = make_env do |req|
       req.url 'foo.json?b=2&a=1#qqq'
     end
-    assert_equal 'http://sushi.com/api/foo.json?a=1&b=2#qqq', env.url.to_s
+    assert_equal 'http://sushi.com/api/foo.json?a=1&b=2', env.url.to_s
   end
 
   def test_request_create_stores_headers
