@@ -52,6 +52,8 @@ module Faraday
           path.query = nil
         end
       else
+        anchor_index = path.index('#')
+        path = path.slice(0, anchor_index) unless anchor_index.nil?
         path, query = path.split('?', 2)
       end
       self.path = path
