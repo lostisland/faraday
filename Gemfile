@@ -29,6 +29,7 @@ group :test do
   if RUBY_VERSION < '2'
     gem 'json', '< 2'
     gem 'tins', '< 1.7.0'
+    gem 'term-ansicolor', '< 1.4'
   end
 end
 
