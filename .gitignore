@@ -17,3 +17,6 @@ vendor/bundle
 
 ## PROJECT::SPECIFIC
 .rbx
+
+## IDEs
+.idea/
