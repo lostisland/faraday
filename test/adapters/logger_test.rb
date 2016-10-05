@@ -23,8 +23,12 @@ module Adapters
       @logger = Logger.new(@io)
       @logger.level = Logger::DEBUG
 
-      @conn = conn(@logger)
+      @conn = conn(@logger, { :headers => true })
       @resp = @conn.get '/hello', nil, :accept => 'text/html'
+    end
+
+    def teardown
+      @io.rewind
     end
 
     def test_still_returns_output
@@ -37,6 +41,13 @@ module Adapters
 
     def test_logs_request_headers
       assert_match %(Accept: "text/html), @io.string
+    end
+
+    def test_doesnt_log_request_headers
+      @io.rewind #reset log data from conn.get in setup
+      app = conn(@logger, { :headers => false })
+      app.post '/ohyes', 'name=Tamago', :accept => 'text/html'
+      refute_match %(Accept: "text/html), @io.string
     end
 
     def test_logs_response_headers
