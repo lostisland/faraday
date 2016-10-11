@@ -4,7 +4,7 @@ module Faraday
   class Response::Logger < Response::Middleware
     extend Forwardable
 
-    DEFAULT_OPTIONS = { :bodies => false }
+    DEFAULT_OPTIONS = { :bodies => false, :headers => false }
 
     def initialize(app, logger = nil, options = {})
       super(app)
@@ -33,6 +33,7 @@ module Faraday
     private
 
     def dump_headers(headers)
+      return unless @options[:headers]
       headers.map { |k, v| "#{k}: #{v.inspect}" }.join("\n")
     end
 
