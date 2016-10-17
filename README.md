@@ -17,6 +17,10 @@ Faraday supports these adapters:
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
 
+## API documentation
+
+Available at [rubydoc.info](http://www.rubydoc.info/gems/faraday).
+
 ## Usage
 
 ```ruby
