@@ -63,5 +63,12 @@ class TestUtils < Faraday::TestCase
       Faraday::Utils.default_uri_parser = old_parser
     end
   end
+
+  def test_unescaping_and_escaping_invalid_byte_sequences
+    invalid_utf_sequence = "%A0"
+    invalid_utf_sequence.force_encoding(Encoding::UTF_8) if RUBY_VERSION >= "1.9"
+    unescaped = Faraday::Utils.unescape(invalid_utf_sequence)
+    assert_equal invalid_utf_sequence, Faraday::Utils.escape(unescaped)
+  end
 end
 
