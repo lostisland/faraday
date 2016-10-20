@@ -75,6 +75,16 @@ module Adapters
       end
     end
 
+    module IPv6
+      def test_simple_ipv6_request
+        server = self.class.live_server
+        uri = URI('%s://%s:%d' % [server.scheme, '[::1]', server.port])
+        conn = create_connection({}, uri)
+
+        assert_equal 'get', conn.get('echo').body
+      end
+    end
+
     module Common
       extend Forwardable
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
@@ -234,7 +244,7 @@ module Adapters
         []
       end
 
-      def create_connection(options = {})
+      def create_connection(options = {}, server = self.class.live_server)
         if adapter == :default
           builder_block = nil
         else
@@ -245,7 +255,6 @@ module Adapters
           end
         end
 
-        server = self.class.live_server
         url = '%s://%s:%d' % [server.scheme, server.host, server.port]
 
         options[:ssl] ||= {}
