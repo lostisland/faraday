@@ -40,5 +40,15 @@ module Adapters
       assert_equal 1234, http.port
     end
 
+    def test_ipv6_uri
+      url = URI('http://[::1]')
+      url.port = nil
+
+      adapter = Faraday::Adapter::NetHttp.new
+      http = adapter.net_http_connection(:url => url, :request => {})
+
+      assert_equal '::1', http.address
+    end
+
   end
 end
