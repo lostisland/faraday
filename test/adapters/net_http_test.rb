@@ -7,7 +7,7 @@ module Adapters
 
     def adapter() :net_http end
 
-    behaviors = [:NonParallel, :Compression]
+    behaviors = [:NonParallel, :Compression, :IPv6]
 
     Integration.apply(self, *behaviors)
 

@@ -5,7 +5,7 @@ module Adapters
 
     def adapter() :httpclient end
 
-    Integration.apply(self, :NonParallel, :Compression) do
+    Integration.apply(self, :NonParallel, :Compression, :IPv6) do
       def setup
         require 'httpclient' unless defined?(HTTPClient)
         HTTPClient::NO_PROXY_HOSTS.delete('localhost')
