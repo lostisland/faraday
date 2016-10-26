@@ -34,9 +34,10 @@ module Faraday
       env.clear_body if env.needs_body?
     end
 
-    def save_response(env, status, body, headers = nil)
+    def save_response(env, status, body, headers = nil, reason_phrase = nil)
       env.status = status
       env.body = body
+      env.reason_phrase = reason_phrase && reason_phrase.to_s.strip
       env.response_headers = Utils::Headers.new.tap do |response_headers|
         response_headers.update headers unless headers.nil?
         yield(response_headers) if block_given?

@@ -14,6 +14,8 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/lostisland/faraday'
   spec.licenses = ['MIT']
 
+  spec.required_ruby_version = '>= 1.9'
+
   spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
 
   spec.files = `git ls-files -z lib LICENSE.md README.md`.split("\0")

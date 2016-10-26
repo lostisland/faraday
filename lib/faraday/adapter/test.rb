@@ -1,16 +1,41 @@
 module Faraday
   class Adapter
-    # test = Faraday::Connection.new do
-    #   use Faraday::Adapter::Test do |stub|
-    #     stub.get '/nigiri/sake.json' do
-    #       [200, {}, 'hi world']
+    # Examples
+    #
+    #   test = Faraday::Connection.new do
+    #     use Faraday::Adapter::Test do |stub|
+    #       # simply define matcher to match the request
+    #       stub.get '/resource.json' do
+    #         # return static content
+    #         [200, {'Content-Type' => 'application/json'}, 'hi world']
+    #       end
+    #       
+    #       # response with content generated based on request
+    #       stub.get '/showget' do |env|
+    #         [200, {'Content-Type' => 'text/plain'}, env[:method].to_s]
+    #       end
+    #       
+    #       # regular expression can be used as matching filter
+    #       stub.get /\A\/items\/(\d+)\z/ do |env, meta|
+    #         # in case regular expression is used an instance of MatchData can be received
+    #         [200, {'Content-Type' => 'text/plain'}, "showing item: #{meta[:match_data][1]}"]
+    #       end
     #     end
     #   end
-    # end
+    #   
+    #   resp = test.get '/resource.json'
+    #   resp.body # => 'hi world'
+    #   
+    #   resp = test.get '/showget'
+    #   resp.body # => 'get'
+    #   
+    #   resp = test.get '/items/1'
+    #   resp.body # => 'showing item: 1'
+    #   
+    #   resp = test.get '/items/2'
+    #   resp.body # => 'showing item: 2'
     #
-    # resp = test.get '/nigiri/sake.json'
-    # resp.body # => 'hi world'
-    #
+
     class Test < Faraday::Adapter
       attr_accessor :stubs
 
@@ -33,12 +58,12 @@ module Faraday
           stack = @stack[request_method]
           consumed = (@consumed[request_method] ||= [])
 
-          if stub = matches?(stack, path, headers, body)
+          stub, meta = matches?(stack, path, headers, body)
+          if stub
             consumed << stack.delete(stub)
-            stub
-          else
-            matches?(consumed, path, headers, body)
+            return stub, meta
           end
+          matches?(consumed, path, headers, body)
         end
 
         def get(path, headers = {}, &block)
@@ -85,18 +110,22 @@ module Faraday
         protected
 
         def new_stub(request_method, path, headers = {}, body=nil, &block)
-          normalized_path = Faraday::Utils.normalize_path(path)
+          normalized_path = path.is_a?(Regexp) ? path : Faraday::Utils.normalize_path(path)
           (@stack[request_method] ||= []) << Stub.new(normalized_path, headers, body, block)
         end
 
         def matches?(stack, path, headers, body)
-          stack.detect { |stub| stub.matches?(path, headers, body) }
+          stack.each do |stub|
+            match_result, meta = stub.matches?(path, headers, body)
+            return stub, meta if match_result
+          end
+          nil
         end
       end
 
       class Stub < Struct.new(:path, :params, :headers, :body, :block)
         def initialize(full, headers, body, block)
-          path, query = full.split('?')
+          path, query = full.respond_to?(:split) ? full.split("?") : full
           params = query ?
             Faraday::Utils.parse_nested_query(query) :
             {}
@@ -108,10 +137,21 @@ module Faraday
           request_params = request_query ?
             Faraday::Utils.parse_nested_query(request_query) :
             {}
-          request_path == path &&
+          # meta is a hash use as carrier
+          # that will be yielded to consumer block
+          meta = {}
+          return path_match?(request_path, meta) &&
             params_match?(request_params) &&
             (body.to_s.size.zero? || request_body == body) &&
-            headers_match?(request_headers)
+            headers_match?(request_headers), meta
+        end
+
+        def path_match?(request_path, meta)
+          if path.is_a? Regexp
+            !!(meta[:match_data] = path.match(request_path))
+          else
+            path == request_path
+          end
         end
 
         def params_match?(request_params)
@@ -146,11 +186,14 @@ module Faraday
         normalized_path = Faraday::Utils.normalize_path(env[:url])
         params_encoder = env.request.params_encoder || Faraday::Utils.default_params_encoder
 
-        if stub = stubs.match(env[:method], normalized_path, env.request_headers, env[:body])
+        stub, meta = stubs.match(env[:method], normalized_path, env.request_headers, env[:body])
+        if stub
           env[:params] = (query = env[:url].query) ?
-            params_encoder.decode(query)  :
-            {}
-          status, headers, body = stub.block.call(env)
+            params_encoder.decode(query) : {}
+          block_arity = stub.block.arity
+          status, headers, body = (block_arity >= 0) ?
+            stub.block.call(*[env, meta].take(block_arity)) :
+            stub.block.call(env, meta)
           save_response(env, status, body, headers)
         else
           raise Stubs::NotFound, "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"

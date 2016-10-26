@@ -17,6 +17,10 @@ Faraday supports these adapters:
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
 
+## API documentation
+
+Available at [rubydoc.info](http://www.rubydoc.info/gems/faraday).
+
 ## Usage
 
 ```ruby
@@ -73,7 +77,7 @@ either per-connection or per-request basis.
 
 ```ruby
 # per-connection setting
-conn = Faraday.new :params_encoder => Faraday::FlatParamsEncoder
+conn = Faraday.new :request => { :params_encoder => Faraday::FlatParamsEncoder }
 
 conn.get do |req|
   # per-request setting:
@@ -210,7 +214,7 @@ stubs.verify_stubbed_calls
 This library aims to support and is [tested against][travis] the following Ruby
 implementations:
 
-* Ruby 1.8.7+
+* Ruby 1.9.3+
 * [JRuby][] 1.7+
 * [Rubinius][] 2+
 

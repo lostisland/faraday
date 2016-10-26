@@ -7,8 +7,7 @@ module Adapters
 
     def adapter() :net_http end
 
-    behaviors = [:NonParallel]
-    behaviors << :Compression if RUBY_VERSION >= '1.9'
+    behaviors = [:NonParallel, :Compression]
 
     Integration.apply(self, *behaviors)
 

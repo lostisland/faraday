@@ -4,7 +4,7 @@ module Faraday
   class Response::Logger < Response::Middleware
     extend Forwardable
 
-    DEFAULT_OPTIONS = { :bodies => false }
+    DEFAULT_OPTIONS = { :headers => true, :bodies => false }
 
     def initialize(app, logger = nil, options = {})
       super(app)
@@ -19,14 +19,14 @@ module Faraday
 
     def call(env)
       info "#{env.method} #{env.url.to_s}"
-      debug('request') { dump_headers env.request_headers }
+      debug('request') { dump_headers env.request_headers } if log_headers?(:request)
       debug('request') { dump_body(env[:body]) } if env[:body] && log_body?(:request)
       super
     end
 
     def on_complete(env)
       info('Status') { env.status.to_s }
-      debug('response') { dump_headers env.response_headers }
+      debug('response') { dump_headers env.response_headers } if log_headers?(:response)
       debug('response') { dump_body env[:body] } if env[:body] && log_body?(:response)
     end
 
@@ -47,6 +47,13 @@ module Faraday
     def pretty_inspect(body)
       require 'pp' unless body.respond_to?(:pretty_inspect)
       body.pretty_inspect
+    end
+
+    def log_headers?(type)
+      case @options[:headers]
+      when Hash then @options[:headers][type]
+      else @options[:headers]
+      end
     end
 
     def log_body?(type)

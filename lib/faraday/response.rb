@@ -37,6 +37,10 @@ module Faraday
       finished? ? env.status : nil
     end
 
+    def reason_phrase
+      finished? ? env.reason_phrase : nil
+    end
+
     def headers
       finished? ? env.response_headers : {}
     end

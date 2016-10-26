@@ -4,13 +4,11 @@ script: bundle exec script/test
 cache: bundler
 
 rvm:
-  - 1.8.7
-  - 1.9.2
   - 1.9.3
   - 2.0.0
   - 2.1
   - 2.2
-  - jruby-18mode
+  - 2.3.1
   - jruby-19mode
   - jruby-20mode
   - jruby-21mode
@@ -21,7 +19,6 @@ matrix:
   allow_failures:
     # "A fatal error has been detected by the Java Runtime Environment:
     #  Internal Error (sharedRuntime.cpp:843)"
-    - rvm: jruby-18mode
     - rvm: jruby-19mode
     - rvm: jruby-20mode
     - rvm: jruby-21mode

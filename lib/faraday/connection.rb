@@ -56,7 +56,7 @@ module Faraday
     #                     :password - String (optional)
     def initialize(url = nil, options = nil)
       if url.is_a?(Hash)
-        options = ConnectionOptions.from(url)
+        options = options ? options.merge(url) : ConnectionOptions.from(url)
         url     = options.url
       else
         options = ConnectionOptions.from(options)
@@ -358,7 +358,7 @@ module Faraday
     #
     # method  - The Symbol HTTP method.
     # url     - The String or URI to access.
-    # body    - The String body
+    # body    - The request body that will eventually be converted to a string.
     # headers - Hash of unencoded HTTP header key/value pairs.
     #
     # Returns a Faraday::Response.

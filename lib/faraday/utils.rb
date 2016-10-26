@@ -97,7 +97,7 @@ module Faraday
         return unless header_string && !header_string.empty?
         header_string.split(/\r\n/).
           tap  { |a| a.shift if a.first.index('HTTP/') == 0 }. # drop the HTTP status line
-          map  { |h| h.split(/:\s+/, 2) }.reject { |p| p[0].nil? }. # split key and value, ignore blank lines
+          map  { |h| h.split(/:\s*/, 2) }.reject { |p| p[0].nil? }. # split key and value, ignore blank lines
           each { |key, value|
             # join multiple values with a comma
             if self[key]
