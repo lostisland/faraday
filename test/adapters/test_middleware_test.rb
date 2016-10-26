@@ -4,11 +4,23 @@ module Adapters
   class TestMiddleware < Faraday::TestCase
     Stubs = Faraday::Adapter.lookup_middleware(:test)::Stubs
     def setup
-      @stubs = Stubs.new
+      @stubs = Stubs.new do |stub|
+        stub.get('/hello') do
+          [200, {'Content-Type' => 'text/html'}, 'hello']
+        end
+        stub.get('/method-echo') do |env|
+          [200, {'Content-Type' => 'text/html'}, env[:method].to_s]
+        end
+        stub.get(/\A\/resources\/\d+(?:\?|\z)/) do
+          [200, {'Content-Type' => 'text/html'}, 'show']
+        end
+        stub.get(/\A\/resources\/(specified)\z/) do |env, meta|
+          [200, {'Content-Type' => 'text/html'}, "show #{meta[:match_data][1]}"]
+        end
+      end
       @conn  = Faraday.new do |builder|
         builder.adapter :test, @stubs
       end
-      @stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
       @resp = @conn.get('/hello')
     end
 
@@ -25,7 +37,19 @@ module Adapters
     end
 
     def test_middleware_can_be_called_several_times
-      assert_equal 'hello', @conn.get("/hello").body
+      assert_equal 'hello', @conn.get('/hello').body
+    end
+
+    def test_middleware_can_handle_regular_expression_path
+      assert_equal 'show', @conn.get('/resources/1').body
+    end
+
+    def test_middleware_can_handle_single_parameter_block
+      assert_equal 'get', @conn.get('/method-echo').body
+    end
+
+    def test_middleware_can_handle_regular_expression_path_with_captured_result
+      assert_equal 'show specified', @conn.get('/resources/specified').body
     end
 
     def test_middleware_with_get_params
