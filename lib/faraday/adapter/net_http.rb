@@ -17,6 +17,7 @@ module Faraday
         Errno::EHOSTUNREACH,
         Errno::EINVAL,
         Errno::ENETUNREACH,
+        Errno::EPIPE,
         Net::HTTPBadResponse,
         Net::HTTPHeaderSyntaxError,
         Net::ProtocolError,
