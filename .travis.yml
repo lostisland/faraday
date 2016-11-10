@@ -33,3 +33,11 @@ env:
     - SSL=yes
   global:
     - JRUBY_OPTS="$JRUBY_OPTS --debug"
+deploy:
+  provider: rubygems
+  api_key:
+    secure: EqbOu9BQp5jkivJ8qvTo89f3J49KOByBueU3XulrJ2Kqm/ov4RDFsmp9/uHAnSLdmKSkzZaeq79t1AUNfKGX1ZqkKgq/Nw2BKGFnh5ZOjrkrRZR1Vm09OHxqiViEbtg+jZ8VOLY/iDFEkNIzuj9/H3iHGXC0XiKH2LTHOFH63Bs=
+  gem: faraday
+  on:
+    tags: true
+    repo: lostisland/faraday
