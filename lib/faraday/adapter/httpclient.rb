@@ -97,10 +97,15 @@ module Faraday
 
       def ssl_cert_store(ssl)
         return ssl[:cert_store] if ssl[:cert_store]
-        # Use the default cert store by default, i.e. system ca certs
-        cert_store = OpenSSL::X509::Store.new
-        cert_store.set_default_paths
-        cert_store
+        # Memoize the cert store so that the same one is passed to
+        # HTTPClient each time, to avoid resyncing SSL sesions when
+        # it's changed
+        @cert_store ||= begin
+          # Use the default cert store by default, i.e. system ca certs
+          cert_store = OpenSSL::X509::Store.new
+          cert_store.set_default_paths
+          cert_store
+        end
       end
 
       def ssl_verify_mode(ssl)
