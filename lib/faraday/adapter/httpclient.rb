@@ -100,12 +100,12 @@ module Faraday
         # Memoize the cert store so that the same one is passed to
         # HTTPClient each time, to avoid resyncing SSL sesions when
         # it's changed
-        if @cert_store.nil?
+        @cert_store ||= begin
           # Use the default cert store by default, i.e. system ca certs
-          @cert_store = OpenSSL::X509::Store.new
-          @cert_store.set_default_paths
+          cert_store = OpenSSL::X509::Store.new
+          cert_store.set_default_paths
+          cert_store
         end
-        @cert_store
       end
 
       def ssl_verify_mode(ssl)
