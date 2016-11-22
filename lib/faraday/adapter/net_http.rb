@@ -10,7 +10,7 @@ module Faraday
   class Adapter
     class NetHttp < Faraday::Adapter
       NET_HTTP_EXCEPTIONS = [
-        EOFError,
+        IOError,
         Errno::ECONNABORTED,
         Errno::ECONNREFUSED,
         Errno::ECONNRESET,
