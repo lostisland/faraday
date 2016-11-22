@@ -63,5 +63,15 @@ class TestUtils < Faraday::TestCase
       Faraday::Utils.default_uri_parser = old_parser
     end
   end
+
+  # YAML parsing
+
+  def test_headers_yaml_roundtrip
+    headers = Faraday::Utils::Headers.new('User-Agent' => 'safari', 'Content-type' => 'text/html')
+    result = YAML.load(headers.to_yaml)
+
+    assert result.include?('user-agent'), 'Unable to hydrate to a correct Headers'
+    assert result.include?('content-type'), 'Unable to hydrate to a correct Headers'
+  end
 end
 
