@@ -108,6 +108,10 @@ module Faraday
           }
       end
 
+      def init_with(coder)
+        @names = coder['names']
+      end
+
       protected
 
       def names
