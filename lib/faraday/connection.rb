@@ -75,6 +75,10 @@ module Faraday
         options.new_builder(block_given? ? Proc.new { |b| } : nil)
       end
 
+      unless builder.handlers.include?(Faraday::Request::Proxy)
+        builder.use Request::Proxy, options.proxy
+      end
+
       self.url_prefix = url || 'http:/'
 
       @params.update(options.params)   if options.params

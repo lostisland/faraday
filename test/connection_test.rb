@@ -267,7 +267,7 @@ class TestConnection < Faraday::TestCase
 
   def test_proxy_middleware_instantiated_via_proxy_option
     conn_no_proxy = Faraday::Connection.new
-    refute conn_no_proxy.builder.handlers.include?(Faraday::Request::Proxy)
+    assert conn_no_proxy.builder.handlers.include?(Faraday::Request::Proxy)
 
     conn_with_proxy = Faraday::Connection.new(nil, :proxy => 'http://proxy.com')
     assert conn_with_proxy.builder.handlers.include?(Faraday::Request::Proxy)
@@ -276,7 +276,7 @@ class TestConnection < Faraday::TestCase
   def test_proxy_middleware_instantiated_via_proxy_method
     conn = Faraday::Connection.new
 
-    refute conn.builder.handlers.include?(Faraday::Request::Proxy)
+    assert conn.builder.handlers.include?(Faraday::Request::Proxy)
     conn.proxy 'http://proxy.com'
 
     assert conn.builder.handlers.include?(Faraday::Request::Proxy)
@@ -300,8 +300,8 @@ class TestConnection < Faraday::TestCase
     other.params['b'] = '2'
     other.options[:open_timeout] = 10
 
-    assert_equal 2, other.builder.handlers.size
-    assert_equal 2, conn.builder.handlers.size
+    assert_equal 3, other.builder.handlers.size
+    assert_equal 3, conn.builder.handlers.size
     assert !conn.headers.key?('content-length')
     assert !conn.params.key?('b')
     assert_equal 5, other.options[:timeout]
@@ -315,7 +315,9 @@ class TestConnection < Faraday::TestCase
 
   def test_init_with_block
     conn = Faraday::Connection.new { }
-    assert_equal 0, conn.builder.handlers.size
+    assert_equal 1,
+                 conn.builder.handlers.size,
+                 "There should always be a Request::Proxy"
   end
 
   def test_init_with_block_yields_connection
@@ -324,7 +326,7 @@ class TestConnection < Faraday::TestCase
       faraday.url_prefix = 'http://sushi.com/omnom'
       assert_equal '1', faraday.params['a']
     }
-    assert_equal 1, conn.builder.handlers.size
+    assert_equal 2, conn.builder.handlers.size, "The adapter and Request::Proxy"
     assert_equal '/omnom', conn.path_prefix
   end
 
