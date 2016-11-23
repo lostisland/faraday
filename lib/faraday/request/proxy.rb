@@ -120,11 +120,7 @@ module Faraday
         ["#{uri.host}:#{uri.port}", "#{no_proxy_uri.host}:#{no_proxy_uri.port}"].map(&:downcase)
       end
 
-      return true if uri_pattern == no_proxy_pattern
-
-      no_proxy_parts = no_proxy_pattern.split('.')
-      uri_parts = uri_pattern.split('.')
-      uri_parts.reverse.take(no_proxy_parts.size) == no_proxy_parts.reverse
+      /(\A|\.)#{Regexp.quote no_proxy_pattern}\z/i =~ uri_pattern
     end
 
     def parse_uri(uri='')
