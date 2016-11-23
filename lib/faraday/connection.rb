@@ -379,7 +379,7 @@ module Faraday
       Request.create(method) do |req|
         req.params  = self.params.dup
         req.headers = self.headers.dup
-        req.options = self.options.merge(:proxy => self.proxy)
+        req.options = self.options
         yield(req) if block_given?
       end
     end
