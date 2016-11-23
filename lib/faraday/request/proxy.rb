@@ -112,17 +112,19 @@ module Faraday
     end
 
     def domains_match?(uri, no_proxy_uri)
-      if no_proxy_uri.port == 80
+      uri_pattern, no_proxy_pattern = if no_proxy_uri.port == 80
         # domain matching is fine
-        uri_pattern       = uri.host
-        no_proxy_pattern  = no_proxy_uri.host
+        [uri.host, no_proxy_uri.host].map(&:downcase)
       else
         # need to match ports exactly
-        uri_pattern       = "#{uri.host}:#{uri.port}"
-        no_proxy_pattern  = "#{no_proxy_uri.host}:#{no_proxy_uri.port}"
+        ["#{uri.host}:#{uri.port}", "#{no_proxy_uri.host}:#{no_proxy_uri.port}"].map(&:downcase)
       end
 
-      uri_pattern.downcase == no_proxy_pattern.downcase
+      return true if uri_pattern == no_proxy_pattern
+
+      no_proxy_parts = no_proxy_pattern.split('.')
+      uri_parts = uri_pattern.split('.')
+      uri_parts.reverse.take(no_proxy_parts.size) == no_proxy_parts.reverse
     end
 
     def parse_uri(uri='')

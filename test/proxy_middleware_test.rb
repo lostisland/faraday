@@ -261,12 +261,18 @@ class ProxyMiddlewareTest < Faraday::TestCase
   end
 
   def test_https_ignored_given_domain
-    with_env 'https_proxy' => 'http://proxy.com', 'no_proxy' => 'github.com' do
-      %w(www.github.com pages.github.com).each do |url|
+    with_env 'https_proxy' => 'https://ssl.proxy.com', 'no_proxy' => 'example.co.uk' do
+      %w(www.example.co.uk sales.eu.example.co.uk).each do |url|
         response = connection("https://#{url}"){ |b| b.request :proxy }.get('/test')
         proxy_options = response.env.request.proxy
 
         assert_nil proxy_options
+      end
+      %w(malwareexample.co.uk).each do |url|
+        response = connection("https://#{url}"){ |b| b.request :proxy }.get('/test')
+        proxy_options = response.env.request.proxy
+
+        assert proxy_options, "#{url} should not be ignored by the no_proxy 'example.co.uk'"
       end
     end
   end
