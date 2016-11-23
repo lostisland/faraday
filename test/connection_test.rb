@@ -1,21 +1,6 @@
 require File.expand_path('../helper', __FILE__)
 
 class TestConnection < Faraday::TestCase
-
-  def with_env(key, proxy)
-    old_value = ENV.fetch(key, false)
-    ENV[key] = proxy
-    begin
-      yield
-    ensure
-      if old_value == false
-        ENV.delete key
-      else
-        ENV[key] = old_value
-      end
-    end
-  end
-
   def test_initialize_parses_host_out_of_given_url
     conn = Faraday::Connection.new "http://sushi.com"
     assert_equal 'sushi.com', conn.host
@@ -280,89 +265,21 @@ class TestConnection < Faraday::TestCase
     assert_equal '/sake.html', uri.path
   end
 
-  def test_proxy_accepts_string
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      conn.proxy 'http://proxy.com'
-      assert_equal 'proxy.com', conn.proxy.host
-    end
+  def test_proxy_middleware_instantiated_via_proxy_option
+    conn_no_proxy = Faraday::Connection.new
+    assert conn_no_proxy.builder.handlers.include?(Faraday::Request::Proxy)
+
+    conn_with_proxy = Faraday::Connection.new(nil, :proxy => 'http://proxy.com')
+    assert conn_with_proxy.builder.handlers.include?(Faraday::Request::Proxy)
   end
 
-  def test_proxy_accepts_uri
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      conn.proxy URI.parse('http://proxy.com')
-      assert_equal 'proxy.com', conn.proxy.host
-    end
-  end
-
-  def test_proxy_accepts_hash_with_string_uri
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      conn.proxy :uri => 'http://proxy.com', :user => 'rick'
-      assert_equal 'proxy.com', conn.proxy.host
-      assert_equal 'rick',      conn.proxy.user
-    end
-  end
-
-  def test_proxy_accepts_hash
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      conn.proxy :uri => URI.parse('http://proxy.com'), :user => 'rick'
-      assert_equal 'proxy.com', conn.proxy.host
-      assert_equal 'rick',      conn.proxy.user
-    end
-  end
-
-  def test_proxy_accepts_http_env
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      assert_equal 'duncan.proxy.com', conn.proxy.host
-    end
-  end
-
-  def test_proxy_accepts_http_env_with_auth
-    with_env 'http_proxy', "http://a%40b:my%20pass@duncan.proxy.com:80" do
-      conn = Faraday::Connection.new
-      assert_equal 'a@b',     conn.proxy.user
-      assert_equal 'my pass', conn.proxy.password
-    end
-  end
-
-  def test_proxy_accepts_env_without_scheme
-    with_env 'http_proxy', "localhost:8888" do
-      uri = Faraday::Connection.new.proxy[:uri]
-      assert_equal 'localhost', uri.host
-      assert_equal 8888, uri.port
-    end
-  end
-
-  def test_no_proxy_from_env
-    with_env 'http_proxy', nil do
-      conn = Faraday::Connection.new
-      assert_equal nil, conn.proxy
-    end
-  end
-
-  def test_no_proxy_from_blank_env
-    with_env 'http_proxy', '' do
-      conn = Faraday::Connection.new
-      assert_equal nil, conn.proxy
-    end
-  end
-
-  def test_proxy_doesnt_accept_uppercase_env
-    with_env 'HTTP_PROXY', "http://localhost:8888/" do
-      conn = Faraday::Connection.new
-      assert_nil conn.proxy
-    end
-  end
-
-  def test_proxy_requires_uri
+  def test_proxy_middleware_instantiated_via_proxy_method
     conn = Faraday::Connection.new
-    assert_raises ArgumentError do
-      conn.proxy :uri => :bad_uri, :user => 'rick'
-    end
+
+    assert conn.builder.handlers.include?(Faraday::Request::Proxy)
+    conn.proxy 'http://proxy.com'
+
+    assert conn.builder.handlers.include?(Faraday::Request::Proxy)
   end
 
   def test_dups_connection_object
@@ -383,8 +300,8 @@ class TestConnection < Faraday::TestCase
     other.params['b'] = '2'
     other.options[:open_timeout] = 10
 
-    assert_equal 2, other.builder.handlers.size
-    assert_equal 2, conn.builder.handlers.size
+    assert_equal 3, other.builder.handlers.size
+    assert_equal 3, conn.builder.handlers.size
     assert !conn.headers.key?('content-length')
     assert !conn.params.key?('b')
     assert_equal 5, other.options[:timeout]
@@ -398,7 +315,9 @@ class TestConnection < Faraday::TestCase
 
   def test_init_with_block
     conn = Faraday::Connection.new { }
-    assert_equal 0, conn.builder.handlers.size
+    assert_equal 1,
+                 conn.builder.handlers.size,
+                 "There should always be a Request::Proxy"
   end
 
   def test_init_with_block_yields_connection
@@ -407,7 +326,7 @@ class TestConnection < Faraday::TestCase
       faraday.url_prefix = 'http://sushi.com/omnom'
       assert_equal '1', faraday.params['a']
     }
-    assert_equal 1, conn.builder.handlers.size
+    assert_equal 2, conn.builder.handlers.size, "The adapter and Request::Proxy"
     assert_equal '/omnom', conn.path_prefix
   end
 

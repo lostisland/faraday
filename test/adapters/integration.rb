@@ -193,21 +193,21 @@ module Adapters
 
       def test_proxy
         proxy_uri = URI(ENV['LIVE_PROXY'])
-        conn = create_connection(:proxy => proxy_uri)
+        conn = create_connection(:proxy => { :uri => proxy_uri })
 
         res = conn.get '/echo'
         assert_equal 'get', res.body
 
         unless self.class.ssl_mode?
           # proxy can't append "Via" header for HTTPS responses
-          assert_match(/:#{proxy_uri.port}$/, res['via'])
+          assert_match(/:#{proxy_uri.port}$/, res['via'], "Proxy was not able to append Via header")
         end
       end
 
       def test_proxy_auth_fail
         proxy_uri = URI(ENV['LIVE_PROXY'])
         proxy_uri.password = 'WRONG'
-        conn = create_connection(:proxy => proxy_uri)
+        conn = create_connection(:proxy => { :uri => proxy_uri, :password => proxy_uri.password })
 
         err = assert_raises Faraday::Error::ConnectionFailed do
           conn.get '/echo'
@@ -236,15 +236,22 @@ module Adapters
       end
 
       def create_connection(options = {})
-        if adapter == :default
-          builder_block = nil
-        else
-          builder_block = Proc.new do |b|
-            b.request :multipart
-            b.request :url_encoded
-            b.adapter adapter, *adapter_options
+        builder_block =
+          if adapter == :default
+            nil
+          else
+            Proc.new do |b|
+              if options[:proxy]
+                b.request :proxy, options[:proxy]
+              else
+                b.request :proxy
+              end
+
+              b.request :multipart
+              b.request :url_encoded
+              b.adapter adapter, *adapter_options
+            end
           end
-        end
 
         server = self.class.live_server
         url = '%s://%s:%d' % [server.scheme, server.host, server.port]

@@ -159,6 +159,7 @@ class MiddlewareStackTest < Faraday::TestCase
     @builder.build do |b|
       handlers.each { |handler| b.use(*handler) }
       yield(b) if block_given?
+      b.use Faraday::Request::Proxy
 
       b.adapter :test do |stub|
         stub.get '/' do |env|
