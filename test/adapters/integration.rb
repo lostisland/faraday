@@ -18,6 +18,7 @@ module Adapters
       elsif !defined? @warned
         warn "Warning: Not running integration tests against a live server."
         warn "Start the server `ruby test/live_server.rb` and set the LIVE=1 env variable."
+        warn "See CONTRIBUTING for usage."
         @warned = true
       end
     end
@@ -247,7 +248,7 @@ module Adapters
 
         server = self.class.live_server
         raise 'Integration test suite: Can not continue without live_server ' \
-              'configured. See script/test for more.' unless server
+              'configured. See CONTRIBUTING for usage.' unless server
         url = '%s://%s:%d' % [server.scheme, server.host, server.port]
 
         options[:ssl] ||= {}
