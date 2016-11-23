@@ -79,14 +79,7 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      @proxy = nil
-      proxy(options.fetch(:proxy) {
-        uri = ENV['http_proxy']
-        if uri && !uri.empty?
-          uri = 'http://' + uri if uri !~ /^http/i
-          uri
-        end
-      })
+      proxy(options.fetch(:proxy)) if options.proxy
 
       yield(self) if block_given?
 
@@ -280,10 +273,12 @@ module Faraday
       @parallel_manager = nil
     end
 
-    # Public: Gets or Sets the Hash proxy options.
+    # Public: Mounts proxy middleware
     def proxy(arg = nil)
-      return @proxy if arg.nil?
-      @proxy = ProxyOptions.from(arg)
+      # dont allow middleware to be set multiple times
+      unless builder.handlers.include?(Faraday::Request::Proxy)
+        builder.use Request::Proxy, arg
+      end
     end
 
     def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
