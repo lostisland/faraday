@@ -9,7 +9,7 @@ module Adapters
   # `#adapter_options` optional. extra arguments for building an adapter
   module Integration
     def self.apply(base, *extra_features)
-      if base.live_server?
+      if base.live_server
         features = [:Common]
         features.concat extra_features
         features << :SSL if base.ssl_mode?
@@ -18,6 +18,7 @@ module Adapters
       elsif !defined? @warned
         warn "Warning: Not running integration tests against a live server."
         warn "Start the server `ruby test/live_server.rb` and set the LIVE=1 env variable."
+        warn "See CONTRIBUTING for usage."
         @warned = true
       end
     end
