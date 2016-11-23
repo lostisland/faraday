@@ -235,6 +235,7 @@ module Faraday
     memoized(:password) { uri.password && Utils.unescape(uri.password) }
   end
 
+  # TODO: Should this have the :proxy option on it?
   class ConnectionOptions < Options.new(:request, :proxy, :ssl, :builder, :url,
     :parallel_manager, :params, :headers, :builder_class)
 

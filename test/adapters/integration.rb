@@ -192,7 +192,7 @@ module Adapters
 
       def test_proxy
         proxy_uri = URI(ENV['LIVE_PROXY'])
-        conn = create_connection(:proxy => proxy_uri)
+        conn = create_connection(:proxy => { uri: proxy_uri })
 
         res = conn.get '/echo'
         assert_equal 'get', res.body
@@ -206,7 +206,7 @@ module Adapters
       def test_proxy_auth_fail
         proxy_uri = URI(ENV['LIVE_PROXY'])
         proxy_uri.password = 'WRONG'
-        conn = create_connection(:proxy => proxy_uri)
+        conn = create_connection(:proxy => { uri: proxy_uri, password: proxy_uri.password })
 
         err = assert_raises Faraday::Error::ConnectionFailed do
           conn.get '/echo'
@@ -235,10 +235,17 @@ module Adapters
       end
 
       def create_connection(options = {})
+        proxy_options = options.delete(:proxy)
         if adapter == :default
           builder_block = nil
         else
           builder_block = Proc.new do |b|
+            if proxy_options
+              b.request :proxy, proxy_options
+            else
+              b.request :proxy
+            end
+
             b.request :multipart
             b.request :url_encoded
             b.adapter adapter, *adapter_options
@@ -246,6 +253,7 @@ module Adapters
         end
 
         server = self.class.live_server
+        raise 'Integration test suite: Can not continue without live_server configured. See script/test for more.' unless server
         url = '%s://%s:%d' % [server.scheme, server.host, server.port]
 
         options[:ssl] ||= {}
