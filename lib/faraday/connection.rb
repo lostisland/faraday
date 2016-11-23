@@ -69,6 +69,7 @@ module Faraday
       @ssl = options.ssl
       @default_parallel_manager = options.parallel_manager
 
+
       @builder = options.builder || begin
         # pass an empty block to Builder so it doesn't assume default middleware
         options.new_builder(block_given? ? Proc.new { |b| } : nil)
@@ -79,7 +80,7 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      proxy(options.fetch(:proxy)) if options.proxy
+      proxy(options.proxy) if options.proxy
 
       yield(self) if block_given?
 
@@ -275,7 +276,7 @@ module Faraday
 
     # Public: Mounts proxy middleware
     def proxy(arg = nil)
-      # dont allow middleware to be set multiple times
+      # Don't allow middleware to be set multiple times
       unless builder.handlers.include?(Faraday::Request::Proxy)
         builder.use Request::Proxy, arg
       end

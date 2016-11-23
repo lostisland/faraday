@@ -199,7 +199,7 @@ module Adapters
 
         unless self.class.ssl_mode?
           # proxy can't append "Via" header for HTTPS responses
-          assert_match(/:#{proxy_uri.port}$/, res['via'])
+          assert_match(/:#{proxy_uri.port}$/, res['via'], "Proxy was not able to append Via header")
         end
       end
 
@@ -235,22 +235,22 @@ module Adapters
       end
 
       def create_connection(options = {})
-        proxy_options = options.delete(:proxy)
-        if adapter == :default
-          builder_block = nil
-        else
-          builder_block = Proc.new do |b|
-            if proxy_options
-              b.request :proxy, proxy_options
-            else
-              b.request :proxy
-            end
+        builder_block =
+          if adapter == :default
+            nil
+          else
+            Proc.new do |b|
+              if options[:proxy]
+                b.request :proxy, options[:proxy]
+              else
+                b.request :proxy
+              end
 
-            b.request :multipart
-            b.request :url_encoded
-            b.adapter adapter, *adapter_options
+              b.request :multipart
+              b.request :url_encoded
+              b.adapter adapter, *adapter_options
+            end
           end
-        end
 
         server = self.class.live_server
         warn 'Integration test suite: Can not continue without live_server configured. See script/test for more.' unless server

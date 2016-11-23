@@ -120,6 +120,8 @@ module Faraday
         ["#{uri.host}:#{uri.port}", "#{no_proxy_uri.host}:#{no_proxy_uri.port}"].map(&:downcase)
       end
 
+      return true if uri_pattern == no_proxy_pattern
+
       /(\A|\.)#{Regexp.quote no_proxy_pattern}\z/i =~ uri_pattern
     end
 
