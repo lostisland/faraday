@@ -35,5 +35,5 @@ Versioning][semver].  If your patch includes changes to break compatibility,
 note that so we can add it to the [Changelog][].
 
 [semver]:    http://semver.org/
-[changelog]: https://github.com/lostisland/faraday/wiki/Changelog
+[changelog]: https://github.com/lostisland/faraday/releases
 [faraday_middleware]: https://github.com/lostisland/faraday_middleware/wiki
