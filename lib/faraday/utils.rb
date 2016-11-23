@@ -113,7 +113,7 @@ module Faraday
       end
 
       def encode_with(coder)
-        coder['names'] = names
+        coder['names'] = @names
       end
 
       protected
