@@ -253,8 +253,6 @@ module Adapters
           end
 
         server = self.class.live_server
-        warn 'Integration test suite: Can not continue without live_server configured. See script/test for more.' unless server
-        raise 'Integration test suite: Can not continue without live_server configured. See script/test for more.' unless server
         url = '%s://%s:%d' % [server.scheme, server.host, server.port]
 
         options[:ssl] ||= {}
