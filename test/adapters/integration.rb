@@ -9,7 +9,7 @@ module Adapters
   # `#adapter_options` optional. extra arguments for building an adapter
   module Integration
     def self.apply(base, *extra_features)
-      if base.live_server?
+      if base.live_server
         features = [:Common]
         features.concat extra_features
         features << :SSL if base.ssl_mode?
@@ -247,8 +247,6 @@ module Adapters
         end
 
         server = self.class.live_server
-        raise 'Integration test suite: Can not continue without live_server ' \
-              'configured. See CONTRIBUTING for usage.' unless server
         url = '%s://%s:%d' % [server.scheme, server.host, server.port]
 
         options[:ssl] ||= {}
