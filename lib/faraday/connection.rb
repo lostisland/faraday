@@ -80,7 +80,7 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      proxy(options.proxy) if options.proxy
+      proxy(options.proxy)
 
       yield(self) if block_given?
 
