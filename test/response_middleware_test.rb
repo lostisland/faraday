@@ -70,3 +70,32 @@ class ResponseNoBodyMiddleWareTest < Faraday::TestCase
     assert_equal nil, @conn.get('not_modified').body
   end
 end
+
+class ClientErrorResponseMiddleWareTest < Faraday::TestCase
+  def setup
+    @conn = Faraday.new do |b|
+      b.response :raise_error
+      b.adapter :test do |stub|
+        stub.get('parse_error') do |env|
+          @env = env
+          [200, nil, nil]
+        end
+      end
+    end
+    @conn.builder.insert(0, RaiseParsingError)
+  end
+
+  class RaiseParsingError < Faraday::Response::Middleware
+    def parse(body)
+      raise Faraday::Error::ParsingError, 'parse error'
+    end
+  end
+
+  def test_parse_error
+    error = assert_raises Faraday::Error::ParsingError do
+      @conn.get('parse_error')
+    end
+    assert_equal 'parse error', error.message
+    assert_equal @env.response, error.response
+  end
+end
