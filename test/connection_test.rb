@@ -2,6 +2,10 @@ require File.expand_path('../helper', __FILE__)
 
 class TestConnection < Faraday::TestCase
 
+  def teardown
+    Faraday.default_connection_options = nil
+  end
+
   def with_env(key, proxy)
     old_value = ENV.fetch(key, false)
     ENV[key] = proxy
@@ -426,6 +430,24 @@ class TestConnection < Faraday::TestCase
     Faraday.default_connection_options.request.timeout = 10
     conn = Faraday.new :url => 'http://sushi.com/foo'
     assert_equal 10, conn.options.timeout
+  end
+
+  def test_default_connection_options_as_hash
+    Faraday.default_connection_options = { request: { timeout: 10 } }
+    conn = Faraday.new 'http://sushi.com/foo'
+    assert_equal 10, conn.options.timeout
+  end
+
+  def test_default_connection_options_as_hash_without_url
+    Faraday.default_connection_options = { request: { timeout: 10 } }
+    conn = Faraday.new :url => 'http://sushi.com/foo'
+    assert_equal 10, conn.options.timeout
+  end
+
+  def test_default_connection_options_as_hash_with_instance_connection_options
+    Faraday.default_connection_options = { request: { timeout: 10 } }
+    conn = Faraday.new 'http://sushi.com/foo', request: { open_timeout: 1 }
+    assert_equal 1, conn.options.open_timeout
   end
 
   def env_url(url, params)
