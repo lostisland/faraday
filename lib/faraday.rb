@@ -34,9 +34,6 @@ module Faraday
     #     Faraday.get "https://faraday.com"
     attr_writer :default_connection
 
-    # Public: Sets the default options used when calling Faraday#new.
-    attr_writer :default_connection_options
-
     # Public: Initializes a new Faraday::Connection.
     #
     # url     - The optional String base URL to use as a prefix for all
@@ -120,6 +117,11 @@ module Faraday
   # Returns a Faraday::ConnectionOptions.
   def self.default_connection_options
     @default_connection_options ||= ConnectionOptions.new
+  end
+
+  # Public: Sets the default options used when calling Faraday#new.
+  def self.default_connection_options=(options)
+    @default_connection_options = ConnectionOptions.from(options)
   end
 
   unless const_defined? :Timer
