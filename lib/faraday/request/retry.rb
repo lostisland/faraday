@@ -27,7 +27,7 @@ module Faraday
       DEFAULT_CHECK = lambda { |env,exception| false }
 
       def self.from(value)
-        if Fixnum === value
+        if Integer === value
           new(value)
         else
           super(value)
