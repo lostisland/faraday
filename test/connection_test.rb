@@ -344,14 +344,14 @@ class TestConnection < Faraday::TestCase
   def test_no_proxy_from_env
     with_env 'http_proxy', nil do
       conn = Faraday::Connection.new
-      assert_equal nil, conn.proxy
+      assert_nil conn.proxy
     end
   end
 
   def test_no_proxy_from_blank_env
     with_env 'http_proxy', '' do
       conn = Faraday::Connection.new
-      assert_equal nil, conn.proxy
+      assert_nil conn.proxy
     end
   end
 

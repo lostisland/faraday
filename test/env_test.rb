@@ -142,7 +142,7 @@ class HeadersTest < Faraday::TestCase
     assert_equal 'application/json', @headers.delete('content-type')
     assert_equal 0, @headers.size
     assert !@headers.include?('content-type')
-    assert_equal nil, @headers.delete('content-type')
+    assert_nil @headers.delete('content-type')
   end
 
   def test_parse_response_headers_leaves_http_status_line_out

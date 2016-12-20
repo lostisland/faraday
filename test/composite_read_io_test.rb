@@ -40,22 +40,22 @@ class CompositeReadIOTest < Faraday::TestCase
     assert_equal "abc", io.read(3)
     assert_equal "d12", io.read(3)
     assert_equal "34", io.read(3)
-    assert_equal nil, io.read(3)
-    assert_equal nil, io.read(3)
+    assert_nil io.read(3)
+    assert_nil io.read(3)
   end
 
   def test_multipart_read_limited_size_larger_than_part
     io = composite_io(part("abcd"), part("1234"))
     assert_equal "abcd12", io.read(6)
     assert_equal "34", io.read(6)
-    assert_equal nil, io.read(6)
+    assert_nil io.read(6)
   end
 
   def test_multipart_read_with_blank_parts
     io = composite_io(part(""), part("abcd"), part(""), part("1234"), part(""))
     assert_equal "abcd12", io.read(6)
     assert_equal "34", io.read(6)
-    assert_equal nil, io.read(6)
+    assert_nil io.read(6)
   end
 
   def test_multipart_rewind
@@ -65,7 +65,7 @@ class CompositeReadIOTest < Faraday::TestCase
     io.rewind
     assert_equal "abc", io.read(3)
     assert_equal "d1234", io.read(5)
-    assert_equal nil, io.read(3)
+    assert_nil io.read(3)
     io.rewind
     assert_equal "ab", io.read(2)
   end
