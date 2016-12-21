@@ -32,10 +32,7 @@ module Faraday
         super
         with_net_http_connection(env) do |http|
           configure_ssl(http, env[:ssl]) if env[:url].scheme == 'https' and env[:ssl]
-
-          req = env[:request]
-          http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
-          http.open_timeout = req[:open_timeout]                if req[:open_timeout]
+          configure_request_options(http, env[:request])
 
           begin
             http_response = perform_request(http, env)
@@ -107,6 +104,11 @@ module Faraday
         http.ca_path      = ssl[:ca_path]      if ssl[:ca_path]
         http.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
         http.ssl_version  = ssl[:version]      if ssl[:version]
+      end
+
+      def configure_request_options(http, req)
+        http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
+        http.open_timeout = req[:open_timeout]                if req[:open_timeout]
       end
 
       def ssl_cert_store(ssl)
