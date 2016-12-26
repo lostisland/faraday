@@ -64,12 +64,10 @@ module Faraday
       private
 
       def create_request(env)
-        request = Net::HTTPGenericRequest.new \
-          env[:method].to_s.upcase,    # request method
-          !!env[:body],                # is there request body
-          :head != env[:method],       # is there response body
-          env[:url].request_uri,       # request uri path
-          env[:request_headers]        # request headers
+        klass = Net::HTTP.const_get(env[:method].to_s.capitalize)
+        request = klass.new \
+          env[:url].request_uri, # request uri path
+          env[:request_headers]  # request headers
 
         if env[:body].respond_to?(:read)
           request.body_stream = env[:body]
