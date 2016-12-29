@@ -8,12 +8,20 @@ module Adapters
       rubbles = ['Barney', 'Betty', 'Bam Bam']
 
       Faraday.new do |b|
-        b.response :logger, logger, logger_options
+        b.response :logger, @logger, logger_options do | logger |
+          logger.filter(/(soylent green is) (.+)/,'\1 tasty')
+          logger.filter(/(api_key:).*"(.+)."/,'\1[API_KEY]')
+          logger.filter(/(password)=(.+)/,'\1=[HIDDEN]')
+        end
         b.adapter :test do |stubs|
           stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
           stubs.post('/ohai') { [200, {'Content-Type' => 'text/html'}, 'fred'] }
           stubs.post('/ohyes') { [200, {'Content-Type' => 'text/html'}, 'pebbles'] }
           stubs.get('/rubbles') { [200, {'Content-Type' => 'application/json'}, rubbles] }
+          stubs.get('/filtered_body') { [200, {'Content-Type' => 'text/html'}, 'soylent green is people'] }
+          stubs.get('/filtered_headers') { [200, {'Content-Type' => 'text/html'}, 'headers response'] }
+          stubs.get('/filtered_params') { [200, {'Content-Type' => 'text/html'}, 'params response'] }
+          stubs.get('/filtered_url') { [200, {'Content-Type' => 'text/html'}, 'url response'] }
         end
       end
     end
@@ -94,5 +102,30 @@ module Adapters
       app.get '/rubbles', nil, :accept => 'text/html'
       assert_match %([\"Barney\", \"Betty\", \"Bam Bam\"]\n), @io.string
     end
+
+    def test_logs_filter_body
+      app = conn(@logger, :bodies => true)
+      app.get '/filtered_body', nil, :accept => 'text/html'
+      assert_match %(soylent green is), @io.string
+      assert_match %(tasty), @io.string
+      refute_match %(people), @io.string
+    end
+
+    def test_logs_filter_headers
+      app = conn(@logger)
+      app.headers = {'api_key' => 'ABC123'}
+      app.get '/filtered_headers', nil, :accept => 'text/html'
+      assert_match %(api_key:), @io.string
+      assert_match %([API_KEY]), @io.string
+      refute_match %(ABC123), @io.string
+    end
+
+    def test_logs_filter_url
+      app = conn(@logger)
+      app.get '/filtered_url?password=hunter2', nil, :accept => 'text/html'
+      assert_match %(password=[HIDDEN]), @io.string
+      refute_match %(hunter2), @io.string
+    end
+
   end
 end
