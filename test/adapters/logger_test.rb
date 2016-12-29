@@ -9,6 +9,10 @@ module Adapters
 
       Faraday.new do |b|
         b.response :logger, logger, logger_options
+        b.response :logger, @logger do | logger |
+          logger.filter(/foo/,'[REDACTED]')
+          logger.filter(/(api_key:).*"(.+)."/,'\1[API_KEY]')
+        end
         b.adapter :test do |stubs|
           stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
           stubs.post('/ohai') { [200, {'Content-Type' => 'text/html'}, 'fred'] }
@@ -94,5 +98,22 @@ module Adapters
       app.get '/rubbles', nil, :accept => 'text/html'
       assert_match %([\"Barney\", \"Betty\", \"Bam Bam\"]\n), @io.string
     end
+
+    def test_logs_filter_url
+      app = conn(@logger)
+      app.get '/foo', nil, :accept => 'text/html'
+      assert_match %([REDACTED]), @io.string
+      refute_match %(foo), @io.string
+    end
+
+    def test_logs_filter_header
+      app = conn(@logger)
+      app.headers = {'api_key' => 'ABC123'}
+      app.get '/bar', nil, :accept => 'text/html'
+      assert_match %(api_key:), @io.string
+      assert_match %([API_KEY]), @io.string
+      refute_match %(ABC123), @io.string
+    end
+
   end
 end
