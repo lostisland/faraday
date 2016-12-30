@@ -3,11 +3,6 @@ module Faraday
     class Patron < Faraday::Adapter
       dependency 'patron'
 
-      def initialize(app, &block)
-        super(app)
-        @block = block
-      end
-
       def call(env)
         super
 
@@ -73,7 +68,7 @@ module Faraday
       def create_session
         session = ::Patron::Session.new
         session.insecure = true
-        @block.call(session) if @block
+        @custom_config.call(session) if @custom_config
         session
       end
     end

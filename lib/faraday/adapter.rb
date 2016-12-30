@@ -32,7 +32,7 @@ module Faraday
 
     def initialize(app = nil, &block)
       super
-      @custom_config = block if block_given?
+      @custom_config = block
     end
 
     def call(env)
