@@ -44,6 +44,12 @@ module Faraday
         http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
         http.ssl_version  = ssl[:version]      if ssl[:version]
       end
+
+      def configure_request_options(http, req)
+        super
+        http.idle_timeout          = req[:idle_timeout]          if req[:idle_timeout]
+        http.retry_change_requests = req[:retry_change_requests] if req[:retry_change_requests]
+      end
     end
   end
 end
