@@ -110,7 +110,7 @@ module Faraday
         http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
         http.open_timeout = req[:open_timeout]                if req[:open_timeout]
 
-        @custom_config.call(http) if @custom_config
+        @config_block.call(http) if @config_block
       end
 
       def ssl_cert_store(ssl)

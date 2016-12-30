@@ -19,7 +19,7 @@ module Faraday
 
       def call(env)
         super
-        request = EventMachine::HttpRequest.new(Utils::URI(env[:url].to_s), connection_config(env))
+        request = create_request(env)
 
         http_method = env[:method].to_s.downcase.to_sym
 
@@ -86,6 +86,10 @@ module Faraday
         else
           raise
         end
+      end
+
+      def create_request(env)
+        EventMachine::HttpRequest.new(Utils::URI(env[:url].to_s), connection_config(env).merge(@connection_options))
       end
     end
   end

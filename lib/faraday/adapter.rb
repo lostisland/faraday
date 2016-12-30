@@ -30,9 +30,10 @@ module Faraday
     extend Parallelism
     self.supports_parallel = false
 
-    def initialize(app = nil, &block)
-      super
-      @custom_config = block
+    def initialize(app = nil, opts = {}, &block)
+      super(app)
+      @connection_options = opts
+      @config_block = block
     end
 
     def call(env)

@@ -68,7 +68,7 @@ module Faraday
       def create_session
         session = ::Patron::Session.new
         session.insecure = true
-        @custom_config.call(session) if @custom_config
+        @config_block.call(session) if @config_block
         session
       end
     end

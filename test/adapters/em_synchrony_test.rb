@@ -18,5 +18,15 @@ module Adapters
         end
       end
     end
+
+    def test_custom_adapter_config
+      url = URI('https://example.com:1234')
+
+      adapter = Faraday::Adapter::EMSynchrony.new nil, inactivity_timeout: 20
+
+      req = adapter.create_request(url: url, request: {})
+
+      assert_equal 20, req.connopts.inactivity_timeout
+    end
   end
 end

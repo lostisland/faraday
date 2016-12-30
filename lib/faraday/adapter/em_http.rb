@@ -138,7 +138,7 @@ module Faraday
 
       # TODO: reuse the connection to support pipelining
       def perform_single_request(env)
-        req = EventMachine::HttpRequest.new(env[:url], connection_config(env))
+        req = create_request(env)
         req.setup_request(env[:method], request_config(env)).callback { |client|
           status = client.response_header.status
           reason = client.response_header.http_reason
@@ -148,6 +148,10 @@ module Faraday
             end
           end
         }
+      end
+
+      def create_request(env)
+        EventMachine::HttpRequest.new(env[:url], connection_config(env).merge(@connection_options))
       end
 
       def error_message(client)

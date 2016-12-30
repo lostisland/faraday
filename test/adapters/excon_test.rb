@@ -16,5 +16,15 @@ module Adapters
       # https://github.com/geemus/excon/issues/358
       undef :test_connection_error if RUBY_VERSION >= '2.1.0'
     end
+
+    def test_custom_adapter_config
+      url = URI('https://example.com:1234')
+
+      adapter = Faraday::Adapter::Excon.new nil, debug_request: true
+
+      conn = adapter.create_connection({url: url}, {})
+
+      assert_equal true, conn.data[:debug_request]
+    end
   end
 end

@@ -29,6 +29,8 @@ module Faraday
           configure_ssl ssl
         end
 
+        configure_client
+
         # TODO Don't stream yet.
         # https://github.com/nahi/httpclient/pull/90
         env[:body] = env[:body].read if env[:body].respond_to? :read
@@ -93,6 +95,10 @@ module Faraday
           client.connect_timeout   = req[:open_timeout]
           client.send_timeout      = req[:open_timeout]
         end
+      end
+
+      def configure_client
+        @config_block.call(client) if @config_block
       end
 
       def ssl_cert_store(ssl)

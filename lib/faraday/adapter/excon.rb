@@ -3,11 +3,6 @@ module Faraday
     class Excon < Faraday::Adapter
       dependency 'excon'
 
-      def initialize(app, connection_options = {})
-        @connection_options = connection_options
-        super(app)
-      end
-
       def call(env)
         super
 
@@ -50,7 +45,7 @@ module Faraday
           end
         end
 
-        conn = ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
+        conn = create_connection(env, opts)
 
         resp = conn.request \
           :method  => env[:method].to_s.upcase,
@@ -70,6 +65,10 @@ module Faraday
         end
       rescue ::Excon::Errors::Timeout => err
         raise Error::TimeoutError, err
+      end
+
+      def create_connection(env, opts)
+        ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
       end
 
       # TODO: support streaming requests
