@@ -30,6 +30,11 @@ module Faraday
     extend Parallelism
     self.supports_parallel = false
 
+    def initialize(app = nil, &block)
+      super
+      @custom_config = block if block_given?
+    end
+
     def call(env)
       env.clear_body if env.needs_body?
     end
