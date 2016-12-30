@@ -19,16 +19,13 @@ module Adapters
     end
 
     def test_custom_adapter_config
-      url = URI('https://example.com:1234')
-
-      adapter = Faraday::Adapter::NetHttpPersistent.new do |http|
-        http.idle_timeout = 123
+      adapter = Faraday::Adapter::Patron.new do |session|
+        session.max_redirects = 10
       end
 
-      http = adapter.net_http_connection(:url => url, :request => {})
-      adapter.configure_request(http, {})
+      session = adapter.create_session
 
-      assert_equal 123, http.idle_timeout
+      assert_equal 10, session.max_redirects
     end
   end
 end
