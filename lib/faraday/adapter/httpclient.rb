@@ -27,6 +27,7 @@ module Faraday
 
         if env[:url].scheme == 'https' && ssl = env[:ssl]
           configure_ssl ssl
+          configure_ssl_timeouts req
         end
 
         # TODO Don't stream yet.
@@ -92,6 +93,13 @@ module Faraday
         if req[:open_timeout]
           client.connect_timeout   = req[:open_timeout]
           client.send_timeout      = req[:open_timeout]
+        end
+      end
+
+      def configure_ssl_timeouts(req)
+        ssl_config = client.ssl_config
+        if req[:timeout] and ssl_config.respond_to?(:timeout=)
+          ssl_config.timeout = req[:timeout]
         end
       end
 
