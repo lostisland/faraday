@@ -36,6 +36,7 @@ module Faraday
           req = env[:request]
           http.read_timeout = http.open_timeout = req[:timeout] if req[:timeout]
           http.open_timeout = req[:open_timeout]                if req[:open_timeout]
+          http.continue_timeout = req[:continue_timeout]        if req[:continue_timeout]
 
           begin
             http_response = perform_request(http, env)
