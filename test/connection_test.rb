@@ -450,6 +450,16 @@ class TestConnection < Faraday::TestCase
     assert_equal 1, conn.options.open_timeout
   end
 
+  def test_default_connection_options_persist_with_an_instance_overriding
+    Faraday.default_connection_options.request.timeout = 10
+    conn = Faraday.new 'http://nigiri.com/bar'
+
+    other = Faraday.new :url => 'https://sushi.com/foo'
+    other.options.timeout = 1
+
+    assert_equal 10, Faraday.default_connection_options.request.timeout
+  end
+
   def env_url(url, params)
     conn = Faraday::Connection.new(url, :params => params)
     yield(conn) if block_given?
