@@ -55,11 +55,12 @@ module Faraday
     #                     :user     - String (optional)
     #                     :password - String (optional)
     def initialize(url = nil, options = nil)
+
+      options = ConnectionOptions.from(options)
+
       if url.is_a?(Hash)
-        options = options ? options.merge(url) : ConnectionOptions.from(url)
+        options = options.merge(url)
         url     = options.url
-      else
-        options = ConnectionOptions.from(options)
       end
 
       @parallel_manager = nil
