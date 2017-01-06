@@ -51,7 +51,14 @@ module Faraday
     def merge(value)
       dup.update(value)
     end
+    
+    # Public
+    def dup
+      self.class.from(self)
+    end
 
+    alias clone dup
+    
     # Public
     def fetch(key, *args)
       unless symbolized_key_set.include?(key.to_sym)
