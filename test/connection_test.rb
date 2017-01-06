@@ -453,6 +453,8 @@ class TestConnection < Faraday::TestCase
   def test_default_connection_options_persist_with_an_instance_overriding
     Faraday.default_connection_options.request.timeout = 10
     conn = Faraday.new 'http://nigiri.com/bar'
+    conn.options.timeout = 1
+    assert_equal 10, Faraday.default_connection_options.request.timeout
 
     other = Faraday.new :url => 'https://sushi.com/foo'
     other.options.timeout = 1
