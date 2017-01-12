@@ -40,5 +40,24 @@ module Adapters
       assert_equal 1234, http.port
     end
 
+    def test_no_proxy_with_nil_input
+      url = URI('http://example.com')
+
+      adapter = Faraday::Adapter::NetHttp.new
+      http = adapter.net_http_connection(:url => url, :request => { :proxy => nil })
+
+      assert_equal false, http.proxy_from_env?
+    end
+
+    def test_no_proxy_with_empty_string
+      url = URI('http://example.com')
+
+      adapter = Faraday::Adapter::NetHttp.new
+      proxy = Faraday::ProxyOptions.from('')
+      http = adapter.net_http_connection(:url => url, :request => { :proxy => proxy })
+
+      assert_equal false, http.proxy_from_env?
+    end
+
   end
 end
