@@ -16,8 +16,7 @@ module Faraday
 
     # Internal
     def self.build_hash(type, hash)
-      offset = KEY.size + type.size + 3
-      comma = ",\n#{' ' * offset}"
+      comma = ", "
       values = []
       hash.each do |key, value|
         values << "#{key}=#{value.to_s.inspect}"
