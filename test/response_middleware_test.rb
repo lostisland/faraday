@@ -63,10 +63,10 @@ class ResponseNoBodyMiddleWareTest < Faraday::TestCase
   end
 
   def test_204
-    assert_equal nil, @conn.get('no_content').body
+    assert_nil @conn.get('no_content').body
   end
 
   def test_304
-    assert_equal nil, @conn.get('not_modified').body
+    assert_nil @conn.get('not_modified').body
   end
 end
