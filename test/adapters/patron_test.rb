@@ -17,5 +17,15 @@ module Adapters
         undef :test_GET_ssl_fails_with_bad_cert if ssl_mode?
       end
     end
+
+    def test_custom_adapter_config
+      adapter = Faraday::Adapter::Patron.new do |session|
+        session.max_redirects = 10
+      end
+
+      session = adapter.create_session
+
+      assert_equal 10, session.max_redirects
+    end
   end
 end

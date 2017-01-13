@@ -16,6 +16,19 @@ module Adapters
         conn = create_connection :request => { :bind => { :host => host } }
         assert_equal host, conn.options[:bind][:host]
       end
+
+      def test_custom_adapter_config
+        adapter = Faraday::Adapter::HTTPClient.new do |client|
+          client.keep_alive_timeout = 20
+          client.ssl_config.timeout = 25
+        end
+
+        client = adapter.client
+        adapter.configure_client
+
+        assert_equal 20, client.keep_alive_timeout
+        assert_equal 25, client.ssl_config.timeout
+      end
     end
   end
 end

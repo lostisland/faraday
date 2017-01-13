@@ -7,8 +7,8 @@ module Faraday
     class NetHttpPersistent < NetHttp
       dependency 'net/http/persistent'
 
-      def with_net_http_connection(env)
-        if proxy = env[:request][:proxy]
+      def net_http_connection(env)
+        if (proxy = env[:request][:proxy])
           proxy_uri = ::URI::HTTP === proxy[:uri] ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
           proxy_uri.user = proxy_uri.password = nil
           # awful patch for net-http-persistent 2.8 not unescaping user/password
@@ -16,9 +16,10 @@ module Faraday
             define_method(:user) { proxy[:user] }
             define_method(:password) { proxy[:password] }
           end if proxy[:user]
+          return Net::HTTP::Persistent.new 'Faraday', proxy_uri
         end
 
-        yield Net::HTTP::Persistent.new 'Faraday', proxy_uri
+        Net::HTTP::Persistent.new 'Faraday'
       end
 
       def perform_request(http, env)

@@ -40,5 +40,17 @@ module Adapters
       assert_equal 1234, http.port
     end
 
+    def test_custom_adapter_config
+      url = URI('https://example.com:1234')
+
+      adapter = Faraday::Adapter::NetHttp.new do |http|
+        http.continue_timeout = 123
+      end
+
+      http = adapter.net_http_connection(:url => url, :request => {})
+      adapter.configure_request(http, {})
+
+      assert_equal 123, http.continue_timeout
+    end
   end
 end
