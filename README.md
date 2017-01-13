@@ -30,6 +30,14 @@ conn = Faraday.new(:url => 'http://sushi.com') do |faraday|
   faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
 end
 
+# Filter sensitive information from logs with a regex matcher
+
+conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
+  faraday.response :logger do | logger |
+    logger.filter(/(api_key=)(\w+)/,'\1[REMOVED]')
+  end
+end
+
 ## GET ##
 
 response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
