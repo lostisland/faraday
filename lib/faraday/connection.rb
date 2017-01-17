@@ -79,13 +79,15 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      @proxy = nil
+      @proxy = @no_proxy = nil
       proxy(options.fetch(:proxy) {
         uri = ENV['http_proxy']
         if uri && !uri.empty?
-          uri = 'http://' + uri if uri !~ /^http/i
+          uri = 'http://' + uri unless uri.downcase.start_with?('http')
           uri
         end
+      }, options.fetch(:no_proxy) {
+        ENV['no_proxy']
       })
 
       yield(self) if block_given?
@@ -281,9 +283,10 @@ module Faraday
     end
 
     # Public: Gets or Sets the Hash proxy options.
-    def proxy(arg = nil)
-      return @proxy if arg.nil?
-      @proxy = ProxyOptions.from(arg)
+    def proxy(proxy = nil, no_proxy = nil)
+      return @proxy if proxy.nil?
+      @no_proxy = no_proxy.gsub('*.','').split(',').map(&:downcase) unless no_proxy.nil?
+      @proxy = ProxyOptions.from(proxy)
     end
 
     def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
@@ -371,6 +374,7 @@ module Faraday
         req.url(url)                if url
         req.headers.update(headers) if headers
         req.body = body             if body
+        req.options.merge!(:proxy => self.proxy) if proxy_allowed?(build_exclusive_url(req.path))
         yield(req) if block_given?
       end
 
@@ -384,8 +388,27 @@ module Faraday
       Request.create(method) do |req|
         req.params  = self.params.dup
         req.headers = self.headers.dup
-        req.options = self.options.merge(:proxy => self.proxy)
+        req.options = self.options
         yield(req) if block_given?
+      end
+    end
+
+    def proxy_allowed?(url)
+      return true if @no_proxy.nil?
+      uri = Utils.URI(url)
+      @no_proxy.none? do |no_proxy_domain|
+        no_proxy_uri = Utils.URI(no_proxy_domain)
+        # assume strings without scheme are of http
+        if no_proxy_uri.class == URI::Generic && !no_proxy_domain.empty?
+          no_proxy_uri = Utils.URI("http://#{no_proxy_domain}")
+        end
+        if no_proxy_uri.port == 80
+          # domain matching is fine
+          uri.host.downcase.end_with?(no_proxy_uri.host)
+        else
+          # need to match ports exactly
+          "#{uri.host.downcase}:#{uri.port}".end_with?("#{no_proxy_uri.host}:#{no_proxy_uri.port}")
+        end
       end
     end
 
