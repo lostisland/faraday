@@ -38,7 +38,7 @@ conn = Faraday.new(:url => 'http://www.example.com')
 response = conn.get '/users'                 # GET http://www.example.com/users' 
 ```
 
-Connections can also take an options hash as a parameter or be configured by using a block. Checkout the section called [#Advanced-middleware-usage] for more details about how to use this block for configurations. 
+Connections can also take an options hash as a parameter or be configured by using a block. Checkout the section called [Advanced middleware usage](#advanced-middleware-usage) for more details about how to use this block for configurations. 
 
 ```ruby
 conn = Faraday.new(:url => 'http://sushi.com') do |faraday|
