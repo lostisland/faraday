@@ -23,6 +23,23 @@ Available at [rubydoc.info](http://www.rubydoc.info/gems/faraday).
 
 ## Usage
 
+### Basic Use
+
+```ruby
+response = Faraday.get 'http://sushi.com/nigiri/sake.json'
+```
+A simple `get` request can be performed by using the syntax described above. This works if you don't need to set up anything; you can roll with just the default middleware
+stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.com/lostisland/faraday/blob/master/lib/faraday/rack_builder.rb)).
+
+A more flexible way to use Faraday is to start with a Connection object. If you want to keep the same defaults, you can use this syntax:
+
+```ruby
+conn = Faraday.new(:url => 'http://www.example.com') 
+response = conn.get '/users'                 # GET http://www.example.com/users' 
+```
+
+Connections can also take an options hash as a parameter or be configured by using a block. Checkout the section called [Advanced middleware usage](#advanced-middleware-usage) for more details about how to use this block for configurations. 
+
 ```ruby
 conn = Faraday.new(:url => 'http://sushi.com') do |faraday|
   faraday.request  :url_encoded             # form-encode POST params
@@ -37,7 +54,10 @@ conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
     logger.filter(/(api_key=)(\w+)/,'\1[REMOVED]')
   end
 end
+```
+Once you have the connection object, use it to make HTTP requests. You can pass paramters to it in a few different ways:
 
+```ruby
 ## GET ##
 
 response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
@@ -45,7 +65,7 @@ response.body
 
 conn.get '/nigiri', { :name => 'Maguro' }   # GET http://sushi.com/nigiri?name=Maguro
 
-conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
+conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100  
   req.url '/search', :page => 2
   req.params['limit'] = 100
 end
@@ -53,7 +73,9 @@ end
 ## POST ##
 
 conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi.com/nigiri
-
+```
+Some configuration options can be adjusted per request:
+```ruby
 # post payload as JSON instead of "www-form-urlencoded" encoding:
 conn.post do |req|
   req.url '/nigiri'
@@ -68,13 +90,6 @@ conn.get do |req|
   req.options.timeout = 5           # open/read timeout in seconds
   req.options.open_timeout = 2      # connection open timeout in seconds
 end
-```
-
-If you don't need to set up anything, you can roll with just the default middleware
-stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.com/lostisland/faraday/blob/master/lib/faraday/rack_builder.rb)):
-
-```ruby
-response = Faraday.get 'http://sushi.com/nigiri/sake.json'
 ```
 
 ### Changing how parameters are serialized
