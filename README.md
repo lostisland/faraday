@@ -9,7 +9,6 @@ Faraday supports these adapters:
 * [Net::HTTP][net_http] _(default)_
 * [Net::HTTP::Persistent][persistent]
 * [Excon][]
-* [Typhoeus][]
 * [Patron][]
 * [EventMachine][]
 * [HTTPClient][]
@@ -192,6 +191,53 @@ later, response. Some keys are:
 :response_headers
 ```
 
+## Ad-hoc adapters customization
+
+Faraday is intended to be a generic interface between your code and the adapter. However, sometimes you need to access a feature specific to one of the adapters that is not covered in Faraday's interface. 
+
+When that happens, you can pass a block when specifying the adapter to customize it. The block parameter will change based on the adapter you're using. See below for some examples.
+
+### NetHttp
+```ruby
+conn = Faraday.new(...) do |f|
+  f.adapter :net_http do |http| # yields Net::HTTP
+    http.idle_timeout = 100
+    http.verify_callback = lambda do | preverify_ok, cert_store |
+      # do something here...
+    end
+  end
+end
+```
+
+### NetHttpPersistent
+```ruby
+conn = Faraday.new(...) do |f|
+  f.adapter :net_http_persistent do |http| # yields Net::HTTP::Persistent
+    http.idle_timeout = 100
+    http.retry_change_requests = true
+  end
+end
+```
+
+### Patron
+```ruby
+conn = Faraday.new(...) do |f|
+  f.adapter :patron do |session| # yields Patron::Session
+    session.max_redirects = 10
+  end
+end
+```
+
+### HTTPClient
+```ruby
+conn = Faraday.new(...) do |f|
+  f.adapter :httpclient do |client| # yields HTTPClient
+    client.keep_alive_timeout = 20
+    client.ssl_config.timeout = 25
+  end
+end
+```
+
 ## Using Faraday for testing
 
 ```ruby
@@ -263,7 +309,6 @@ See [LICENSE][] for details.
 [persistent]:   https://github.com/drbrain/net-http-persistent
 [travis]:       https://travis-ci.org/lostisland/faraday
 [excon]:        https://github.com/excon/excon#readme
-[typhoeus]:     https://github.com/typhoeus/typhoeus#readme
 [patron]:       http://toland.github.io/patron/
 [eventmachine]: https://github.com/igrigorik/em-http-request#readme
 [httpclient]:   https://github.com/nahi/httpclient
