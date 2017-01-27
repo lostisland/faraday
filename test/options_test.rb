@@ -18,6 +18,30 @@ class OptionsTest < Faraday::TestCase
     assert_equal merged, ParentOptions.from(a: 1, b: 2, c: expected_sub_opts)
   end
 
+  def test_dup_is_shallow
+    sub_opts = SubOptions.from(sub_a: 3)
+    opts = ParentOptions.from(b: 1, c: sub_opts)
+
+    duped = opts.dup
+    duped.b = 2
+    duped.c.sub_a = 4
+
+    assert_equal opts.b, 1
+    assert_equal opts.c.sub_a, 4
+  end
+
+  def test_deep_dup
+    sub_opts = SubOptions.from(sub_a: 3)
+    opts = ParentOptions.from(b: 1, c: sub_opts)
+
+    duped = opts.deep_dup
+    duped.b = 2
+    duped.c.sub_a = 4
+
+    assert_equal opts.b, 1
+    assert_equal opts.c.sub_a, 3
+  end
+
   def test_clear
     options = SubOptions.new(1)
     assert !options.empty?

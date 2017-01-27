@@ -67,11 +67,9 @@ module Faraday
     end
 
     # Public
-    def dup
+    def deep_dup
       self.class.from(self)
     end
-
-    alias clone dup
 
     # Public
     def fetch(key, *args)
