@@ -11,11 +11,11 @@ class OptionsTest < Faraday::TestCase
     sub_opts2 = SubOptions.from(sub_b: 4)
     opt1 = ParentOptions.from(a: 1, c: sub_opts1)
     opt2 = ParentOptions.from(b: 2, c: sub_opts2)
+
     merged = opt1.merge(opt2)
-    assert_equal merged.a, 1
-    assert_equal merged.b, 2
-    assert_equal merged.c.sub_a, 3
-    assert_equal merged.c.sub_b, 4
+
+    expected_sub_opts = SubOptions.from(sub_a: 3, sub_b: 4)
+    assert_equal merged, ParentOptions.from(a: 1, b: 2, c: expected_sub_opts)
   end
 
   def test_clear
