@@ -32,8 +32,6 @@ module Faraday
       self
     end
 
-    alias merge! update
-
     # Public
     def delete(key)
       value = send(key)
@@ -47,8 +45,27 @@ module Faraday
     end
 
     # Public
-    def merge(value)
-      dup.update(value)
+    def merge!(other)
+      other.each do |key, other_value|
+        self_value = self.send(key)
+        sub_options = self.class.options_for(key)
+        if sub_options
+          self_value = sub_options.from(self_value)
+          other_value = sub_options.from(other_value)
+        end
+        if self_value.is_a?(Faraday::Options) && other_value.is_a?(Faraday::Options)
+          new_value = self_value.merge(other_value)
+        else
+          new_value = other_value
+        end
+        self.send("#{key}=", new_value) unless new_value.nil?
+      end
+      self
+    end
+
+    # Public
+    def merge(other)
+      dup.merge!(other)
     end
 
     # Public
