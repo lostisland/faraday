@@ -52,8 +52,6 @@ module Faraday
         if sub_options
           self_value = sub_options.from(self_value)
           other_value = sub_options.from(other_value)
-        end
-        if self_value.is_a?(Faraday::Options) && other_value.is_a?(Faraday::Options)
           new_value = self_value.merge(other_value)
         else
           new_value = other_value
