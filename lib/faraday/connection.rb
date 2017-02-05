@@ -285,7 +285,9 @@ module Faraday
     # Public: Gets or Sets the Hash proxy options.
     def proxy(proxy = nil, no_proxy = nil)
       return @proxy if proxy.nil?
-      @no_proxy = no_proxy.gsub('*.','').split(',').map(&:downcase) unless no_proxy.nil?
+      @no_proxy = no_proxy
+        .scan(/(?!\.)([^:,\s]+)(?::(\d+))?/)
+        .map {|host, port| [host, port, /(\A|\.)#{Regexp.quote host}\z/i]} unless no_proxy.nil?
       @proxy = ProxyOptions.from(proxy)
     end
 
@@ -396,18 +398,24 @@ module Faraday
     def proxy_allowed?(url)
       return true if @no_proxy.nil?
       uri = Utils.URI(url)
-      @no_proxy.none? do |no_proxy_domain|
-        no_proxy_uri = Utils.URI(no_proxy_domain)
-        # assume strings without scheme are of http
-        if no_proxy_uri.class == URI::Generic && !no_proxy_domain.empty?
-          no_proxy_uri = Utils.URI("http://#{no_proxy_domain}")
-        end
-        if no_proxy_uri.port == 80
-          # domain matching is fine
-          uri.host.downcase.end_with?(no_proxy_uri.host)
-        else
-          # need to match ports exactly
-          "#{uri.host.downcase}:#{uri.port}".end_with?("#{no_proxy_uri.host}:#{no_proxy_uri.port}")
+      @no_proxy.none? do |host, port, host_regex|
+        next false if (port && uri.port != port.to_i)
+        next true if host_regex =~ uri.host
+        if uri.hostname
+          require 'socket'
+          begin
+            addr = IPSocket.getaddress(uri.hostname)
+            next true if /\A127\.|\A::1\z/ =~ addr
+          rescue SocketError
+          end
+          next false unless addr
+          require 'ipaddr'
+          next true if
+            begin
+              IPAddr.new(host)
+            rescue
+              next false
+            end.include?(addr)
         end
       end
     end

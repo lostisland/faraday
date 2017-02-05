@@ -383,10 +383,38 @@ class TestConnection < Faraday::TestCase
     end
   end
 
+  def test_proxy_allowed_when_prefixed_url_is_not_in_no_proxy_list
+    with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
+      conn = Faraday::Connection.new
+      assert_equal conn.proxy_allowed?('http://prefixedexample.com'), true
+    end
+  end
+
+  def test_proxy_allowed_when_subdomain_url_is_in_no_proxy_list
+    with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
+      conn = Faraday::Connection.new
+      assert_equal conn.proxy_allowed?('http://subdomain.example.com'), false
+    end
+  end
+
   def test_proxy_allowed_when_url_not_in_no_proxy_list
     with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example2.com' do
       conn = Faraday::Connection.new
       assert_equal conn.proxy_allowed?('http://example.com'), true
+    end
+  end
+
+  def test_proxy_allowed_when_ip_address_is_not_in_no_proxy_list_but_url_is
+    with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'localhost' do
+      conn = Faraday::Connection.new
+      assert_equal conn.proxy_allowed?('http://127.0.0.1'), false
+    end
+  end
+
+  def test_proxy_allowed_when_url_is_not_in_no_proxy_list_but_ip_address_is
+    with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => '127.0.0.1' do
+      conn = Faraday::Connection.new
+      assert_equal conn.proxy_allowed?('http://localhost'), false
     end
   end
 
