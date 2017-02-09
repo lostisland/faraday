@@ -113,7 +113,10 @@ module Faraday
       request_body = env[:body]
       begin
         env[:body] = request_body # after failure env[:body] is set to the response body
-        @app.call(env)
+        @app.call(env).on_complete do |response_env|
+          # add the number of retries to the env:
+          response_env[:retries] = @options.max - retries
+        end
       rescue @errmatch => exception
         if retries > 0 && retry_request?(env, exception)
           retries -= 1
