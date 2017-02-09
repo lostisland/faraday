@@ -87,7 +87,7 @@ module Faraday
 
       def net_http_connection(env)
         if proxy = env[:request][:proxy]
-          Net::HTTP::Proxy(proxy[:uri].host, proxy[:uri].port, proxy[:user], proxy[:password])
+          Net::HTTP::Proxy(proxy[:uri].host, proxy[:uri].port, proxy[:uri].user, proxy[:uri].password)
         else
           Net::HTTP
         end.new(env[:url].host, env[:url].port || (env[:url].scheme == 'https' ? 443 : 80))
