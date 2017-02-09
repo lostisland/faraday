@@ -1,9 +1,57 @@
 require File.expand_path('../helper', __FILE__)
 
 class OptionsTest < Faraday::TestCase
-  class SubOptions < Faraday::Options.new(:sub); end
+  SubOptions = Class.new(Faraday::Options.new(:sub_a, :sub_b))
   class ParentOptions < Faraday::Options.new(:a, :b, :c)
     options :c => SubOptions
+  end
+
+  def test_deep_merge
+    sub_opts1 = SubOptions.from(sub_a: 3)
+    sub_opts2 = SubOptions.from(sub_b: 4)
+    opt1 = ParentOptions.from(a: 1, c: sub_opts1)
+    opt2 = ParentOptions.from(b: 2, c: sub_opts2)
+
+    merged = opt1.merge(opt2)
+
+    expected_sub_opts = SubOptions.from(sub_a: 3, sub_b: 4)
+    assert_equal merged, ParentOptions.from(a: 1, b: 2, c: expected_sub_opts)
+  end
+
+  def test_deep_merge_with_hash
+    sub_opts1 = SubOptions.from(sub_a: 3)
+    sub_opts2 = { sub_b: 4 }
+    opt1 = ParentOptions.from(a: 1, c: sub_opts1)
+    opt2 = { b: 2, c: sub_opts2 }
+
+    merged = opt1.merge(opt2)
+
+    expected_sub_opts = SubOptions.from(sub_a: 3, sub_b: 4)
+    assert_equal merged, ParentOptions.from(a: 1, b: 2, c: expected_sub_opts)
+  end
+
+  def test_dup_is_shallow
+    sub_opts = SubOptions.from(sub_a: 3)
+    opts = ParentOptions.from(b: 1, c: sub_opts)
+
+    duped = opts.dup
+    duped.b = 2
+    duped.c.sub_a = 4
+
+    assert_equal opts.b, 1
+    assert_equal opts.c.sub_a, 4
+  end
+
+  def test_deep_dup
+    sub_opts = SubOptions.from(sub_a: 3)
+    opts = ParentOptions.from(b: 1, c: sub_opts)
+
+    duped = opts.deep_dup
+    duped.b = 2
+    duped.c.sub_a = 4
+
+    assert_equal opts.b, 1
+    assert_equal opts.c.sub_a, 3
   end
 
   def test_clear
@@ -16,9 +64,9 @@ class OptionsTest < Faraday::TestCase
   def test_empty
     options = SubOptions.new
     assert options.empty?
-    options.sub = 1
+    options.sub_a = 1
     assert !options.empty?
-    options.delete(:sub)
+    options.delete(:sub_a)
     assert options.empty?
   end
 
@@ -32,9 +80,9 @@ class OptionsTest < Faraday::TestCase
 
   def test_key?
     options = SubOptions.new
-    assert !options.key?(:sub)
-    options.sub = 1
-    assert options.key?(:sub)
+    assert !options.key?(:sub_a)
+    options.sub_a = 1
+    assert options.key?(:sub_a)
   end
 
   def test_each_value
@@ -48,7 +96,7 @@ class OptionsTest < Faraday::TestCase
   def test_value?
     options = SubOptions.new
     assert !options.value?(1)
-    options.sub = 1
+    options.sub_a = 1
     assert options.value?(1)
   end
 
@@ -108,7 +156,7 @@ class OptionsTest < Faraday::TestCase
     assert_equal 1, options.a
     assert_nil options.b
     assert_kind_of SubOptions, options.c
-    assert_equal 1, options.c.sub
+    assert_equal 1, options.c.sub_a
   end
 
   def test_from_hash
@@ -119,19 +167,19 @@ class OptionsTest < Faraday::TestCase
   end
 
   def test_from_hash_with_sub_object
-    options = ParentOptions.from :a => 1, :c => {:sub => 1}
+    options = ParentOptions.from :a => 1, :c => {:sub_a => 1}
     assert_kind_of ParentOptions, options
     assert_equal 1, options.a
     assert_nil options.b
     assert_kind_of SubOptions, options.c
-    assert_equal 1, options.c.sub
+    assert_equal 1, options.c.sub_a
   end
 
   def test_inheritance
     subclass = Class.new(ParentOptions)
-    options = subclass.from(:c => {:sub => 'hello'})
+    options = subclass.from(:c => {:sub_a => 'hello'})
     assert_kind_of SubOptions, options.c
-    assert_equal 'hello', options.c.sub
+    assert_equal 'hello', options.c.sub_a
   end
 
   def test_from_deep_hash

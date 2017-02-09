@@ -18,22 +18,19 @@ module Faraday
     # Public
     def update(obj)
       obj.each do |key, value|
-        if sub_options = self.class.options_for(key)
-          value = sub_options.from(value) if value
-        elsif Hash === value
-          hash = {}
-          value.each do |hash_key, hash_value|
-            hash[hash_key] = hash_value
-          end
-          value = hash
+        sub_options = self.class.options_for(key)
+        if sub_options
+          new_value = sub_options.from(value) if value
+        elsif value.is_a?(Hash)
+          new_value = value.dup
+        else
+          new_value = value
         end
 
-        self.send("#{key}=", value) unless value.nil?
+        self.send("#{key}=", new_value) unless new_value.nil?
       end
       self
     end
-
-    alias merge! update
 
     # Public
     def delete(key)
@@ -48,16 +45,25 @@ module Faraday
     end
 
     # Public
-    def merge(value)
-      dup.update(value)
+    def merge!(other)
+      other.each do |key, other_value|
+        self_value = self.send(key)
+        sub_options = self.class.options_for(key)
+        new_value = sub_options ? self_value.merge(other_value) : other_value
+        self.send("#{key}=", new_value) unless new_value.nil?
+      end
+      self
     end
 
     # Public
-    def dup
-      self.class.from(self)
+    def merge(other)
+      dup.merge!(other)
     end
 
-    alias clone dup
+    # Public
+    def deep_dup
+      self.class.from(self)
+    end
 
     # Public
     def fetch(key, *args)
