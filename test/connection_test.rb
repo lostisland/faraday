@@ -355,6 +355,25 @@ class TestConnection < Faraday::TestCase
     end
   end
 
+  def test_no_proxy_from_no_proxy_env
+    with_env 'http_proxy', 'localhost:8888' do
+      with_env 'no_proxy', 'localhost,127.0.0.1' do
+        conn = Faraday::Connection.new 'http://localhost/foo'
+        assert_equal nil, conn.proxy
+      end
+    end
+  end
+
+  def test_proxy_from_no_proxy_env
+    with_env 'http_proxy', 'localhost:8888' do
+      with_env 'no_proxy', 'localhost,127.0.0.1' do
+        conn = Faraday::Connection.new 'http://sushi.com/foo'
+        assert_equal 'localhost', conn.proxy.host
+        assert_equal 8888, conn.proxy.port
+      end
+    end
+  end
+
   def test_proxy_doesnt_accept_uppercase_env
     with_env 'HTTP_PROXY', "http://localhost:8888/" do
       conn = Faraday::Connection.new
