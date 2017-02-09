@@ -1,5 +1,10 @@
 # Faraday
 
+[![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
+[![Build Status](https://travis-ci.org/lostisland/faraday.svg)](https://travis-ci.org/lostisland/faraday)
+[![Gitter](https://badges.gitter.im/lostisland/faraday.svg)](https://gitter.im/lostisland/faraday?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+
 Faraday is an HTTP client lib that provides a common interface over many
 adapters (such as Net::HTTP) and embraces the concept of Rack middleware when
 processing the request/response cycle.

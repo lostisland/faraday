@@ -204,6 +204,15 @@ module Adapters
         end
       end
 
+      def test_no_proxy
+        proxy_uri = URI(ENV['LIVE_PROXY'])
+        conn = create_connection(:proxy => proxy_uri, :no_proxy => 'localhost')
+
+        res = conn.get '/echo'
+
+        assert_nil res['via']
+      end
+
       def test_proxy_auth_fail
         proxy_uri = URI(ENV['LIVE_PROXY'])
         proxy_uri.password = 'WRONG'
