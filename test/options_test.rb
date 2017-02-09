@@ -18,6 +18,18 @@ class OptionsTest < Faraday::TestCase
     assert_equal merged, ParentOptions.from(a: 1, b: 2, c: expected_sub_opts)
   end
 
+  def test_deep_merge_with_hash
+    sub_opts1 = SubOptions.from(sub_a: 3)
+    sub_opts2 = { sub_b: 4 }
+    opt1 = ParentOptions.from(a: 1, c: sub_opts1)
+    opt2 = { b: 2, c: sub_opts2 }
+
+    merged = opt1.merge(opt2)
+
+    expected_sub_opts = SubOptions.from(sub_a: 3, sub_b: 4)
+    assert_equal merged, ParentOptions.from(a: 1, b: 2, c: expected_sub_opts)
+  end
+
   def test_dup_is_shallow
     sub_opts = SubOptions.from(sub_a: 3)
     opts = ParentOptions.from(b: 1, c: sub_opts)
