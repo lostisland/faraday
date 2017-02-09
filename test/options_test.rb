@@ -154,6 +154,15 @@ class OptionsTest < Faraday::TestCase
     assert_nil options.b
   end
 
+  def test_from_hash_with_string_keys_with_sub_object
+    options = ParentOptions.from 'a' => 1, 'c' => {'sub' => 1}
+    assert_kind_of ParentOptions, options
+    assert_equal 1, options.a
+    assert_kind_of SubOptions, options.c
+    assert_equal 1, options.c.sub
+    assert_nil options.b
+  end
+
   def test_invalid_key
     assert_raises NoMethodError do
       ParentOptions.from :invalid => 1
