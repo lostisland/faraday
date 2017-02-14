@@ -10,7 +10,7 @@ module Faraday
   #
   #   Faraday.new do |conn|
   #     conn.request :retry, max: 2, interval: 0.05,
-  #                          interval_randomness: 0.5, backoff_factor: 2
+  #                          interval_randomness: 0.5, backoff_factor: 2,
   #                          exceptions: [CustomException, 'Timeout::Error']
   #     conn.adapter ...
   #   end
