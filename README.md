@@ -57,6 +57,7 @@ conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
   faraday.response :logger do | logger |
     logger.filter(/(api_key=)(\w+)/,'\1[REMOVED]')
   end
+  faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
 end
 ```
 Once you have the connection object, use it to make HTTP requests. You can pass paramters to it in a few different ways:
