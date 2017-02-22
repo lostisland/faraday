@@ -117,6 +117,7 @@ module Faraday
       rescue @errmatch => exception
         if retries > 0 && retry_request?(env, exception)
           retries -= 1
+          rewind_files(request_body)
           sleep sleep_amount(retries + 1)
           retry
         end
@@ -148,6 +149,14 @@ module Faraday
 
     def retry_request?(env, exception)
       @options.methods.include?(env[:method]) || @options.retry_if.call(env, exception)
+    end
+
+    def rewind_files(env)
+      env && env.each do |_, value|
+        if value.is_a? UploadIO
+          value.rewind
+        end
+      end
     end
 
   end
