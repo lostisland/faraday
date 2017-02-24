@@ -362,6 +362,24 @@ class TestConnection < Faraday::TestCase
     end
   end
 
+  if URI.parse("").respond_to?(:find_proxy)
+    def test_proxy_with_find_proxy
+      with_env 'http_proxy', "http://proxy.com/" do
+        conn = Faraday::Connection.new("http://sushi.com/")
+        assert_equal 'proxy.com', conn.proxy.host
+      end
+    end
+
+    def test_proxy_nil_with_no_proxy
+      with_env 'http_proxy', "http://example.com/" do
+        with_env 'no_proxy', "sushi.com" do
+          conn = Faraday::Connection.new("http://sushi.com/")
+          assert_nil conn.proxy
+        end
+      end
+    end
+  end
+
   def test_proxy_requires_uri
     conn = Faraday::Connection.new
     assert_raises ArgumentError do

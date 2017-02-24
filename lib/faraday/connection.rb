@@ -81,11 +81,20 @@ module Faraday
 
       @proxy = nil
       proxy(options.fetch(:proxy) {
-        uri = ENV['http_proxy']
-        if uri && !uri.empty?
-          uri = 'http://' + uri if uri !~ /^http/i
-          uri
+        uri = nil
+        if URI.parse("").respond_to?(:find_proxy)
+          case url
+          when String
+            uri = URI.parse(url).find_proxy
+          when URI
+            uri = url.find_proxy
+          when nil
+            uri = find_default_proxy
+          end
+        else
+          uri = find_default_proxy
         end
+        uri
       })
 
       yield(self) if block_given?
@@ -432,6 +441,17 @@ module Faraday
       header = Faraday::Request.lookup_middleware(header_type).
         header(*args)
       headers[Faraday::Request::Authorization::KEY] = header
+    end
+
+    def find_default_proxy
+      warn 'no_proxy is unsupported' if ENV['no_proxy'] || ENV['NO_PROXY']
+      uri = ENV['http_proxy']
+      if uri && !uri.empty?
+        uri = 'http://' + uri if uri !~ /^http/i
+        return uri
+      else
+        return nil
+      end
     end
   end
 end
