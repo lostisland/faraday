@@ -22,6 +22,7 @@ module Adapters
           stubs.get('/filtered_headers') { [200, {'Content-Type' => 'text/html'}, 'headers response'] }
           stubs.get('/filtered_params') { [200, {'Content-Type' => 'text/html'}, 'params response'] }
           stubs.get('/filtered_url') { [200, {'Content-Type' => 'text/html'}, 'url response'] }
+          stubs.get('/empty_headers') { [200, nil, 'headers response'] }
         end
       end
     end
@@ -60,7 +61,7 @@ module Adapters
       refute_match %(Accept: "text/html), @io.string
     end
 
-    def test_does_log_response_headers_if_option_is_false
+    def test_does_not_log_response_headers_if_option_is_false
       app = conn(@logger, :headers => { :response => false })
       app.get '/hello', nil, :accept => 'text/html'
       refute_match %(Content-Type: "text/html), @io.string
@@ -127,5 +128,16 @@ module Adapters
       refute_match %(hunter2), @io.string
     end
 
+    def test_does_not_log_request_headers_if_headers_are_empty
+      app = conn(@logger, :headers => { :request => true })
+      app.get '/empty_headers', nil, nil
+      refute_match %(Accept: "text/html), @io.string
+    end
+
+    def test_does_not_log_response_headers_if_headers_are_empty
+      app = conn(@logger, :headers => { :response => true })
+      app.get '/empty_headers', nil, :accept => 'text/html'
+      refute_match %(Content-Type: "text/html), @io.string
+    end
   end
 end
