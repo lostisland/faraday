@@ -206,7 +206,7 @@ module Middleware
         @explode = lambda {|n| raise Errno::ETIMEDOUT }
         check = lambda { |env,exception| true }
         assert_raises(Errno::ETIMEDOUT) {
-          conn(:retry_if => check).post("/unstable", { file: upload_io})
+          conn(:retry_if => check).post("/unstable", { :file => upload_io })
         }
       end
       assert_equal 3, @times_called
