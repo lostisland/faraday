@@ -82,8 +82,9 @@ class RequestMiddlewareTest < Faraday::TestCase
     response = @conn.post('/echo', payload)
 
     assert_kind_of Faraday::CompositeReadIO, response.body
-    assert_equal "multipart/form-data; boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
-      response.headers['Content-Type']
+    assert response.headers['Content-Type'].start_with?(
+      "multipart/form-data; boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY_PREFIX,
+    )
 
     response.body.send(:ios).map{|io| io.read}.each do |io|
       if re = regexes.detect { |r| io =~ r }
@@ -104,8 +105,9 @@ class RequestMiddlewareTest < Faraday::TestCase
     response = @conn.post('/echo', payload)
 
     assert_kind_of Faraday::CompositeReadIO, response.body
-    assert_equal "multipart/form-data; boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY,
-      response.headers['Content-Type']
+    assert response.headers['Content-Type'].start_with?(
+      "multipart/form-data; boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY_PREFIX,
+    )
 
     response.body.send(:ios).map{|io| io.read}.each do |io|
       if re = regexes.detect { |r| io =~ r }
@@ -115,4 +117,11 @@ class RequestMiddlewareTest < Faraday::TestCase
     assert_equal [], regexes
   end
 
+  def test_multipart_unique_boundary
+    payload = {:a => 1, :b =>[{:c => Faraday::UploadIO.new(__FILE__, 'text/x-ruby'), :d => 2}]}
+    response1 = @conn.post('/echo', payload)
+    setup
+    response2 = @conn.post('/echo', payload)
+    assert response1.headers['Content-Type'] != response2.headers['Content-Type']
+  end
 end
