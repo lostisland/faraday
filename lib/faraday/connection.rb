@@ -84,9 +84,11 @@ module Faraday
         uri = ENV['http_proxy']
         if uri && !uri.empty?
           uri = 'http://' + uri if uri !~ /^http/i
-          uri
+          no_proxy = ENV['no_proxy'].gsub(/\s+/, '').split(',')
+          u = URI(uri)  
+          no_proxy.include?(u.hostname) ? nil : uri
         end
-      })
+      }) unless options.has_key?(:proxy)
 
       yield(self) if block_given?
 
