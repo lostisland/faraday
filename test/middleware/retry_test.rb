@@ -195,5 +195,22 @@ module Middleware
       assert_equal 2, @times_called
     end
 
+    def test_should_rewind_files_on_retry
+      io = StringIO.new("Test data")
+      upload_io = Faraday::UploadIO.new(io, "application/octet/stream")
+
+      rewound = 0
+      rewind = lambda { rewound += 1 }
+
+      upload_io.stub :rewind, rewind do
+        @explode = lambda {|n| raise Errno::ETIMEDOUT }
+        check = lambda { |env,exception| true }
+        assert_raises(Errno::ETIMEDOUT) {
+          conn(:retry_if => check).post("/unstable", { :file => upload_io })
+        }
+      end
+      assert_equal 3, @times_called
+      assert_equal 2, rewound
+    end
   end
 end
