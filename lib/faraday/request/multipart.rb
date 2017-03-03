@@ -1,13 +1,14 @@
 require File.expand_path("../url_encoded", __FILE__)
+require 'securerandom'
 
 module Faraday
   class Request::Multipart < Request::UrlEncoded
     self.mime_type = 'multipart/form-data'.freeze
-    DEFAULT_BOUNDARY = "-----------RubyMultipartPost".freeze unless defined? DEFAULT_BOUNDARY
+    DEFAULT_BOUNDARY_PREFIX = "-----------RubyMultipartPost".freeze unless defined? DEFAULT_BOUNDARY_PREFIX
 
     def call(env)
       match_content_type(env) do |params|
-        env.request.boundary ||= DEFAULT_BOUNDARY
+        env.request.boundary ||= unique_boundary
         env.request_headers[CONTENT_TYPE] += "; boundary=#{env.request.boundary}"
         env.body = create_multipart(env, params)
       end
@@ -42,6 +43,10 @@ module Faraday
       body = Faraday::CompositeReadIO.new(parts)
       env.request_headers[Faraday::Env::ContentLength] = body.length.to_s
       return body
+    end
+
+    def unique_boundary
+      "#{DEFAULT_BOUNDARY_PREFIX}-#{SecureRandom.hex}"
     end
 
     def process_params(params, prefix = nil, pieces = nil, &block)
