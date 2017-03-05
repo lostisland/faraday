@@ -121,7 +121,7 @@ module Faraday
     #   conn.get '/items', {:page => 1}, :accept => 'application/json'
     #   conn.head '/items/1'
     #
-    #   # ElasticSearch example sending a body with GET.
+    #   # Elasticsearch example sending a body with GET.
     #   conn.get '/twitter/tweet/_search' do |req|
     #     req.headers[:content_type] = 'application/json'
     #     req.params[:routing] = 'kimchy'
@@ -158,7 +158,7 @@ module Faraday
     #
     #   conn.post '/items', data, :content_type => 'application/json'
     #
-    #   # Simple ElasticSearch indexing sample.
+    #   # Simple Elasticsearch indexing sample.
     #   conn.post '/twitter/tweet' do |req|
     #     req.headers[:content_type] = 'application/json'
     #     req.params[:routing] = 'kimchy'
