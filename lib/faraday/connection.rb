@@ -448,9 +448,7 @@ module Faraday
       uri = ENV['http_proxy']
       if uri && !uri.empty?
         uri = 'http://' + uri if uri !~ /^http/i
-        return uri
-      else
-        return nil
+        uri
       end
     end
   end
