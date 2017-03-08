@@ -6,16 +6,23 @@ class TestConnection < Faraday::TestCase
     Faraday.default_connection_options = nil
   end
 
-  def with_env(key, proxy)
-    old_value = ENV.fetch(key, false)
-    ENV[key] = proxy
+  def with_env(new_env)
+    old_env = {}
+
+    new_env.each do |key, value|
+      old_env[key] = ENV.fetch(key, false)
+      ENV[key] = value
+    end
+
     begin
       yield
     ensure
-      if old_value == false
-        ENV.delete key
-      else
-        ENV[key] = old_value
+      old_env.each do |key, value|
+        if value == false
+          ENV.delete key
+        else
+          ENV[key] = value
+        end
       end
     end
   end
@@ -285,7 +292,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_string
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
+    with_env 'http_proxy' => "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy 'http://proxy.com'
       assert_equal 'proxy.com', conn.proxy.host
@@ -293,7 +300,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_uri
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
+    with_env 'http_proxy' => "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy URI.parse('http://proxy.com')
       assert_equal 'proxy.com', conn.proxy.host
@@ -301,7 +308,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_hash_with_string_uri
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
+    with_env 'http_proxy' => "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy :uri => 'http://proxy.com', :user => 'rick'
       assert_equal 'proxy.com', conn.proxy.host
@@ -310,7 +317,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_hash
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
+    with_env 'http_proxy' => "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       conn.proxy :uri => URI.parse('http://proxy.com'), :user => 'rick'
       assert_equal 'proxy.com', conn.proxy.host
@@ -319,14 +326,14 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_http_env
-    with_env 'http_proxy', "http://duncan.proxy.com:80" do
+    with_env 'http_proxy' => "http://duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       assert_equal 'duncan.proxy.com', conn.proxy.host
     end
   end
 
   def test_proxy_accepts_http_env_with_auth
-    with_env 'http_proxy', "http://a%40b:my%20pass@duncan.proxy.com:80" do
+    with_env 'http_proxy' => "http://a%40b:my%20pass@duncan.proxy.com:80" do
       conn = Faraday::Connection.new
       assert_equal 'a@b',     conn.proxy.user
       assert_equal 'my pass', conn.proxy.password
@@ -334,7 +341,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_proxy_accepts_env_without_scheme
-    with_env 'http_proxy', "localhost:8888" do
+    with_env 'http_proxy' => "localhost:8888" do
       uri = Faraday::Connection.new.proxy[:uri]
       assert_equal 'localhost', uri.host
       assert_equal 8888, uri.port
@@ -342,40 +349,75 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_no_proxy_from_env
-    with_env 'http_proxy', nil do
+    with_env 'http_proxy' => nil do
       conn = Faraday::Connection.new
       assert_nil conn.proxy
     end
   end
 
   def test_no_proxy_from_blank_env
-    with_env 'http_proxy', '' do
+    with_env 'http_proxy' => '' do
       conn = Faraday::Connection.new
       assert_nil conn.proxy
     end
   end
 
   def test_proxy_doesnt_accept_uppercase_env
-    with_env 'HTTP_PROXY', "http://localhost:8888/" do
+    with_env 'HTTP_PROXY' => "http://localhost:8888/" do
       conn = Faraday::Connection.new
       assert_nil conn.proxy
     end
   end
 
   if URI.parse("").respond_to?(:find_proxy)
-    def test_proxy_with_find_proxy
-      with_env 'http_proxy', "http://proxy.com/" do
-        conn = Faraday::Connection.new("http://sushi.com/")
+    def test_proxy_allowed_when_url_in_no_proxy_list
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
+        conn = Faraday::Connection.new('http://example.com')
+        assert_nil conn.proxy
+      end
+    end
+
+    def test_proxy_allowed_when_prefixed_url_is_not_in_no_proxy_list
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
+        conn = Faraday::Connection.new('http://prefixedexample.com')
         assert_equal 'proxy.com', conn.proxy.host
       end
     end
 
-    def test_proxy_nil_with_no_proxy
-      with_env 'http_proxy', "http://example.com/" do
-        with_env 'no_proxy', "sushi.com" do
-          conn = Faraday::Connection.new("http://sushi.com/")
-          assert_nil conn.proxy
-        end
+    def test_proxy_allowed_when_subdomain_url_is_in_no_proxy_list
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
+        conn = Faraday::Connection.new('http://subdomain.example.com')
+        assert_nil conn.proxy
+      end
+    end
+
+    def test_proxy_allowed_when_url_not_in_no_proxy_list
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example2.com' do
+        conn = Faraday::Connection.new('http://example.com')
+        assert_equal 'proxy.com', conn.proxy.host
+      end
+    end
+
+    def test_proxy_allowed_when_ip_address_is_not_in_no_proxy_list_but_url_is
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'localhost' do
+        conn = Faraday::Connection.new('http://127.0.0.1')
+        assert_nil conn.proxy
+      end
+    end
+
+    def test_proxy_allowed_when_url_is_not_in_no_proxy_list_but_ip_address_is
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => '127.0.0.1' do
+        conn = Faraday::Connection.new('http://localhost')
+        assert_nil conn.proxy
+      end
+    end
+
+    def test_proxy_allowed_in_multi_element_no_proxy_list
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example0.com,example.com,example1.com' do
+        assert_nil Faraday::Connection.new('http://example0.com').proxy
+        assert_nil Faraday::Connection.new('http://example.com').proxy
+        assert_nil Faraday::Connection.new('http://example1.com').proxy
+        assert_equal 'proxy.com', Faraday::Connection.new('http://example2.com').proxy.host
       end
     end
   end
