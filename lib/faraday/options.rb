@@ -248,7 +248,7 @@ module Faraday
     memoized(:password) { uri.password && Utils.unescape(uri.password) }
   end
 
-  class ConnectionOptions < Options.new(:request, :ssl, :proxy, :no_proxy, :builder, :url,
+  class ConnectionOptions < Options.new(:request, :proxy, :ssl, :builder, :url,
     :parallel_manager, :params, :headers, :builder_class)
 
     options :request => RequestOptions, :ssl => SSLOptions

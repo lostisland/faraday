@@ -79,15 +79,22 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      @proxy = @no_proxy = nil
+      @proxy = nil
       proxy(options.fetch(:proxy) {
-        uri = ENV['http_proxy']
-        if uri && !uri.empty?
-          uri = 'http://' + uri unless uri.downcase.start_with?('http')
-          uri
+        uri = nil
+        if URI.parse("").respond_to?(:find_proxy)
+          case url
+          when String
+            uri = URI.parse(url).find_proxy
+          when URI
+            uri = url.find_proxy
+          when nil
+            uri = find_default_proxy
+          end
+        else
+          uri = find_default_proxy
         end
-      }, options.fetch(:no_proxy) {
-        ENV['no_proxy']
+        uri
       })
 
       yield(self) if block_given?
@@ -283,12 +290,9 @@ module Faraday
     end
 
     # Public: Gets or Sets the Hash proxy options.
-    def proxy(proxy = nil, no_proxy = nil)
-      return @proxy if proxy.nil?
-      @no_proxy = no_proxy
-        .scan(/(?!\.)([^:,\s]+)(?::(\d+))?/)
-        .map {|host, port| [host, port, /(\A|\.)#{Regexp.quote host}\z/i]} unless no_proxy.nil?
-      @proxy = ProxyOptions.from(proxy)
+    def proxy(arg = nil)
+      return @proxy if arg.nil?
+      @proxy = ProxyOptions.from(arg)
     end
 
     def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
@@ -376,7 +380,6 @@ module Faraday
         req.url(url)                if url
         req.headers.update(headers) if headers
         req.body = body             if body
-        req.options.merge!(:proxy => self.proxy) if proxy_allowed?(build_exclusive_url(req.path))
         yield(req) if block_given?
       end
 
@@ -390,33 +393,8 @@ module Faraday
       Request.create(method) do |req|
         req.params  = self.params.dup
         req.headers = self.headers.dup
-        req.options = self.options
+        req.options = self.options.merge(:proxy => self.proxy)
         yield(req) if block_given?
-      end
-    end
-
-    def proxy_allowed?(url)
-      return true if @no_proxy.nil?
-      uri = Utils.URI(url)
-      @no_proxy.none? do |host, port, host_regex|
-        next false if (port && uri.port != port.to_i)
-        next true if host_regex =~ uri.host
-        if uri.hostname
-          require 'socket'
-          begin
-            addr = IPSocket.getaddress(uri.hostname)
-            next true if /\A127\.|\A::1\z/ =~ addr
-          rescue SocketError
-          end
-          next false unless addr
-          require 'ipaddr'
-          next true if
-            begin
-              IPAddr.new(host)
-            rescue
-              next false
-            end.include?(addr)
-        end
       end
     end
 
@@ -463,6 +441,15 @@ module Faraday
       header = Faraday::Request.lookup_middleware(header_type).
         header(*args)
       headers[Faraday::Request::Authorization::KEY] = header
+    end
+
+    def find_default_proxy
+      warn 'no_proxy is unsupported' if ENV['no_proxy'] || ENV['NO_PROXY']
+      uri = ENV['http_proxy']
+      if uri && !uri.empty?
+        uri = 'http://' + uri if uri !~ /^http/i
+        uri
+      end
     end
   end
 end
