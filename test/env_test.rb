@@ -8,6 +8,7 @@ class EnvTest < Faraday::TestCase
 
     @conn.options.timeout      = 3
     @conn.options.open_timeout = 5
+    @conn.options.idle_timeout = 7
     @conn.ssl.verify           = false
     @conn.proxy 'http://proxy.com'
   end
@@ -51,15 +52,18 @@ class EnvTest < Faraday::TestCase
     env = make_env
     assert_equal 3, env.request.timeout
     assert_equal 5, env.request.open_timeout
+    assert_equal 7, env.request.idle_timeout
   end
 
   def test_per_request_options
     env = make_env do |req|
       req.options.timeout = 10
+      req.options.idle_timeout = 8
       req.options.boundary = 'boo'
       req.options.oauth[:consumer_secret] = 'xyz'
     end
     assert_equal 10, env.request.timeout
+    assert_equal 8, env.request.idle_timeout
     assert_equal 5, env.request.open_timeout
     assert_equal 'boo', env.request.boundary
 

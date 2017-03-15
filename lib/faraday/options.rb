@@ -202,7 +202,7 @@ module Faraday
   end
 
   class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
-    :timeout, :open_timeout, :boundary,
+    :timeout, :open_timeout, :idle_timeout, :boundary,
     :oauth)
 
     def []=(key, value)
@@ -215,7 +215,7 @@ module Faraday
   end
 
   class SSLOptions < Options.new(:verify, :ca_file, :ca_path, :verify_mode,
-    :cert_store, :client_cert, :client_key, :certificate, :private_key, :verify_depth, :version)
+    :cert_store, :client_cert, :client_key, :certificate, :private_key, :verify_depth, :version, :sni_host)
 
     def verify?
       verify != false
