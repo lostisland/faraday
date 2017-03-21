@@ -58,10 +58,16 @@ class EnvTest < Faraday::TestCase
       req.options.timeout = 10
       req.options.boundary = 'boo'
       req.options.oauth[:consumer_secret] = 'xyz'
+      req.options.context = {
+          foo: 'foo',
+          bar: 'bar'
+      }
     end
+
     assert_equal 10, env.request.timeout
     assert_equal 5, env.request.open_timeout
     assert_equal 'boo', env.request.boundary
+    assert_equal env.request.context, { foo: 'foo', bar: 'bar' }
 
     oauth_expected = {:consumer_secret => 'xyz', :consumer_key => 'anonymous'}
     assert_equal oauth_expected, env.request.oauth

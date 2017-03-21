@@ -14,7 +14,7 @@ require 'forwardable'
 #   conn.get '/'
 #
 module Faraday
-  VERSION = "0.11.0"
+  VERSION = "0.12.0"
 
   class << self
     # Public: Gets or sets the root path that Faraday is being loaded from.

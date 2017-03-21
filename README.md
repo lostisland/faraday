@@ -60,6 +60,7 @@ conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
   faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
 end
 ```
+
 Once you have the connection object, use it to make HTTP requests. You can pass paramters to it in a few different ways:
 
 ```ruby
@@ -79,7 +80,9 @@ end
 
 conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi.com/nigiri
 ```
+
 Some configuration options can be adjusted per request:
+
 ```ruby
 # post payload as JSON instead of "www-form-urlencoded" encoding:
 conn.post do |req|
@@ -94,6 +97,20 @@ conn.get do |req|
   req.url '/search'
   req.options.timeout = 5           # open/read timeout in seconds
   req.options.open_timeout = 2      # connection open timeout in seconds
+end
+```
+
+And you can inject arbitrary data into the request using the `context` option:
+
+```ruby
+# Anything you inject using context option will be available in the env on all middlewares
+
+conn.get do |req|
+  req.url '/search'
+  req.options.context = {
+      foo: 'foo',
+      bar: 'bar'
+  }          
 end
 ```
 
