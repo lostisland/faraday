@@ -42,3 +42,5 @@ deploy:
   on:
     tags: true
     repo: lostisland/faraday
+    rvm: 2.4.0
+    condition: '"$SSL" = "yes"'
