@@ -95,7 +95,13 @@ module Faraday
 
       def parse(header_string)
         return unless header_string && !header_string.empty?
-        header_string.split(/\r\n/).
+
+        headers = header_string.split(/\r\n/)
+
+        # Break headers into distinct responses, and only consider the last response.
+        last_response = headers.slice_before(/^HTTP\//).to_a.last
+
+        last_response.
           tap  { |a| a.shift if a.first.index('HTTP/') == 0 }. # drop the HTTP status line
           map  { |h| h.split(/:\s*/, 2) }.reject { |p| p[0].nil? }. # split key and value, ignore blank lines
           each { |key, value|
