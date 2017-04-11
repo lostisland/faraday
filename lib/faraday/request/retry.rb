@@ -151,8 +151,9 @@ module Faraday
       @options.methods.include?(env[:method]) || @options.retry_if.call(env, exception)
     end
 
-    def rewind_files(env)
-      env && env.each do |_, value|
+    def rewind_files(body)
+      return unless body.is_a?(Hash)
+      body.each do |_, value|
         if value.is_a? UploadIO
           value.rewind
         end

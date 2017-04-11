@@ -325,7 +325,7 @@ of a major release, support for that Ruby version may be dropped.
 
 ## Copyright
 
-Copyright (c) 2009-2013 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
+Copyright (c) 2009-2017 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
 [net_http]:     http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
