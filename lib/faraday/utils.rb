@@ -98,8 +98,9 @@ module Faraday
 
         headers = header_string.split(/\r\n/)
 
-        # Break headers into distinct responses, and only consider the last response.
-        last_response = headers.slice_before(/^HTTP\//).to_a.last
+        # Find the last set of response headers.
+        start_index = headers.rindex { |x| x.match(/^HTTP\//) }
+        last_response = headers.slice(start_index, headers.size)
 
         last_response.
           tap  { |a| a.shift if a.first.index('HTTP/') == 0 }. # drop the HTTP status line
