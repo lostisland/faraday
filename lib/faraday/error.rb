@@ -3,7 +3,7 @@ module Faraday
   class MissingDependency < Error; end
 
   class ClientError < Error
-    attr_reader :response
+    attr_accessor :response
 
     def initialize(ex, response = nil)
       @wrapped_exception = nil

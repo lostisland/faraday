@@ -14,6 +14,9 @@ module Faraday
       # Calls the `parse` method if defined
       def on_complete(env)
         env.body = parse(env.body) if respond_to?(:parse) && env.parse_body?
+      rescue Faraday::Error::ClientError => err
+        err.response ||= env.response
+        raise err
       end
     end
 
