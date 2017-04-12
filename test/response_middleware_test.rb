@@ -42,17 +42,6 @@ class ResponseMiddlewareTest < Faraday::TestCase
     @conn.builder.insert(0, ResponseUpcaser)
     assert_equal '<BODY></BODY>', @conn.get('ok').body
   end
-
-  def test_adding_response_middleware_after_adapter
-    err = assert_raises Faraday::ConfigurationError do
-      Faraday.new do |b|
-        b.adapter :test
-        b.response :raise_error
-      end
-    end
-
-    assert_equal err.message, "unexpected middleware set after the adapter"
-  end
 end
 
 class ResponseNoBodyMiddleWareTest < Faraday::TestCase

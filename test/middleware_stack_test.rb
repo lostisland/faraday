@@ -191,3 +191,38 @@ class MiddlewareStackTest < Faraday::TestCase
     component.instance_variable_get('@registered_middleware').delete(key)
   end
 end
+
+class MiddlewareStackOrderTest < Faraday::TestCase
+  def test_adding_response_middleware_after_adapter
+    err = assert_raises Faraday::ConfigurationError do
+      Faraday::RackBuilder.new do |b|
+        b.adapter :test
+        b.response :raise_error
+      end
+    end
+
+    assert_equal err.message, "unexpected middleware set after the adapter"
+  end
+
+  def test_adding_request_middleware_after_adapter
+    err = assert_raises Faraday::ConfigurationError do
+      Faraday::RackBuilder.new do |b|
+        b.adapter :test
+        b.request :multipart
+      end
+    end
+
+    assert_equal err.message, "unexpected middleware set after the adapter"
+  end
+
+  def test_adding_request_middleware_after_adapter_via_use
+    err = assert_raises Faraday::ConfigurationError do
+      Faraday::RackBuilder.new do |b|
+        b.adapter :test
+        b.use Faraday::Request::Multipart
+      end
+    end
+
+    assert_equal err.message, "unexpected middleware set after the adapter"
+  end
+end
