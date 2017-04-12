@@ -106,6 +106,7 @@ module Faraday
     def insert(index, *args, &block)
       raise_if_locked
       index = assert_index(index)
+      raise_if_adapter_set if inserting_after_adapter?(index)
       handler = self.class::Handler.new(*args, &block)
       @handlers.insert(index, handler)
     end
@@ -206,11 +207,18 @@ module Faraday
     end
 
     def adapter_set?
-      @handlers.any? { |handler| is_adapter? handler.klass }
+      @handlers.any? { |handler| is_adapter?(handler) }
     end
 
-    def is_adapter?(klass)
-      klass.ancestors.include? Faraday::Adapter
+    def inserting_after_adapter?(index)
+      adapter_index = @handlers.find_index { |handler| is_adapter?(handler) }
+      return false if adapter_index.nil?
+
+      index > adapter_index
+    end
+
+    def is_adapter?(handler)
+      handler.klass.ancestors.include? Faraday::Adapter
     end
 
     def use_symbol(mod, key, *args, &block)

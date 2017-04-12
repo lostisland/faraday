@@ -36,8 +36,8 @@ class MiddlewareStackTest < Faraday::TestCase
 
   def test_allows_extending
     build_handlers_stack Apple
-    @conn.use Orange
-    @conn.adapter :test, &test_adapter
+    @builder.use Orange
+    @builder.adapter :test, &test_adapter
     assert_handlers %w[Apple Orange]
   end
 
@@ -47,20 +47,23 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_insert_before
-    build_stack Apple, Orange
+    build_handlers_stack Apple, Orange
     @builder.insert_before Apple, Banana
+    @builder.adapter :test, &test_adapter
     assert_handlers %w[Banana Apple Orange]
   end
 
   def test_insert_after
-    build_stack Apple, Orange
+    build_handlers_stack Apple, Orange
     @builder.insert_after Apple, Banana
+    @builder.adapter :test, &test_adapter
     assert_handlers %w[Apple Banana Orange]
   end
 
   def test_swap_handlers
-    build_stack Apple, Orange
+    build_handlers_stack Apple, Orange
     @builder.swap Apple, Banana
+    @builder.adapter :test, &test_adapter
     assert_handlers %w[Banana Orange]
   end
 
@@ -224,5 +227,24 @@ class MiddlewareStackOrderTest < Faraday::TestCase
     end
 
     assert_equal err.message, "unexpected middleware set after the adapter"
+  end
+
+  def test_adding_request_middleware_after_adapter_via_insert
+    err = assert_raises Faraday::ConfigurationError do
+      Faraday::RackBuilder.new do |b|
+        b.adapter :test
+        b.insert(1, Faraday::Request::Multipart)
+      end
+    end
+
+    assert_equal err.message, "unexpected middleware set after the adapter"
+  end
+
+  def test_adding_request_middleware_before_adapter_via_insert
+    builder = Faraday::RackBuilder.new do |b|
+      b.adapter :test
+    end
+
+    builder.insert(0, Faraday::Request::Multipart)
   end
 end
