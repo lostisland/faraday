@@ -84,6 +84,7 @@ module Faraday
         use_symbol(Faraday::Middleware, klass, *args, &block)
       else
         raise_if_locked
+        raise_if_adapter_set
         @handlers << self.class::Handler.new(klass, *args, &block)
       end
     end
@@ -198,6 +199,18 @@ module Faraday
 
     def raise_if_locked
       raise StackLocked, "can't modify middleware stack after making a request" if locked?
+    end
+
+    def raise_if_adapter_set
+      raise ConfigurationError, "unexpected middleware set after the adapter" if adapter_set?
+    end
+
+    def adapter_set?
+      @handlers.any? { |handler| is_adapter? handler.klass }
+    end
+
+    def is_adapter?(klass)
+      klass.ancestors.include? Faraday::Adapter
     end
 
     def use_symbol(mod, key, *args, &block)

@@ -35,8 +35,9 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_allows_extending
-    build_stack Apple
+    build_handlers_stack Apple
     @conn.use Orange
+    @conn.adapter :test, &test_adapter
     assert_handlers %w[Apple Orange]
   end
 
@@ -160,11 +161,21 @@ class MiddlewareStackTest < Faraday::TestCase
       handlers.each { |handler| b.use(*handler) }
       yield(b) if block_given?
 
-      b.adapter :test do |stub|
-        stub.get '/' do |env|
-          # echo the "X-Middleware" request header in the body
-          [200, {}, env[:request_headers]['X-Middleware'].to_s]
-        end
+      @builder.adapter :test, &test_adapter
+    end
+  end
+
+  def build_handlers_stack(*handlers)
+    @builder.build do |b|
+      handlers.each { |handler| b.use(*handler) }
+    end
+  end
+
+  def test_adapter
+    Proc.new do |stub|
+      stub.get '/' do |env|
+        # echo the "X-Middleware" request header in the body
+        [200, {}, env[:request_headers]['X-Middleware'].to_s]
       end
     end
   end
