@@ -46,6 +46,7 @@ module Faraday
   class ConnectionFailed < ClientError;   end
   class ResourceNotFound < ClientError;   end
   class ParsingError     < ClientError;   end
+  class Unauthorized < ClientError; end
 
   class TimeoutError < ClientError
     def initialize(ex = nil)
@@ -57,7 +58,7 @@ module Faraday
   end
 
   [:MissingDependency, :ClientError, :ConnectionFailed, :ResourceNotFound,
-   :ParsingError, :TimeoutError, :SSLError].each do |const|
+   :ParsingError, :TimeoutError, :SSLError, :Unauthorized].each do |const|
     Error.const_set(const, Faraday.const_get(const))
   end
 end
