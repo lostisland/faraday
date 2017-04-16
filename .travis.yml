@@ -17,6 +17,11 @@ rvm:
   - rbx-2
 
 matrix:
+  include:
+    - rvm: jruby
+      env: JRUBY_OPTS="--2.0"
+    - rvm: jruby-head
+      env: JRUBY_OPTS="--2.1"
   allow_failures:
     # "A fatal error has been detected by the Java Runtime Environment:
     #  Internal Error (sharedRuntime.cpp:843)"
