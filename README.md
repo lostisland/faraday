@@ -45,6 +45,16 @@ response = conn.get '/users'                 # GET http://www.example.com/users'
 Connections can also take an options hash as a parameter or be configured by using a block. Checkout the section called [Advanced middleware usage](#advanced-middleware-usage) for more details about how to use this block for configurations. 
 
 ```ruby
+## CREATE CONNECTION ##
+
+# Use default request encoding and adapter middleware:
+conn = Faraday.new(:url => 'http://sushi.com')
+
+# To explicitly set the request encoding and/or other middlewares to use, define with a block.
+# Note: A connection defined with a block will not use any of the default middlewares that you get
+#       without a block, so you MUST define a request encoding and adapter explicitly.
+#       (defaults are explicitly used below)
+
 conn = Faraday.new(:url => 'http://sushi.com') do |faraday|
   faraday.request  :url_encoded             # form-encode POST params
   faraday.response :logger                  # log requests to STDOUT
