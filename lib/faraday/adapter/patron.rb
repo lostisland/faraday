@@ -37,7 +37,7 @@ module Faraday
 
         @app.call env
       rescue ::Patron::TimeoutError => err
-        if err.message == "Connection time-out"
+        if err.message == "Connection time-out" || err.message.start_with?("Connection timed out")
           raise Faraday::Error::ConnectionFailed, err
         else
           raise Faraday::Error::TimeoutError, err
