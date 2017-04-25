@@ -1,6 +1,25 @@
 require File.expand_path('../helper', __FILE__)
 
 class TestUtils < Faraday::TestCase
+
+  # Headers parsing
+
+  def test_headers
+    "HTTP/1.x 500 OK\r\nContent-Type: text/html; charset=UTF-8\r\n" \
+    "HTTP/1.x 200 OK\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"
+  end
+
+  def test_headers_parsing_for_aggregated_responses
+    headers = Faraday::Utils::Headers.new()
+    headers.parse(test_headers)
+
+    result = headers.to_hash
+
+    assert_equal result["Content-Type"], "application/json; charset=UTF-8"
+  end
+
+  # URI parsing
+
   def setup
     @url = "http://example.com/abc"
   end
