@@ -49,9 +49,26 @@ class TestParameters < Faraday::TestCase
     assert_equal expected, Faraday::FlatParamsEncoder.decode(query)
   end
 
-  def test_nested_decode_hash
+  def test_decode_hash_nested
     query = "a[b1]=one&a[b2]=two&a[b][c]=foo"
     expected = {"a" => {"b1" => "one", "b2" => "two", "b" => {"c" => "foo"}}}
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_encode_array_hash_nested
+    expected = URI.escape("a[][b]=one&a[][b]=two", "[]")
+    assert_equal expected, Faraday::NestedParamsEncoder.encode({"a" => [{"b" => "one"}, {"b" => "two"}]})
+  end
+
+  def test_decode_array_hash_nested
+    query = "a[][b]=one&a[][b]=two&a[][b]=three"
+    expected = {"a" => [{"b" => "one"}, {"b" => "two"}, {"b" => "three"}]}
+    assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
+  end
+
+  def test_decode_array_hash_numbered_nested
+    query = "a[1][b]=one&a[2][b]=two&a[3][b]=three"
+    expected = {"a" => [{"b" => "one"}, {"b" => "two"}, {"b" => "three"}]}
     assert_equal expected, Faraday::NestedParamsEncoder.decode(query)
   end
 
