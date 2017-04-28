@@ -197,54 +197,64 @@ end
 
 class MiddlewareStackOrderTest < Faraday::TestCase
   def test_adding_response_middleware_after_adapter
-    err = assert_raises Faraday::ConfigurationError do
+    response_after_adapter = lambda do
       Faraday::RackBuilder.new do |b|
         b.adapter :test
         b.response :raise_error
       end
     end
 
-    assert_equal err.message, "unexpected middleware set after the adapter"
+    assert_output("", expected_middleware_warning, &response_after_adapter)
   end
 
   def test_adding_request_middleware_after_adapter
-    err = assert_raises Faraday::ConfigurationError do
+    request_after_adapter = lambda do
       Faraday::RackBuilder.new do |b|
         b.adapter :test
         b.request :multipart
       end
     end
 
-    assert_equal err.message, "unexpected middleware set after the adapter"
+    assert_output("", expected_middleware_warning, &request_after_adapter)
   end
 
   def test_adding_request_middleware_after_adapter_via_use
-    err = assert_raises Faraday::ConfigurationError do
+    use_after_adapter = lambda do
       Faraday::RackBuilder.new do |b|
         b.adapter :test
         b.use Faraday::Request::Multipart
       end
     end
 
-    assert_equal err.message, "unexpected middleware set after the adapter"
+    assert_output("", expected_middleware_warning, &use_after_adapter)
   end
 
   def test_adding_request_middleware_after_adapter_via_insert
-    err = assert_raises Faraday::ConfigurationError do
+    insert_after_adapter = lambda do
       Faraday::RackBuilder.new do |b|
         b.adapter :test
         b.insert(1, Faraday::Request::Multipart)
       end
     end
 
-    assert_equal err.message, "unexpected middleware set after the adapter"
+    assert_output("", expected_middleware_warning, &insert_after_adapter)
   end
 
-  def test_adding_request_middleware_before_adapter_via_insert
+  def test_adding_request_middleware_before_adapter_via_insert_no_warning
     builder = Faraday::RackBuilder.new do |b|
       b.adapter :test
     end
 
-    builder.insert(0, Faraday::Request::Multipart)
+    insert_before_adapter = lambda do
+      builder.insert(0, Faraday::Request::Multipart)
+    end
+
+    assert_output("", "", &insert_before_adapter)
+  end
+
+  private
+
+  def expected_middleware_warning
+    /Unexpected middleware set after the adapter/
   end
 end

@@ -1,6 +1,5 @@
 module Faraday
   class Error < StandardError; end
-  class ConfigurationError < Error; end
   class MissingDependency < Error; end
 
   class ClientError < Error
