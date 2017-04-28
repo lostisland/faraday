@@ -35,8 +35,9 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_allows_extending
-    build_stack Apple
-    @conn.use Orange
+    build_handlers_stack Apple
+    @builder.use Orange
+    @builder.adapter :test, &test_adapter
     assert_handlers %w[Apple Orange]
   end
 
@@ -46,20 +47,23 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 
   def test_insert_before
-    build_stack Apple, Orange
+    build_handlers_stack Apple, Orange
     @builder.insert_before Apple, Banana
+    @builder.adapter :test, &test_adapter
     assert_handlers %w[Banana Apple Orange]
   end
 
   def test_insert_after
-    build_stack Apple, Orange
+    build_handlers_stack Apple, Orange
     @builder.insert_after Apple, Banana
+    @builder.adapter :test, &test_adapter
     assert_handlers %w[Apple Banana Orange]
   end
 
   def test_swap_handlers
-    build_stack Apple, Orange
+    build_handlers_stack Apple, Orange
     @builder.swap Apple, Banana
+    @builder.adapter :test, &test_adapter
     assert_handlers %w[Banana Orange]
   end
 
@@ -160,11 +164,21 @@ class MiddlewareStackTest < Faraday::TestCase
       handlers.each { |handler| b.use(*handler) }
       yield(b) if block_given?
 
-      b.adapter :test do |stub|
-        stub.get '/' do |env|
-          # echo the "X-Middleware" request header in the body
-          [200, {}, env[:request_headers]['X-Middleware'].to_s]
-        end
+      @builder.adapter :test, &test_adapter
+    end
+  end
+
+  def build_handlers_stack(*handlers)
+    @builder.build do |b|
+      handlers.each { |handler| b.use(*handler) }
+    end
+  end
+
+  def test_adapter
+    Proc.new do |stub|
+      stub.get '/' do |env|
+        # echo the "X-Middleware" request header in the body
+        [200, {}, env[:request_headers]['X-Middleware'].to_s]
       end
     end
   end
@@ -178,5 +192,69 @@ class MiddlewareStackTest < Faraday::TestCase
   def unregister_middleware(component, key)
     # TODO: unregister API?
     component.instance_variable_get('@registered_middleware').delete(key)
+  end
+end
+
+class MiddlewareStackOrderTest < Faraday::TestCase
+  def test_adding_response_middleware_after_adapter
+    response_after_adapter = lambda do
+      Faraday::RackBuilder.new do |b|
+        b.adapter :test
+        b.response :raise_error
+      end
+    end
+
+    assert_output("", expected_middleware_warning, &response_after_adapter)
+  end
+
+  def test_adding_request_middleware_after_adapter
+    request_after_adapter = lambda do
+      Faraday::RackBuilder.new do |b|
+        b.adapter :test
+        b.request :multipart
+      end
+    end
+
+    assert_output("", expected_middleware_warning, &request_after_adapter)
+  end
+
+  def test_adding_request_middleware_after_adapter_via_use
+    use_after_adapter = lambda do
+      Faraday::RackBuilder.new do |b|
+        b.adapter :test
+        b.use Faraday::Request::Multipart
+      end
+    end
+
+    assert_output("", expected_middleware_warning, &use_after_adapter)
+  end
+
+  def test_adding_request_middleware_after_adapter_via_insert
+    insert_after_adapter = lambda do
+      Faraday::RackBuilder.new do |b|
+        b.adapter :test
+        b.insert(1, Faraday::Request::Multipart)
+      end
+    end
+
+    assert_output("", expected_middleware_warning, &insert_after_adapter)
+  end
+
+  def test_adding_request_middleware_before_adapter_via_insert_no_warning
+    builder = Faraday::RackBuilder.new do |b|
+      b.adapter :test
+    end
+
+    insert_before_adapter = lambda do
+      builder.insert(0, Faraday::Request::Multipart)
+    end
+
+    assert_output("", "", &insert_before_adapter)
+  end
+
+  private
+
+  def expected_middleware_warning
+    /Unexpected middleware set after the adapter/
   end
 end

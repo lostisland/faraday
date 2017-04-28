@@ -166,6 +166,7 @@ Faraday.new(...) do |conn|
   conn.request :multipart
   conn.request :url_encoded
 
+  # Last middleware must be the adapter:
   conn.adapter :net_http
 end
 ```
