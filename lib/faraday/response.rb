@@ -40,6 +40,7 @@ module Faraday
     def reason_phrase
       finished? ? env.reason_phrase : nil
     end
+    alias_method :code, :status
 
     def headers
       finished? ? env.response_headers : {}
