@@ -88,7 +88,7 @@ Some configuration options can be adjusted per request:
 conn.post do |req|
   req.url '/nigiri'
   req.headers['Content-Type'] = 'application/json'
-  req.body = '{ "name": "Unagi" }'
+  req.body = { name: 'Unagi' }.to_json
 end
 
 ## Per-request options ##
