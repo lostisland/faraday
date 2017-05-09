@@ -282,6 +282,15 @@ module Faraday
 
     def_delegators :request, :params_encoder
 
+    def self.from(value)
+      case value
+      when Env
+        value
+      else
+        super(value)
+      end
+    end
+
     # Public
     def self.from(value)
       env = super(value)
