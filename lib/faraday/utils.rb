@@ -155,7 +155,7 @@ module Faraday
       def update(params)
         params.each do |key, value|
           self[key] = value
-        end
+        end unless params.nil?
         self
       end
       alias_method :merge!, :update
