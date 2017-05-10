@@ -75,7 +75,7 @@ module Faraday
         if ssl.fetch(:verify, true)
           session.cacert = ssl[:ca_file]
         else
-          session.insecure = !!ssl.fetch(:verify, true)
+          session.insecure = true
         end
       end
     end
