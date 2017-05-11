@@ -5,11 +5,11 @@ module Faraday
 
       def call(env)
         super
-
         # TODO: support streaming requests
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
         session = @session ||= create_session
+        configure_ssl(session, env[:ssl]) if env[:url].scheme == 'https' and env[:ssl]
 
         if req = env[:request]
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
@@ -67,9 +67,16 @@ module Faraday
 
       def create_session
         session = ::Patron::Session.new
-        session.insecure = true
         @config_block.call(session) if @config_block
         session
+      end
+
+      def configure_ssl(session, ssl)
+        if ssl.fetch(:verify, true)
+          session.cacert = ssl[:ca_file]
+        else
+          session.insecure = true
+        end
       end
     end
   end
