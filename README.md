@@ -38,11 +38,11 @@ stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.
 A more flexible way to use Faraday is to start with a Connection object. If you want to keep the same defaults, you can use this syntax:
 
 ```ruby
-conn = Faraday.new(:url => 'http://www.example.com') 
-response = conn.get '/users'                 # GET http://www.example.com/users' 
+conn = Faraday.new(:url => 'http://www.example.com')
+response = conn.get '/users'                 # GET http://www.example.com/users'
 ```
 
-Connections can also take an options hash as a parameter or be configured by using a block. Checkout the section called [Advanced middleware usage](#advanced-middleware-usage) for more details about how to use this block for configurations. 
+Connections can also take an options hash as a parameter or be configured by using a block. Checkout the section called [Advanced middleware usage](#advanced-middleware-usage) for more details about how to use this block for configurations.
 
 ```ruby
 conn = Faraday.new(:url => 'http://sushi.com') do |faraday|
@@ -71,7 +71,7 @@ response.body
 
 conn.get '/nigiri', { :name => 'Maguro' }   # GET http://sushi.com/nigiri?name=Maguro
 
-conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100  
+conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
   req.url '/search', :page => 2
   req.params['limit'] = 100
 end
@@ -110,7 +110,7 @@ conn.get do |req|
   req.options.context = {
       foo: 'foo',
       bar: 'bar'
-  }          
+  }
 end
 ```
 
@@ -231,7 +231,7 @@ later, response. Some keys are:
 
 ## Ad-hoc adapters customization
 
-Faraday is intended to be a generic interface between your code and the adapter. However, sometimes you need to access a feature specific to one of the adapters that is not covered in Faraday's interface. 
+Faraday is intended to be a generic interface between your code and the adapter. However, sometimes you need to access a feature specific to one of the adapters that is not covered in Faraday's interface.
 
 When that happens, you can pass a block when specifying the adapter to customize it. The block parameter will change based on the adapter you're using. See below for some examples.
 
