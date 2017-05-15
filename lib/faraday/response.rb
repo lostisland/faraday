@@ -36,6 +36,7 @@ module Faraday
     def status
       finished? ? env.status : nil
     end
+    alias :code :status
 
     def reason_phrase
       finished? ? env.reason_phrase : nil
