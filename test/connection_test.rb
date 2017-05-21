@@ -562,7 +562,6 @@ class TestRequestParams < Faraday::TestCase
 
   def test_merges_connection_and_request_params
     create_connection 'http://a.co/?token=abc', :params => {'format' => 'json'}
-    # query = get '?page=1', :limit => 5
     query = get '?page=1&limit=5'
     assert_query_equal %w[format=json limit=5 page=1 token=abc], query
   end
