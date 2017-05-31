@@ -54,6 +54,7 @@ end
 # Filter sensitive information from logs with a regex matcher
 
 conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
+  faraday.request  :url_encoded             # form-encode POST params
   faraday.response :logger do | logger |
     logger.filter(/(api_key=)(\w+)/,'\1[REMOVED]')
   end
