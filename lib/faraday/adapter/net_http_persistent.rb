@@ -8,18 +8,11 @@ module Faraday
       dependency 'net/http/persistent'
 
       def net_http_connection(env)
-        if (proxy = env[:request][:proxy])
-          proxy_uri = ::URI::HTTP === proxy[:uri] ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
-          proxy_uri.user = proxy_uri.password = nil
-          # awful patch for net-http-persistent 2.8 not unescaping user/password
-          (class << proxy_uri; self; end).class_eval do
-            define_method(:user) { proxy[:user] }
-            define_method(:password) { proxy[:password] }
-          end if proxy[:user]
-          return Net::HTTP::Persistent.new 'Faraday', proxy_uri
+        if Net::HTTP::Persistent::VERSION < '3.0.0'
+          net_http_connection_v2(env)
+        else
+          net_http_connection_v3(env)
         end
-
-        Net::HTTP::Persistent.new 'Faraday'
       end
 
       def perform_request(http, env)
@@ -44,6 +37,33 @@ module Faraday
         http.private_key  = ssl[:client_key]   if ssl[:client_key]
         http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
         http.ssl_version  = ssl[:version]      if ssl[:version]
+      end
+
+      private
+
+      def net_http_connection_v3(env)
+        Net::HTTP::Persistent.new name: 'Faraday', proxy: env_to_proxy_uri(env)
+      end
+
+      def net_http_connection_v2(env)
+        Net::HTTP::Persistent.new 'Faraday', env_to_proxy_uri(env)
+      end
+
+      def env_to_proxy_uri(env)
+        if (proxy = env[:request][:proxy])
+          proxy_uri = ::URI::HTTP === proxy[:uri] ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
+          proxy_uri.user = proxy_uri.password = nil
+          patch_proxy_uri_to_unescape_user_and_password(proxy_uri, proxy) if proxy[:user]
+          proxy_uri
+        end
+      end
+
+      def patch_proxy_uri_to_unescape_user_and_password(proxy_uri, proxy)
+        # awful patch for net-http-persistent 2.8 not unescaping user/password
+        (class << proxy_uri; self; end).class_eval do
+          define_method(:user) { proxy[:user] }
+          define_method(:password) { proxy[:password] }
+        end
       end
     end
   end
