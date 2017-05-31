@@ -21,15 +21,23 @@ module Faraday
 
     def call(env)
       info "#{env.method} #{apply_filters(env.url.to_s)}"
-      debug('request') { apply_filters( dump_headers env.request_headers ) } if log_headers?(:request)
-      debug('request') { apply_filters( dump_body(env[:body]) ) } if env[:body] && log_body?(:request)
+      if env.request_headers && log_headers?(:request)
+        debug('request') { apply_filters(dump_headers(env.request_headers)) }
+      end
+      if env.body && log_body?(:request)
+        debug('request') { apply_filters(dump_body(env.body)) }
+      end
       super
     end
 
     def on_complete(env)
       info('Status') { env.status.to_s }
-      debug('response') { apply_filters( dump_headers env.response_headers ) } if log_headers?(:response)
-      debug('response') { apply_filters( dump_body env[:body] ) } if env[:body] && log_body?(:response)
+      if env.response_headers && log_headers?(:response)
+        debug('response') { apply_filters(dump_headers(env.response_headers)) }
+      end
+      if env.body && log_body?(:response)
+        debug('response') { apply_filters(dump_body(env.body)) }
+      end
     end
 
     def filter(filter_word, filter_replacement)
