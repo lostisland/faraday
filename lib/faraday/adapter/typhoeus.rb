@@ -101,8 +101,8 @@ module Faraday
 
       def configure_timeout(req, env)
         env_req = request_options(env)
-        req.timeout = req.connect_timeout = (env_req[:timeout] * 1000) if env_req[:timeout]
-        req.connect_timeout = (env_req[:open_timeout] * 1000)          if env_req[:open_timeout]
+        req.timeout = req.connect_timeout = (env_req[:timeout] * 1000).ceil if env_req[:timeout]
+        req.connect_timeout = (env_req[:open_timeout] * 1000).ceil          if env_req[:open_timeout]
       end
 
       def configure_socket(req, env)
