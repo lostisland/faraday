@@ -87,7 +87,13 @@ module Faraday
 
       def net_http_connection(env)
         if proxy = env[:request][:proxy]
-          Net::HTTP::Proxy(proxy[:uri].host, proxy[:uri].port, proxy[:user], proxy[:password])
+          if proxy[:uri].scheme.start_with?('socks')
+            require 'socksify'
+            require 'socksify/http'
+            Net::HTTP::SOCKSProxy(proxy[:uri].host, proxy[:uri].port)
+          else
+            Net::HTTP::Proxy(proxy[:uri].host, proxy[:uri].port, proxy[:user], proxy[:password])
+          end
         else
           Net::HTTP
         end.new(env[:url].host, env[:url].port || (env[:url].scheme == 'https' ? 443 : 80))
