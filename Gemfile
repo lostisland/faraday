@@ -20,6 +20,8 @@ group :test do
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 0.3.3', :platforms => [:ruby_18, :ruby_19, :ruby_20, :ruby_21]
+  gem 'http', '~> 2.0'
+  gem 'cookiejar', '= 0.3', :platforms => [:ruby_18, :ruby_19]
 
   # Below are dependencies of the gems we actually care about that have
   # dropped support for older Rubies. Because they are not first-level
