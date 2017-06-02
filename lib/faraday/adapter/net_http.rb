@@ -104,6 +104,9 @@ module Faraday
         http.ca_path      = ssl[:ca_path]      if ssl[:ca_path]
         http.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
         http.ssl_version  = ssl[:version]      if ssl[:version]
+        http.ciphers      = ssl[:ciphers]      if ssl[:ciphers]
+        http.verify_callback = ssl[:verify_callback] if ssl[:verify_callback]
+        http.ssl_timeout  = ssl[:timeout]      if ssl[:timeout]
       end
 
       def configure_request(http, req)
