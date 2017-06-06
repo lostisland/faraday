@@ -89,6 +89,7 @@ module Faraday
         if proxy = env[:request][:proxy]
           Net::HTTP::Proxy(proxy[:uri].host, proxy[:uri].port, proxy[:user], proxy[:password])
         else
+          env[:url].port = 443 if env[:url].scheme == 'https'
           Net::HTTP
         end.new(env[:url].host, env[:url].port || (env[:url].scheme == 'https' ? 443 : 80))
       end
