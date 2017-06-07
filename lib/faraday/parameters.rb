@@ -16,10 +16,11 @@ module Faraday
             "Can't convert #{params.class} into Hash."
         end
         params = params.to_hash
-        params = params.map do |key, value|
-          key = key.to_s if key.kind_of?(Symbol)
-          [key, value]
+        params = params.inject({}) do |options, (key, value)|
+          options[key.to_s] = value
+          options
         end
+        params = params.to_a
         # Useful default for OAuth and caching.
         # Only to be used for non-Array inputs. Arrays should preserve order.
         params.sort!
