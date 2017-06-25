@@ -50,7 +50,7 @@ module Faraday
         else
           raise Faraday::Error::ClientError, $!
         end
-      rescue Errno::ECONNREFUSED, IOError
+      rescue Errno::ECONNREFUSED, IOError, SocketError
         raise Faraday::Error::ConnectionFailed, $!
       rescue => err
         if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
