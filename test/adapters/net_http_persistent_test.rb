@@ -10,8 +10,11 @@ module Adapters
         if defined?(Net::HTTP::Persistent)
           # work around problems with mixed SSL certificates
           # https://github.com/drbrain/net-http-persistent/issues/45
-          http = Net::HTTP::Persistent.new('Faraday')
-          http.ssl_cleanup(4)
+          if Net::HTTP::Persistent.instance_method(:initialize).parameters.first == [:key, :name]
+            Net::HTTP::Persistent.new(name: 'Faraday').reconnect_ssl
+          else
+            Net::HTTP::Persistent.new('Faraday').ssl_cleanup(4)
+          end
         end
       end if ssl_mode?
     end
