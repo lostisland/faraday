@@ -109,7 +109,7 @@ module Faraday
   #
   # Returns a Faraday::Connection, configured with the #default_adapter.
   def self.default_connection
-    @default_connection ||= Connection.new
+    @default_connection ||= Connection.new(default_connection_options)
   end
 
   # Gets the default connection options used when calling Faraday#new.
@@ -121,6 +121,7 @@ module Faraday
 
   # Public: Sets the default options used when calling Faraday#new.
   def self.default_connection_options=(options)
+    @default_connection = nil
     @default_connection_options = ConnectionOptions.from(options)
   end
 
