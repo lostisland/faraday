@@ -30,6 +30,22 @@ class OptionsTest < Faraday::TestCase
     assert_equal merged, ParentOptions.from(a: 1, b: 2, c: expected_sub_opts)
   end
 
+  def test_deep_merge_with_nil
+    sub_opts = SubOptions.new(3, 4)
+    options = ParentOptions.new(1, 2, sub_opts)
+    assert_equal options.a, 1
+    assert_equal options.b, 2
+    assert_equal options.c.sub_a, 3
+    assert_equal options.c.sub_b, 4
+
+    options2 = ParentOptions.from(b: 5, c: nil)
+
+    merged = options.merge(options2)
+
+    assert_equal merged.b, 5
+    assert_equal merged.c, sub_opts
+  end
+
   def test_dup_is_shallow
     sub_opts = SubOptions.from(sub_a: 3)
     opts = ParentOptions.from(b: 1, c: sub_opts)
