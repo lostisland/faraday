@@ -91,6 +91,8 @@ class TestUtils < Faraday::TestCase
 
     assert result.include?('user-agent'), 'Unable to hydrate to a correct Headers'
     assert result.include?('content-type'), 'Unable to hydrate to a correct Headers'
+    assert result['user-agent'] == 'safari', 'Unable to access rehydrated Headers'
+    assert result['content-type'] == 'text/html', 'Unable to access rehydrated Headers'
   end
 end
 

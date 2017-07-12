@@ -10,10 +10,20 @@ module Faraday
         new(value)
       end
 
+      def self.allocate
+        new_self = super
+        new_self.initialize_names
+        new_self
+      end
+
       def initialize(hash = nil)
         super()
         @names = {}
         self.update(hash || {})
+      end
+
+      def initialize_names
+        @names = {}
       end
 
       # on dup/clone, we need to duplicate @names hash
@@ -113,14 +123,6 @@ module Faraday
               self[key] = value
             end
           }
-      end
-
-      def init_with(coder)
-        @names = coder['names']
-      end
-
-      def encode_with(coder)
-        coder['names'] = @names
       end
 
       protected
