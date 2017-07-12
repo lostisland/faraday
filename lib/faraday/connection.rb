@@ -57,7 +57,7 @@ module Faraday
     def initialize(url = nil, options = nil)
       options = ConnectionOptions.from(options)
 
-      if url.is_a?(Hash)
+      if url.is_a?(Hash) || url.is_a?(ConnectionOptions)
         options = options.merge(url)
         url     = options.url
       end

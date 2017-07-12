@@ -523,6 +523,13 @@ class TestConnection < Faraday::TestCase
     assert_equal 10, Faraday.default_connection_options.request.timeout
   end
 
+  def test_default_connection_uses_default_connection_options
+    Faraday.default_connection_options.request.timeout = 10
+    default_conn = Faraday.default_connection
+
+    assert_equal 10, default_conn.options.timeout
+  end
+
   def env_url(url, params)
     conn = Faraday::Connection.new(url, :params => params)
     yield(conn) if block_given?
