@@ -18,11 +18,24 @@ $ script/test excon typhoeus
 $ SSL=yes script/test
 ```
 
+### New Features
+
+When adding a feature Faraday:
+
+1. also add tests to cover your new feature.
+2. if the feature is for an adapter, the **attempt** must be made to add the same feature to all other adapters as well.
+3. start opening an issue describing how the new feature will work, and only after receiving the green light by the core team start working on the PR.
+
+### New Middlewares
+
 We will accept middleware that:
 
 1. is useful to a broader audience, but can be implemented relatively
    simple; and
 2. which isn't already present in [faraday_middleware][] project.
+
+
+### New Adapters
 
 We will accept adapters that:
 
