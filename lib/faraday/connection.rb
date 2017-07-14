@@ -40,7 +40,7 @@ module Faraday
     attr_writer :default_parallel_manager
 
     # Public: Gets or Sets the Hash proxy options.
-    attr_reader :proxy
+    # attr_reader :proxy
 
     # Public: Initializes a new Faraday::Connection.
     #
