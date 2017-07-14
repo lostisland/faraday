@@ -82,7 +82,7 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      @proxy = nil
+      @temp_proxy = nil
       @proxy = options.proxy ? ProxyOptions.from(options.proxy) : proxy_from_env(url)
 
       yield(self) if block_given?
