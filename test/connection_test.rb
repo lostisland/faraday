@@ -362,6 +362,13 @@ class TestConnection < Faraday::TestCase
     end
   end
 
+  def test_proxy_doesnt_accept_uppercase_env
+    with_env 'HTTP_PROXY' => 'http://localhost:8888/' do
+      conn = Faraday::Connection.new
+      assert_nil conn.proxy
+    end
+  end
+
   if URI.parse('').respond_to?(:find_proxy)
     def test_proxy_allowed_when_url_in_no_proxy_list
       with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
