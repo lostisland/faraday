@@ -82,8 +82,8 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      @temp_proxy = nil
       @proxy = options.proxy ? ProxyOptions.from(options.proxy) : proxy_from_env(url)
+      @temp_proxy = @proxy
 
       yield(self) if block_given?
 
@@ -371,12 +371,13 @@ module Faraday
       end
 
       # Resets temp_proxy
-      @temp_proxy = nil
+      @temp_proxy = self.proxy
 
-      # Set a temporary proxy if request url is absolute
+      # Set temporary proxy if request url is absolute
       @temp_proxy = proxy_from_env(url) if url && URI(url).absolute?
 
       request = build_request(method) do |req|
+        req.options = req.options.merge(:proxy => @temp_proxy)
         req.url(url)                if url
         req.headers.update(headers) if headers
         req.body = body             if body
@@ -393,7 +394,7 @@ module Faraday
       Request.create(method) do |req|
         req.params  = self.params.dup
         req.headers = self.headers.dup
-        req.options = self.options.merge(:proxy => @temp_proxy || self.proxy)
+        req.options = self.options
         yield(req) if block_given?
       end
     end
@@ -455,13 +456,13 @@ module Faraday
             uri = find_default_proxy
         end
       else
+        warn 'no_proxy is unsupported' if ENV['no_proxy'] || ENV['NO_PROXY']
         uri = find_default_proxy
       end
       ProxyOptions.from(uri) if uri
     end
 
     def find_default_proxy
-      warn 'no_proxy is unsupported' if ENV['no_proxy'] || ENV['NO_PROXY']
       uri = ENV['http_proxy']
       if uri && !uri.empty?
         uri = 'http://' + uri if uri !~ /^http/i

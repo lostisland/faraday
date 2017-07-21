@@ -369,6 +369,13 @@ class TestConnection < Faraday::TestCase
     end
   end
 
+  def test_dynamic_proxy
+    with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+      Faraday.get('http://google.co.uk')
+      assert_equal 'duncan.proxy.com', Faraday.default_connection.instance_variable_get('@temp_proxy').host
+    end
+  end
+
   if URI.parse('').respond_to?(:find_proxy)
     def test_proxy_allowed_when_url_in_no_proxy_list
       with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
@@ -418,6 +425,16 @@ class TestConnection < Faraday::TestCase
         assert_nil Faraday::Connection.new('http://example.com').proxy
         assert_nil Faraday::Connection.new('http://example1.com').proxy
         assert_equal 'proxy.com', Faraday::Connection.new('http://example2.com').proxy.host
+      end
+    end
+
+    def test_dynamic_no_proxy
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'google.co.uk' do
+        conn = Faraday.new
+
+        assert_equal 'proxy.com', conn.instance_variable_get('@temp_proxy').host
+        conn.get('https://google.co.uk')
+        assert_nil conn.instance_variable_get('@temp_proxy')
       end
     end
   end
