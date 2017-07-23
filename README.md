@@ -2,6 +2,8 @@
 
 [![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
 [![Build Status](https://travis-ci.org/lostisland/faraday.svg)](https://travis-ci.org/lostisland/faraday)
+[![Coverage Status](https://coveralls.io/repos/github/lostisland/faraday/badge.svg?branch=master)](https://coveralls.io/github/lostisland/faraday?branch=master)
+[![Code Climate](https://codeclimate.com/github/lostisland/faraday/badges/gpa.svg)](https://codeclimate.com/github/lostisland/faraday)
 [![Gitter](https://badges.gitter.im/lostisland/faraday.svg)](https://gitter.im/lostisland/faraday?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
@@ -313,11 +315,6 @@ resp = test.get '/else' #=> raises "no such stub" error
 stubs.verify_stubbed_calls
 ```
 
-## TODO
-
-* support streaming requests/responses
-* better stubbing API
-
 ## Supported Ruby versions
 
 This library aims to support and is [tested against][travis] the following Ruby
@@ -339,6 +336,12 @@ run and pass on that implementation. When something breaks on your
 implementation, you will be responsible for providing patches in a timely
 fashion. If critical issues for a particular implementation exist at the time
 of a major release, support for that Ruby version may be dropped.
+
+## Contribute
+
+Do you want to contribute to Faraday?
+Open the issues page and check for the `any volunteer?` label!
+But before you start coding, please read our [Contributing Guide](https://github.com/lostisland/faraday/blob/master/CONTRIBUTING.md)
 
 ## Copyright
 
