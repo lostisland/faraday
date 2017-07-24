@@ -53,7 +53,6 @@ module Faraday
     autoload_all 'faraday/adapter',
       :NetHttp           => 'net_http',
       :NetHttpPersistent => 'net_http_persistent',
-      :Typhoeus          => 'typhoeus',
       :EMSynchrony       => 'em_synchrony',
       :EMHttp            => 'em_http',
       :Patron            => 'patron',

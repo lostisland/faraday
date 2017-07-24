@@ -10,7 +10,7 @@
 #
 #   $ script/test
 #   $ script/test test/env_test.rb
-#   $ script/test excon typhoeus
+#   $ script/test excon patron
 #
 #   # Run only tests matching /ssl/ for the net_http adapter, with SSL enabled.
 #   $ SSL=yes script/test net_http -- -n /ssl/
