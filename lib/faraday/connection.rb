@@ -39,6 +39,9 @@ module Faraday
     # Public: Sets the default parallel manager for this connection.
     attr_writer :default_parallel_manager
 
+    # Public: Gets or Sets the Hash proxy options.
+    # attr_reader :proxy
+
     # Public: Initializes a new Faraday::Connection.
     #
     # url     - URI or String base URL to use as a prefix for all
@@ -79,23 +82,8 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
-      @proxy = nil
-      proxy(options.fetch(:proxy) {
-        uri = nil
-        if URI.parse("").respond_to?(:find_proxy)
-          case url
-          when String
-            uri = URI.parse(url).find_proxy
-          when URI
-            uri = url.find_proxy
-          when nil
-            uri = find_default_proxy
-          end
-        else
-          uri = find_default_proxy
-        end
-        uri
-      })
+      @proxy = options.proxy ? ProxyOptions.from(options.proxy) : proxy_from_env(url)
+      @temp_proxy = @proxy
 
       yield(self) if block_given?
 
@@ -292,7 +280,13 @@ module Faraday
     # Public: Gets or Sets the Hash proxy options.
     def proxy(arg = nil)
       return @proxy if arg.nil?
+      warn 'Warning: use of proxy(new_value) to set connection proxy have been DEPRECATED and will be removed in Faraday 1.0'
       @proxy = ProxyOptions.from(arg)
+    end
+
+    # Public: Sets the Hash proxy options.
+    def proxy=(new_value)
+      @proxy = ProxyOptions.from(new_value)
     end
 
     def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
@@ -376,7 +370,14 @@ module Faraday
         raise ArgumentError, "unknown http method: #{method}"
       end
 
+      # Resets temp_proxy
+      @temp_proxy = self.proxy
+
+      # Set temporary proxy if request url is absolute
+      @temp_proxy = proxy_from_env(url) if url && URI(url).absolute?
+
       request = build_request(method) do |req|
+        req.options = req.options.merge(:proxy => @temp_proxy)
         req.url(url)                if url
         req.headers.update(headers) if headers
         req.body = body             if body
@@ -393,7 +394,7 @@ module Faraday
       Request.create(method) do |req|
         req.params  = self.params.dup
         req.headers = self.headers.dup
-        req.options = self.options.merge(:proxy => self.proxy)
+        req.options = self.options
         yield(req) if block_given?
       end
     end
@@ -443,8 +444,25 @@ module Faraday
       headers[Faraday::Request::Authorization::KEY] = header
     end
 
+    def proxy_from_env(url)
+      uri = nil
+      if URI.parse('').respond_to?(:find_proxy)
+        case url
+          when String
+            uri = URI.parse(url).find_proxy
+          when URI
+            uri = url.find_proxy
+          when nil
+            uri = find_default_proxy
+        end
+      else
+        warn 'no_proxy is unsupported' if ENV['no_proxy'] || ENV['NO_PROXY']
+        uri = find_default_proxy
+      end
+      ProxyOptions.from(uri) if uri
+    end
+
     def find_default_proxy
-      warn 'no_proxy is unsupported' if ENV['no_proxy'] || ENV['NO_PROXY']
       uri = ENV['http_proxy']
       if uri && !uri.empty?
         uri = 'http://' + uri if uri !~ /^http/i
