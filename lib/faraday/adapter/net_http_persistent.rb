@@ -16,10 +16,10 @@ module Faraday
             define_method(:user) { proxy[:user] }
             define_method(:password) { proxy[:password] }
           end if proxy[:user]
-          return Net::HTTP::Persistent.new 'Faraday', proxy_uri
+          return Net::HTTP::Persistent.new(name: 'Faraday', proxy: proxy_uri)
         end
 
-        Net::HTTP::Persistent.new 'Faraday'
+        Net::HTTP::Persistent.new(name: 'Faraday')
       end
 
       def perform_request(http, env)
