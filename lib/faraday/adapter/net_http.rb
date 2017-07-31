@@ -87,10 +87,10 @@ module Faraday
 
       def net_http_connection(env)
         if proxy = env[:request][:proxy]
-          Net::HTTP::Proxy(proxy[:uri].host, proxy[:uri].port, proxy[:user], proxy[:password])
+          Net::HTTP::Proxy(proxy[:uri].hostname, proxy[:uri].port, proxy[:user], proxy[:password])
         else
           Net::HTTP
-        end.new(env[:url].host, env[:url].port || (env[:url].scheme == 'https' ? 443 : 80))
+        end.new(env[:url].hostname, env[:url].port || (env[:url].scheme == 'https' ? 443 : 80))
       end
 
       def configure_ssl(http, ssl)
