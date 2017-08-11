@@ -109,7 +109,7 @@ module Faraday
         headers = header_string.split(/\r\n/)
 
         # Find the last set of response headers.
-        start_index = headers.rindex { |x| x.match(/^HTTP\//) }
+        start_index = headers.rindex { |x| x.match(/^HTTP\//) } || 0
         last_response = headers.slice(start_index, headers.size)
 
         last_response.
