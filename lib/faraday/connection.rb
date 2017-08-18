@@ -374,7 +374,7 @@ module Faraday
       @temp_proxy = self.proxy
 
       # Set temporary proxy if request url is absolute
-      @temp_proxy = proxy_from_env(url) if url && URI(url).absolute?
+      @temp_proxy = proxy_from_env(url) if url && Utils.URI(url).absolute?
 
       request = build_request(method) do |req|
         req.options = req.options.merge(:proxy => @temp_proxy)
@@ -448,8 +448,9 @@ module Faraday
       uri = nil
       if URI.parse('').respond_to?(:find_proxy)
         case url
-          when String
-            uri = URI.parse(url).find_proxy
+        when String
+            uri = Utils.URI(url)
+            uri = URI.parse("#{uri.scheme}://#{uri.hostname}").find_proxy
           when URI
             uri = url.find_proxy
           when nil

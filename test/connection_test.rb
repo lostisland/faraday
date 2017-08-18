@@ -231,7 +231,7 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_env_url_escapes_per_spec
-    uri = env_url('http:/', 'a' => '1+2 foo~bar.-baz')
+    uri = env_url(nil, 'a' => '1+2 foo~bar.-baz')
     assert_equal 'a=1%2B2+foo~bar.-baz', uri.query
   end
 
