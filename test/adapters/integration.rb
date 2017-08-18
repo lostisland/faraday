@@ -85,7 +85,7 @@ module Adapters
       end
 
       def test_GET_send_url_encoded_params
-        assert_equal %(get ?{"name"=>"zack"}), get('echo', :name => 'zack').body
+        assert_equal %(get {"name"=>"zack"}), get('echo', :name => 'zack').body
       end
 
       def test_GET_retrieves_the_response_headers
@@ -176,6 +176,13 @@ module Adapters
 
       def test_DELETE_retrieves_the_body
         assert_equal %(delete), delete('echo').body
+      end
+
+      def test_DELETE_with_body
+        response = delete('echo') do |req|
+          req.body = {'bodyrock' => true}
+        end
+        assert_equal %(delete {"bodyrock"=>"true"}), response.body
       end
 
       def test_timeout

@@ -104,44 +104,6 @@ module Faraday
 
     def_delegators :builder, :build, :use, :request, :response, :adapter, :app
 
-    # Public: Makes an HTTP request without a body.
-    #
-    # url     - The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
-    # params  - Hash of URI query unencoded key/value pairs.
-    # headers - Hash of unencoded HTTP header key/value pairs.
-    #
-    # Examples
-    #
-    #   conn.get '/items', {:page => 1}, :accept => 'application/json'
-    #   conn.head '/items/1'
-    #
-    #   # ElasticSearch example sending a body with GET.
-    #   conn.get '/twitter/tweet/_search' do |req|
-    #     req.headers[:content_type] = 'application/json'
-    #     req.params[:routing] = 'kimchy'
-    #     req.body = JSON.generate(:query => {...})
-    #   end
-    #
-    # Yields a Faraday::Request for further request customizations.
-    # Returns a Faraday::Response.
-    #
-    # Signature
-    #
-    #   <verb>(url = nil, params = nil, headers = nil)
-    #
-    # verb - An HTTP verb: get, head, or delete.
-    %w[get head delete].each do |method|
-      class_eval <<-RUBY, __FILE__, __LINE__ + 1
-        def #{method}(url = nil, params = nil, headers = nil)
-          run_request(:#{method}, url, nil, headers) { |request|
-            request.params.update(params) if params
-            yield(request) if block_given?
-          }
-        end
-      RUBY
-    end
-
     # Public: Makes an HTTP request with a body.
     #
     # url     - The optional String base URL to use as a prefix for all
@@ -168,7 +130,7 @@ module Faraday
     #   <verb>(url = nil, body = nil, headers = nil)
     #
     # verb - An HTTP verb: post, put, or patch.
-    %w[post put patch].each do |method|
+    %w[post put patch get head delete].each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, body = nil, headers = nil, &block)
           run_request(:#{method}, url, body, headers, &block)

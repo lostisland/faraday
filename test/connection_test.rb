@@ -570,6 +570,10 @@ class TestRequestParams < Faraday::TestCase
     assert_equal expected, query.split('&').sort
   end
 
+  def assert_body_equal(expected, body)
+    assert_equal expected, body
+  end
+
   def with_default_params_encoder(encoder)
     old_encoder = Faraday::Utils.default_params_encoder
     begin
@@ -582,8 +586,18 @@ class TestRequestParams < Faraday::TestCase
 
   def test_merges_connection_and_request_params
     create_connection 'http://a.co/?token=abc', :params => {'format' => 'json'}
-    query = get '?page=1', :limit => 5
+    query = get '?page=1&limit=5'
     assert_query_equal %w[format=json limit=5 page=1 token=abc], query
+  end
+
+  def test_body_and_request_params_on_connection
+    create_connection 'http://a.co/?token=abc', :params => {'format' => 'json'}
+    body = { :limit => 5 }
+    env = get_with_body('?page=1', body)
+    query = env[:url].query
+    assert_query_equal %w[format=json page=1 token=abc], query
+    assert_body_equal env[:body], body
+
   end
 
   def test_overrides_connection_params
@@ -602,8 +616,8 @@ class TestRequestParams < Faraday::TestCase
   end
 
   def test_overrides_request_params
-    create_connection
-    query = get '?p=1&a=a', :p => 2
+    create_connection 'http://a.co', :params => {:p => 1}
+    query = get '?p=2&a=a'
     assert_query_equal %w[a=a p=2], query
   end
 
@@ -625,9 +639,10 @@ class TestRequestParams < Faraday::TestCase
 
   def test_overrides_all_request_params
     create_connection :params => {:c => 'c'}
-    query = get '?p=1&a=a', :p => 2 do |req|
+    query = get '?p=1&a=a' do |req|
       assert_equal 'a', req.params[:a]
       assert_equal 'c', req.params['c']
+      req.params = {:p => 2}
       assert_equal 2, req.params['p']
       req.params = {:b => 'b'}
       assert_equal 'b', req.params['b']
@@ -674,10 +689,17 @@ class TestRequestParams < Faraday::TestCase
     end
 
     create_connection :params => {:color => 'red'}
-    query = get('', :feeling => 'blue') do |req|
+    query = get('?feeling=blue') do |req|
       req.options.params_encoder = encoder
     end
     assert_equal ['COLOR-RED', 'FEELING-BLUE'], query.split(',').sort
+  end
+
+  def test_body_with_connection_no_request_params
+    hash = {:bench => 'press'}
+    create_connection 'http://a.co'
+    env = get_with_body(nil, hash)
+    assert_equal env[:body], hash
   end
 
   def get(*args)
@@ -685,5 +707,12 @@ class TestRequestParams < Faraday::TestCase
       yield(req) if block_given?
     end
     env[:url].query
+  end
+
+  def get_with_body(*args)
+    env = @conn.get(*args) do |req|
+      yield(req) if block_given?
+    end
+    env
   end
 end
