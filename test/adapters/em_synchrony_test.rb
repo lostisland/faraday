@@ -6,7 +6,7 @@ module Adapters
     def adapter() :em_synchrony end
 
     unless jruby?
-      Integration.apply(self, :Parallel) do
+      Integration.apply(self, :Parallel, :NonStreaming, :ParallelNonStreaming) do
         # https://github.com/eventmachine/eventmachine/pull/289
         undef :test_timeout
 

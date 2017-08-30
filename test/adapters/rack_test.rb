@@ -13,6 +13,7 @@ module Adapters
     # no Integration.apply because this doesn't require a server as a separate process
     include Integration::Common
     include Integration::NonParallel
+    include Integration::NonStreaming
 
     # Rack::MockResponse doesn't provide any way to access the reason phrase,
     # so override the shared test from Common.

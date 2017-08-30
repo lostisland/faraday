@@ -202,7 +202,8 @@ module Faraday
   end
 
   class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
-    :timeout, :open_timeout, :boundary, :oauth, :context)
+    :timeout, :open_timeout, :boundary,
+    :oauth, :context, :on_data)
 
     def []=(key, value)
       if key && key.to_sym == :proxy
@@ -210,6 +211,10 @@ module Faraday
       else
         super(key, value)
       end
+    end
+
+    def stream_response?
+      on_data.is_a?(Proc)
     end
   end
 

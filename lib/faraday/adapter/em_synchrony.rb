@@ -26,6 +26,11 @@ module Faraday
         # Queue requests for parallel execution.
         if env[:parallel_manager]
           env[:parallel_manager].add(request, http_method, request_config(env)) do |resp|
+            if (req = env[:request]).stream_response?
+              warn "Streaming downloads for #{self.class.name} are not yet implemented."
+              req.on_data.call(resp.response, resp.response.bytesize)
+            end
+
             save_response(env, resp.response_header.status, resp.response) do |resp_headers|
               resp.response_header.each do |name, value|
                 resp_headers[name.to_sym] = value
@@ -54,6 +59,10 @@ module Faraday
 
           raise client.error if client.error
 
+          if env[:request].stream_response?
+            warn "Streaming downloads for #{self.class.name} are not yet implemented."
+            env[:request].on_data.call(client.response, client.response.bytesize)
+          end
           status = client.response_header.status
           reason = client.response_header.http_reason
           save_response(env, status, client.response, nil, reason) do |resp_headers|

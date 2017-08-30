@@ -30,6 +30,10 @@ module Faraday
           raise Error::ConnectionFailed, $!
         end
 
+        if (req = env[:request]).stream_response?
+          warn "Streaming downloads for #{self.class.name} are not yet implemented."
+          req.on_data.call(response.body, response.body.bytesize)
+        end
         # Remove the "HTTP/1.1 200", leaving just the reason phrase
         reason_phrase = response.status_line.gsub(/^.* \d{3} /, '')
 

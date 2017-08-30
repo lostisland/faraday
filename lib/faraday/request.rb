@@ -80,6 +80,7 @@ module Faraday
     # :request - Hash of options for configuring the request.
     #   :timeout      - open/read timeout Integer in seconds
     #   :open_timeout - read timeout Integer in seconds
+    #   :on_data      - Proc for streaming
     #   :proxy        - Hash of proxy options
     #     :uri        - Proxy Server URI
     #     :user       - Proxy server username
