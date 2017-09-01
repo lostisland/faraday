@@ -44,6 +44,7 @@ module Faraday
       end
 
       def []=(k, v)
+        return if v.nil?
         k = KeyMap[k]
         k = (@names[k.downcase] ||= k)
         # join multiple values with a comma
@@ -74,7 +75,7 @@ module Faraday
       alias_method :key?, :include?
 
       def merge!(other)
-        other.each { |k, v| self[k] = v }
+        other.each { |k, v| self[k] = v unless v.nil? }
         self
       end
       alias_method :update, :merge!
