@@ -1,6 +1,6 @@
 module Faraday
   class Response::RaiseError < Response::Middleware
-    ClientErrorStatuses = 400...600
+    ClientErrorStatuses = 400...500
 
     def on_complete(env)
       case env[:status]
