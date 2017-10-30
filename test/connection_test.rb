@@ -437,6 +437,16 @@ class TestConnection < Faraday::TestCase
         assert_nil conn.instance_variable_get('@temp_proxy')
       end
     end
+
+    def test_issue
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'google.co.uk' do
+        conn = Faraday.new
+        conn.proxy = 'http://proxy2.com'
+
+        assert_equal true, conn.instance_variable_get('@manual_proxy')
+        assert_equal 'proxy2.com', conn.proxy_for_request('https://google.co.uk').host
+      end
+    end
   end
 
   def test_proxy_requires_uri
