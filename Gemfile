@@ -16,7 +16,7 @@ group :test do
   gem 'minitest', '>= 5.0.5'
   gem 'net-http-persistent', '>= 2.9.4'
   gem 'patron', '>= 0.4.2', :platforms => :ruby
-  gem 'rack-test', '>= 0.6', :require => 'rack/test'
+  gem 'rack-test', '~> 0.6.0', :require => 'rack/test'
   gem 'rest-client', '~> 1.6.0', :platforms => [:jruby, :ruby_18]
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
