@@ -33,6 +33,19 @@ class EnvTest < Faraday::TestCase
     assert_equal 'Faraday', headers['server']
   end
 
+  def test_request_create_ignores_nil_headers
+    conn = Faraday.new :url => 'http://sushi.com/api',
+      :headers => {'X-Another-Header' => nil},
+      :request => {:oauth => {:consumer_key => 'anonymous'}}
+
+    env = make_env(:get, conn) do |req|
+      req.headers['X-Some-Header'] = nil
+    end
+    headers = env.request_headers
+    assert_equal false, headers.has_key?('X-Some-Header')
+    assert_equal false, headers.has_key?('X-Another-Header')
+  end
+
   def test_request_create_stores_body
     env = make_env do |req|
       req.body = 'hi'

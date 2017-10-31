@@ -11,12 +11,14 @@ group :test do
   gem 'em-synchrony', '>= 1.0.3', :require => ['em-synchrony', 'em-synchrony/em-http']
   gem 'addressable', '< 2.4.0'
   gem 'excon', '>= 0.27.4'
-  gem 'httpclient', '>= 2.2'
+  gem 'httpclient', '>= 2.2', '<= 2.8.1'
   gem 'mime-types', '~> 1.25', :platforms => [:jruby, :ruby_18]
+  gem 'tins', '~> 1.6.0', :platforms => [:jruby, :ruby_18]
+  gem 'cookiejar', '<= 0.3.2', :platforms => [:jruby, :ruby_18]
   gem 'minitest', '>= 5.0.5'
-  gem 'net-http-persistent', '>= 2.9.4'
+  gem 'net-http-persistent', '>= 2.9.4', '< 3.0.0'
   gem 'patron', '>= 0.4.2', :platforms => :ruby
-  gem 'rack-test', '>= 0.6', :require => 'rack/test'
+  gem 'rack-test', '~> 0.6.0', :require => 'rack/test'
   gem 'rest-client', '~> 1.6.0', :platforms => [:jruby, :ruby_18]
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'

@@ -1,3 +1,4 @@
+dist: precise
 sudo: false
 language: ruby
 script: bundle exec script/test
@@ -5,7 +6,6 @@ cache: bundler
 
 rvm:
   - 1.8.7
-  - 1.9.2
   - 1.9.3
   - 2.0.0
   - 2.1
