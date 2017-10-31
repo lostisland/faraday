@@ -16,7 +16,7 @@ group :test do
   gem 'tins', '~> 1.6.0', :platforms => [:jruby, :ruby_18]
   gem 'cookiejar', '<= 0.3.2', :platforms => [:jruby, :ruby_18]
   gem 'minitest', '>= 5.0.5'
-  gem 'net-http-persistent', '>= 2.9.4'
+  gem 'net-http-persistent', '>= 2.9.4', '< 3.0.0'
   gem 'patron', '>= 0.4.2', :platforms => :ruby
   gem 'rack-test', '~> 0.6.0', :require => 'rack/test'
   gem 'rest-client', '~> 1.6.0', :platforms => [:jruby, :ruby_18]
