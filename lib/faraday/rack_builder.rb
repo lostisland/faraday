@@ -138,6 +138,8 @@ module Faraday
     #
     # Returns a Faraday::Response.
     def build_response(connection, request)
+      warn 'WARNING: No adapter was configured for this request' unless adapter_set?
+
       app.call(build_env(connection, request))
     end
 
