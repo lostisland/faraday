@@ -11,7 +11,7 @@ Faraday is an HTTP client lib that provides a common interface over many
 adapters (such as Net::HTTP) and embraces the concept of Rack middleware when
 processing the request/response cycle.
 
-Faraday supports these adapters:
+Faraday supports these adapters out of the box:
 
 * [Net::HTTP][net_http] _(default)_
 * [Net::HTTP::Persistent][persistent]
@@ -19,6 +19,10 @@ Faraday supports these adapters:
 * [Patron][]
 * [EventMachine][]
 * [HTTPClient][]
+
+Adapters are slowly being moved into their own gems, or bundled with HTTP clients:
+
+* [Typhoeus][]
 
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
@@ -40,8 +44,8 @@ stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.
 A more flexible way to use Faraday is to start with a Connection object. If you want to keep the same defaults, you can use this syntax:
 
 ```ruby
-conn = Faraday.new(:url => 'http://www.example.com') 
-response = conn.get '/users'                 # GET http://www.example.com/users' 
+conn = Faraday.new(:url => 'http://www.example.com')
+response = conn.get '/users'                 # GET http://www.example.com/users'
 ```
 
 Connections can also take an options hash as a parameter or be configured by using a block. Checkout the section called [Advanced middleware usage](#advanced-middleware-usage) for more details about how to use this block for configurations.
@@ -158,7 +162,7 @@ The encoder will affect both how query strings are processed and how POST bodies
 get serialized. The default encoder is Faraday::NestedParamsEncoder.
 
 ## Authentication
-  
+
 Basic and Token authentication are handled by Faraday::Request::BasicAuthentication and Faraday::Request::TokenAuthentication respectively. These can be added as middleware manually or through the helper methods.
 
 ```ruby
@@ -167,7 +171,7 @@ Faraday.new(...) do |conn|
 end
 
 Faraday.new(...) do |conn|
-  conn.token_auth('authentication-token') 
+  conn.token_auth('authentication-token')
 end
 ```
 
@@ -248,7 +252,7 @@ later, response. Some keys are:
 
 ## Ad-hoc adapters customization
 
-Faraday is intended to be a generic interface between your code and the adapter. However, sometimes you need to access a feature specific to one of the adapters that is not covered in Faraday's interface. 
+Faraday is intended to be a generic interface between your code and the adapter. However, sometimes you need to access a feature specific to one of the adapters that is not covered in Faraday's interface.
 
 When that happens, you can pass a block when specifying the adapter to customize it. The block parameter will change based on the adapter you're using. See below for some examples.
 
@@ -368,6 +372,7 @@ See [LICENSE][] for details.
 [patron]:       http://toland.github.io/patron/
 [eventmachine]: https://github.com/igrigorik/em-http-request#readme
 [httpclient]:   https://github.com/nahi/httpclient
+[typhoeus]:     https://github.com/typhoeus/typhoeus/blob/master/lib/typhoeus/adapters/faraday.rb
 [jruby]:        http://jruby.org/
 [rubinius]:     http://rubini.us/
 [license]:      LICENSE.md

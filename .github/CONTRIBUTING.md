@@ -12,7 +12,7 @@ $ script/bootstrap
 $ script/test
 
 # run only specific files
-$ script/test excon typhoeus
+$ script/test excon patron
 
 # run tests using SSL
 $ SSL=yes script/test

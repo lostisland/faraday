@@ -30,7 +30,6 @@ module Faraday
 
           if req[:open_timeout]
             opts[:connect_timeout]   = req[:open_timeout]
-            opts[:write_timeout]     = req[:open_timeout]
           end
 
           if req[:proxy]

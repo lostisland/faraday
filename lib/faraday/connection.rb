@@ -82,6 +82,7 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
+      @manual_proxy = !!options.proxy
       @proxy = options.proxy ? ProxyOptions.from(options.proxy) : proxy_from_env(url)
       @temp_proxy = @proxy
 
@@ -281,11 +282,13 @@ module Faraday
     def proxy(arg = nil)
       return @proxy if arg.nil?
       warn 'Warning: use of proxy(new_value) to set connection proxy have been DEPRECATED and will be removed in Faraday 1.0'
+      @manual_proxy = true
       @proxy = ProxyOptions.from(arg)
     end
 
     # Public: Sets the Hash proxy options.
     def proxy=(new_value)
+      @manual_proxy = true
       @proxy = ProxyOptions.from(new_value)
     end
 
@@ -307,7 +310,7 @@ module Faraday
     #
     #   conn.get("nigiri?page=2") # accesses https://sushi.com/api/nigiri
     #
-    # Returns the parsed URI from teh given input..
+    # Returns the parsed URI from the given input..
     def url_prefix=(url, encoder = nil)
       uri = @url_prefix = Utils.URI(url)
       self.path_prefix = uri.path
@@ -371,10 +374,7 @@ module Faraday
       end
 
       # Resets temp_proxy
-      @temp_proxy = self.proxy
-
-      # Set temporary proxy if request url is absolute
-      @temp_proxy = proxy_from_env(url) if url && Utils.URI(url).absolute?
+      @temp_proxy = proxy_for_request(url)
 
       request = build_request(method) do |req|
         req.options = req.options.merge(:proxy => @temp_proxy)
@@ -468,6 +468,15 @@ module Faraday
       if uri && !uri.empty?
         uri = 'http://' + uri if uri !~ /^http/i
         uri
+      end
+    end
+
+    def proxy_for_request(url)
+      return self.proxy if @manual_proxy
+      if url && Utils.URI(url).absolute?
+        proxy_from_env(url)
+      else
+        self.proxy
       end
     end
   end
