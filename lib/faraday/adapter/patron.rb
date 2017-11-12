@@ -88,7 +88,8 @@ module Faraday
           "server connect has timed out",
           "Resolving timed out",
           "name lookup timed out",
-          "timed out before SSL"
+          "timed out before SSL",
+          "connect() timed out"
         ].any? { |curl_message| message.include?(curl_message) }
       end
 
