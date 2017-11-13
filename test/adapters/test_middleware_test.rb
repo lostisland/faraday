@@ -17,6 +17,15 @@ module Adapters
         stub.get(/\A\/resources\/(specified)\z/) do |env, meta|
           [200, {'Content-Type' => 'text/html'}, "show #{meta[:match_data][1]}"]
         end
+        stub.get('http://domain.test/hello') do
+          [200, {'Content-Type' => 'text/html'}, 'domain: hello']
+        end
+        stub.get('http://wrong.test/hello') do
+          [200, {'Content-Type' => 'text/html'}, 'wrong: hello']
+        end
+        stub.get('http://wrong.test/bait') do
+          [404, {'Content-Type' => 'text/html'}]
+        end
       end
       @conn  = Faraday.new do |builder|
         builder.adapter :test, @stubs
@@ -34,6 +43,10 @@ module Adapters
 
     def test_middleware_with_simple_path_sets_body
       assert_equal 'hello', @resp.body
+    end
+
+    def test_middleware_with_host_points_to_the_right_stub
+      assert_equal 'domain: hello', @conn.get('http://domain.test/hello').body
     end
 
     def test_middleware_can_be_called_several_times
@@ -125,6 +138,12 @@ module Adapters
     def test_raises_an_error_if_no_stub_is_found_for_request
       assert_raises Stubs::NotFound do
         @conn.get('/invalid'){ [200, {}, []] }
+      end
+    end
+
+    def test_raises_an_error_if_no_stub_is_found_for_specified_host
+      assert_raises Stubs::NotFound do
+        @conn.get('http://domain.test/bait')
       end
     end
 
