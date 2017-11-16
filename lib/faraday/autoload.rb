@@ -55,6 +55,7 @@ module Faraday
       :NetHttpPersistent => 'net_http_persistent',
       :EMSynchrony       => 'em_synchrony',
       :EMHttp            => 'em_http',
+      :Typhoeus          => 'typhoeus',
       :Patron            => 'patron',
       :Excon             => 'excon',
       :Test              => 'test',
