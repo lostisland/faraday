@@ -10,6 +10,12 @@ module Adapters
     def adapter() :typhoeus end
 
     Integration.apply(self, :Parallel) do
+      # inconsistent outcomes ranging from successful response to connection error
+      undef :test_proxy_auth_fail if ssl_mode?
+
+      # Typhoeus adapter not supporting Faraday::SSLError
+      undef :test_GET_ssl_fails_with_bad_cert if ssl_mode?
+
       def test_binds_local_socket
         host = '1.2.3.4'
         conn = create_connection :request => { :bind => { :host => host } }
