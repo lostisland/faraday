@@ -1,9 +1,5 @@
 require File.expand_path('../integration', __FILE__)
 
-require 'typhoeus/adapters/faraday'
-
-Faraday::Adapter.register_middleware :typhoeus => :Typhoeus
-
 module Adapters
   class TyphoeusTest < Faraday::TestCase
 
