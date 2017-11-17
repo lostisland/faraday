@@ -20,7 +20,8 @@ Faraday supports these adapters out of the box:
 * [EventMachine][]
 * [HTTPClient][]
 
-Adapters are slowly being moved into their own gems, or bundled with HTTP clients:
+Adapters are slowly being moved into their own gems, or bundled with HTTP clients.
+Here is the list of known external adapters:
 
 * [Typhoeus][]
 
@@ -337,14 +338,12 @@ stubs.verify_stubbed_calls
 This library aims to support and is [tested against][travis] the following Ruby
 implementations:
 
-* Ruby 1.9.3+
-* [JRuby][] 1.7+
-* [Rubinius][] 2+
+* Ruby 2.2+
 
 If something doesn't work on one of these Ruby versions, it's a bug.
 
 This library may inadvertently work (or seem to work) on other Ruby
-implementations, however support will only be provided for the versions listed
+implementations and versions, however support will only be provided for the versions listed
 above.
 
 If you would like this library to support another Ruby version, you may

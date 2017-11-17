@@ -6,36 +6,13 @@ script: bundle exec script/test
 cache: bundler
 
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1
   - 2.2
-  - 2.3.0
-  - 2.4.0
-  - jruby-19mode
-  - jruby-20mode
-  - jruby-21mode
-  - jruby-head
-  - rbx-2
-
-matrix:
-  allow_failures:
-    # "A fatal error has been detected by the Java Runtime Environment:
-    #  Internal Error (sharedRuntime.cpp:843)"
-    - rvm: jruby-19mode
-    - rvm: jruby-20mode
-    - rvm: jruby-21mode
-    - rvm: jruby-head
-    # random crashes
-    - rvm: rbx-2
-  fast_finish: true
-
+  - 2.3
+  - 2.4
 env:
   matrix:
     - SSL=no
     - SSL=yes
-  global:
-    - JRUBY_OPTS="$JRUBY_OPTS --debug"
 deploy:
   provider: rubygems
   api_key:
