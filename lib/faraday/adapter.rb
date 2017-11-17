@@ -8,6 +8,7 @@ module Faraday
       :test => [:Test, 'test'],
       :net_http => [:NetHttp, 'net_http'],
       :net_http_persistent => [:NetHttpPersistent, 'net_http_persistent'],
+      :typhoeus => [:Typhoeus, 'typhoeus'],
       :patron => [:Patron, 'patron'],
       :em_synchrony => [:EMSynchrony, 'em_synchrony'],
       :em_http => [:EMHttp, 'em_http'],

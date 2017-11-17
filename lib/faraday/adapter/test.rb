@@ -53,17 +53,17 @@ module Faraday
           @stack.empty?
         end
 
-        def match(request_method, path, headers, body)
+        def match(request_method, host, path, headers, body)
           return false if !@stack.key?(request_method)
           stack = @stack[request_method]
           consumed = (@consumed[request_method] ||= [])
 
-          stub, meta = matches?(stack, path, headers, body)
+          stub, meta = matches?(stack, host, path, headers, body)
           if stub
             consumed << stack.delete(stub)
             return stub, meta
           end
-          matches?(consumed, path, headers, body)
+          matches?(consumed, host, path, headers, body)
         end
 
         def get(path, headers = {}, &block)
@@ -110,29 +110,35 @@ module Faraday
         protected
 
         def new_stub(request_method, path, headers = {}, body=nil, &block)
-          normalized_path = path.is_a?(Regexp) ? path : Faraday::Utils.normalize_path(path)
-          (@stack[request_method] ||= []) << Stub.new(normalized_path, headers, body, block)
+          normalized_path, host =
+            if path.is_a?(Regexp)
+              path
+            else
+              [Faraday::Utils.normalize_path(path), Faraday::Utils.URI(path).host]
+            end
+
+          (@stack[request_method] ||= []) << Stub.new(host, normalized_path, headers, body, block)
         end
 
-        def matches?(stack, path, headers, body)
+        def matches?(stack, host, path, headers, body)
           stack.each do |stub|
-            match_result, meta = stub.matches?(path, headers, body)
+            match_result, meta = stub.matches?(host, path, headers, body)
             return stub, meta if match_result
           end
           nil
         end
       end
 
-      class Stub < Struct.new(:path, :params, :headers, :body, :block)
-        def initialize(full, headers, body, block)
+      class Stub < Struct.new(:host, :path, :params, :headers, :body, :block)
+        def initialize(host, full, headers, body, block)
           path, query = full.respond_to?(:split) ? full.split("?") : full
           params = query ?
             Faraday::Utils.parse_nested_query(query) :
             {}
-          super(path, params, headers, body, block)
+          super(host, path, params, headers, body, block)
         end
 
-        def matches?(request_uri, request_headers, request_body)
+        def matches?(request_host, request_uri, request_headers, request_body)
           request_path, request_query = request_uri.split('?')
           request_params = request_query ?
             Faraday::Utils.parse_nested_query(request_query) :
@@ -140,7 +146,8 @@ module Faraday
           # meta is a hash use as carrier
           # that will be yielded to consumer block
           meta = {}
-          return path_match?(request_path, meta) &&
+          return (host.nil? || host == request_host) &&
+            path_match?(request_path, meta) &&
             params_match?(request_params) &&
             (body.to_s.size.zero? || request_body == body) &&
             headers_match?(request_headers), meta
@@ -183,10 +190,11 @@ module Faraday
 
       def call(env)
         super
+        host = env[:url].host
         normalized_path = Faraday::Utils.normalize_path(env[:url])
         params_encoder = env.request.params_encoder || Faraday::Utils.default_params_encoder
 
-        stub, meta = stubs.match(env[:method], normalized_path, env.request_headers, env[:body])
+        stub, meta = stubs.match(env[:method], host, normalized_path, env.request_headers, env[:body])
         if stub
           env[:params] = (query = env[:url].query) ?
             params_encoder.decode(query) : {}
