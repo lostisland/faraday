@@ -7,6 +7,9 @@ module Faraday
   #     builder.adapter  :net_http     # Faraday::Adapter::NetHttp
   #   end
   class RackBuilder
+    # Used to detect missing arguments
+    NO_ARGUMENT = Object.new
+
     attr_accessor :handlers
 
     # Error raised when trying to modify the stack after calling `lock!`
@@ -84,7 +87,7 @@ module Faraday
         use_symbol(Faraday::Middleware, klass, *args, &block)
       else
         raise_if_locked
-        warn_middleware_after_adapter if adapter_set?
+        raise_if_adapter(klass)
         @handlers << self.class::Handler.new(klass, *args, &block)
       end
     end
@@ -97,8 +100,13 @@ module Faraday
       use_symbol(Faraday::Response, key, *args, &block)
     end
 
-    def adapter(key, *args, &block)
-      use_symbol(Faraday::Adapter, key, *args, &block)
+    def adapter(klass = NO_ARGUMENT, *args, &block)
+      return @adapter if klass == NO_ARGUMENT
+
+      if klass.is_a?(Symbol)
+        klass = Faraday::Adapter.lookup_middleware(klass)
+      end
+      @adapter = self.class::Handler.new(klass, *args, &block)
     end
 
     ## methods to push onto the various positions in the stack:
@@ -106,7 +114,6 @@ module Faraday
     def insert(index, *args, &block)
       raise_if_locked
       index = assert_index(index)
-      warn_middleware_after_adapter if inserting_after_adapter?(index)
       handler = self.class::Handler.new(*args, &block)
       @handlers.insert(index, handler)
     end
@@ -138,8 +145,6 @@ module Faraday
     #
     # Returns a Faraday::Response.
     def build_response(connection, request)
-      warn 'WARNING: No adapter was configured for this request' unless adapter_set?
-
       app.call(build_env(connection, request))
     end
 
@@ -164,7 +169,9 @@ module Faraday
 
     def to_app(inner_app)
       # last added handler is the deepest and thus closest to the inner app
-      @handlers.reverse.inject(inner_app) { |app, handler| handler.build(app) }
+      # adapter is always the last one
+      adapter(Faraday.default_adapter) unless @adapter
+      (@handlers + [@adapter]).reverse.inject(inner_app) { |app, handler| handler.build(app) }
     end
 
     def ==(other)
@@ -204,24 +211,16 @@ module Faraday
       raise StackLocked, "can't modify middleware stack after making a request" if locked?
     end
 
-    def warn_middleware_after_adapter
-      warn "WARNING: Unexpected middleware set after the adapter. " \
-        "This won't be supported from Faraday 1.0."
+    def raise_if_adapter(klass)
+      raise "Adapter should be set using the `adapter` method, not `use`" if is_adapter?(klass)
     end
 
     def adapter_set?
-      @handlers.any? { |handler| is_adapter?(handler) }
+      !@adapter.nil?
     end
 
-    def inserting_after_adapter?(index)
-      adapter_index = @handlers.find_index { |handler| is_adapter?(handler) }
-      return false if adapter_index.nil?
-
-      index > adapter_index
-    end
-
-    def is_adapter?(handler)
-      handler.klass.ancestors.include? Faraday::Adapter
+    def is_adapter?(klass)
+      klass.ancestors.include?(Faraday::Adapter)
     end
 
     def use_symbol(mod, key, *args, &block)

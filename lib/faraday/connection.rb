@@ -233,20 +233,17 @@ module Faraday
       set_authorization_header(:authorization, type, token)
     end
 
-    # Internal: Traverse the middleware stack in search of a
-    # parallel-capable adapter.
+    # Internal: Check if the adapter is parallel-capable.
     #
-    # Yields in case of not found.
+    # Yields otherwise or if no adapter is set yet.
     #
-    # Returns a parallel manager or nil if not found.
+    # Returns a parallel manager or nil if yielded.
     def default_parallel_manager
       @default_parallel_manager ||= begin
-        handler = @builder.handlers.detect do |h|
-          h.klass.respond_to?(:supports_parallel?) and h.klass.supports_parallel?
-        end
+        adapter = @builder.adapter.klass if @builder.adapter
 
-        if handler
-          handler.klass.setup_parallel_manager
+        if adapter and adapter.respond_to?(:supports_parallel?) and adapter.supports_parallel?
+          adapter.setup_parallel_manager
         elsif block_given?
           yield
         end
