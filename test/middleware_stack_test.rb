@@ -21,11 +21,31 @@ class MiddlewareStackTest < Faraday::TestCase
     @builder = @conn.builder
   end
 
-  def test_sets_default_adapter_if_none_set
+  def test_default_stack
     default_middleware = Faraday::Request.lookup_middleware(:url_encoded)
     default_adapter_klass = Faraday::Adapter.lookup_middleware(Faraday.default_adapter)
     assert @builder[0] == default_middleware
     assert @builder.adapter == default_adapter_klass
+  end
+
+  def test_sets_default_adapter_if_none_set
+    @conn = Faraday::Connection.new do |_|
+      # custom stack, but missing adapter
+    end
+    @builder = @conn.builder
+    default_adapter_klass = Faraday::Adapter.lookup_middleware(Faraday.default_adapter)
+    assert_nil @builder[0]
+    assert @builder.adapter == default_adapter_klass
+  end
+
+  def test_use_provided_adapter
+    @conn = Faraday::Connection.new do |builder|
+      builder.adapter :test
+    end
+    @builder = @conn.builder
+    test_adapter_klass = Faraday::Adapter.lookup_middleware(:test)
+    assert_nil @builder[0]
+    assert @builder.adapter == test_adapter_klass
   end
 
   def test_allows_rebuilding

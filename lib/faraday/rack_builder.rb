@@ -53,6 +53,7 @@ module Faraday
     end
 
     def initialize(handlers = [])
+      @adapter = nil
       @handlers = handlers
       if block_given?
         build(&Proc.new)
@@ -67,6 +68,7 @@ module Faraday
       raise_if_locked
       @handlers.clear unless options[:keep]
       yield(self) if block_given?
+      adapter(Faraday.default_adapter) unless @adapter
     end
 
     def [](idx)
@@ -170,7 +172,6 @@ module Faraday
     def to_app(inner_app)
       # last added handler is the deepest and thus closest to the inner app
       # adapter is always the last one
-      adapter(Faraday.default_adapter) unless @adapter
       (@handlers + [@adapter]).reverse.inject(inner_app) { |app, handler| handler.build(app) }
     end
 
