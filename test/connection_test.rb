@@ -474,8 +474,8 @@ class TestConnection < Faraday::TestCase
     other.params['b'] = '2'
     other.options[:open_timeout] = 10
 
-    assert_equal 2, other.builder.handlers.size
-    assert_equal 2, conn.builder.handlers.size
+    assert_equal 1, other.builder.handlers.size
+    assert_equal 1, conn.builder.handlers.size
     assert !conn.headers.key?('content-length')
     assert !conn.params.key?('b')
     assert_equal 5, other.options[:timeout]
@@ -498,7 +498,7 @@ class TestConnection < Faraday::TestCase
       faraday.url_prefix = 'http://sushi.com/omnom'
       assert_equal '1', faraday.params['a']
     }
-    assert_equal 1, conn.builder.handlers.size
+    assert_equal 0, conn.builder.handlers.size
     assert_equal '/omnom', conn.path_prefix
   end
 

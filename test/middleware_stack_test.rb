@@ -21,11 +21,31 @@ class MiddlewareStackTest < Faraday::TestCase
     @builder = @conn.builder
   end
 
-  def test_sets_default_adapter_if_none_set
-    default_middleware = Faraday::Request.lookup_middleware :url_encoded
-    default_adapter_klass = Faraday::Adapter.lookup_middleware Faraday.default_adapter
+  def test_default_stack
+    default_middleware = Faraday::Request.lookup_middleware(:url_encoded)
+    default_adapter_klass = Faraday::Adapter.lookup_middleware(Faraday.default_adapter)
     assert @builder[0] == default_middleware
-    assert @builder[1] == default_adapter_klass
+    assert @builder.adapter == default_adapter_klass
+  end
+
+  def test_sets_default_adapter_if_none_set
+    @conn = Faraday::Connection.new do |_|
+      # custom stack, but missing adapter
+    end
+    @builder = @conn.builder
+    default_adapter_klass = Faraday::Adapter.lookup_middleware(Faraday.default_adapter)
+    assert_nil @builder[0]
+    assert @builder.adapter == default_adapter_klass
+  end
+
+  def test_use_provided_adapter
+    @conn = Faraday::Connection.new do |builder|
+      builder.adapter :test
+    end
+    @builder = @conn.builder
+    test_adapter_klass = Faraday::Adapter.lookup_middleware(:test)
+    assert_nil @builder[0]
+    assert @builder.adapter == test_adapter_klass
   end
 
   def test_allows_rebuilding
@@ -195,66 +215,3 @@ class MiddlewareStackTest < Faraday::TestCase
   end
 end
 
-class MiddlewareStackOrderTest < Faraday::TestCase
-  def test_adding_response_middleware_after_adapter
-    response_after_adapter = lambda do
-      Faraday::RackBuilder.new do |b|
-        b.adapter :test
-        b.response :raise_error
-      end
-    end
-
-    assert_output("", expected_middleware_warning, &response_after_adapter)
-  end
-
-  def test_adding_request_middleware_after_adapter
-    request_after_adapter = lambda do
-      Faraday::RackBuilder.new do |b|
-        b.adapter :test
-        b.request :multipart
-      end
-    end
-
-    assert_output("", expected_middleware_warning, &request_after_adapter)
-  end
-
-  def test_adding_request_middleware_after_adapter_via_use
-    use_after_adapter = lambda do
-      Faraday::RackBuilder.new do |b|
-        b.adapter :test
-        b.use Faraday::Request::Multipart
-      end
-    end
-
-    assert_output("", expected_middleware_warning, &use_after_adapter)
-  end
-
-  def test_adding_request_middleware_after_adapter_via_insert
-    insert_after_adapter = lambda do
-      Faraday::RackBuilder.new do |b|
-        b.adapter :test
-        b.insert(1, Faraday::Request::Multipart)
-      end
-    end
-
-    assert_output("", expected_middleware_warning, &insert_after_adapter)
-  end
-
-  def test_adding_request_middleware_before_adapter_via_insert_no_warning
-    builder = Faraday::RackBuilder.new do |b|
-      b.adapter :test
-    end
-
-    insert_before_adapter = lambda do
-      builder.insert(0, Faraday::Request::Multipart)
-    end
-
-    assert_output("", "", &insert_before_adapter)
-  end
-
-  private
-
-  def expected_middleware_warning
-    /Unexpected middleware set after the adapter/
-  end
-end
