@@ -243,8 +243,8 @@ module Faraday
       super(value)
     end
 
-    memoized(:user) { uri.user && Utils.unescape(uri.user) }
-    memoized(:password) { uri.password && Utils.unescape(uri.password) }
+    memoized(:user) { uri && uri.user && Utils.unescape(uri.user) }
+    memoized(:password) { uri && uri.password && Utils.unescape(uri.password) }
   end
 
   class ConnectionOptions < Options.new(:request, :proxy, :ssl, :builder, :url,

@@ -34,6 +34,9 @@ module Faraday
     #     Faraday.get "https://faraday.com"
     attr_writer :default_connection
 
+    # Public: Tells faraday to ignore the environment proxy (http_proxy).
+    attr_accessor :ignore_env_proxy
+
     # Public: Initializes a new Faraday::Connection.
     #
     # url     - The optional String base URL to use as a prefix for all
@@ -101,6 +104,7 @@ module Faraday
     end
   end
 
+  self.ignore_env_proxy = false
   self.root_path = File.expand_path "..", __FILE__
   self.lib_path = File.expand_path "../faraday", __FILE__
   self.default_adapter = :net_http

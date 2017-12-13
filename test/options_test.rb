@@ -161,7 +161,7 @@ class OptionsTest < Faraday::TestCase
 
   def test_proxy_options_from_nil
     options = Faraday::ProxyOptions.from nil
-    assert_nil options
+    assert_kind_of Faraday::ProxyOptions, options
   end
 
   def test_proxy_options_hash_access
