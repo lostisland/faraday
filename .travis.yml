@@ -15,8 +15,6 @@ rvm:
   - jruby-20mode
   - jruby-21mode
   - jruby-head
-  - rbx-2
-  - rbx-3
 
 matrix:
   allow_failures:
@@ -26,9 +24,6 @@ matrix:
     - rvm: jruby-20mode
     - rvm: jruby-21mode
     - rvm: jruby-head
-    # random crashes
-    - rvm: rbx-2
-    - rvm: rbx-3
   fast_finish: true
 
 env:
