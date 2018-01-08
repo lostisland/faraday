@@ -1,7 +1,5 @@
-dist: precise
 sudo: false
 language: ruby
-before_install: gem install bundler
 script: bundle exec script/test
 cache: bundler
 
@@ -10,13 +8,13 @@ rvm:
   - 2.0.0
   - 2.1
   - 2.2
-  - 2.3.0
-  - 2.4.0
+  - 2.3
+  - 2.4
+  - 2.5.0
   - jruby-19mode
   - jruby-20mode
   - jruby-21mode
   - jruby-head
-  - rbx-2
 
 matrix:
   allow_failures:
@@ -26,8 +24,6 @@ matrix:
     - rvm: jruby-20mode
     - rvm: jruby-21mode
     - rvm: jruby-head
-    # random crashes
-    - rvm: rbx-2
   fast_finish: true
 
 env:
