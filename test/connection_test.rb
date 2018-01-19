@@ -22,6 +22,16 @@ class TestConnection < Faraday::TestCase
     end
   end
 
+  def with_env_proxy_disabled
+    Faraday.ignore_env_proxy = true
+
+    begin
+      yield
+    ensure
+      Faraday.ignore_env_proxy = false
+    end
+  end
+
   def with_env(new_env)
     old_env = {}
 
@@ -393,6 +403,15 @@ class TestConnection < Faraday::TestCase
       end
       Faraday.get('http://google.co.uk')
       assert_nil Faraday.default_connection.instance_variable_get('@temp_proxy')
+    end
+  end
+
+  def test_ignore_env_proxy
+    with_env_proxy_disabled do
+      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+        conn = Faraday::Connection.new(proxy: nil)
+        assert_nil conn.proxy
+      end
     end
   end
 

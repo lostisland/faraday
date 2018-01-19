@@ -162,6 +162,22 @@ Faraday.new(...) do |conn|
 end
 ```
 
+## Proxy
+
+Faraday will try to automatically infer the proxy settings from your system using `URI#find_proxy`.
+This will retrieve them from environment variables such as http_proxy, ftp_proxy, no_proxy, etc.
+If for any reason you want to disable this behaviour, you can do so by setting the global varibale `ignore_env_proxy`:
+
+```ruby
+Faraday.ignore_env_proxy = true
+```
+
+You can also specify a custom proxy when initializing the connection
+
+```ruby
+Faraday.new('http://www.example.com', :proxy => 'http://proxy.com')
+```
+
 ## Advanced middleware usage
 
 The order in which middleware is stacked is important. Like with Rack, the

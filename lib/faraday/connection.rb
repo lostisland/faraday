@@ -289,7 +289,7 @@ module Faraday
     # Public: Sets the Hash proxy options.
     def proxy=(new_value)
       @manual_proxy = true
-      @proxy = ProxyOptions.from(new_value)
+      @proxy = new_value ? ProxyOptions.from(new_value) : nil
     end
 
     def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
@@ -445,6 +445,7 @@ module Faraday
     end
 
     def proxy_from_env(url)
+      return if Faraday.ignore_env_proxy
       uri = nil
       if URI.parse('').respond_to?(:find_proxy)
         case url

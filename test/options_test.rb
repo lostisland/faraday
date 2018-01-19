@@ -159,6 +159,11 @@ class OptionsTest < Faraday::TestCase
     assert_equal 'http', options.scheme
   end
 
+  def test_proxy_options_from_nil
+    options = Faraday::ProxyOptions.from nil
+    assert_kind_of Faraday::ProxyOptions, options
+  end
+
   def test_proxy_options_hash_access
     proxy = Faraday::ProxyOptions.from 'http://a%40b:pw%20d@example.org'
     assert_equal 'a@b', proxy[:user]
