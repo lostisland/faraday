@@ -6,7 +6,7 @@ require 'forwardable'
 # Public: This is the main namespace for Faraday.  You can either use it to
 # create Faraday::Connection objects, or access it directly.
 #
-# Examples
+# @example
 #
 #   Faraday.get "http://faraday.com"
 #
@@ -37,33 +37,32 @@ module Faraday
     # Public: Tells faraday to ignore the environment proxy (http_proxy).
     attr_accessor :ignore_env_proxy
 
-    # Public: Initializes a new Faraday::Connection.
+    # Initializes a new {Connection}.
     #
-    # url     - The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
-    # options - The optional Hash used to configure this Faraday::Connection.
-    #           Any of these values will be set on every request made, unless
-    #           overridden for a specific request.
-    #           :url     - String base URL.
-    #           :params  - Hash of URI query unencoded key/value pairs.
-    #           :headers - Hash of unencoded HTTP header key/value pairs.
-    #           :request - Hash of request options.
-    #           :ssl     - Hash of SSL options.
-    #           :proxy   - Hash of Proxy options.
+    # @param url [String,Hash] The optional String base URL to use as a prefix for all
+    #           requests.  Can also be the options Hash. Any of these values
+    #           will be set on every request made, unless overridden for a
+    #           specific request.
+    # @param options [Hash]
+    # @option options [String] :url Base URL
+    # @option options [Hash] :params Hash of URI query unencoded key/value pairs.
+    # @option options [Hash] :headers Hash of unencoded HTTP header key/value pairs.
+    # @option options [Hash] :request Hash of request options.
+    # @option options [Hash] :ssl Hash of SSL options.
+    # @option options [Hash] :proxy Hash of Proxy options.
+    # @return [Faraday::Connection]
     #
-    # Examples
+    # @example
     #
     #   Faraday.new 'http://faraday.com'
-    #
-    #   # http://faraday.com?page=1
+    #   # => http://faraday.com?page=1
+    #   
     #   Faraday.new 'http://faraday.com', :params => {:page => 1}
-    #
-    #   # same
+    #   # => http://faraday.com?page=1
     #
     #   Faraday.new :url => 'http://faraday.com',
-    #     :params => {:page => 1}
-    #
-    # Returns a Faraday::Connection.
+    #               :params => {:page => 1}
+    #   # => Faraday::Connection
     def new(url = nil, options = nil)
       block = block_given? ? Proc.new : nil
       options = options ? default_connection_options.merge(options) : default_connection_options
