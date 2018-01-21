@@ -1,0 +1,12 @@
+--no-private
+--exclude test
+--exclude .github
+--exclude coverage
+--exclude doc
+--exclude script
+--markup markdown
+--readme README.md
+
+lib/**/*.rb
+-
+CHANGELOG.md
