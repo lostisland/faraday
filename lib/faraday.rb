@@ -3,13 +3,15 @@ require 'cgi'
 require 'set'
 require 'forwardable'
 
-# Public: This is the main namespace for Faraday.  You can either use it to
-# create Faraday::Connection objects, or access it directly.
+# This is the main namespace for Faraday.
 #
-# @example
+# It provides methods to create {Connection} objects, and HTTP-related
+# methods to use directly.
 #
+# @example Helpful class methods for easy usage
 #   Faraday.get "http://faraday.com"
 #
+# @example Helpful class method `.new` to create {Connection} objects.
 #   conn = Faraday.new "http://faraday.com"
 #   conn.get '/'
 #
@@ -17,24 +19,31 @@ module Faraday
   VERSION = "0.14.0"
 
   class << self
-    # Public: Gets or sets the root path that Faraday is being loaded from.
-    # This is the root from where the libraries are auto-loaded from.
+    # The root path that Faraday is being loaded from.
+    #
+    # This is the root from where the libraries are auto-loaded.
+    #
+    # @return [String]
     attr_accessor :root_path
 
-    # Public: Gets or sets the path that the Faraday libs are loaded from.
+    # Gets or sets the path that the Faraday libs are loaded from.
+    # @return [String]
     attr_accessor :lib_path
 
-    # Public: Gets or sets the Symbol key identifying a default Adapter to use
-    # for the default Faraday::Connection.
+    # @overload default_adapter
+    #   Gets the Symbol key identifying a default Adapter to use
+    #   for the default {Faraday::Connection}. Defaults to `:net_http`.
+    #   @return [Symbol] the default adapter
+    # @overload default_adapter=(adapter)
+    #   Updates default adapter while resetting {.default_connection}.
+    #   @return [Symbol] the new default_adapter.
     attr_reader :default_adapter
 
-    # Public: Sets the default Faraday::Connection for simple scripts that
-    # access the Faraday constant directly.
-    #
-    #     Faraday.get "https://faraday.com"
+    # Documented below, see default_connection
     attr_writer :default_connection
 
-    # Public: Tells faraday to ignore the environment proxy (http_proxy).
+    # Tells Faraday to ignore the environment proxy (http_proxy). Defaults to `false`.
+    # @return [Boolean]
     attr_accessor :ignore_env_proxy
 
     # Initializes a new {Connection}.
@@ -70,27 +79,24 @@ module Faraday
       Faraday::Connection.new(url, options, &block)
     end
 
+    # @private
     # Internal: Requires internal Faraday libraries.
     #
-    # *libs - One or more relative String names to Faraday classes.
-    #
-    # Returns nothing.
+    # @param libs [Array] one or more relative String names to Faraday classes.
+    # @return [void]
     def require_libs(*libs)
       libs.each do |lib|
         require "#{lib_path}/#{lib}"
       end
     end
 
-    # Public: Updates default adapter while resetting
-    # #default_connection.
-    #
-    # Returns the new default_adapter.
+    alias require_lib require_libs
+
+    # Documented elsewhere, see default_adapter reader
     def default_adapter=(adapter)
       @default_connection = nil
       @default_adapter = adapter
     end
-
-    alias require_lib require_libs
 
     def respond_to?(symbol, include_private = false)
       default_connection.respond_to?(symbol, include_private) || super
@@ -98,7 +104,7 @@ module Faraday
 
   private
     # Internal: Proxies method calls on the Faraday constant to
-    # #default_connection.
+    # .default_connection.
     def method_missing(name, *args, &block)
       default_connection.send(name, *args, &block)
     end
@@ -109,21 +115,27 @@ module Faraday
   self.lib_path = File.expand_path "../faraday", __FILE__
   self.default_adapter = :net_http
 
-  # Gets the default connection used for simple scripts.
-  #
-  # Returns a Faraday::Connection, configured with the #default_adapter.
+  # @overload default_connection
+  #   Gets the default connection used for simple scripts.
+  #   @return [Faraday::Connection] a connection configured with the {.default_adapter}.
+  # @overload default_connection=(connection)
+  #   @param connection [Faraday::Connection]
+  #   Sets the default {Faraday::Connection} for simple scripts that
+  #   access the Faraday constant directly, such as <code>Faraday.get "https://faraday.com"</code>.
   def self.default_connection
     @default_connection ||= Connection.new(default_connection_options)
   end
 
-  # Gets the default connection options used when calling Faraday#new.
+  # Gets the default connection options used when calling {Faraday#new}.
   #
-  # Returns a Faraday::ConnectionOptions.
+  # @return [Faraday::ConnectionOptions]
   def self.default_connection_options
     @default_connection_options ||= ConnectionOptions.new
   end
 
-  # Public: Sets the default options used when calling Faraday#new.
+  # Sets the default options used when calling {Faraday#new}.
+  #
+  # @param options [Hash, Faraday::ConnectionOptions]
   def self.default_connection_options=(options)
     @default_connection = nil
     @default_connection_options = ConnectionOptions.from(options)
@@ -134,31 +146,47 @@ module Faraday
     Timer = Timeout
   end
 
-  # Public: Adds the ability for other modules to register and lookup
+  # Adds the ability for other modules to register and lookup
   # middleware classes.
   module MiddlewareRegistry
-    # Public: Register middleware class(es) on the current module.
+    # Register middleware class(es) on the current module.
     #
-    # mapping - A Hash mapping Symbol keys to classes. Classes can be expressed
-    #           as fully qualified constant, or a Proc that will be lazily
-    #           called to return the former.
+    # @param autoload_path [String] Middleware autoload path
+    # @param mapping [Hash{Symbol => Module, Symbol, Array<Module, Symbol, String>}] Middleware mapping from a lookup symbol to a reference to the middleware. - Classes can be expressed as:
+    #           - a fully qualified constant
+    #           - a Symbol
+    #           - a Proc that will be lazily called to return the former
+    #           - an array is given, its first element is the constant or symbol,
+    #             and its second is a file to `require`.
+    # @return [void]
     #
-    # Examples
+    # @example Lookup by a constant
     #
     #   module Faraday
     #     class Whatever
     #       # Middleware looked up by :foo returns Faraday::Whatever::Foo.
     #       register_middleware :foo => Foo
+    #     end
+    #   end
     #
+    # @example Lookup by a symbol
+    #
+    #   module Faraday
+    #     class Whatever
     #       # Middleware looked up by :bar returns Faraday::Whatever.const_get(:Bar)
     #       register_middleware :bar => :Bar
+    #     end
+    #   end
     #
+    # @example Lookup by a symbol and string in an array
+    #
+    #   module Faraday
+    #     class Whatever
     #       # Middleware looked up by :baz requires 'baz' and returns Faraday::Whatever.const_get(:Baz)
     #       register_middleware :baz => [:Baz, 'baz']
     #     end
     #   end
-    #
-    # Returns nothing.
+    #       
     def register_middleware(autoload_path = nil, mapping = nil)
       if mapping.nil?
         mapping = autoload_path
@@ -170,11 +198,13 @@ module Faraday
       end
     end
 
-    # Public: Lookup middleware class with a registered Symbol shortcut.
+    # Lookup middleware class with a registered Symbol shortcut.
     #
-    # key - The Symbol key for the registered middleware.
+    # @param key [Symbol] key for the registered middleware.
+    # @return [Class] a middleware Class.
+    # @raise [Faraday::Error] if the {key} is not registered
     #
-    # Examples
+    # @example
     #
     #   module Faraday
     #     class Whatever
@@ -185,7 +215,6 @@ module Faraday
     #   Faraday::Whatever.lookup_middleware(:foo)
     #   # => Faraday::Whatever::Foo
     #
-    # Returns a middleware Class.
     def lookup_middleware(key)
       load_middleware(key) ||
         raise(Faraday::Error.new("#{key.inspect} is not registered on #{self}"))
@@ -230,6 +259,7 @@ module Faraday
     end
   end
 
+  # @private
   def self.const_missing(name)
     if name.to_sym == :Builder
       warn "Faraday::Builder is now Faraday::RackBuilder."
