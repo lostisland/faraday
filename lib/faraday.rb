@@ -14,7 +14,7 @@ require 'forwardable'
 #   conn.get '/'
 #
 module Faraday
-  VERSION = "0.13.1"
+  VERSION = "0.14.0"
 
   class << self
     # Public: Gets or sets the root path that Faraday is being loaded from.
@@ -33,6 +33,9 @@ module Faraday
     #
     #     Faraday.get "https://faraday.com"
     attr_writer :default_connection
+
+    # Public: Tells faraday to ignore the environment proxy (http_proxy).
+    attr_accessor :ignore_env_proxy
 
     # Public: Initializes a new Faraday::Connection.
     #
@@ -101,6 +104,7 @@ module Faraday
     end
   end
 
+  self.ignore_env_proxy = false
   self.root_path = File.expand_path "..", __FILE__
   self.lib_path = File.expand_path "../faraday", __FILE__
   self.default_adapter = :net_http

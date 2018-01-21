@@ -41,7 +41,7 @@ module Faraday
 
         @app.call env
       rescue ::Patron::TimeoutError => err
-        if err.message == "Connection time-out"
+        if connection_timed_out_message?(err.message)
           raise Faraday::Error::ConnectionFailed, err
         else
           raise Faraday::Error::TimeoutError, err
@@ -82,6 +82,23 @@ module Faraday
           session.insecure = true
         end
       end
+
+      private
+
+      CURL_TIMEOUT_MESSAGES = [ "Connection time-out",
+          "Connection timed out",
+          "Timed out before name resolve",
+          "server connect has timed out",
+          "Resolving timed out",
+          "name lookup timed out",
+          "timed out before SSL",
+          "connect() timed out"
+        ].freeze
+
+      def connection_timed_out_message?(message)
+        CURL_TIMEOUT_MESSAGES.any? { |curl_message| message.include?(curl_message) }
+      end
+
     end
   end
 end

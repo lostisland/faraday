@@ -1,9 +1,35 @@
 require File.expand_path('../helper', __FILE__)
 
 class TestConnection < Faraday::TestCase
-
   def teardown
     Faraday.default_connection_options = nil
+  end
+
+  def with_test_conn
+    old_conn = Faraday.default_connection
+    Faraday.default_connection = Faraday::Connection.new do |builder|
+      builder.adapter :test do |stub|
+        stub.get('/') do |_|
+          [200, nil, nil]
+        end
+      end
+    end
+
+    begin
+      yield
+    ensure
+      Faraday.default_connection = old_conn
+    end
+  end
+
+  def with_env_proxy_disabled
+    Faraday.ignore_env_proxy = true
+
+    begin
+      yield
+    ensure
+      Faraday.ignore_env_proxy = false
+    end
   end
 
   def with_env(new_env)
@@ -370,9 +396,22 @@ class TestConnection < Faraday::TestCase
   end
 
   def test_dynamic_proxy
-    with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+    with_test_conn do
+      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+        Faraday.get('http://google.co.uk')
+        assert_equal 'duncan.proxy.com', Faraday.default_connection.instance_variable_get('@temp_proxy').host
+      end
       Faraday.get('http://google.co.uk')
-      assert_equal 'duncan.proxy.com', Faraday.default_connection.instance_variable_get('@temp_proxy').host
+      assert_nil Faraday.default_connection.instance_variable_get('@temp_proxy')
+    end
+  end
+
+  def test_ignore_env_proxy
+    with_env_proxy_disabled do
+      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+        conn = Faraday::Connection.new(proxy: nil)
+        assert_nil conn.proxy
+      end
     end
   end
 
