@@ -268,6 +268,48 @@ module Faraday
     end
   end
 
+  # @!attribute method
+  #   @return [Symbol] HTTP method (`:get`, `:post`)
+  #
+  # @!attribute body
+  #   @return [String] The request body that will eventually be converted to a string.
+  #
+  # @!attribute url
+  #   @return [URI] URI instance for the current request.
+  #
+  # @!attribute request
+  #   @return [Hash] options for configuring the request.
+  #   Options for configuring the request.
+  #
+  #   - `:timeout`  open/read timeout Integer in seconds
+  #   - `:open_timeout` - read timeout Integer in seconds
+  #   - `:on_data`      - Proc for streaming
+  #   - `:proxy`        - Hash of proxy options
+  #       - `:uri`        - Proxy Server URI
+  #       - `:user`       - Proxy server username
+  #       - `:password`   - Proxy server password
+  #
+  # @!attribute request_headers
+  #   @return [Hash] HTTP Headers to be sent to the server.
+  #
+  # @!attribute ssl
+  #   @return [Hash] options for configuring SSL requests
+  #
+  # @!attribute parallel_manager
+  #   @return [Object] sent if the connection is in parallel mode
+  #
+  # @!attribute params
+  #
+  # @!attribute response
+  #
+  # @!attribute response_headers
+  #   @return [Hash] HTTP headers from the server
+  #
+  # @!attribute status
+  #   @return [Integer] HTTP response status code
+  #
+  # @!attribute reason_phrase
+  #   @return [String]
   class Env < Options.new(:method, :body, :url, :request, :request_headers,
     :ssl, :parallel_manager, :params, :response, :response_headers, :status,
     :reason_phrase)
@@ -287,7 +329,10 @@ module Faraday
 
     def_delegators :request, :params_encoder
 
-    # Public
+    # Build a new Env from given value. Respects and updates `custom_members`.
+    #
+    # @param value [Object] a value fitting Option.from(v).
+    # @return [Env] from given value
     def self.from(value)
       env = super(value)
       if value.respond_to?(:custom_members)
@@ -296,7 +341,7 @@ module Faraday
       env
     end
 
-    # Public
+    # @param key [Object]
     def [](key)
       if in_member_set?(key)
         super(key)
@@ -305,7 +350,8 @@ module Faraday
       end
     end
 
-    # Public
+    # @param key [Object]
+    # @param value [Object]
     def []=(key, value)
       if in_member_set?(key)
         super(key, value)
@@ -314,28 +360,29 @@ module Faraday
       end
     end
 
-    # Public
+    # @return [Boolean] true if status is in the set of {SuccessfulStatuses}.
     def success?
       SuccessfulStatuses.include?(status)
     end
 
-    # Public
+    # @return [Boolean] true if there's no body yet, and the method is in the set of {MethodsWithBodies}.
     def needs_body?
       !body && MethodsWithBodies.include?(method)
     end
 
-    # Public
+    # Sets content length to zero and the body to the empty string.
+    # @return [void]
     def clear_body
       request_headers[ContentLength] = '0'
       self.body = ''
     end
 
-    # Public
+    # @return [Boolean] true if the status isn't in the set of {StatusesWithoutBody}.
     def parse_body?
       !StatusesWithoutBody.include?(status)
     end
 
-    # Public
+    # @return [Boolean] true if there is a parallel_manager
     def parallel?
       !!parallel_manager
     end
@@ -353,12 +400,12 @@ module Faraday
       %(#<#{self.class}#{attrs.join(" ")}>)
     end
 
-    # Internal
+    # @private
     def custom_members
       @custom_members ||= {}
     end
 
-    # Internal
+    # @private
     if members.first.is_a?(Symbol)
       def in_member_set?(key)
         self.class.member_set.include?(key.to_sym)
