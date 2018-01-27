@@ -22,6 +22,7 @@ group :test do
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 1.3', :require => 'typhoeus'
+  gem 'rspec', '~> 3.7'
 end
 
 gemspec

@@ -7,9 +7,9 @@ pkg/*
 tmp
 .rvmrc
 .ruby-version
+.yardoc
 
 ## BUNDLER
-bin
 *.gem
 .bundle
 Gemfile.lock
