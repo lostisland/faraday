@@ -299,8 +299,10 @@ module Faraday
   #   @return [Object] sent if the connection is in parallel mode
   #
   # @!attribute params
+  #   @return [Hash]
   #
   # @!attribute response
+  #   @return [Response]
   #
   # @!attribute response_headers
   #   @return [Hash] HTTP headers from the server
@@ -371,7 +373,6 @@ module Faraday
     end
 
     # Sets content length to zero and the body to the empty string.
-    # @return [void]
     def clear_body
       request_headers[ContentLength] = '0'
       self.body = ''
@@ -416,7 +417,7 @@ module Faraday
       end
     end
 
-    # Internal
+    # @private
     def self.member_set
       @member_set ||= Set.new(members)
     end
