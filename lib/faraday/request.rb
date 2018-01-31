@@ -11,17 +11,17 @@ module Faraday
   #   end
   #
   # @!attribute method
-  #   @return [String] the HTTP method of the Request
+  #   @return [Symbol] the HTTP method of the Request
   # @!attribute path
   #   @return [URI, String] the path
   # @!attribute params
-  #   @return [Object] query parameters
+  #   @return [Hash] query parameters
   # @!attribute headers
-  #   @return [Object] headers
+  #   @return [Faraday::Utils::Headers] headers
   # @!attribute body
-  #   @return [Object] body
+  #   @return [Hash] body
   # @!attribute options
-  #   @return [Object] options
+  #   @return [RequestOptions] options
   class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
     extend MiddlewareRegistry
 
