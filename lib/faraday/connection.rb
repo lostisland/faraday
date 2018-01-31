@@ -40,7 +40,7 @@ module Faraday
     attr_writer :default_parallel_manager
 
     # Public: Gets or Sets the Hash proxy options.
-    # attr_reader :proxy
+    attr_reader :proxy
 
     # Public: Initializes a new Faraday::Connection.
     #
@@ -273,14 +273,6 @@ module Faraday
       @parallel_manager && @parallel_manager.run
     ensure
       @parallel_manager = nil
-    end
-
-    # Public: Gets or Sets the Hash proxy options.
-    def proxy(arg = nil)
-      return @proxy if arg.nil?
-      warn 'Warning: use of proxy(new_value) to set connection proxy have been DEPRECATED and will be removed in Faraday 1.0'
-      @manual_proxy = true
-      @proxy = ProxyOptions.from(arg)
     end
 
     # Public: Sets the Hash proxy options.
