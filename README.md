@@ -15,15 +15,15 @@ Faraday supports these adapters out of the box:
 
 * [Net::HTTP][net_http] _(default)_
 * [Net::HTTP::Persistent][persistent]
-* [Excon][]
-* [Patron][]
-* [EventMachine][]
-* [HTTPClient][]
+* [Excon][excon]
+* [Patron][patron]
+* [EventMachine][eventmachine]
+* [HTTPClient][httpclient]
 
 Adapters are slowly being moved into their own gems, or bundled with HTTP clients.
 Here is the list of known external adapters:
 
-* [Typhoeus][]
+* [Typhoeus][typhoeus]
 
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
