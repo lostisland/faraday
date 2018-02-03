@@ -1,6 +1,5 @@
 module Faraday
   class Error < StandardError; end
-  class MissingDependency < Error; end
 
   class ClientError < Error
     attr_reader :response, :wrapped_exception
@@ -56,7 +55,7 @@ module Faraday
   class SSLError < ClientError
   end
 
-  [:MissingDependency, :ClientError, :ConnectionFailed, :ResourceNotFound,
+  [:ClientError, :ConnectionFailed, :ResourceNotFound,
    :ParsingError, :TimeoutError, :SSLError].each do |const|
     Error.const_set(const, Faraday.const_get(const))
   end
