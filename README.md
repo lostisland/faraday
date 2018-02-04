@@ -69,7 +69,7 @@ conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
 end
 ```
 
-Once you have the connection object, use it to make HTTP requests. You can pass paramters to it in a few different ways:
+Once you have the connection object, use it to make HTTP requests. You can pass parameters to it in a few different ways:
 
 ```ruby
 ## GET ##
