@@ -7,6 +7,11 @@ module Faraday
       def_delegators :'Faraday::Utils', :escape, :unescape
     end
 
+    # @param params [nil, Array, #to_hash] parameters to be encoded
+    #
+    # @return [String] the encoded params
+    #
+    # @raise [TypeError] if params can not be converted to a Hash
     def self.encode(params)
       return nil if params == nil
 
@@ -63,6 +68,11 @@ module Faraday
       return buffer.chop
     end
 
+    # @param query [nil, String]
+    #
+    # @raise [TypeError] if the nesting is incorrect
+    #
+    # @return [Array<Array, String>] the decoded params
     def self.decode(query)
       return nil if query == nil
 
@@ -114,6 +124,7 @@ module Faraday
 
     # Internal: convert a nested hash with purely numeric keys into an array.
     # FIXME: this is not compatible with Rack::Utils.parse_nested_query
+    # @!visibility private
     def self.dehash(hash, depth)
       hash.each do |key, value|
         hash[key] = dehash(value, depth + 1) if value.kind_of?(Hash)
