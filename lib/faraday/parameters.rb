@@ -73,9 +73,9 @@ module Faraday
 
     # @param query [nil, String]
     #
-    # @raise [TypeError] if the nesting is incorrect
-    #
     # @return [Array<Array, String>] the decoded params
+    #
+    # @raise [TypeError] if the nesting is incorrect
     def self.decode(query)
       return nil if query == nil
 
