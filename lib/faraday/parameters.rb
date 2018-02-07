@@ -1,6 +1,9 @@
 require "forwardable"
 
 module Faraday
+  # This is the default encoder for Faraday requests.
+  # Using this encoder, parameters will be encoded respecting their structure,
+  # so you can send objects such as Arrays or Hashes as parameters for your requests.
   module NestedParamsEncoder
     class << self
       extend Forwardable
