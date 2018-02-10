@@ -1,6 +1,7 @@
 module Faraday
-  # Used to setup urls, params, headers, and the request body in a sane manner.
+  # Used to setup URLs, params, headers, and the request body in a sane manner.
   #
+  # @example
   #   @connection.post do |req|
   #     req.url 'http://localhost', 'a' => '1' # 'http://localhost?a=1'
   #     req.headers['b'] = '2' # Header
@@ -9,6 +10,18 @@ module Faraday
   #     req.body = 'abc'
   #   end
   #
+  # @!attribute method
+  #   @return [Symbol] the HTTP method of the Request
+  # @!attribute path
+  #   @return [URI, String] the path
+  # @!attribute params
+  #   @return [Hash] query parameters
+  # @!attribute headers
+  #   @return [Faraday::Utils::Headers] headers
+  # @!attribute body
+  #   @return [Hash] body
+  # @!attribute options
+  #   @return [RequestOptions] options
   class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
     extend MiddlewareRegistry
 
@@ -21,13 +34,19 @@ module Faraday
       :token_auth => [:TokenAuthentication, 'token_authentication'],
       :instrumentation => [:Instrumentation, 'instrumentation']
 
+    # @param request_method [String]
+    # @yield [request] for block customization, if block given
+    # @yieldparam request [Request]
+    # @return [Request]
     def self.create(request_method)
       new(request_method).tap do |request|
         yield(request) if block_given?
       end
     end
 
-    # Public: Replace params, preserving the existing hash type
+    # Replace params, preserving the existing hash type.
+    #
+    # @param hash [Hash] new params
     def params=(hash)
       if params
         params.replace hash
@@ -36,7 +55,9 @@ module Faraday
       end
     end
 
-    # Public: Replace request headers, preserving the existing hash type
+    # Replace request headers, preserving the existing hash type.
+    #
+    # @param hash [Hash] new headers
     def headers=(hash)
       if headers
         headers.replace hash
@@ -45,6 +66,11 @@ module Faraday
       end
     end
 
+    # Update path and params.
+    #
+    # @param path [URI, String]
+    # @param params [Hash, nil]
+    # @return [void]
     def url(path, params = nil)
       if path.respond_to? :query
         if query = path.query
@@ -61,31 +87,19 @@ module Faraday
       self.params.update(params) if params
     end
 
+    # @param key [Object] key to look up in headers
+    # @return [Object] value of the given header name
     def [](key)
       headers[key]
     end
 
+    # @param key [Object] key of header to write
+    # @param value [Object] value of header
     def []=(key, value)
       headers[key] = value
     end
 
-    # ENV Keys
-    # :method - a symbolized request method (:get, :post)
-    # :body   - the request body that will eventually be converted to a string.
-    # :url    - URI instance for the current request.
-    # :status           - HTTP response status code
-    # :request_headers  - hash of HTTP Headers to be sent to the server
-    # :response_headers - Hash of HTTP headers from the server
-    # :parallel_manager - sent if the connection is in parallel mode
-    # :request - Hash of options for configuring the request.
-    #   :timeout      - open/read timeout Integer in seconds
-    #   :open_timeout - read timeout Integer in seconds
-    #   :on_data      - Proc for streaming
-    #   :proxy        - Hash of proxy options
-    #     :uri        - Proxy Server URI
-    #     :user       - Proxy server username
-    #     :password   - Proxy server password
-    # :ssl - Hash of options for configuring SSL requests.
+    # @return [Env] the Env for this Request
     def to_env(connection)
       Env.new(method, body, connection.build_exclusive_url(path, params),
         options, headers, connection.ssl, connection.parallel_manager)

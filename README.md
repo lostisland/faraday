@@ -15,15 +15,15 @@ Faraday supports these adapters out of the box:
 
 * [Net::HTTP][net_http] _(default)_
 * [Net::HTTP::Persistent][persistent]
-* [Excon][]
-* [Patron][]
-* [EventMachine][]
-* [HTTPClient][]
+* [Excon][excon]
+* [Patron][patron]
+* [EventMachine][eventmachine]
+* [HTTPClient][httpclient]
 
 Adapters are slowly being moved into their own gems, or bundled with HTTP clients.
 Here is the list of known external adapters:
 
-* [Typhoeus][]
+* [Typhoeus][typhoeus]
 
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
@@ -70,7 +70,7 @@ conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
 end
 ```
 
-Once you have the connection object, use it to make HTTP requests. You can pass paramters to it in a few different ways:
+Once you have the connection object, use it to make HTTP requests. You can pass parameters to it in a few different ways:
 
 ```ruby
 ## GET ##
