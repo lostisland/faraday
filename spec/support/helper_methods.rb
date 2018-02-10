@@ -13,5 +13,15 @@ module Faraday
         Faraday::Utils.default_uri_parser = old_parser
       end
     end
+
+    def capture_warnings
+      old, $stderr = $stderr, StringIO.new
+      begin
+        yield
+        $stderr.string
+      ensure
+        $stderr = old
+      end
+    end
   end
 end

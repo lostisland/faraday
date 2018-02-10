@@ -18,17 +18,6 @@ RSpec.describe Faraday::Utils do
   describe 'URI parsing' do
     let(:url) { "http://example.com/abc" }
 
-    # emulates ActiveSupport::SafeBuffer#gsub
-    FakeSafeBuffer = Struct.new(:string) do
-      def to_s; self end
-      def gsub(regex)
-        string.gsub(regex) {
-          match, = $&, '' =~ /a/
-          yield(match)
-        }
-      end
-    end
-
     it 'escapes safe buffer' do
       str = FakeSafeBuffer.new('$32,000.00')
       expect(Faraday::Utils.escape(str)).to eq('%2432%2C000.00')
