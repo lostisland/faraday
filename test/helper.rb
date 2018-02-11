@@ -6,7 +6,7 @@ SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, Coveralls::SimpleCo
 SimpleCov.start do
   add_filter '/bundle/'
   add_filter '/test/'
-  minimum_coverage(87)
+  # minimum_coverage(87)
 end
 
 gem 'minitest' if defined? Bundler
