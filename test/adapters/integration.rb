@@ -156,46 +156,6 @@ module Adapters
       extend Forwardable
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
 
-      def test_GET_retrieves_the_response_body
-        assert_equal 'get', get('echo').body
-      end
-
-      def test_GET_send_url_encoded_params
-        assert_equal %(get ?{"name"=>"zack"}), get('echo', :name => 'zack').body
-      end
-
-      def test_GET_retrieves_the_response_headers
-        response = get('echo')
-        assert_match(/text\/plain/, response.headers['Content-Type'], 'original case fail')
-        assert_match(/text\/plain/, response.headers['content-type'], 'lowercase fail')
-      end
-
-      def test_GET_handles_headers_with_multiple_values
-        assert_equal 'one, two', get('multi').headers['set-cookie']
-      end
-
-      def test_GET_with_body
-        response = get('echo') do |req|
-          req.body = {'bodyrock' => true}
-        end
-        assert_equal %(get {"bodyrock"=>"true"}), response.body
-      end
-
-      def test_GET_sends_user_agent
-        response = get('echo_header', {:name => 'user-agent'}, :user_agent => 'Agent Faraday')
-        assert_equal 'Agent Faraday', response.body
-      end
-
-      def test_GET_ssl
-        expected = self.class.ssl_mode?.to_s
-        assert_equal expected, get('ssl').body
-      end
-
-      def test_GET_reason_phrase
-        response = get('echo')
-        assert_equal "OK", response.reason_phrase
-      end
-
       def test_POST_send_url_encoded_params
         assert_equal %(post {"name"=>"zack"}), post('echo', :name => 'zack').body
       end

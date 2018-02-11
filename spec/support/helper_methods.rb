@@ -1,5 +1,9 @@
 module Faraday
   module HelperMethods
+    def ssl_mode?
+      ENV['SSL'] == 'yes'
+    end
+
     def normalize(url)
       Faraday::Utils::URI(url)
     end
