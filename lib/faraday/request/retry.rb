@@ -23,7 +23,7 @@ module Faraday
     IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
 
     class Options < Faraday::Options.new(:max, :interval, :max_interval, :interval_randomness,
-                                         :backoff_factor, :exceptions, :methods, :retry_if)
+                                         :backoff_factor, :exceptions, :methods, :retry_if, :retry_block)
       DEFAULT_CHECK = lambda { |env,exception| false }
 
       def self.from(value)
@@ -67,6 +67,10 @@ module Faraday
         self[:retry_if] ||= DEFAULT_CHECK
       end
 
+      def retry_block
+        self[:retry_block] ||= Proc.new {}
+      end
+
     end
 
     # Public: Initialize middleware
@@ -94,6 +98,8 @@ module Faraday
     #                       if the exception produced is non-recoverable or if the
     #                       the HTTP method called is not idempotent.
     #                       (defaults to return false)
+    # retry_block         - block that is executed after every retry. Request environment, middleware options,
+    #                       current number of retries and the exception is passed to the block as parameters.
     def initialize(app, options = nil)
       super(app)
       @options = Options.from(options)
@@ -118,6 +124,7 @@ module Faraday
         if retries > 0 && retry_request?(env, exception)
           retries -= 1
           rewind_files(request_body)
+          @options.retry_block.call(env, @options, retries, exception)
           sleep sleep_amount(retries + 1)
           retry
         end
