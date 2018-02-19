@@ -23,7 +23,9 @@ module Faraday
     IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
 
     class Options < Faraday::Options.new(:max, :interval, :max_interval, :interval_randomness,
-                                         :backoff_factor, :exceptions, :methods, :retry_if, :retry_block)
+                                         :backoff_factor, :exceptions, :methods, :retry_if, :retry_block,
+                                         :retry_statuses)
+
       DEFAULT_CHECK = lambda { |env,exception| false }
 
       def self.from(value)
@@ -56,7 +58,8 @@ module Faraday
 
       def exceptions
         Array(self[:exceptions] ||= [Errno::ETIMEDOUT, 'Timeout::Error',
-                                     Error::TimeoutError])
+                                     Error::TimeoutError,
+                                     Faraday::Error::RetriableResponse])
       end
 
       def methods
@@ -71,6 +74,9 @@ module Faraday
         self[:retry_block] ||= Proc.new {}
       end
 
+      def retry_statuses
+        Array(self[:retry_statuses] ||= [])
+      end
     end
 
     # Public: Initialize middleware
@@ -106,12 +112,13 @@ module Faraday
       @errmatch = build_exception_matcher(@options.exceptions)
     end
 
-    def sleep_amount(retries)
-      retry_index = @options.max - retries
-      current_interval = @options.interval * (@options.backoff_factor ** retry_index)
-      current_interval = [current_interval, @options.max_interval].min
-      random_interval  = rand * @options.interval_randomness.to_f * @options.interval
-      current_interval + random_interval
+    def calculate_sleep_amount(retries, env)
+      retry_after     = calculate_retry_after(env)
+      retry_interval  = calculate_retry_interval(retries)
+
+      return if retry_after && retry_after > @options.max_interval
+
+      retry_after && retry_after >= retry_interval ? retry_after : retry_interval
     end
 
     def call(env)
@@ -119,16 +126,21 @@ module Faraday
       request_body = env[:body]
       begin
         env[:body] = request_body # after failure env[:body] is set to the response body
-        @app.call(env)
+        @app.call(env).tap do |resp|
+          raise Faraday::Error::RetriableResponse.new(nil, resp) if @options.retry_statuses.include?(resp.status)
+        end
       rescue @errmatch => exception
         if retries > 0 && retry_request?(env, exception)
           retries -= 1
           rewind_files(request_body)
           @options.retry_block.call(env, @options, retries, exception)
-          sleep sleep_amount(retries + 1)
-          retry
+          if (sleep_amount = calculate_sleep_amount(retries + 1, env))
+            sleep sleep_amount
+            retry
+          end
         end
-        raise
+
+        raise unless exception.is_a?(Faraday::Error::RetriableResponse)
       end
     end
 
@@ -167,5 +179,29 @@ module Faraday
       end
     end
 
+    # MDN spec for Retry-After header: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
+    def calculate_retry_after(env)
+      response_headers = env[:response_headers]
+      return unless response_headers
+
+      retry_after_value = env[:response_headers]["Retry-After"]
+
+      # Try to parse date from the header value
+      begin
+        datetime = DateTime.rfc2822(retry_after_value)
+        datetime.to_time - Time.now.utc
+      rescue ArgumentError
+        retry_after_value.to_f
+      end
+    end
+
+    def calculate_retry_interval(retries)
+      retry_index = @options.max - retries
+      current_interval = @options.interval * (@options.backoff_factor ** retry_index)
+      current_interval = [current_interval, @options.max_interval].min
+      random_interval  = rand * @options.interval_randomness.to_f * @options.interval
+
+      current_interval + random_interval
+    end
   end
 end
