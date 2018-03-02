@@ -55,7 +55,7 @@ module Faraday
       end
 
       # The params have form [['key1', 'value1'], ['key2', 'value2']].
-      buffer = ''
+      buffer = String.new('')
       params.each do |parent, value|
         encoded_parent = escape(parent)
         buffer << "#{to_query.call(encoded_parent, value)}&"
