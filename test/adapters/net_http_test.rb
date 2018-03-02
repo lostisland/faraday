@@ -16,7 +16,7 @@ module Adapters
       url.port = nil
 
       adapter = Faraday::Adapter::NetHttp.new
-      http = adapter.net_http_connection(:url => url, :request => {})
+      http = adapter.send(:net_http_connection, :url => url, :request => {})
 
       assert_equal 80, http.port
     end
@@ -26,7 +26,7 @@ module Adapters
       url.port = nil
 
       adapter = Faraday::Adapter::NetHttp.new
-      http = adapter.net_http_connection(:url => url, :request => {})
+      http = adapter.send(:net_http_connection, :url => url, :request => {})
 
       assert_equal 443, http.port
     end
@@ -35,7 +35,7 @@ module Adapters
       url = URI('https://example.com:1234')
 
       adapter = Faraday::Adapter::NetHttp.new
-      http = adapter.net_http_connection(:url => url, :request => {})
+      http = adapter.send(:net_http_connection, :url => url, :request => {})
 
       assert_equal 1234, http.port
     end
@@ -47,8 +47,8 @@ module Adapters
         http.continue_timeout = 123
       end
 
-      http = adapter.net_http_connection(:url => url, :request => {})
-      adapter.configure_request(http, {})
+      http = adapter.send(:net_http_connection, :url => url, :request => {})
+      adapter.send(:configure_request, http, {})
 
       assert_equal 123, http.continue_timeout
     end

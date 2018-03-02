@@ -26,10 +26,24 @@ module Adapters
         http.idle_timeout = 123
       end
 
-      http = adapter.net_http_connection(:url => url, :request => {})
-      adapter.configure_request(http, {})
+      http = adapter.send(:net_http_connection, :url => url, :request => {})
+      adapter.send(:configure_request, http, {})
 
       assert_equal 123, http.idle_timeout
+    end
+
+    def test_caches_connections
+      adapter = Faraday::Adapter::NetHttpPersistent.new
+      a = adapter.send(:net_http_connection, :url => URI('https://example.com:1234/foo'), :request => {})
+      b = adapter.send(:net_http_connection, :url => URI('https://example.com:1234/bar'), :request => {})
+      assert_equal a.object_id, b.object_id
+    end
+
+    def test_does_not_cache_connections_for_different_hosts
+      adapter = Faraday::Adapter::NetHttpPersistent.new
+      a = adapter.send(:net_http_connection, :url => URI('https://example.com:1234/foo'), :request => {})
+      b = adapter.send(:net_http_connection, :url => URI('https://example2.com:1234/bar'), :request => {})
+      refute_equal a.object_id, b.object_id
     end
   end
 end
