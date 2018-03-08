@@ -1,4 +1,4 @@
-shared_examples 'an adapter' do |*features, **options|
+shared_examples 'an adapter' do |**options|
   let(:adapter) { described_class.name.split('::').last }
 
   let(:conn_options) { { headers: { 'X-Faraday-Adapter' => adapter } }.merge(options[:conn_options] || {}) }
@@ -61,11 +61,13 @@ shared_examples 'an adapter' do |*features, **options|
       expect(response.headers['set-cookie']).to eq('one, two')
     end
 
-    it 'with body' do
-      body = { bodyrock: 'true' }
-      request_stub.with(body: body)
-      conn.get('/') do |req|
-        req.body = body
+    on_feature :body_on_get do
+      it 'with body' do
+        body = { bodyrock: 'true' }
+        request_stub.with(body: body)
+        conn.get('/') do |req|
+          req.body = body
+        end
       end
     end
 
@@ -74,10 +76,12 @@ shared_examples 'an adapter' do |*features, **options|
       conn.get('/', nil, user_agent: 'Agent Faraday')
     end
 
-    it 'parses the reason phrase' do
-      request_stub.to_return(status: [200, 'OK'])
-      response = conn.get('/')
-      expect(response.reason_phrase).to eq('OK')
+    on_feature :reason_phrase_parse do
+      it 'parses the reason phrase' do
+        request_stub.to_return(status: [200, 'OK'])
+        response = conn.get('/')
+        expect(response.reason_phrase).to eq('OK')
+      end
     end
   end
 end

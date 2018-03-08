@@ -1,5 +1,23 @@
 module Faraday
   module HelperMethods
+    def self.included(base)
+      base.extend ClassMethods
+    end
+
+    module ClassMethods
+      def features(*features)
+        @features = features
+      end
+
+      def on_feature(name, &block)
+        if @features.nil?
+          superclass.on_feature(name, &block) if superclass.respond_to?(:on_feature)
+        else
+          yield if block_given? and @features.include?(name)
+        end
+      end
+    end
+
     def ssl_mode?
       ENV['SSL'] == 'yes'
     end
