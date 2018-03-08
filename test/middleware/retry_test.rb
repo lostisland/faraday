@@ -10,6 +10,7 @@ module Middleware
     def conn(*retry_args)
       Faraday.new do |b|
         b.request :retry, *retry_args
+
         b.adapter :test do |stub|
           ['get', 'post'].each do |method|
             stub.send(method, '/unstable') do |env|
@@ -17,6 +18,22 @@ module Middleware
               @envs << env.dup
               env[:body] = nil # simulate blanking out response body
               @explode.call @times_called
+            end
+
+            stub.send(method, '/throttled') do |env|
+              @times_called += 1
+              @envs << env.dup
+
+              params = env[:params]
+
+              status = (params['status'] || 429).to_i
+              headers = {}
+
+              retry_after = params['retry_after']
+
+              headers['Retry-After'] = retry_after if retry_after
+
+              [status, headers, '']
             end
           end
         end
@@ -68,7 +85,7 @@ module Middleware
       assert_in_delta 0.2, Time.now - started, 0.04
     end
 
-    def test_calls_sleep_amount
+    def test_calls_calculate_sleep_amount
       explode_app = MiniTest::Mock.new
       explode_app.expect(:call, nil, [{:body=>nil}])
       def explode_app.call(env)
@@ -79,7 +96,7 @@ module Middleware
       class << retry_middleware
         attr_accessor :sleep_amount_retries
 
-        def sleep_amount(retries)
+        def calculate_sleep_amount(retries, env)
           self.sleep_amount_retries.delete(retries)
           0
         end
@@ -95,30 +112,30 @@ module Middleware
 
     def test_exponential_backoff
       middleware = Faraday::Request::Retry.new(nil, :max => 5, :interval => 0.1, :backoff_factor => 2)
-      assert_equal middleware.sleep_amount(5), 0.1
-      assert_equal middleware.sleep_amount(4), 0.2
-      assert_equal middleware.sleep_amount(3), 0.4
+      assert_equal middleware.send(:calculate_retry_interval, 5), 0.1
+      assert_equal middleware.send(:calculate_retry_interval, 4), 0.2
+      assert_equal middleware.send(:calculate_retry_interval, 3), 0.4
     end
 
     def test_exponential_backoff_with_max_interval
       middleware = Faraday::Request::Retry.new(nil, :max => 5, :interval => 1, :max_interval => 3, :backoff_factor => 2)
-      assert_equal middleware.sleep_amount(5), 1
-      assert_equal middleware.sleep_amount(4), 2
-      assert_equal middleware.sleep_amount(3), 3
-      assert_equal middleware.sleep_amount(2), 3
+      assert_equal middleware.send(:calculate_retry_interval, 5), 1
+      assert_equal middleware.send(:calculate_retry_interval, 4), 2
+      assert_equal middleware.send(:calculate_retry_interval, 3), 3
+      assert_equal middleware.send(:calculate_retry_interval, 2), 3
     end
 
     def test_random_additional_interval_amount
       middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 1.0)
-      sleep_amount = middleware.sleep_amount(2)
+      sleep_amount = middleware.send(:calculate_retry_interval, 2)
       assert_operator sleep_amount, :>=, 0.1
       assert_operator sleep_amount, :<=, 0.2
       middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 0.5)
-      sleep_amount = middleware.sleep_amount(2)
+      sleep_amount = middleware.send(:calculate_retry_interval, 2)
       assert_operator sleep_amount, :>=, 0.1
       assert_operator sleep_amount, :<=, 0.15
       middleware = Faraday::Request::Retry.new(nil, :max => 2, :interval => 0.1, :interval_randomness => 0.25)
-      sleep_amount = middleware.sleep_amount(2)
+      sleep_amount = middleware.send(:calculate_retry_interval, 2)
       assert_operator sleep_amount, :>=, 0.1
       assert_operator sleep_amount, :<=, 0.125
     end
@@ -211,6 +228,54 @@ module Middleware
       end
       assert_equal 3, @times_called
       assert_equal 2, rewound
+    end
+
+    def test_should_retry_retriable_response
+      params = { status: 429 }
+      conn(:max => 1, :retry_statuses => 429).get("/throttled", params)
+
+      assert_equal 2, @times_called
+    end
+
+    def test_should_not_retry_non_retriable_response
+      params = { status: 503 }
+      conn(:max => 1, :retry_statuses => 429).get("/throttled", params)
+
+      assert_equal 1, @times_called
+    end
+
+    def test_interval_if_retry_after_present
+      started = Time.now
+
+      params = { :retry_after => 0.5 }
+      conn(:max => 1, :interval => 0.1, :retry_statuses => [429]).get("/throttled", params)
+
+      assert Time.now - started > 0.5
+    end
+
+    def test_should_ignore_retry_after_if_less_then_calculated
+      started = Time.now
+
+      params = { :retry_after => 0.1 }
+      conn(:max => 1, :interval => 0.2, :retry_statuses => [429]).get("/throttled", params)
+
+      assert Time.now - started > 0.2
+    end
+
+    def test_interval_when_retry_after_is_timestamp
+      started = Time.now
+
+      params = { :retry_after => (Time.now.utc + 2).strftime('%a, %d %b %Y %H:%M:%S GMT') }
+      conn(:max => 1, :interval => 0.1, :retry_statuses => [429]).get("/throttled", params)
+
+      assert Time.now - started > 1
+    end
+
+    def test_should_not_retry_when_retry_after_greater_then_max_interval
+      params = { :retry_after => (Time.now.utc + 20).strftime('%a, %d %b %Y %H:%M:%S GMT') }
+      conn(:max => 2, :interval => 0.1, :retry_statuses => [429], max_interval: 5).get("/throttled", params)
+
+      assert_equal 1, @times_called
     end
   end
 end
