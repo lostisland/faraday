@@ -132,7 +132,7 @@ module Faraday
     #   <verb>(url = nil, params = nil, headers = nil)
     #
     # verb - An HTTP verb: get, head, or delete.
-    %w[get head delete].each do |method|
+    METHODS_WITH_QUERY.each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, params = nil, headers = nil)
           run_request(:#{method}, url, nil, headers) { |request|
@@ -169,7 +169,7 @@ module Faraday
     #   <verb>(url = nil, body = nil, headers = nil)
     #
     # verb - An HTTP verb: post, put, or patch.
-    %w[post put patch].each do |method|
+    METHODS_WITH_BODY.each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, body = nil, headers = nil, &block)
           run_request(:#{method}, url, body, headers, &block)

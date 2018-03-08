@@ -36,30 +36,7 @@ shared_examples 'an adapter' do |**options|
   describe '#get' do
     let(:http_method) { :get }
 
-    it 'retrieves the response body' do
-      res_body = 'test'
-      request_stub.to_return(body: res_body)
-      expect(conn.get('/').body).to eq(res_body)
-    end
-
-    it 'sends url encoded parameters' do
-      query = { name: 'zack' }
-      request_stub.with(query: query)
-      conn.get('/', query)
-    end
-
-    it 'retrieves the response headers' do
-      request_stub.to_return(headers: { 'Content-Type' => 'text/plain' })
-      response = conn.get('/')
-      expect(response.headers['Content-Type']).to match(/text\/plain/)
-      expect(response.headers['content-type']).to match(/text\/plain/)
-    end
-
-    it 'handles headers with multiple values' do
-      request_stub.to_return(headers: { 'Set-Cookie' => 'one, two' })
-      response = conn.get('/')
-      expect(response.headers['set-cookie']).to eq('one, two')
-    end
+    it_behaves_like 'a request method', multipart_support: false
 
     on_feature :body_on_get do
       it 'with body' do
@@ -70,51 +47,17 @@ shared_examples 'an adapter' do |**options|
         end
       end
     end
-
-    it 'sends user agent' do
-      request_stub.with(headers: { 'User-Agent' => 'Agent Faraday' })
-      conn.get('/', nil, user_agent: 'Agent Faraday')
-    end
-
-    on_feature :reason_phrase_parse do
-      it 'parses the reason phrase' do
-        request_stub.to_return(status: [200, 'OK'])
-        response = conn.get('/')
-        expect(response.reason_phrase).to eq('OK')
-      end
-    end
   end
 
   describe '#post' do
     let(:http_method) { :post }
 
-    it 'sends url encoded parameters' do
-      body = { name: 'zack' }
-      request_stub.with(body: body)
-      conn.post('/', body)
-    end
+    it_behaves_like 'a request method'
+  end
 
-    it 'sends url encoded nested parameters' do
-      body = { name: { first: 'zack' } }
-      request_stub.with(body: body)
-      conn.post('/', body)
-    end
+  describe '#put' do
+    let(:http_method) { :put }
 
-    it 'retrieves the response headers' do
-      request_stub.to_return(headers: { 'Content-Type' => 'text/plain' })
-      response = conn.post('/')
-      expect(response.headers['Content-Type']).to match(/text\/plain/)
-      expect(response.headers['content-type']).to match(/text\/plain/)
-    end
-
-    it 'sends files' do
-      body = { uploaded_file: multipart_file }
-      request_stub.with(headers: { "Content-Type" => %r[\Amultipart/form-data] }) do |request|
-        # WebMock does not support matching body for multipart/form-data requests yet :(
-        # https://github.com/bblimke/webmock/issues/623
-        request.body =~ %r[RubyMultipartPost]
-      end
-      conn.post('/', body)
-    end
+    it_behaves_like 'a request method'
   end
 end

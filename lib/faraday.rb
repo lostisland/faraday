@@ -17,6 +17,8 @@ require 'forwardable'
 #
 module Faraday
   VERSION = "0.14.0"
+  METHODS_WITH_QUERY = %w[get head delete]
+  METHODS_WITH_BODY = %w[post put patch]
 
   class << self
     # The root path that Faraday is being loaded from.

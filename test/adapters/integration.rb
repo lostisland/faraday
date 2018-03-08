@@ -156,19 +156,6 @@ module Adapters
       extend Forwardable
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
 
-      def test_PUT_send_url_encoded_params
-        assert_equal %(put {"name"=>"zack"}), put('echo', :name => 'zack').body
-      end
-
-      def test_PUT_send_url_encoded_nested_params
-        resp = put('echo', 'name' => {'first' => 'zack'})
-        assert_equal %(put {"name"=>{"first"=>"zack"}}), resp.body
-      end
-
-      def test_PUT_retrieves_the_response_headers
-        assert_match(/text\/plain/, put('echo').headers['content-type'])
-      end
-
       def test_PATCH_send_url_encoded_params
         assert_equal %(patch {"name"=>"zack"}), patch('echo', :name => 'zack').body
       end

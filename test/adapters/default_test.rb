@@ -7,7 +7,7 @@ module Adapters
 
     Integration.apply(self, :NonParallel, :Streaming) do
       # default stack is not configured with Multipart
-      undef :test_POST_sends_files
+      # undef :test_POST_sends_files
     end
 
   end
