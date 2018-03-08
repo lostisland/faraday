@@ -84,4 +84,37 @@ shared_examples 'an adapter' do |**options|
       end
     end
   end
+
+  describe '#post' do
+    let(:http_method) { :post }
+
+    it 'sends url encoded parameters' do
+      body = { name: 'zack' }
+      request_stub.with(body: body)
+      conn.post('/', body)
+    end
+
+    it 'sends url encoded nested parameters' do
+      body = { name: { first: 'zack' } }
+      request_stub.with(body: body)
+      conn.post('/', body)
+    end
+
+    it 'retrieves the response headers' do
+      request_stub.to_return(headers: { 'Content-Type' => 'text/plain' })
+      response = conn.post('/')
+      expect(response.headers['Content-Type']).to match(/text\/plain/)
+      expect(response.headers['content-type']).to match(/text\/plain/)
+    end
+
+    it 'sends files' do
+      body = { uploaded_file: multipart_file }
+      request_stub.with(headers: { "Content-Type" => %r[\Amultipart/form-data] }) do |request|
+        # WebMock does not support matching body for multipart/form-data requests yet :(
+        # https://github.com/bblimke/webmock/issues/623
+        request.body =~ %r[RubyMultipartPost]
+      end
+      conn.post('/', body)
+    end
+  end
 end

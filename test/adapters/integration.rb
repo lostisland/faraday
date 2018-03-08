@@ -156,26 +156,6 @@ module Adapters
       extend Forwardable
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
 
-      def test_POST_send_url_encoded_params
-        assert_equal %(post {"name"=>"zack"}), post('echo', :name => 'zack').body
-      end
-
-      def test_POST_send_url_encoded_nested_params
-        resp = post('echo', 'name' => {'first' => 'zack'})
-        assert_equal %(post {"name"=>{"first"=>"zack"}}), resp.body
-      end
-
-      def test_POST_retrieves_the_response_headers
-        assert_match(/text\/plain/, post('echo').headers['content-type'])
-      end
-
-      def test_POST_sends_files
-        resp = post('file') do |req|
-          req.body = {'uploaded_file' => Faraday::UploadIO.new(__FILE__, 'text/x-ruby')}
-        end
-        assert_equal "file integration.rb text/x-ruby #{File.size(__FILE__)}", resp.body
-      end
-
       def test_PUT_send_url_encoded_params
         assert_equal %(put {"name"=>"zack"}), put('echo', :name => 'zack').body
       end

@@ -45,5 +45,9 @@ module Faraday
         $stderr = old
       end
     end
+
+    def multipart_file
+      Faraday::UploadIO.new(__FILE__, 'text/x-ruby')
+    end
   end
 end
