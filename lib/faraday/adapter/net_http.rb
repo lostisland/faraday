@@ -56,6 +56,8 @@ module Faraday
         raise Faraday::Error::TimeoutError, err
       end
 
+      private
+
       def create_request(env)
         request = Net::HTTPGenericRequest.new \
           env[:method].to_s.upcase,    # request method

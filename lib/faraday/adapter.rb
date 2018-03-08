@@ -40,6 +40,8 @@ module Faraday
       env.clear_body if env.needs_body?
     end
 
+    private
+
     def save_response(env, status, body, headers = nil, reason_phrase = nil)
       env.status = status
       env.body = body

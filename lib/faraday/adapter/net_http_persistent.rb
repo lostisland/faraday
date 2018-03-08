@@ -1,13 +1,23 @@
-# Rely on autoloading instead of explicit require; helps avoid the "already
-# initialized constant" warning on Ruby 1.8.7 when NetHttp is refereced below.
-# require 'faraday/adapter/net_http'
-
 module Faraday
   class Adapter
     class NetHttpPersistent < NetHttp
       dependency 'net/http/persistent'
 
+      private
+
       def net_http_connection(env)
+        proxy_uri = proxy_uri(env)
+
+        cached_connection env[:url], proxy_uri do
+          if Net::HTTP::Persistent.instance_method(:initialize).parameters.first == [:key, :name]
+            Net::HTTP::Persistent.new(name: 'Faraday', proxy: proxy_uri)
+          else
+            Net::HTTP::Persistent.new('Faraday', proxy_uri)
+          end
+        end
+      end
+
+      def proxy_uri(env)
         proxy_uri = nil
         if (proxy = env[:request][:proxy])
           proxy_uri = ::URI::HTTP === proxy[:uri] ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
@@ -18,12 +28,7 @@ module Faraday
             define_method(:password) { proxy[:password] }
           end if proxy[:user]
         end
-
-        if Net::HTTP::Persistent.instance_method(:initialize).parameters.first == [:key, :name]
-          Net::HTTP::Persistent.new(name: 'Faraday', proxy: proxy_uri)
-        else
-          Net::HTTP::Persistent.new('Faraday', proxy_uri)
-        end
+        proxy_uri
       end
 
       def perform_request(http, env)
@@ -48,6 +53,10 @@ module Faraday
         http.private_key  = ssl[:client_key]   if ssl[:client_key]
         http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
         http.ssl_version  = ssl[:version]      if ssl[:version]
+      end
+
+      def cached_connection(url, proxy_uri)
+        (@cached_connection ||= {})[[url.scheme, url.host, url.port, proxy_uri]] ||= yield
       end
     end
   end
