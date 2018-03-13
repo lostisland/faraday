@@ -19,7 +19,7 @@ shared_examples 'an adapter' do |**options|
     conn_options[:ssl]           ||= {}
     conn_options[:ssl][:ca_file] ||= ENV['SSL_FILE']
 
-    Faraday::Connection.new(remote, conn_options) do |conn|
+    Faraday.new(remote, conn_options) do |conn|
       conn.request :multipart
       conn.request :url_encoded
       conn.response :raise_error
@@ -29,8 +29,8 @@ shared_examples 'an adapter' do |**options|
 
   let(:request_stub) { stub_request(http_method, remote) }
 
-  after do
-    expect(request_stub).to have_been_requested
+  after do |example|
+    expect(request_stub).to have_been_requested unless example.skipped?
   end
 
   describe '#get' do
@@ -59,5 +59,11 @@ shared_examples 'an adapter' do |**options|
     let(:http_method) { :put }
 
     it_behaves_like 'a request method'
+  end
+
+  describe '#patch' do
+    let(:http_method) { :patch }
+
+    it_behaves_like 'a request method', multipart_support: false
   end
 end

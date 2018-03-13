@@ -1,4 +1,4 @@
-shared_examples 'a request method' do |multipart_support: true|
+shared_examples 'a request method' do
   let(:query_or_body) { method_with_body?(http_method) ? :body : :query }
 
   it 'retrieves the response body' do
@@ -14,12 +14,18 @@ shared_examples 'a request method' do |multipart_support: true|
   end
 
   it 'sends url encoded parameters' do
+    # Issue with Patron and PATCH body: https://github.com/toland/patron/issues/163
+    skip if described_class == Faraday::Adapter::Patron && http_method == :patch
+
     payload = { name: 'zack' }
     request_stub.with(Hash[query_or_body, payload])
     conn.public_send(http_method, '/', payload)
   end
 
   it 'sends url encoded nested parameters' do
+    # Issue with Patron and PATCH body: https://github.com/toland/patron/issues/163
+    skip if described_class == Faraday::Adapter::Patron && http_method == :patch
+
     payload = { name: { first: 'zack' } }
     request_stub.with(Hash[query_or_body, payload])
     conn.public_send(http_method, '/', payload)
@@ -38,6 +44,11 @@ shared_examples 'a request method' do |multipart_support: true|
   end
 
   it 'sends files' do
+    # Can't send files on get methods
+    skip if http_method == :get
+    # Issue with Patron and PATCH body: https://github.com/toland/patron/issues/163
+    skip if described_class == Faraday::Adapter::Patron && http_method == :patch
+
     payload = { uploaded_file: multipart_file }
     request_stub.with(headers: { "Content-Type" => %r[\Amultipart/form-data] }) do |request|
       # WebMock does not support matching body for multipart/form-data requests yet :(
@@ -45,7 +56,7 @@ shared_examples 'a request method' do |multipart_support: true|
       request.body =~ %r[RubyMultipartPost]
     end
     conn.public_send(http_method, '/', payload)
-  end if multipart_support
+  end
 
   on_feature :reason_phrase_parse do
     it 'parses the reason phrase' do

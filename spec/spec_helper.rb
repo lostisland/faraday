@@ -113,3 +113,14 @@ RSpec.configure do |config|
 
   config.include Faraday::HelperMethods
 end
+
+# Extends RSpec DocumentationFormatter to hide skipped tests.
+module FormatterOverrides
+  def example_pending(_)
+  end
+
+  def dump_pending(_)
+  end
+
+  RSpec::Core::Formatters::DocumentationFormatter.prepend self
+end
