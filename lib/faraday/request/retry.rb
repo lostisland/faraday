@@ -93,8 +93,8 @@ module Faraday
     #                       (default: 1)
     # exceptions          - The list of exceptions to handle. Exceptions can be
     #                       given as Class, Module, or String. (default:
-    #                       [Errno::ETIMEDOUT, Timeout::Error,
-    #                       Error::TimeoutError])
+    #                       [Errno::ETIMEDOUT, 'Timeout::Error',
+    #                       Error::TimeoutError, Faraday::Error::RetriableResponse])
     # methods             - A list of HTTP methods to retry without calling retry_if.  Pass
     #                       an empty Array to call retry_if for all exceptions.
     #                       (defaults to the idempotent HTTP methods in IDEMPOTENT_METHODS)
