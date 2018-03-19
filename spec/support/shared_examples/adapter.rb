@@ -27,16 +27,16 @@ shared_examples 'an adapter' do |**options|
     end
   end
 
-  let(:request_stub) { stub_request(http_method, remote) }
+  let!(:request_stub) { stub_request(http_method, remote) }
 
   after do |example|
-    expect(request_stub).to have_been_requested unless example.skipped?
+    expect(request_stub).to have_been_requested unless example.skipped? or request_stub.disabled?
   end
 
   describe '#get' do
     let(:http_method) { :get }
 
-    it_behaves_like 'a request method', multipart_support: false
+    it_behaves_like 'a request method'
 
     on_feature :body_on_get do
       it 'with body' do
@@ -61,9 +61,28 @@ shared_examples 'an adapter' do |**options|
     it_behaves_like 'a request method'
   end
 
+  describe '#delete' do
+    let(:http_method) { :delete }
+
+    it_behaves_like 'a request method'
+  end
+
   describe '#patch' do
     let(:http_method) { :patch }
 
-    it_behaves_like 'a request method', multipart_support: false
+    it_behaves_like 'a request method'
   end
+
+  describe '#head' do
+    let(:http_method) { :head }
+
+    it_behaves_like 'a request method'
+  end
+
+  # TODO: Enable after adding API for options method
+  # describe '#options' do
+  #   let(:http_method) { :options }
+  #
+  #   it_behaves_like 'a request method'
+  # end
 end

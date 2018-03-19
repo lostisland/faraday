@@ -44,8 +44,8 @@ shared_examples 'a request method' do
   end
 
   it 'sends files' do
-    # Can't send files on get methods
-    skip if http_method == :get
+    # Can't send files on get, head and delete methods
+    skip unless method_with_body?(http_method)
     # Issue with Patron and PATCH body: https://github.com/toland/patron/issues/163
     skip if described_class == Faraday::Adapter::Patron && http_method == :patch
 
@@ -57,6 +57,49 @@ shared_examples 'a request method' do
     end
     conn.public_send(http_method, '/', payload)
   end
+
+  # TODO: This needs reimplementation: see https://github.com/lostisland/faraday/issues/718
+  # it 'handles open timeout responses' do
+  #   request_stub.to_timeout
+  #   expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::Error::ConnectionFailed)
+  # end
+
+  it 'handles connection error' do
+    request_stub.disable
+    expect { conn.public_send(http_method, 'http://localhost:4') }.to raise_error(Faraday::Error::ConnectionFailed)
+  end
+
+  # TODO: Fix proxy tests
+  # it 'handles requests with proxy' do
+  #   conn_options[:proxy] = 'http://google.co.uk'
+  #   # stub_request(:get, 'http://example.com/')
+  #
+  #   # binding.pry
+  #   conn.public_send(http_method, '/')
+  #   # assert_equal 'get', res.body
+  #
+  #   # unless self.class.ssl_mode?
+  #   #   # proxy can't append "Via" header for HTTPS responses
+  #   #   assert_match(/:#{proxy_uri.port}$/, res['via'])
+  #   # end
+  # end
+  #
+  # it 'handles proxy failures' do
+  #   proxy_uri = URI(ENV['LIVE_PROXY'])
+  #   proxy_uri.password = 'WRONG'
+  #   conn = create_connection(:proxy => proxy_uri)
+  #
+  #   err = assert_raises Faraday::Error::ConnectionFailed do
+  #     conn.get '/echo'
+  #   end
+  #
+  #   unless self.class.ssl_mode? && (self.class.jruby? ||
+  #       adapter == :em_http || adapter == :em_synchrony)
+  #     # JRuby raises "End of file reached" which cannot be distinguished from a 407
+  #     # EM raises "connection closed by server" due to https://github.com/igrigorik/em-socksify/pull/19
+  #     assert_equal %{407 "Proxy Authentication Required "}, err.message
+  #   end
+  # end
 
   on_feature :reason_phrase_parse do
     it 'parses the reason phrase' do

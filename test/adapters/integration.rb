@@ -156,31 +156,7 @@ module Adapters
       extend Forwardable
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
 
-      def test_PATCH_send_url_encoded_params
-        assert_equal %(patch {"name"=>"zack"}), patch('echo', :name => 'zack').body
-      end
-
-      def test_OPTIONS
-        resp = run_request(:options, 'echo', nil, {})
-        assert_equal 'options', resp.body
-      end
-
-      def test_HEAD_retrieves_no_response_body
-        assert_equal '', head('echo').body
-      end
-
-      def test_HEAD_retrieves_the_response_headers
-        assert_match(/text\/plain/, head('echo').headers['content-type'])
-      end
-
-      def test_DELETE_retrieves_the_response_headers
-        assert_match(/text\/plain/, delete('echo').headers['content-type'])
-      end
-
-      def test_DELETE_retrieves_the_body
-        assert_equal %(delete), delete('echo').body
-      end
-
+      # This needs reimplementation: see https://github.com/lostisland/faraday/issues/718
       def test_timeout
         conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
         assert_raises Faraday::Error::TimeoutError do
@@ -188,41 +164,35 @@ module Adapters
         end
       end
 
-      def test_connection_error
-        assert_raises Faraday::Error::ConnectionFailed do
-          get 'http://localhost:4'
-        end
-      end
+      # def test_proxy
+      #   proxy_uri = URI(ENV['LIVE_PROXY'])
+      #   conn = create_connection(:proxy => proxy_uri)
+      #
+      #   res = conn.get '/echo'
+      #   assert_equal 'get', res.body
+      #
+      #   unless self.class.ssl_mode?
+      #     # proxy can't append "Via" header for HTTPS responses
+      #     assert_match(/:#{proxy_uri.port}$/, res['via'])
+      #   end
+      # end
 
-      def test_proxy
-        proxy_uri = URI(ENV['LIVE_PROXY'])
-        conn = create_connection(:proxy => proxy_uri)
-
-        res = conn.get '/echo'
-        assert_equal 'get', res.body
-
-        unless self.class.ssl_mode?
-          # proxy can't append "Via" header for HTTPS responses
-          assert_match(/:#{proxy_uri.port}$/, res['via'])
-        end
-      end
-
-      def test_proxy_auth_fail
-        proxy_uri = URI(ENV['LIVE_PROXY'])
-        proxy_uri.password = 'WRONG'
-        conn = create_connection(:proxy => proxy_uri)
-
-        err = assert_raises Faraday::Error::ConnectionFailed do
-          conn.get '/echo'
-        end
-
-        unless self.class.ssl_mode? && (self.class.jruby? ||
-            adapter == :em_http || adapter == :em_synchrony)
-          # JRuby raises "End of file reached" which cannot be distinguished from a 407
-          # EM raises "connection closed by server" due to https://github.com/igrigorik/em-socksify/pull/19
-          assert_equal %{407 "Proxy Authentication Required "}, err.message
-        end
-      end
+      # def test_proxy_auth_fail
+      #   proxy_uri = URI(ENV['LIVE_PROXY'])
+      #   proxy_uri.password = 'WRONG'
+      #   conn = create_connection(:proxy => proxy_uri)
+      #
+      #   err = assert_raises Faraday::Error::ConnectionFailed do
+      #     conn.get '/echo'
+      #   end
+      #
+      #   unless self.class.ssl_mode? && (self.class.jruby? ||
+      #       adapter == :em_http || adapter == :em_synchrony)
+      #     # JRuby raises "End of file reached" which cannot be distinguished from a 407
+      #     # EM raises "connection closed by server" due to https://github.com/igrigorik/em-socksify/pull/19
+      #     assert_equal %{407 "Proxy Authentication Required "}, err.message
+      #   end
+      # end
 
       def test_empty_body_response_represented_as_blank_string
         response = get('204')

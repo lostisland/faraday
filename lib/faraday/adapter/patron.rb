@@ -85,7 +85,8 @@ module Faraday
 
       private
 
-      CURL_TIMEOUT_MESSAGES = [ "Connection time-out",
+      CURL_TIMEOUT_MESSAGES = [
+          "Connection time-out",
           "Connection timed out",
           "Timed out before name resolve",
           "server connect has timed out",

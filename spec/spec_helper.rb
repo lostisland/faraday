@@ -17,6 +17,7 @@
 require 'simplecov'
 require 'coveralls'
 require 'webmock/rspec'
+WebMock.disable_net_connect!(allow_localhost: true)
 
 SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, Coveralls::SimpleCov::Formatter]
 
@@ -123,4 +124,17 @@ module FormatterOverrides
   end
 
   RSpec::Core::Formatters::DocumentationFormatter.prepend self
+end
+
+# Allows to disable WebMock stubs
+module DisablingStub
+  def disable
+    @disabled = true
+  end
+
+  def disabled?
+    @disabled
+  end
+
+  WebMock::RequestStub.prepend self
 end
