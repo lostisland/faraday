@@ -44,6 +44,11 @@ module Adapters
       assert_match 'request: get http:/hello', @io.string
     end
 
+    def test_logs_status_code
+      @conn.get '/hello', nil, :accept => 'text/html'
+      assert_match 'response: Status 200', @io.string
+    end
+
     def test_logs_request_headers_by_default
       @conn.get '/hello', nil, :accept => 'text/html'
       assert_match %(Accept: "text/html), @io.string
