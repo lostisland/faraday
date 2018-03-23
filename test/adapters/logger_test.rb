@@ -41,7 +41,7 @@ module Adapters
 
     def test_logs_method_and_url
       @conn.get '/hello', nil, :accept => 'text/html'
-      assert_match "get http:/hello", @io.string
+      assert_match 'request: get http:/hello', @io.string
     end
 
     def test_logs_request_headers_by_default
