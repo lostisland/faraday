@@ -232,9 +232,10 @@ module Middleware
 
     def test_should_retry_retriable_response
       params = { status: 429 }
-      conn(:max => 1, :retry_statuses => 429).get("/throttled", params)
+      response = conn(:max => 1, :retry_statuses => 429).get("/throttled", params)
 
       assert_equal 2, @times_called
+      assert_equal 429, response.status
     end
 
     def test_should_not_retry_non_retriable_response
