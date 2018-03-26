@@ -20,14 +20,14 @@ module Faraday
     def_delegators :@logger, :debug, :info, :warn, :error, :fatal
 
     def call(env)
-      info "#{env.method} #{apply_filters(env.url.to_s)}"
+      info('request')  { "#{env.method.upcase} #{apply_filters(env.url.to_s)}" }
       debug('request') { apply_filters( dump_headers env.request_headers ) } if log_headers?(:request)
       debug('request') { apply_filters( dump_body(env[:body]) ) } if env[:body] && log_body?(:request)
       super
     end
 
     def on_complete(env)
-      info('Status') { env.status.to_s }
+      info('response')  { "Status #{env.status.to_s}" }
       debug('response') { apply_filters( dump_headers env.response_headers ) } if log_headers?(:response)
       debug('response') { apply_filters( dump_body env[:body] ) } if env[:body] && log_body?(:response)
     end
