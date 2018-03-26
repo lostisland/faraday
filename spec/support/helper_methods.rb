@@ -53,5 +53,10 @@ module Faraday
     def method_with_body?(method)
       METHODS_WITH_BODY.include?(method.to_s)
     end
+
+    def big_string
+      kb = 1024
+      (32..126).map{|i| i.chr}.cycle.take(50*kb).join
+    end
   end
 end

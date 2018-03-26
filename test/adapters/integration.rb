@@ -14,7 +14,7 @@ module Adapters
         features = [:Common]
         features.concat extra_features
         features << :SSL if base.ssl_mode?
-        features.each {|name| base.send(:include, self.const_get(name)) }
+        features.each { |name| base.send(:include, self.const_get(name)) }
         yield if block_given?
       elsif !defined? @warned
         warn "Warning: Not running integration tests against a live server."
@@ -67,7 +67,7 @@ module Adapters
         err = capture_warnings do
           connection.in_parallel do
             resp1, streamed1 = streaming_request(connection, :get, 'stream?a=1')
-            resp2, streamed2 = streaming_request(connection, :get, 'stream?b=2', :chunk_size => 16*1024)
+            resp2, streamed2 = streaming_request(connection, :get, 'stream?b=2', :chunk_size => 16 * 1024)
             assert connection.in_parallel?
             assert_nil resp1.body
             assert_nil resp2.body
@@ -77,39 +77,19 @@ module Adapters
         end
         assert !connection.in_parallel?
         assert_match(/Streaming .+ not yet implemented/, err)
-        opts = {:streaming? => false, :chunk_size => 16*1024}
+        opts = { :streaming? => false, :chunk_size => 16 * 1024 }
         check_streaming_response(streamed1, opts.merge(:prefix => '{"a"=>"1"}'))
         check_streaming_response(streamed2, opts.merge(:prefix => '{"b"=>"2"}'))
       end
     end
 
     module Streaming
-      def test_GET_streaming
-        response, streamed = streaming_request(create_connection, :get, 'stream')
-        check_streaming_response(streamed, :chunk_size => 16*1024)
-        assert_equal "", response.body
-      end
 
-      def test_non_GET_streaming
-        response, streamed = streaming_request(create_connection, :post, 'stream')
-        check_streaming_response(streamed, :chunk_size => 16*1024)
-
-        assert_equal "", response.body
-      end
-
-      def test_GET_streaming_empty_response
-        _, streamed = streaming_request(create_connection, :get, 'empty_stream')
-        assert_equal [["", 0]], streamed
-      end
-
-      def test_non_GET_streaming_empty_response
-        _, streamed = streaming_request(create_connection, :post, 'empty_stream')
-        assert_equal [["", 0]], streamed
-      end
     end
 
     module NonStreaming
       include Faraday::Shared
+
       def test_GET_streaming
         response, streamed = nil
         err = capture_warnings do
@@ -134,17 +114,13 @@ module Adapters
     end
 
     module Compression
-      def test_GET_handles_compression
-        res = get('echo_header', :name => 'accept-encoding')
-        assert_match(/\bgzip\b/, res.body)
-        assert_match(/\bdeflate\b/, res.body)
-      end
+
     end
 
     module SSL
       def test_GET_ssl_fails_with_bad_cert
         ca_file = 'tmp/faraday-different-ca-cert.crt'
-        conn = create_connection(:ssl => {:ca_file => ca_file})
+        conn = create_connection(:ssl => { :ca_file => ca_file })
         err = assert_raises Faraday::SSLError do
           conn.get('/ssl')
         end
@@ -158,7 +134,7 @@ module Adapters
 
       # This needs reimplementation: see https://github.com/lostisland/faraday/issues/718
       def test_timeout
-        conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
+        conn = create_connection(:request => { :timeout => 1, :open_timeout => 1 })
         assert_raises Faraday::Error::TimeoutError do
           conn.get '/slow'
         end
@@ -194,11 +170,6 @@ module Adapters
       #   end
       # end
 
-      def test_empty_body_response_represented_as_blank_string
-        response = get('204')
-        assert_equal '', response.body
-      end
-
       def adapter
         raise NotImplementedError.new("Need to override #adapter")
       end
@@ -229,44 +200,6 @@ module Adapters
           conn.headers['X-Faraday-Adapter'] = adapter.to_s
           adapter_handler = conn.builder.handlers.last
           conn.builder.insert_before adapter_handler, Faraday::Response::RaiseError
-        end
-      end
-
-      def streaming_request(connection, method, path, options={})
-        streamed = []
-        response = connection.send(method, path) do |req|
-          req.options.on_data = Proc.new{|*args| streamed << args}
-        end
-
-        [response, streamed]
-      end
-
-      def check_streaming_response(streamed, options={})
-        opts = {
-          :prefix => '',
-          :streaming? => true
-        }.merge(options)
-        expected_response = opts[:prefix] + Faraday::Shared.big_string
-
-        chunks, sizes = streamed.transpose
-
-        # Check that the total size of the chunks (via the last size returned)
-        # is the same size as the expected_response
-        assert_equal sizes.last, expected_response.bytesize
-
-        start_index = 0
-        expected_chunks = []
-        chunks.each do |actual_chunk|
-          expected_chunk = expected_response[start_index..((start_index + actual_chunk.bytesize)-1)]
-          expected_chunks << expected_chunk
-          start_index += expected_chunk.bytesize
-        end
-
-        # it's easier to read a smaller portion, so we check that first
-        assert_equal expected_chunks[0][0..255], chunks[0][0..255]
-
-        [expected_chunks, chunks].transpose.each do |expected, actual|
-          assert_equal expected, actual
         end
       end
     end
