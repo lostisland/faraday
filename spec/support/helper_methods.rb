@@ -16,6 +16,10 @@ module Faraday
           yield if block_given? and @features.include?(name)
         end
       end
+
+      def method_with_body?(method)
+        METHODS_WITH_BODY.include?(method.to_s)
+      end
     end
 
     def ssl_mode?
@@ -51,7 +55,7 @@ module Faraday
     end
 
     def method_with_body?(method)
-      METHODS_WITH_BODY.include?(method.to_s)
+      self.class.method_with_body?(method)
     end
 
     def big_string

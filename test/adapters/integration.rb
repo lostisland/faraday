@@ -25,21 +25,21 @@ module Adapters
     end
 
     module Parallel
-      def test_in_parallel
-        resp1, resp2 = nil, nil
-
-        connection = create_connection
-        connection.in_parallel do
-          resp1 = connection.get('echo?a=1')
-          resp2 = connection.get('echo?b=2')
-          assert connection.in_parallel?
-          assert_nil resp1.body
-          assert_nil resp2.body
-        end
-        assert !connection.in_parallel?
-        assert_equal 'get ?{"a"=>"1"}', resp1.body
-        assert_equal 'get ?{"b"=>"2"}', resp2.body
-      end
+      # def test_in_parallel
+      #   resp1, resp2 = nil, nil
+      #
+      #   connection = create_connection
+      #   connection.in_parallel do
+      #     resp1 = connection.get('echo?a=1')
+      #     resp2 = connection.get('echo?b=2')
+      #     assert connection.in_parallel?
+      #     assert_nil resp1.body
+      #     assert_nil resp2.body
+      #   end
+      #   assert !connection.in_parallel?
+      #   assert_equal 'get ?{"a"=>"1"}', resp1.body
+      #   assert_equal 'get ?{"b"=>"2"}', resp2.body
+      # end
     end
 
     module NonParallel
@@ -83,10 +83,6 @@ module Adapters
       end
     end
 
-    module Streaming
-
-    end
-
     module NonStreaming
       include Faraday::Shared
 
@@ -111,10 +107,6 @@ module Adapters
         check_streaming_response(streamed, :streaming? => false)
         assert_equal big_string, response.body
       end
-    end
-
-    module Compression
-
     end
 
     module SSL

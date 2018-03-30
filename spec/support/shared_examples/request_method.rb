@@ -47,17 +47,17 @@ shared_examples 'a request method' do |http_method|
       conn.public_send(http_method, '/', payload)
     end
 
-    it 'sends files' do
-      # Can't send files on get, head and delete methods
-      skip unless method_with_body?(http_method)
-
-      payload = { uploaded_file: multipart_file }
-      request_stub.with(headers: { "Content-Type" => %r[\Amultipart/form-data] }) do |request|
-        # WebMock does not support matching body for multipart/form-data requests yet :(
-        # https://github.com/bblimke/webmock/issues/623
-        request.body =~ %r[RubyMultipartPost]
+    # Can't send files on get, head and delete methods
+    if method_with_body?(http_method)
+      it 'sends files' do
+        payload = { uploaded_file: multipart_file }
+        request_stub.with(headers: { "Content-Type" => %r[\Amultipart/form-data] }) do |request|
+          # WebMock does not support matching body for multipart/form-data requests yet :(
+          # https://github.com/bblimke/webmock/issues/623
+          request.body =~ %r[RubyMultipartPost]
+        end
+        conn.public_send(http_method, '/', payload)
       end
-      conn.public_send(http_method, '/', payload)
     end
   end
 
@@ -65,6 +65,76 @@ shared_examples 'a request method' do |http_method|
     it 'parses the reason phrase' do
       request_stub.to_return(status: [200, 'OK'])
       expect(response.reason_phrase).to eq('OK')
+    end
+  end
+
+  on_feature :compression do
+    # Accept-Encoding header not sent for HEAD requests as body is not expected in the response.
+    unless http_method == :head
+      it 'handles gzip compression' do
+        request_stub.with(headers: { 'Accept-Encoding' => %r[\bgzip\b] })
+        conn.public_send(http_method, '/')
+      end
+
+      it 'handles deflate compression' do
+        request_stub.with(headers: { 'Accept-Encoding' => %r[\bdeflate\b] })
+        conn.public_send(http_method, '/')
+      end
+    end
+  end
+
+  on_feature :streaming do
+    describe 'streaming' do
+      let(:streamed) { [] }
+
+      context 'when response is empty' do
+        it do
+          conn.public_send(http_method, '/') do |req|
+            req.options.on_data = Proc.new { |*args| streamed << args }
+          end
+
+          expect(streamed).to eq([["", 0]])
+        end
+      end
+
+      context 'when response contains big data' do
+        before { request_stub.to_return(body: big_string) }
+
+
+        it 'handles streaming' do
+          response = conn.public_send(http_method, '/') do |req|
+            req.options.on_data = Proc.new { |*args| streamed << args }
+          end
+
+          expect(response.body).to eq('')
+          check_streaming_response(streamed, chunk_size: 16 * 1024)
+        end
+      end
+    end
+  end
+
+  on_feature :parallel do
+    it 'handles parallel requests' do
+      resp1, resp2 = nil, nil
+      payload1 = { a: '1' }
+      payload2 = { b: '2' }
+      request_stub.with(Hash[query_or_body, payload1])
+          .to_return(body: payload1.to_json)
+      stub_request(http_method, remote).with(Hash[query_or_body, payload2])
+          .to_return(body: payload2.to_json)
+
+      conn.in_parallel do
+        resp1 = conn.public_send(http_method, '/', payload1)
+        resp2 = conn.public_send(http_method, '/', payload2)
+
+        expect(conn.in_parallel?).to be_truthy
+        expect(resp1.body).to be_nil
+        expect(resp2.body).to be_nil
+      end
+
+      expect(conn.in_parallel?).to be_falsey
+      expect(resp1.body).to eq(payload1.to_json)
+      expect(resp2.body).to eq(payload2.to_json)
     end
   end
 

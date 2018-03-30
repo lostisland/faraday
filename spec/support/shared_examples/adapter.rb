@@ -49,51 +49,6 @@ shared_examples 'an adapter' do |**options|
         end
       end
     end
-
-    on_feature :compression do
-      it 'handles gzip compression' do
-        request_stub.with(headers: { 'Accept-Encoding' => %r[\bgzip\b] })
-        conn.get('/')
-      end
-
-      it 'handles deflate compression' do
-        request_stub.with(headers: { 'Accept-Encoding' => %r[\bdeflate\b] })
-        conn.get('/')
-      end
-    end
-
-    # Streaming
-    let(:streamed) { [] }
-
-    it 'handles streaming' do
-      # response, streamed = streaming_request(create_connection, :get, 'stream')
-      # check_streaming_response(streamed, :chunk_size => 16*1024)
-      # assert_equal "", response.body
-      request_stub.to_return(body: big_string)
-
-      response = conn.get('/') do |req|
-        req.options.on_data = Proc.new { |*args| streamed << args }
-      end
-      expect(response.body).to eq('')
-      check_streaming_response(streamed, :chunk_size => 16*1024)
-    end
-
-    # def test_non_GET_streaming
-    #   response, streamed = streaming_request(create_connection, :post, 'stream')
-    #   check_streaming_response(streamed, chunk_size: 16 * 1024)
-    #
-    #   assert_equal "", response.body
-    # end
-    #
-    # def test_GET_streaming_empty_response
-    #   _, streamed = streaming_request(create_connection, :get, 'empty_stream')
-    #   assert_equal [["", 0]], streamed
-    # end
-    #
-    # def test_non_GET_streaming_empty_response
-    #   _, streamed = streaming_request(create_connection, :post, 'empty_stream')
-    #   assert_equal [["", 0]], streamed
-    # end
   end
 
   describe '#post' do
