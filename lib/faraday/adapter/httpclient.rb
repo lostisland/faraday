@@ -1,8 +1,10 @@
 module Faraday
   class Adapter
+    # HTTPClient adapter.
     class HTTPClient < Faraday::Adapter
       dependency 'httpclient'
 
+      # @return [HTTPClient]
       def client
         @client ||= ::HTTPClient.new
       end
@@ -64,11 +66,15 @@ module Faraday
         end
       end
 
+      # @param bind [Hash]
       def configure_socket(bind)
         client.socket_local.host = bind[:host]
         client.socket_local.port = bind[:port]
       end
 
+      # Configure proxy URI and any user credentials.
+      #
+      # @param proxy [Hash]
       def configure_proxy(proxy)
         client.proxy = proxy[:uri]
         if proxy[:user] && proxy[:password]
@@ -76,6 +82,7 @@ module Faraday
         end
       end
 
+      # @param ssl [Hash]
       def configure_ssl(ssl)
         ssl_config = client.ssl_config
         ssl_config.verify_mode = ssl_verify_mode(ssl)
@@ -88,6 +95,7 @@ module Faraday
         ssl_config.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
       end
 
+      # @param req [Hash]
       def configure_timeouts(req)
         if req[:timeout]
           client.connect_timeout   = req[:timeout]
@@ -105,6 +113,8 @@ module Faraday
         @config_block.call(client) if @config_block
       end
 
+      # @param ssl [Hash]
+      # @return [OpenSSL::X509::Store]
       def ssl_cert_store(ssl)
         return ssl[:cert_store] if ssl[:cert_store]
         # Memoize the cert store so that the same one is passed to
@@ -118,6 +128,7 @@ module Faraday
         end
       end
 
+      # @param ssl [Hash]
       def ssl_verify_mode(ssl)
         ssl[:verify_mode] || begin
           if ssl.fetch(:verify, true)

@@ -188,7 +188,7 @@ module Faraday
         !!env[:parallel_manager]
       end
 
-      # The parallel manager is designed to start an EventMachine loop
+      # This parallel manager is designed to start an EventMachine loop
       # and block until all registered requests have been completed.
       class Manager
         # @see reset

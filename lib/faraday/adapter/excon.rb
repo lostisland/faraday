@@ -1,5 +1,6 @@
 module Faraday
   class Adapter
+    # Excon adapter.
     class Excon < Faraday::Adapter
       dependency 'excon'
 
@@ -70,6 +71,7 @@ module Faraday
         raise Error::TimeoutError, err
       end
 
+      # @return [Excon]
       def create_connection(env, opts)
         ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
       end
