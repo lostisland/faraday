@@ -2,7 +2,7 @@ module Faraday
   # Adds the ability for other modules to manage autoloadable
   # constants.
   #
-  # @note This is an internal module.
+  # @api private
   module AutoloadHelper
     # Registers the constants to be auto loaded.
     #
