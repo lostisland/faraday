@@ -8,6 +8,7 @@ require 'zlib'
 
 module Faraday
   class Adapter
+    # Net::HTTP adapter.
     class NetHttp < Faraday::Adapter
       NET_HTTP_EXCEPTIONS = [
         IOError,

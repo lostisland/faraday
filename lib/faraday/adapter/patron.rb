@@ -1,5 +1,6 @@
 module Faraday
   class Adapter
+    # Patron adapter.
     class Patron < Faraday::Adapter
       dependency 'patron'
 
@@ -69,6 +70,7 @@ module Faraday
         end
       end
 
+      # @return [Patron::Session]
       def create_session
         session = ::Patron::Session.new
         @config_block.call(session) if @config_block

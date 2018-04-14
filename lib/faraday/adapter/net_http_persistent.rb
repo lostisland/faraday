@@ -1,5 +1,6 @@
 module Faraday
   class Adapter
+    # Net::HTTP::Persistent adapter.
     class NetHttpPersistent < NetHttp
       dependency 'net/http/persistent'
 
