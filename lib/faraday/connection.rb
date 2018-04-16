@@ -107,13 +107,9 @@ module Faraday
 
     def_delegators :builder, :build, :use, :request, :response, :adapter, :app
 
-    # Makes an HTTP request without a body.
-    #
-    # Signature
-    #
-    #   <verb>(url = nil, params = nil, headers = nil)
-    #
-    # verb - An HTTP verb: get, head, or delete.
+    # @!method get(url = nil, params = nil, headers = nil)
+    # Makes a GET HTTP request without a body.
+    # @!scope class
     #
     # @param url [String] The optional String base URL to use as a prefix for all
     #           requests.  Can also be the options Hash.
@@ -121,9 +117,7 @@ module Faraday
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
     # @example
-    #
     #   conn.get '/items', {:page => 1}, :accept => 'application/json'
-    #   conn.head '/items/1'
     #
     #   # ElasticSearch example sending a body with GET.
     #   conn.get '/twitter/tweet/_search' do |req|
@@ -134,6 +128,38 @@ module Faraday
     #
     # @yield [Faraday::Request] for further request customizations
     # @return [Faraday::Response]
+
+    # @!method head(url = nil, params = nil, headers = nil)
+    # Makes a HEAD HTTP request without a body.
+    # @!scope class
+    #
+    # @param url [String] The optional String base URL to use as a prefix for all
+    #           requests.  Can also be the options Hash.
+    # @param params [Hash] Hash of URI query unencoded key/value pairs.
+    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    #
+    # @example
+    #   conn.head '/items/1'
+    #
+    # @yield [Faraday::Request] for further request customizations
+    # @return [Faraday::Response]
+
+    # @!method delete(url = nil, params = nil, headers = nil)
+    # Makes a DELETE HTTP request without a body.
+    # @!scope class
+    #
+    # @param url [String] The optional String base URL to use as a prefix for all
+    #           requests.  Can also be the options Hash.
+    # @param params [Hash] Hash of URI query unencoded key/value pairs.
+    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    #
+    # @example
+    #   conn.delete '/items/1'
+    #
+    # @yield [Faraday::Request] for further request customizations
+    # @return [Faraday::Response]
+
+    # @!visibility private
     %w[get head delete].each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, params = nil, headers = nil)
@@ -144,16 +170,17 @@ module Faraday
         end
       RUBY
     end
-
-    # Public: Makes an HTTP request with a body.
+    
+    # @!method post(url = nil, body = nil, headers = nil)
+    # Makes a POST HTTP request with a body.
+    # @!scope class
     #
-    # url     - The optional String base URL to use as a prefix for all
+    # @param url [String] The optional String base URL to use as a prefix for all
     #           requests.  Can also be the options Hash.
-    # body    - The String body for the request.
-    # headers - Hash of unencoded HTTP header key/value pairs.
+    # @param body [String] body for the request.
+    # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
-    # Examples
-    #
+    # @example
     #   conn.post '/items', data, :content_type => 'application/json'
     #
     #   # Simple ElasticSearch indexing sample.
@@ -163,14 +190,33 @@ module Faraday
     #     req.body = JSON.generate(:user => 'kimchy', ...)
     #   end
     #
-    # Yields a Faraday::Request for further request customizations.
-    # Returns a Faraday::Response.
+    # @yield [Faraday::Request] for further request customizations
+    # @return [Faraday::Response]
+
+    # @!method put(url = nil, body = nil, headers = nil)
+    # Makes a PUT HTTP request with a body.
+    # @!scope class
     #
-    # Signature
+    # @param url [String] The optional String base URL to use as a prefix for all
+    #           requests.  Can also be the options Hash.
+    # @param body [String] body for the request.
+    # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
-    #   <verb>(url = nil, body = nil, headers = nil)
+    # @example
+    #   # TODO: Make it a PUT example
+    #   conn.post '/items', data, :content_type => 'application/json'
     #
-    # verb - An HTTP verb: post, put, or patch.
+    #   # Simple ElasticSearch indexing sample.
+    #   conn.post '/twitter/tweet' do |req|
+    #     req.headers[:content_type] = 'application/json'
+    #     req.params[:routing] = 'kimchy'
+    #     req.body = JSON.generate(:user => 'kimchy', ...)
+    #   end
+    #
+    # @yield [Faraday::Request] for further request customizations
+    # @return [Faraday::Response]
+
+    # @!visibility private
     %w[post put patch].each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, body = nil, headers = nil, &block)
@@ -219,7 +265,7 @@ module Faraday
     # @param token [String, Hash] token. A String value is taken literally, and
     #         a Hash is encoded into comma-separated key/value pairs.
     #
-    # @Example
+    # @example
     #
     #   conn.authorization :Bearer, 'mF_9.B5f-4.1JqM'
     #   conn.headers['Authorization']
@@ -337,7 +383,7 @@ module Faraday
     # Takes a relative url for a request and combines it with the defaults
     # set on the connection instance.
     #
-    # @param urk [String]
+    # @param url [String]
     # @param extra_params [Hash]
     #
     # @example
