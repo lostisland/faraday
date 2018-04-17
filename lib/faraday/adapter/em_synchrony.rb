@@ -2,6 +2,7 @@ require 'uri'
 
 module Faraday
   class Adapter
+    # EventMachine Synchrony adapter.
     class EMSynchrony < Faraday::Adapter
       include EMHttp::Options
 
@@ -13,6 +14,7 @@ module Faraday
 
       self.supports_parallel = true
 
+      # @return [ParallelManager]
       def self.setup_parallel_manager(options = {})
         ParallelManager.new
       end
