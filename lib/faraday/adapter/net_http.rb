@@ -106,6 +106,8 @@ module Faraday
         http.ca_path      = ssl[:ca_path]      if ssl[:ca_path]
         http.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
         http.ssl_version  = ssl[:version]      if ssl[:version]
+        http.min_version  = ssl[:min_version]  if ssl[:min_version]
+        http.max_version  = ssl[:max_version]  if ssl[:max_version]
       end
 
       def configure_request(http, req)
