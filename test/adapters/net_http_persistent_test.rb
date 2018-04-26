@@ -17,6 +17,28 @@ module Adapters
           end
         end
       end if ssl_mode?
+
+      def test_reuses_tcp_sockets
+        # Ensure that requests are not reused from previous tests
+        Thread.current.keys
+          .select { |key| key.to_s =~ /\Anet_http_persistent_Faraday_/ }
+          .each { |key| Thread.current[key] = nil }
+
+        sockets = []
+        tcp_socket_open_wrapped = Proc.new do |*args, &block|
+          socket = TCPSocket.__minitest_stub__open(*args, &block)
+          sockets << socket
+          socket
+        end
+
+        TCPSocket.stub :open, tcp_socket_open_wrapped do
+          conn = create_connection
+          conn.post("/echo", :foo => "bar")
+          conn.post("/echo", :foo => "baz")
+        end
+
+        assert_equal 1, sockets.count
+      end
     end
 
     def test_custom_adapter_config
@@ -30,20 +52,6 @@ module Adapters
       adapter.send(:configure_request, http, {})
 
       assert_equal 123, http.idle_timeout
-    end
-
-    def test_caches_connections
-      adapter = Faraday::Adapter::NetHttpPersistent.new
-      a = adapter.send(:net_http_connection, :url => URI('https://example.com:1234/foo'), :request => {})
-      b = adapter.send(:net_http_connection, :url => URI('https://example.com:1234/bar'), :request => {})
-      assert_equal a.object_id, b.object_id
-    end
-
-    def test_does_not_cache_connections_for_different_hosts
-      adapter = Faraday::Adapter::NetHttpPersistent.new
-      a = adapter.send(:net_http_connection, :url => URI('https://example.com:1234/foo'), :request => {})
-      b = adapter.send(:net_http_connection, :url => URI('https://example2.com:1234/bar'), :request => {})
-      refute_equal a.object_id, b.object_id
     end
   end
 end
