@@ -56,7 +56,7 @@ module Faraday
       end
 
       def http_set(http, attr, value)
-        if http.sent(attr) != value
+        if http.send(attr) != value
           http.send("#{attr}=", value)
         end
       end
