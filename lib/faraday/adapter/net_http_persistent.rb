@@ -6,15 +6,16 @@ module Faraday
       private
 
       def net_http_connection(env)
-        proxy_uri = proxy_uri(env)
-
         cached_connection do
           if Net::HTTP::Persistent.instance_method(:initialize).parameters.first == [:key, :name]
-            Net::HTTP::Persistent.new(name: 'Faraday', proxy: proxy_uri)
+            Net::HTTP::Persistent.new(name: 'Faraday')
           else
-            Net::HTTP::Persistent.new('Faraday', proxy_uri)
+            Net::HTTP::Persistent.new('Faraday')
           end
         end
+        proxy_uri = proxy_uri(env)
+        cached_connection.proxy = proxy_uri if cached_connection.proxy_uri != proxy_uri
+        cached_connection
       end
 
       def proxy_uri(env)
