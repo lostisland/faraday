@@ -18,13 +18,15 @@ module Adapters
       end
 
       def test_custom_adapter_config
-        adapter = Faraday::Adapter::Patron.new do |session|
+        conn = create_connection do |session|
+          assert_kind_of ::Patron::Session, session
           session.max_redirects = 10
+          throw :config_block_called
         end
 
-        session = adapter.create_session
-
-        assert_equal 10, session.max_redirects
+        assert_throws(:config_block_called) do
+          conn.get 'http://8.8.8.8:88'
+        end
       end
 
       def test_connection_timeout
