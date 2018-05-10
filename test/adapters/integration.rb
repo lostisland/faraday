@@ -311,14 +311,14 @@ module Adapters
         []
       end
 
-      def create_connection(options = {})
+      def create_connection(options = {}, &optional_connection_config_blk)
         if adapter == :default
           builder_block = nil
         else
           builder_block = Proc.new do |b|
             b.request :multipart
             b.request :url_encoded
-            b.adapter adapter, *adapter_options
+            b.adapter adapter, *adapter_options, &optional_connection_config_blk
           end
         end
 

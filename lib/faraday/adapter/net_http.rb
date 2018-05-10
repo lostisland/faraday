@@ -29,6 +29,11 @@ module Faraday
       NET_HTTP_EXCEPTIONS << OpenSSL::SSL::SSLError if defined?(OpenSSL)
       NET_HTTP_EXCEPTIONS << Net::OpenTimeout if defined?(Net::OpenTimeout)
 
+      def initialize(app = nil, opts = {}, &block)
+        @cert_store = nil
+        super(app, opts, &block)
+      end
+
       def call(env)
         super
         with_net_http_connection(env) do |http|
@@ -141,6 +146,8 @@ module Faraday
         http.ca_path      = ssl[:ca_path]      if ssl[:ca_path]
         http.verify_depth = ssl[:verify_depth] if ssl[:verify_depth]
         http.ssl_version  = ssl[:version]      if ssl[:version]
+        http.min_version  = ssl[:min_version]  if ssl[:min_version]
+        http.max_version  = ssl[:max_version]  if ssl[:max_version]
       end
 
       def configure_request(http, req)
@@ -152,10 +159,11 @@ module Faraday
 
       def ssl_cert_store(ssl)
         return ssl[:cert_store] if ssl[:cert_store]
+        return @cert_store if @cert_store
         # Use the default cert store by default, i.e. system ca certs
-        cert_store = OpenSSL::X509::Store.new
-        cert_store.set_default_paths
-        cert_store
+        @cert_store = OpenSSL::X509::Store.new
+        @cert_store.set_default_paths
+        @cert_store
       end
 
       def ssl_verify_mode(ssl)

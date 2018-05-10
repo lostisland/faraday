@@ -7,15 +7,16 @@ module Faraday
       private
 
       def net_http_connection(env)
-        proxy_uri = proxy_uri(env)
-
-        cached_connection env[:url], proxy_uri do
+        @cached_connection ||=
           if Net::HTTP::Persistent.instance_method(:initialize).parameters.first == [:key, :name]
-            Net::HTTP::Persistent.new(name: 'Faraday', proxy: proxy_uri)
+            Net::HTTP::Persistent.new(name: 'Faraday')
           else
-            Net::HTTP::Persistent.new('Faraday', proxy_uri)
+            Net::HTTP::Persistent.new('Faraday')
           end
-        end
+
+        proxy_uri = proxy_uri(env)
+        @cached_connection.proxy = proxy_uri if @cached_connection.proxy_uri != proxy_uri
+        @cached_connection
       end
 
       def proxy_uri(env)
@@ -47,17 +48,19 @@ module Faraday
       end
 
       def configure_ssl(http, ssl)
-        http.verify_mode  = ssl_verify_mode(ssl)
-        http.cert_store   = ssl_cert_store(ssl)
+        http_set(http, :verify_mode, ssl_verify_mode(ssl))
+        http_set(http, :cert_store,  ssl_cert_store(ssl))
 
-        http.certificate  = ssl[:client_cert]  if ssl[:client_cert]
-        http.private_key  = ssl[:client_key]   if ssl[:client_key]
-        http.ca_file      = ssl[:ca_file]      if ssl[:ca_file]
-        http.ssl_version  = ssl[:version]      if ssl[:version]
+        http_set(http, :certificate, ssl[:client_cert]) if ssl[:client_cert]
+        http_set(http, :private_key, ssl[:client_key])  if ssl[:client_key]
+        http_set(http, :ca_file,     ssl[:ca_file])     if ssl[:ca_file]
+        http_set(http, :ssl_version, ssl[:version])     if ssl[:version]
       end
 
-      def cached_connection(url, proxy_uri)
-        (@cached_connection ||= {})[[url.scheme, url.host, url.port, proxy_uri]] ||= yield
+      def http_set(http, attr, value)
+        if http.send(attr) != value
+          http.send("#{attr}=", value)
+        end
       end
     end
   end
