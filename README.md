@@ -55,7 +55,7 @@ Since the default middleware stack uses url\_encoded middleware and default adap
 ```ruby
 conn = Faraday.new(:url => 'http://sushi.com') do |faraday|
   faraday.request  :url_encoded             # form-encode POST params
-  faraday.response :logger                  # log requests to $stdout
+  faraday.response :logger                  # log requests and responses to $stdout
   faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
 end
 
