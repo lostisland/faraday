@@ -243,6 +243,20 @@ class ResponseTest < Faraday::TestCase
     assert_equal %w[body response_headers status], loaded.env.keys.map { |k| k.to_s }.sort
   end
 
+  def test_marshal_request
+    @request = Faraday::Request.create(:post) do |request|
+      request.options      = Faraday::RequestOptions.new
+      request.params       = Faraday::Utils::ParamsHash.new({ 'a' => 'c' })
+      request.headers      = { 'b' => 'd' }
+      request.body         = 'hello, world!'
+      request.url 'http://localhost/foo'
+    end
+
+    loaded = Marshal.load(Marshal.dump(@request))
+
+    assert_equal @request, loaded
+  end
+
   def test_hash
     hash = @response.to_hash
     assert_kind_of Hash, hash
