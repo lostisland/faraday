@@ -233,7 +233,7 @@ class ResponseTest < Faraday::TestCase
     assert_equal :post, @response.env[:method]
   end
 
-  def test_marshal
+  def test_marshal_response
     @response = Faraday::Response.new
     @response.on_complete { }
     @response.finish @env.merge(:params => 'moo')
