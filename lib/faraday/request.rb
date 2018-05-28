@@ -69,6 +69,26 @@ module Faraday
       headers[key] = value
     end
 
+    def marshal_dump
+      {
+        :method  => method,
+        :body    => body,
+        :headers => headers,
+        :path    => path,
+        :params  => params,
+        :options => options
+      }
+    end
+
+    def marshal_load(serialised)
+      self.method  = serialised[:method]
+      self.body    = serialised[:body]
+      self.headers = serialised[:headers]
+      self.path    = serialised[:path]
+      self.params  = serialised[:params]
+      self.options = serialised[:options]
+    end
+
     # ENV Keys
     # :method - a symbolized request method (:get, :post)
     # :body   - the request body that will eventually be converted to a string.

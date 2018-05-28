@@ -233,7 +233,7 @@ class ResponseTest < Faraday::TestCase
     assert_equal :post, @response.env[:method]
   end
 
-  def test_marshal
+  def test_marshal_response
     @response = Faraday::Response.new
     @response.on_complete { }
     @response.finish @env.merge(:params => 'moo')
@@ -241,6 +241,20 @@ class ResponseTest < Faraday::TestCase
     loaded = Marshal.load Marshal.dump(@response)
     assert_nil loaded.env[:params]
     assert_equal %w[body response_headers status], loaded.env.keys.map { |k| k.to_s }.sort
+  end
+
+  def test_marshal_request
+    @request = Faraday::Request.create(:post) do |request|
+      request.options      = Faraday::RequestOptions.new
+      request.params       = Faraday::Utils::ParamsHash.new({ 'a' => 'c' })
+      request.headers      = { 'b' => 'd' }
+      request.body         = 'hello, world!'
+      request.url 'http://localhost/foo'
+    end
+
+    loaded = Marshal.load(Marshal.dump(@request))
+
+    assert_equal @request, loaded
   end
 
   def test_hash
