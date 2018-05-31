@@ -33,8 +33,17 @@ shared_examples 'a request method' do |http_method|
     expect { conn.public_send(http_method, 'http://localhost:4') }.to raise_error(Faraday::Error::ConnectionFailed)
   end
 
-  # Issue with Patron and PATCH body: https://github.com/toland/patron/issues/163
-  unless described_class == Faraday::Adapter::Patron && http_method == :patch
+  # context 'when wrong ssl certificate is provided' do
+  #   let(:ca_file_path) { 'tmp/faraday-different-ca-cert.crt' }
+  #   before { conn_options.merge!(ssl: { ca_file: ca_file_path }) }
+  #
+  #   it do
+  #     expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::SSLError) # do |ex|
+  #     #   expect(ex.message).to include?('certificate')
+  #     # end
+  #   end
+  # end
+
     it 'sends url encoded parameters' do
       payload = { name: 'zack' }
       request_stub.with(Hash[query_or_body, payload])
@@ -59,7 +68,6 @@ shared_examples 'a request method' do |http_method|
         conn.public_send(http_method, '/', payload)
       end
     end
-  end
 
   on_feature :reason_phrase_parse do
     it 'parses the reason phrase' do

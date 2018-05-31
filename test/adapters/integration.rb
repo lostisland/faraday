@@ -24,24 +24,6 @@ module Adapters
       end
     end
 
-    module Parallel
-      # def test_in_parallel
-      #   resp1, resp2 = nil, nil
-      #
-      #   connection = create_connection
-      #   connection.in_parallel do
-      #     resp1 = connection.get('echo?a=1')
-      #     resp2 = connection.get('echo?b=2')
-      #     assert connection.in_parallel?
-      #     assert_nil resp1.body
-      #     assert_nil resp2.body
-      #   end
-      #   assert !connection.in_parallel?
-      #   assert_equal 'get ?{"a"=>"1"}', resp1.body
-      #   assert_equal 'get ?{"b"=>"2"}', resp2.body
-      # end
-    end
-
     module NonParallel
       def test_no_parallel_support
         connection = create_connection
