@@ -1,6 +1,7 @@
 require 'openssl'
 require 'em-http'
 
+# EventMachine patch to make SSL work.
 module EmHttpSslPatch
   def ssl_verify_peer(cert_string)
     cert = nil

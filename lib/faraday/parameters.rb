@@ -48,9 +48,10 @@ module Faraday
           end
           return buffer.chop
         elsif value.is_a?(Array)
+          new_parent = "#{parent}%5B%5D"
+          return new_parent if value.empty?
           buffer = ""
           value.each_with_index do |val, i|
-            new_parent = "#{parent}%5B%5D"
             buffer << "#{to_query.call(new_parent, val)}&"
           end
           return buffer.chop

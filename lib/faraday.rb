@@ -16,7 +16,7 @@ require 'forwardable'
 #   conn.get '/'
 #
 module Faraday
-  VERSION = "0.14.0"
+  VERSION = "0.15.2"
   METHODS_WITH_QUERY = %w[get head delete]
   METHODS_WITH_BODY = %w[post put patch]
 

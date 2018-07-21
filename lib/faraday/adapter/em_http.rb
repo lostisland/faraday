@@ -1,10 +1,11 @@
 module Faraday
   class Adapter
-    # EventMachine adapter is useful for either asynchronous requests
-    # when in EM reactor loop or for making parallel requests in
+    # EventMachine adapter. This adapter is useful for either asynchronous
+    # requests when in an EM reactor loop, or for making parallel requests in
     # synchronous code.
     class EMHttp < Faraday::Adapter
       module Options
+        # @return [Hash]
         def connection_config(env)
           options = {}
           configure_proxy(options, env)
@@ -30,6 +31,7 @@ module Faraday
           body.respond_to?(:read) ? body.read : body
         end
 
+        # Reads out proxy settings from env into options
         def configure_proxy(options, env)
           if proxy = request_options(env)[:proxy]
             options[:proxy] = {
@@ -40,6 +42,7 @@ module Faraday
           end
         end
 
+        # Reads out host and port settings from env into options
         def configure_socket(options, env)
           if bind = request_options(env)[:bind]
             options[:bind] = {
@@ -49,6 +52,7 @@ module Faraday
           end
         end
 
+        # Reads out SSL certificate settings from env into options
         def configure_ssl(options, env)
           if env[:url].scheme == 'https' && env[:ssl]
             options[:ssl] = {
@@ -58,12 +62,14 @@ module Faraday
           end
         end
 
+        # Reads out timeout settings from env into options
         def configure_timeout(options, env)
           timeout, open_timeout = request_options(env).values_at(:timeout, :open_timeout)
           options[:connect_timeout] = options[:inactivity_timeout] = timeout
           options[:connect_timeout] = open_timeout if open_timeout
         end
 
+        # Reads out compression header settings from env into options
         def configure_compression(options, env)
           if env[:method] == :get and not options[:head].key? 'accept-encoding'
             options[:head]['accept-encoding'] = 'gzip, compressed'
@@ -81,6 +87,7 @@ module Faraday
 
       self.supports_parallel = true
 
+      # @return [Manager]
       def self.setup_parallel_manager(options = nil)
         Manager.new
       end
@@ -176,17 +183,20 @@ module Faraday
         raise errklass, msg
       end
 
+      # @return [Boolean]
       def parallel?(env)
         !!env[:parallel_manager]
       end
 
-      # The parallel manager is designed to start an EventMachine loop
+      # This parallel manager is designed to start an EventMachine loop
       # and block until all registered requests have been completed.
       class Manager
+        # @see reset
         def initialize
           reset
         end
 
+        # Re-initializes instance variables
         def reset
           @registered_procs = []
           @num_registered = 0
@@ -195,6 +205,7 @@ module Faraday
           @running = false
         end
 
+        # @return [Boolean]
         def running?() @running end
 
         def add

@@ -1,6 +1,8 @@
 module Faraday
+  # Faraday error base class.
   class Error < StandardError; end
 
+  # Faraday client error class.
   class ClientError < Error
     attr_reader :response, :wrapped_exception
 

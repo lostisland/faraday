@@ -55,7 +55,7 @@ Since the default middleware stack uses url\_encoded middleware and default adap
 ```ruby
 conn = Faraday.new(:url => 'http://sushi.com') do |faraday|
   faraday.request  :url_encoded             # form-encode POST params
-  faraday.response :logger                  # log requests to STDOUT
+  faraday.response :logger                  # log requests and responses to $stdout
   faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
 end
 
@@ -80,7 +80,7 @@ response.body
 
 conn.get '/nigiri', { :name => 'Maguro' }   # GET http://sushi.com/nigiri?name=Maguro
 
-conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100  
+conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
   req.url '/search', :page => 2
   req.params['limit'] = 100
 end
@@ -132,7 +132,7 @@ conn.get do |req|
   req.options.context = {
       foo: 'foo',
       bar: 'bar'
-  }          
+  }
 end
 ```
 

@@ -20,3 +20,4 @@ vendor/bundle
 
 ## IDEs
 .idea/
+.yardoc/

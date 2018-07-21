@@ -1,5 +1,6 @@
 module Faraday
   class Adapter
+    # Excon adapter.
     class Excon < Faraday::Adapter
       dependency 'excon'
 
@@ -15,6 +16,9 @@ module Faraday
           opts[:client_key]  = ssl[:client_key]  if ssl[:client_key]
           opts[:certificate] = ssl[:certificate] if ssl[:certificate]
           opts[:private_key] = ssl[:private_key] if ssl[:private_key]
+          opts[:ssl_version] = ssl[:version] if ssl[:version]
+          opts[:ssl_min_version] = ssl[:min_version] if ssl[:min_version]
+          opts[:ssl_max_version] = ssl[:max_version] if ssl[:max_version]
 
           # https://github.com/geemus/excon/issues/106
           # https://github.com/jruby/jruby-ossl/issues/19
@@ -70,6 +74,7 @@ module Faraday
         raise Error::TimeoutError, err
       end
 
+      # @return [Excon]
       def create_connection(env, opts)
         ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
       end

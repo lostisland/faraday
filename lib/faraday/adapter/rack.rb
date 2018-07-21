@@ -2,7 +2,7 @@ module Faraday
   class Adapter
     # Sends requests to a Rack app.
     #
-    # Examples
+    # @example
     #
     #   class MyRackApp
     #     def call(env)

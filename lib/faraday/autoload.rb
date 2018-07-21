@@ -1,15 +1,17 @@
 module Faraday
-  # Internal: Adds the ability for other modules to manage autoloadable
+  # Adds the ability for other modules to manage autoloadable
   # constants.
+  #
+  # @api private
   module AutoloadHelper
-    # Internal: Registers the constants to be auto loaded.
+    # Registers the constants to be auto loaded.
     #
-    # prefix  - The String require prefix.  If the path is inside Faraday, then
+    # @param prefix [String] The require prefix. If the path is inside Faraday, then
     #           it will be prefixed with the root path of this loaded Faraday
     #           version.
-    # options - Hash of Symbol => String library names.
+    # @param options [{ Symbol => String }] library names.
     #
-    # Examples.
+    # @example
     #
     #   Faraday.autoload_all 'faraday/foo',
     #     :Bar => 'bar'
@@ -18,7 +20,7 @@ module Faraday
     #   Faraday::Bar
     #
     #
-    # Returns nothing.
+    # @return [void]
     def autoload_all(prefix, options)
       if prefix =~ /^faraday(\/|$)/i
         prefix = File.join(Faraday.root_path, prefix)
@@ -28,20 +30,20 @@ module Faraday
       end
     end
 
-    # Internal: Loads each autoloaded constant.  If thread safety is a concern,
+    # Loads each autoloaded constant.  If thread safety is a concern,
     # wrap this in a Mutex.
     #
-    # Returns nothing.
+    # @return [void]
     def load_autoloaded_constants
       constants.each do |const|
         const_get(const) if autoload?(const)
       end
     end
 
-    # Internal: Filters the module's contents with those that have been already
+    # Filters the module's contents with those that have been already
     # autoloaded.
     #
-    # Returns an Array of Class/Module objects.
+    # @return [Array<Class, Module>]
     def all_loaded_constants
       constants.map { |c| const_get(c) }.
         select { |a| a.respond_to?(:loaded?) && a.loaded? }
