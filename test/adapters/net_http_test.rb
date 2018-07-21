@@ -52,5 +52,17 @@ module Adapters
 
       assert_equal 123, http.continue_timeout
     end
+
+    def test_no_retries
+      url = URI('http://example.com')
+
+      adapter = Faraday::Adapter::NetHttp.new
+
+      http = adapter.send(:net_http_connection, :url => url, :request => {})
+      adapter.send(:configure_request, http, {})
+
+      # `max_retries=` is only present in Ruby 2.5
+      assert_equal 0, http.max_retries if http.respond_to?(:max_retries=)
+    end
   end
 end

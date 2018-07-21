@@ -99,6 +99,32 @@ module Faraday
       headers[key] = value
     end
 
+    # Marshal serialization support.
+    #
+    # @return [Hash] the hash ready to be serialized in Marshal.
+    def marshal_dump
+      {
+        :method  => method,
+        :body    => body,
+        :headers => headers,
+        :path    => path,
+        :params  => params,
+        :options => options
+      }
+    end
+
+    # Marshal serialization support.
+    # Restores the instance variables according to the +serialised+.
+    # @param serialised [Hash] the serialised object.
+    def marshal_load(serialised)
+      self.method  = serialised[:method]
+      self.body    = serialised[:body]
+      self.headers = serialised[:headers]
+      self.path    = serialised[:path]
+      self.params  = serialised[:params]
+      self.options = serialised[:options]
+    end
+
     # @return [Env] the Env for this Request
     def to_env(connection)
       Env.new(method, body, connection.build_exclusive_url(path, params),
