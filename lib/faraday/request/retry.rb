@@ -20,7 +20,7 @@ module Faraday
   #
   class Request::Retry < Faraday::Middleware
 
-    DEFAULT_EXCEPTIONS = [Errno::ETIMEDOUT, 'Timeout::Error', Error::TimeoutError, Faraday::Error::RetriableResponse]
+    DEFAULT_EXCEPTIONS = [Errno::ETIMEDOUT, 'Timeout::Error', Error::TimeoutError, Faraday::Error::RetriableResponse].freeze
     IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
 
     class Options < Faraday::Options.new(:max, :interval, :max_interval, :interval_randomness,
