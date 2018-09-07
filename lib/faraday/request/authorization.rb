@@ -30,7 +30,7 @@ module Faraday
       "#{type} #{values * comma}"
     end
 
-    # @param app [Object] Rack app
+    # @param app [#call]
     # @param type [String, Symbol] Type of Authorization
     # @param token [String, Symbol, Hash] Token value for the Authorization
     def initialize(app, type, token)
