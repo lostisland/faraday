@@ -34,7 +34,7 @@ module Faraday
       @name, @instrumenter = Options.from(options).values_at(:name, :instrumenter)
     end
 
-    # @param env [Object] Rack environment
+    # @param env [Faraday::Env]
     def call(env)
       @instrumenter.instrument(@name, env) do
         @app.call(env)
