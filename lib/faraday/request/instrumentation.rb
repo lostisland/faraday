@@ -25,7 +25,7 @@ module Faraday
     #     duration = ends - starts
     #     $stderr.puts '[%s] %s %s (%.3f s)' % [url.host, http_method, url.request_uri, duration]
     #   end
-    # @param app [Object] Rack app
+    # @param app [#call]
     # @param options [nil, Hash] Options hash
     # @option options [String] :name Name of the instrumenter. Default: "request.faraday"
     # @option options [Class] :instrumenter Active Support instrumenter class. Default: ActiveSupport::Notifications
