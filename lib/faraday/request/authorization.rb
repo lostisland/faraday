@@ -38,7 +38,7 @@ module Faraday
       super(app)
     end
 
-    # @param env [Object] Rack app environment
+    # @param env [Faraday::Env]
     def call(env)
       unless env.request_headers[KEY]
         env.request_headers[KEY] = @header_value
