@@ -2,10 +2,14 @@ require File.expand_path("../url_encoded", __FILE__)
 require 'securerandom'
 
 module Faraday
+  # Middleware for supporting multi-part requests.
   class Request::Multipart < Request::UrlEncoded
     self.mime_type = 'multipart/form-data'.freeze
     DEFAULT_BOUNDARY_PREFIX = "-----------RubyMultipartPost".freeze unless defined? DEFAULT_BOUNDARY_PREFIX
 
+    # Checks for files in the payload, otherwise leaves everything untouched.
+    #
+    # @param env [Faraday::Env]
     def call(env)
       match_content_type(env) do |params|
         env.request.boundary ||= unique_boundary
@@ -15,6 +19,7 @@ module Faraday
       @app.call env
     end
 
+    # @param env [Faraday::Env]
     def process_request?(env)
       type = request_type(env)
       env.body.respond_to?(:each_key) and !env.body.empty? and (
@@ -23,6 +28,10 @@ module Faraday
       )
     end
 
+    # Returns true of +obj+ is an enumerable with values that are multipart.
+    #
+    # @param obj [Object]
+    # @return [Boolean]
     def has_multipart?(obj)
       # string is an enum in 1.8, returning list of itself
       if obj.respond_to?(:each) && !obj.is_a?(String)
@@ -33,6 +42,8 @@ module Faraday
       false
     end
 
+    # @param env [Faraday::Env]
+    # @param params [Hash]
     def create_multipart(env, params)
       boundary = env.request.boundary
       parts = process_params(params) do |key, value|
@@ -45,10 +56,14 @@ module Faraday
       return body
     end
 
+    # @return [String]
     def unique_boundary
       "#{DEFAULT_BOUNDARY_PREFIX}-#{SecureRandom.hex}"
     end
 
+    # @param params [Hash]
+    # @param prefix [String]
+    # @param pieces [Array]
     def process_params(params, prefix = nil, pieces = nil, &block)
       params.inject(pieces || []) do |all, (key, value)|
         key = "#{prefix}[#{key}]" if prefix
