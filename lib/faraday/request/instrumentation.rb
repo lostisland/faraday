@@ -27,8 +27,8 @@ module Faraday
     #   end
     # @param app [#call]
     # @param options [nil, Hash] Options hash
-    # @option options [String] :name Name of the instrumenter. Default: "request.faraday"
-    # @option options [Class] :instrumenter Active Support instrumenter class. Default: ActiveSupport::Notifications
+    # @option options [String] :name ('request.faraday) Name of the instrumenter
+    # @option options [Class] :instrumenter (ActiveSupport::Notifications) Active Support instrumenter class.
     def initialize(app, options = nil)
       super(app)
       @name, @instrumenter = Options.from(options).values_at(:name, :instrumenter)
