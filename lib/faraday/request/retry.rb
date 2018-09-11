@@ -82,29 +82,25 @@ module Faraday
 
     # @param app [#call]
     # @param options [Hash]
-    # @option options [Integer] :max Maximum number of retries (default: 2)
-    # @option options [Integer] :interval Pause in seconds between retries (default: 0)
-    # @option options [Integer] :interval_randomness The maximum random interval amount expressed
+    # @option options [Integer] :max (2) Maximum number of retries
+    # @option options [Integer] :interval (0) Pause in seconds between retries
+    # @option options [Integer] :interval_randomness (0) The maximum random interval amount expressed
     #                       as a float between 0 and 1 to use in addition to the
-    #                       interval. (default: 0)
-    # @option options [Integer] :max_interval An upper limit for the interval (default: Float::MAX)
-    # @option options [Integer] :backoff_factor    The amount to multiple each successive retry's
+    #                       interval.
+    # @option options [Integer] :max_interval (Float::MAX) An upper limit for the interval
+    # @option options [Integer] :backoff_factor (1) The amount to multiple each successive retry's
     #                       interval amount by in order to provide backoff
-    #                       (default: 1)
-    # @option options [Array] :exceptions The list of exceptions to handle. Exceptions can be
-    #                       given as Class, Module, or String. (default:
-    #                       [Errno::ETIMEDOUT, 'Timeout::Error',
-    #                       Error::TimeoutError, Faraday::Error::RetriableResponse])
-    
-    # @option options [Array] :methods A list of HTTP methods to retry without calling retry_if.  Pass
+    # @option options [Array] :exceptions ([Errno::ETIMEDOUT, 'Timeout::Error',
+    #                       Error::TimeoutError, Faraday::Error::RetriableResponse]) The list of
+    #                       exceptions to handle. Exceptions can be given as Class, Module, or String.
+    # @option options [Array] :methods (the idempotent HTTP methods in IDEMPOTENT_METHODS) A list of
+    #                       HTTP methods to retry without calling retry_if.  Pass
     #                       an empty Array to call retry_if for all exceptions.
-    #                       (defaults to the idempotent HTTP methods in IDEMPOTENT_METHODS)
-    # @option options [Block] :retry_if block that will receive the env object and the exception raised
+    # @option options [Block] :retry_if (false) block that will receive the env object and the exception raised
     #                       and should decide if the code should retry still the action or
     #                       not independent of the retry count. This would be useful
     #                       if the exception produced is non-recoverable or if the
     #                       the HTTP method called is not idempotent.
-    #                       (defaults to return false)
     # @option options [Block] :retry_block block that is executed after every retry. Request environment, middleware options,
     #                       current number of retries and the exception is passed to the block as parameters.
     def initialize(app, options = nil)
