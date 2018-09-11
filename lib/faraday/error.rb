@@ -46,10 +46,13 @@ module Faraday
 
   # A unified client error for failed connections.
   class ConnectionFailed < ClientError;   end
+
   # A 404 error used in the RaiseError middleware
   #
   # @see Faraday::Response::RaiseError
   class ResourceNotFound < ClientError;   end
+  
+  # Raised by FaradayMiddleware::ResponseMiddleware
   class ParsingError     < ClientError;   end
 
   # A unified client error for timeouts.
