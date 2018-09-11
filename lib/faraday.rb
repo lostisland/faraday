@@ -202,7 +202,7 @@ module Faraday
     #
     # @param key [Symbol] key for the registered middleware.
     # @return [Class] a middleware Class.
-    # @raise [Faraday::Error] if the {key} is not registered
+    # @raise [Faraday::Error] if given key is not registered
     #
     # @example
     #

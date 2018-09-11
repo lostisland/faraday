@@ -44,19 +44,31 @@ module Faraday
     end
   end
 
+  # A unified client error for failed connections.
   class ConnectionFailed < ClientError;   end
+
+  # A 404 error used in the RaiseError middleware
+  #
+  # @see Faraday::Response::RaiseError
   class ResourceNotFound < ClientError;   end
+  
+  # Raised by FaradayMiddleware::ResponseMiddleware
   class ParsingError     < ClientError;   end
 
+  # A unified client error for timeouts.
   class TimeoutError < ClientError
     def initialize(ex = nil)
       super(ex || "timeout")
     end
   end
 
+  # A unified client error for SSL errors.
   class SSLError < ClientError
   end
 
+  # Exception used to control the Retry middleware.
+  #
+  # @see Faraday::Request::Retry
   class RetriableResponse < ClientError; end
 
   [:ClientError, :ConnectionFailed, :ResourceNotFound,
