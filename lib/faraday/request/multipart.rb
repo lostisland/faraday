@@ -28,7 +28,7 @@ module Faraday
       )
     end
 
-    # Returns true of +obj+ is an enumerable with values that are multipart.
+    # Returns true if obj is an enumerable with values that are multipart.
     #
     # @param obj [Object]
     # @return [Boolean]
