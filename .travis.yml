@@ -11,6 +11,7 @@ rvm:
   - 2.3
   - 2.4
   - 2.5.0
+  - ruby-head
   - jruby-19mode
   - jruby-20mode
   - jruby-21mode
@@ -24,6 +25,7 @@ matrix:
     - rvm: jruby-20mode
     - rvm: jruby-21mode
     - rvm: jruby-head
+    - rvm: ruby-head
   fast_finish: true
 
 env:
