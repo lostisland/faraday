@@ -64,5 +64,16 @@ module Adapters
       # `max_retries=` is only present in Ruby 2.5
       assert_equal 0, http.max_retries if http.respond_to?(:max_retries=)
     end
+
+    def test_write_timeout
+      url = URI('http://example.com')
+
+      adapter = Faraday::Adapter::NetHttp.new
+
+      http = adapter.send(:net_http_connection, :url => url, :request => {})
+      adapter.send(:configure_request, http, { write_timeout: 10 })
+
+      assert_equal 10, http.write_timeout if http.respond_to?(:write_timeout=)
+    end
   end
 end
