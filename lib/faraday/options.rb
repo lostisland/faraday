@@ -202,7 +202,7 @@ module Faraday
   end
 
   class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
-    :timeout, :open_timeout, :boundary,
+    :timeout, :open_timeout, :write_timeout, :boundary,
     :oauth, :context, :on_data)
 
     def []=(key, value)
