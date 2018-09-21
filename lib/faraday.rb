@@ -16,7 +16,7 @@ require 'forwardable'
 #   conn.get '/'
 #
 module Faraday
-  VERSION = "0.15.2"
+  VERSION = "0.15.3"
   METHODS_WITH_QUERY = %w[get head delete]
   METHODS_WITH_BODY = %w[post put patch]
 
@@ -204,7 +204,7 @@ module Faraday
     #
     # @param key [Symbol] key for the registered middleware.
     # @return [Class] a middleware Class.
-    # @raise [Faraday::Error] if the {key} is not registered
+    # @raise [Faraday::Error] if given key is not registered
     #
     # @example
     #

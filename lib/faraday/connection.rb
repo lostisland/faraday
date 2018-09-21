@@ -47,7 +47,7 @@ module Faraday
     # @param url [URI, String] URI or String base URL to use as a prefix for all
     #           requests (optional).
     # @param options [Hash, Faraday::ConnectionOptions]
-    # @option options [URI, String] :url URI or String base URL (default: "http:/").
+    # @option options [URI, String] :url ('http:/') URI or String base URL
     # @option options [Hash<String => String>] :params URI query unencoded key/value pairs.
     # @option options [Hash<String => String>] :headers Hash of unencoded HTTP header key/value pairs.
     # @option options [Hash] :request Hash of request options.

@@ -6,20 +6,22 @@ module Faraday
   # handle, a retry interval, a percentage of randomness to add to the retry
   # interval, and a backoff factor.
   #
-  # Examples
-  #
+  # @example Configure Retry middleware using intervals
   #   Faraday.new do |conn|
-  #     conn.request :retry, max: 2, interval: 0.05,
-  #                          interval_randomness: 0.5, backoff_factor: 2,
-  #                          exceptions: [CustomException, 'Timeout::Error']
-  #     conn.adapter ...
+  #     conn.request(:retry, max: 2,
+  #                          interval: 0.05,
+  #                          interval_randomness: 0.5,
+  #                          backoff_factor: 2,
+  #                          exceptions: [CustomException, 'Timeout::Error'])
+  #
+  #     conn.adapter(:net_http) # NB: Last middleware must be the adapter
   #   end
   #
   # This example will result in a first interval that is random between 0.05 and 0.075 and a second
-  # interval that is random between 0.1 and 0.15
-  #
+  # interval that is random between 0.1 and 0.15.
   class Request::Retry < Faraday::Middleware
 
+    DEFAULT_EXCEPTIONS = [Errno::ETIMEDOUT, 'Timeout::Error', Error::TimeoutError, Faraday::Error::RetriableResponse].freeze
     IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
 
     class Options < Faraday::Options.new(:max, :interval, :max_interval, :interval_randomness,
@@ -57,9 +59,7 @@ module Faraday
       end
 
       def exceptions
-        Array(self[:exceptions] ||= [Errno::ETIMEDOUT, 'Timeout::Error',
-                                     Error::TimeoutError,
-                                     Faraday::Error::RetriableResponse])
+        Array(self[:exceptions] ||= DEFAULT_EXCEPTIONS)
       end
 
       def methods
@@ -79,32 +79,28 @@ module Faraday
       end
     end
 
-    # Public: Initialize middleware
-    #
-    # Options:
-    # max                 - Maximum number of retries (default: 2)
-    # interval            - Pause in seconds between retries (default: 0)
-    # interval_randomness - The maximum random interval amount expressed
+    # @param app [#call]
+    # @param options [Hash]
+    # @option options [Integer] :max (2) Maximum number of retries
+    # @option options [Integer] :interval (0) Pause in seconds between retries
+    # @option options [Integer] :interval_randomness (0) The maximum random interval amount expressed
     #                       as a float between 0 and 1 to use in addition to the
-    #                       interval. (default: 0)
-    # max_interval        - An upper limit for the interval (default: Float::MAX)
-    # backoff_factor      - The amount to multiple each successive retry's
+    #                       interval.
+    # @option options [Integer] :max_interval (Float::MAX) An upper limit for the interval
+    # @option options [Integer] :backoff_factor (1) The amount to multiple each successive retry's
     #                       interval amount by in order to provide backoff
-    #                       (default: 1)
-    # exceptions          - The list of exceptions to handle. Exceptions can be
-    #                       given as Class, Module, or String. (default:
-    #                       [Errno::ETIMEDOUT, 'Timeout::Error',
-    #                       Error::TimeoutError, Faraday::Error::RetriableResponse])
-    # methods             - A list of HTTP methods to retry without calling retry_if.  Pass
+    # @option options [Array] :exceptions ([Errno::ETIMEDOUT, 'Timeout::Error',
+    #                       Error::TimeoutError, Faraday::Error::RetriableResponse]) The list of
+    #                       exceptions to handle. Exceptions can be given as Class, Module, or String.
+    # @option options [Array] :methods (the idempotent HTTP methods in IDEMPOTENT_METHODS) A list of
+    #                       HTTP methods to retry without calling retry_if.  Pass
     #                       an empty Array to call retry_if for all exceptions.
-    #                       (defaults to the idempotent HTTP methods in IDEMPOTENT_METHODS)
-    # retry_if            - block that will receive the env object and the exception raised
+    # @option options [Block] :retry_if (false) block that will receive the env object and the exception raised
     #                       and should decide if the code should retry still the action or
     #                       not independent of the retry count. This would be useful
     #                       if the exception produced is non-recoverable or if the
     #                       the HTTP method called is not idempotent.
-    #                       (defaults to return false)
-    # retry_block         - block that is executed after every retry. Request environment, middleware options,
+    # @option options [Block] :retry_block block that is executed after every retry. Request environment, middleware options,
     #                       current number of retries and the exception is passed to the block as parameters.
     def initialize(app, options = nil)
       super(app)
@@ -121,6 +117,7 @@ module Faraday
       retry_after && retry_after >= retry_interval ? retry_after : retry_interval
     end
 
+    # @param env [Faraday::Env]
     def call(env)
       retries = @options.max
       request_body = env[:body]
@@ -148,10 +145,12 @@ module Faraday
       end
     end
 
-    # Private: construct an exception matcher object.
-    #
     # An exception matcher for the rescue clause can usually be any object that
     # responds to `===`, but for Ruby 1.8 it has to be a Class or Module.
+    #
+    # @param exceptions [Array]
+    # @api private
+    # @return [Module] an exception matcher
     def build_exception_matcher(exceptions)
       matcher = Module.new
       (class << matcher; self; end).class_eval do
