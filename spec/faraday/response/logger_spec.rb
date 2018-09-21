@@ -38,7 +38,7 @@ RSpec.describe Faraday::Response::Logger do
 
   it 'logs method and url' do
     conn.get '/hello', nil, accept: 'text/html'
-    expect(string_io.string).to match("get http:/hello")
+    expect(string_io.string).to match("GET http:/hello")
   end
 
   it 'logs request headers by default' do
