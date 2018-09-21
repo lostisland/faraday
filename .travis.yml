@@ -1,8 +1,6 @@
 sudo: false
 language: ruby
-script: bundle exec script/test
 cache: bundler
-
 rvm:
   - 2.2
   - 2.3
