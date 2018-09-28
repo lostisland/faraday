@@ -22,6 +22,7 @@ WebMock.disable_net_connect!(allow_localhost: true)
 SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, Coveralls::SimpleCov::Formatter]
 
 SimpleCov.start do
+  add_filter '/spec/'
   minimum_coverage 90
   minimum_coverage_by_file 70
 end
