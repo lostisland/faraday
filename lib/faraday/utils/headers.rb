@@ -36,9 +36,9 @@ module Faraday
         value = if key.respond_to?(:to_str)
                   key
                 else
-                  key.to_s.split('_').            # :user_agent => %w(user agent)
-                  each { |w| w.capitalize! }.   # => %w(User Agent)
-                  join('-')                     # => "User-Agent"
+                  key.to_s.split('_') # :user_agent => %w(user agent)
+                    .each { |w| w.capitalize! } # => %w(User Agent)
+                    .join('-') # => "User-Agent"
                 end
         keymap_mutex.synchronize { map[key] = value }
       end
@@ -65,7 +65,7 @@ module Faraday
 
       def delete(k)
         k = KeyMap[k]
-        if k = @names[k.downcase]
+        if (k = @names[k.downcase])
           @names.delete k.downcase
           super(k)
         end
@@ -83,6 +83,7 @@ module Faraday
         other.each { |k, v| self[k] = v }
         self
       end
+
       alias_method :update, :merge!
 
       def merge(other)
@@ -97,7 +98,9 @@ module Faraday
         self
       end
 
-      def to_hash() ::Hash.new.update(self) end
+      def to_hash
+        ::Hash.new.update(self)
+      end
 
       def parse(header_string)
         return unless header_string && !header_string.empty?
@@ -108,23 +111,23 @@ module Faraday
         start_index = headers.rindex { |x| x.match(/^HTTP\//) } || 0
         last_response = headers.slice(start_index, headers.size)
 
-        last_response.
-          tap  { |a| a.shift if a.first.index('HTTP/') == 0 }. # drop the HTTP status line
-        map  { |h| h.split(/:\s*/, 2) }.reject { |p| p[0].nil? }. # split key and value, ignore blank lines
-        each { |key, value|
-          # join multiple values with a comma
-          if self[key]
-            self[key] << ', ' << value
-          else
-            self[key] = value
-          end
-        }
+        last_response
+          .tap { |a| a.shift if a.first.index('HTTP/') == 0 } # drop the HTTP status line
+          .map { |h| h.split(/:\s*/, 2) } # split key and value
+          .reject { |p| p[0].nil? } # ignore blank lines
+          .each { |key, value| add_parsed(key, value) } # join multiple values with a comma
       end
 
       protected
 
       def names
         @names
+      end
+
+      private
+
+      def add_parsed(key, value)
+        self[key] ? self[key] << ', ' << value : self[key] = value
       end
     end
   end
