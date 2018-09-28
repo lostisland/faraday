@@ -1,4 +1,16 @@
 shared_examples 'an adapter' do |**options|
+  context 'with SSL enabled' do
+    before { ENV['SSL'] = 'yes' }
+    include_examples 'adapter examples', options
+  end
+
+  context 'with SSL disabled' do
+    before { ENV['SSL'] = 'no' }
+    include_examples 'adapter examples'
+  end
+end
+
+shared_examples 'adapter examples' do |**options|
   include Faraday::StreamingResponseChecker
 
   let(:adapter) { described_class.name.split('::').last }
