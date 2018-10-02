@@ -160,7 +160,7 @@ module Adapters
       def test_OPTIONS
         resp = run_request(:options, 'echo', nil, {})
 
-        body = 'options' if Faraday::TestCase.ruby_22_plus?
+        body = Faraday::TestCase.ruby_22_plus? ? 'options' : ''
 
         assert_equal body, resp.body
       end
