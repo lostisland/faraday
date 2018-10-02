@@ -159,7 +159,10 @@ module Adapters
 
       def test_OPTIONS
         resp = run_request(:options, 'echo', nil, {})
-        assert_equal 'options', resp.body
+
+        body = 'options' if ruby_22_plus?
+
+        assert_equal body, resp.body
       end
 
       def test_HEAD_retrieves_no_response_body
