@@ -39,35 +39,53 @@ shared_examples 'a request method' do |http_method|
   #
   #   it do
   #     expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::SSLError) # do |ex|
-  #     #   expect(ex.message).to include?('certificate')
-  #     # end
+  #       expect(ex.message).to include?('certificate')
+  #     end
   #   end
   # end
 
-    it 'sends url encoded parameters' do
-      payload = { name: 'zack' }
-      request_stub.with(Hash[query_or_body, payload])
-      conn.public_send(http_method, '/', payload)
-    end
+  it 'sends url encoded parameters' do
+    payload = { name: 'zack' }
+    request_stub.with(Hash[query_or_body, payload])
+    conn.public_send(http_method, '/', payload)
+  end
 
-    it 'sends url encoded nested parameters' do
-      payload = { name: { first: 'zack' } }
-      request_stub.with(Hash[query_or_body, payload])
-      conn.public_send(http_method, '/', payload)
-    end
+  it 'sends url encoded nested parameters' do
+    payload = { name: { first: 'zack' } }
+    request_stub.with(Hash[query_or_body, payload])
+    conn.public_send(http_method, '/', payload)
+  end
 
-    # Can't send files on get, head and delete methods
-    if method_with_body?(http_method)
-      it 'sends files' do
-        payload = { uploaded_file: multipart_file }
-        request_stub.with(headers: { "Content-Type" => %r[\Amultipart/form-data] }) do |request|
-          # WebMock does not support matching body for multipart/form-data requests yet :(
-          # https://github.com/bblimke/webmock/issues/623
-          request.body =~ %r[RubyMultipartPost]
-        end
-        conn.public_send(http_method, '/', payload)
+  # TODO: This needs reimplementation: see https://github.com/lostisland/faraday/issues/718
+  # Should raise Faraday::TimeoutError
+  it 'supports timeout option' do
+    conn_options[:request] = { timeout: 1 }
+    request_stub.to_timeout
+    exc = adapter == 'NetHttp' ? Faraday::Error::ConnectionFailed : Faraday::TimeoutError
+    expect { conn.public_send(http_method, '/') }.to raise_error(exc)
+  end
+
+  # TODO: This needs reimplementation: see https://github.com/lostisland/faraday/issues/718
+  # Should raise Faraday::Error::ConnectionFailed
+  it 'supports open_timeout option' do
+    conn_options[:request] = { open_timeout: 1 }
+    request_stub.to_timeout
+    exc = adapter == 'NetHttp' ? Faraday::Error::ConnectionFailed : Faraday::TimeoutError
+    expect { conn.public_send(http_method, '/') }.to raise_error(exc)
+  end
+
+  # Can't send files on get, head and delete methods
+  if method_with_body?(http_method)
+    it 'sends files' do
+      payload = { uploaded_file: multipart_file }
+      request_stub.with(headers: { "Content-Type" => %r[\Amultipart/form-data] }) do |request|
+        # WebMock does not support matching body for multipart/form-data requests yet :(
+        # https://github.com/bblimke/webmock/issues/623
+        request.body =~ %r[RubyMultipartPost]
       end
+      conn.public_send(http_method, '/', payload)
     end
+  end
 
   on_feature :reason_phrase_parse do
     it 'parses the reason phrase' do
@@ -127,9 +145,9 @@ shared_examples 'a request method' do |http_method|
       payload1 = { a: '1' }
       payload2 = { b: '2' }
       request_stub.with(Hash[query_or_body, payload1])
-          .to_return(body: payload1.to_json)
+        .to_return(body: payload1.to_json)
       stub_request(http_method, remote).with(Hash[query_or_body, payload2])
-          .to_return(body: payload2.to_json)
+        .to_return(body: payload2.to_json)
 
       conn.in_parallel do
         resp1 = conn.public_send(http_method, '/', payload1)
@@ -146,41 +164,18 @@ shared_examples 'a request method' do |http_method|
     end
   end
 
-  # TODO: This needs reimplementation: see https://github.com/lostisland/faraday/issues/718
-  # it 'handles open timeout responses' do
-  #   request_stub.to_timeout
-  #   expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::Error::ConnectionFailed)
-  # end
+  it 'handles requests with proxy' do
+    conn_options[:proxy] = 'http://google.co.uk'
 
-  # TODO: Fix proxy tests
-  # it 'handles requests with proxy' do
-  #   conn_options[:proxy] = 'http://google.co.uk'
-  #   # stub_request(:get, 'http://example.com/')
-  #
-  #   # binding.pry
-  #   conn.public_send(http_method, '/')
-  #   # assert_equal 'get', res.body
-  #
-  #   # unless self.class.ssl_mode?
-  #   #   # proxy can't append "Via" header for HTTPS responses
-  #   #   assert_match(/:#{proxy_uri.port}$/, res['via'])
-  #   # end
-  # end
-  #
-  # it 'handles proxy failures' do
-  #   proxy_uri = URI(ENV['LIVE_PROXY'])
-  #   proxy_uri.password = 'WRONG'
-  #   conn = create_connection(:proxy => proxy_uri)
-  #
-  #   err = assert_raises Faraday::Error::ConnectionFailed do
-  #     conn.get '/echo'
-  #   end
-  #
-  #   unless self.class.ssl_mode? && (self.class.jruby? ||
-  #       adapter == :em_http || adapter == :em_synchrony)
-  #     # JRuby raises "End of file reached" which cannot be distinguished from a 407
-  #     # EM raises "connection closed by server" due to https://github.com/igrigorik/em-socksify/pull/19
-  #     assert_equal %{407 "Proxy Authentication Required "}, err.message
-  #   end
-  # end
+    # binding.pry
+    res = conn.public_send(http_method, '/')
+    expect(res.status).to eq(200)
+  end
+
+  it 'handles proxy failures' do
+    conn_options[:proxy] = 'http://google.co.uk'
+    request_stub.to_return(status: 407)
+
+    expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::Error::ConnectionFailed)
+  end
 end
