@@ -4,7 +4,10 @@ module Faraday
   module Utils
     extend self
 
-    # Adapted from Rack::Utils::HeaderHash
+    # A case-insensitive Hash that preserves the original case of a header
+    # when set.
+    #
+    # Adapted from [Rack::Utils::HeaderHash](https://www.rubydoc.info/gems/rack/Rack/Utils/HeaderHash).
     class Headers < ::Hash
       def self.from(value)
         new(value)
