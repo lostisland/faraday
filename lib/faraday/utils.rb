@@ -135,7 +135,7 @@ module Faraday
       end
     end
 
-    # hash with stringified keys
+    # A hash with stringified keys.
     class ParamsHash < Hash
       def [](key)
         super(convert_key(key))
