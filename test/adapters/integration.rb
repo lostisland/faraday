@@ -106,44 +106,6 @@ module Adapters
       extend Forwardable
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
 
-      # This needs reimplementation: see https://github.com/lostisland/faraday/issues/718
-      def test_timeout
-        conn = create_connection(:request => { :timeout => 1, :open_timeout => 1 })
-        assert_raises Faraday::Error::TimeoutError do
-          conn.get '/slow'
-        end
-      end
-
-      # def test_proxy
-      #   proxy_uri = URI(ENV['LIVE_PROXY'])
-      #   conn = create_connection(:proxy => proxy_uri)
-      #
-      #   res = conn.get '/echo'
-      #   assert_equal 'get', res.body
-      #
-      #   unless self.class.ssl_mode?
-      #     # proxy can't append "Via" header for HTTPS responses
-      #     assert_match(/:#{proxy_uri.port}$/, res['via'])
-      #   end
-      # end
-
-      # def test_proxy_auth_fail
-      #   proxy_uri = URI(ENV['LIVE_PROXY'])
-      #   proxy_uri.password = 'WRONG'
-      #   conn = create_connection(:proxy => proxy_uri)
-      #
-      #   err = assert_raises Faraday::Error::ConnectionFailed do
-      #     conn.get '/echo'
-      #   end
-      #
-      #   unless self.class.ssl_mode? && (self.class.jruby? ||
-      #       adapter == :em_http || adapter == :em_synchrony)
-      #     # JRuby raises "End of file reached" which cannot be distinguished from a 407
-      #     # EM raises "connection closed by server" due to https://github.com/igrigorik/em-socksify/pull/19
-      #     assert_equal %{407 "Proxy Authentication Required "}, err.message
-      #   end
-      # end
-
       def adapter
         raise NotImplementedError.new("Need to override #adapter")
       end
