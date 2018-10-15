@@ -218,14 +218,56 @@ module Faraday
     end
   end
 
+  # SSL-related options.
+  #
+  # @!attribute verify
+  #   @return [Boolean] whether to very SSL certificates
+  #
+  # @!attribute ca_file
+  #   @return [String] CA file
+  #
+  # @!attribute ca_path
+  #   @return [String] CA path
+  #
+  # @!attribute verify_mode
+  #   @return [String] TODO: Explain this
+  #
+  # @!attribute cert_store
+  #   @return [Object] certificate store
+  #
+  # @!attribute client_cert
+  #   @return [Object] client certificate
+  #
+  # @!attribute client_key
+  #   @return [Object] client key
+  #
+  # @!attribute certificate
+  #   @return [Object] certificate
+  #
+  # @!attribute private_key
+  #   @return [Object] private key
+  #
+  # @!attribute verify_depth
+  #   @return [Object] verify depth
+  #
+  # @!attribute version
+  #   @return [Object] version
+  #
+  # @!attribute min_version
+  #   @return [Object] minimum version
+  #
+  # @!attribute max_version
+  #   @return [Object] maximum version
   class SSLOptions < Options.new(:verify, :ca_file, :ca_path, :verify_mode,
     :cert_store, :client_cert, :client_key, :certificate, :private_key, :verify_depth,
     :version, :min_version, :max_version)
 
+    # @return [Boolean] true if should verify
     def verify?
       verify != false
     end
 
+    # @return [Boolean] true if should not verify
     def disable?
       !verify?
     end
