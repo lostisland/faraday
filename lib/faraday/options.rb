@@ -233,7 +233,7 @@ module Faraday
   #   @return [String] Any `OpenSSL::SSL::` constant (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL.html)
   #
   # @!attribute cert_store
-  #   @return [Object] certificate store
+  #   @return [OpenSSL::X509::Store] certificate store
   #
   # @!attribute client_cert
   #   @return [Object] client certificate
