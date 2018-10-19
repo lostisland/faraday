@@ -257,7 +257,7 @@ module Faraday
   #   @return [String, Symbol] minimum SSL version (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL/SSLContext.html#method-i-min_version-3D)
   #
   # @!attribute max_version
-  #   @return [Object] maximum version
+  #   @return [String, Symbol] maximum SSL version (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL/SSLContext.html#method-i-max_version-3D)
   class SSLOptions < Options.new(:verify, :ca_file, :ca_path, :verify_mode,
     :cert_store, :client_cert, :client_key, :certificate, :private_key, :verify_depth,
     :version, :min_version, :max_version)
