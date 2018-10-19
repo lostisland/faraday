@@ -248,7 +248,7 @@ module Faraday
   #   @return [OpenSSL::PKey::RSA, OpenSSL::PKey::DSA] private key (Excon only)
   #
   # @!attribute verify_depth
-  #   @return [Object] verify depth
+  #   @return [Integer] maximum depth for the certificate chain verification
   #
   # @!attribute version
   #   @return [Object] version
