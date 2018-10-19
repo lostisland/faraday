@@ -239,7 +239,7 @@ module Faraday
   #   @return [String, OpenSSL::X509::Certificate] client certificate
   #
   # @!attribute client_key
-  #   @return [Object] client key
+  #   @return [String, OpenSSL::PKey::RSA, OpenSSL::PKey::DSA] client key
   #
   # @!attribute certificate
   #   @return [Object] certificate
