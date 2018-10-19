@@ -221,7 +221,7 @@ module Faraday
   # SSL-related options.
   #
   # @!attribute verify
-  #   @return [Boolean] whether to very SSL certificates
+  #   @return [Boolean] whether to verify SSL certificates or not
   #
   # @!attribute ca_file
   #   @return [String] CA file
