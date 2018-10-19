@@ -354,7 +354,7 @@ stubs.verify_stubbed_calls
 This library aims to support and is [tested against][travis] the following Ruby
 implementations:
 
-* Ruby 2.2+
+* Ruby 2.3+
 
 If something doesn't work on one of these Ruby versions, it's a bug.
 
