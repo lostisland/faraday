@@ -251,7 +251,7 @@ module Faraday
   #   @return [Integer] maximum depth for the certificate chain verification
   #
   # @!attribute version
-  #   @return [Object] version
+  #   @return [String, Symbol] SSL version (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL/SSLContext.html#method-i-ssl_version-3D)
   #
   # @!attribute min_version
   #   @return [Object] minimum version
