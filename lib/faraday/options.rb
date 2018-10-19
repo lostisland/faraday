@@ -254,7 +254,7 @@ module Faraday
   #   @return [String, Symbol] SSL version (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL/SSLContext.html#method-i-ssl_version-3D)
   #
   # @!attribute min_version
-  #   @return [Object] minimum version
+  #   @return [String, Symbol] minimum SSL version (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL/SSLContext.html#method-i-min_version-3D)
   #
   # @!attribute max_version
   #   @return [Object] maximum version
