@@ -245,7 +245,7 @@ module Faraday
   #   @return [OpenSSL::X509::Certificate] certificate (Excon only)
   #
   # @!attribute private_key
-  #   @return [Object] private key
+  #   @return [OpenSSL::PKey::RSA, OpenSSL::PKey::DSA] private key (Excon only)
   #
   # @!attribute verify_depth
   #   @return [Object] verify depth
