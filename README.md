@@ -372,7 +372,7 @@ of a major release, support for that Ruby version may be dropped.
 ## Contribute
 
 Do you want to contribute to Faraday?
-Open the issues page and check for the `any volunteer?` label!
+Open the issues page and check for the `help wanted` label!
 But before you start coding, please read our [Contributing Guide](https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md)
 
 ## Copyright
