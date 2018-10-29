@@ -1,5 +1,8 @@
 module Faraday
   module Utils
+    # A case-insensitive Hash that preserves the original case of a header
+    # when set.
+    #
     # Adapted from Rack::Utils::HeaderHash
     class Headers < ::Hash
       def self.from(value)

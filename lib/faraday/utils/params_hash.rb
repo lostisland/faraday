@@ -1,6 +1,6 @@
 module Faraday
   module Utils
-    # Hash with stringified keys
+    # A hash with stringified keys.
     class ParamsHash < Hash
       def [](key)
         super(convert_key(key))
