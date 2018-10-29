@@ -21,47 +21,65 @@ RSpec.describe Faraday::NestedParamsEncoder do
     expect(subject.decode(query)).to eq(expected)
   end
 
-  it 'decode_nested_array_mixed_types' do
+  it 'decodes nested array mixed types' do
     query    = 'a[][one]=1&a[]=2&a[]=&a[]'
     expected = Rack::Utils.parse_nested_query(query)
     expect(subject.decode(query)).to eq(expected)
   end
 
-  it 'decode_nested_ignores_invalid_array' do
+  it 'decodes nested ignores invalid array' do
     query    = '[][a]=1&b=2'
     expected = { "a" => "1", "b" => "2" }
     expect(subject.decode(query)).to eq(expected)
   end
 
-  it 'decode_nested_ignores_repeated_array_notation' do
+  it 'decodes nested ignores repeated array notation' do
     query    = 'a[][][]=1'
     expected = { "a" => ["1"] }
     expect(subject.decode(query)).to eq(expected)
   end
 
-  it 'decode_nested_ignores_malformed_keys' do
+  it 'decodes nested ignores malformed keys' do
     query    = '=1&[]=2'
     expected = {}
     expect(subject.decode(query)).to eq(expected)
   end
 
-  it 'decode_nested_subkeys_dont_have_to_be_in_brackets' do
+  it 'decodes nested subkeys dont have to be in brackets' do
     query    = 'a[b]c[d]e=1'
     expected = { "a" => { "b" => { "c" => { "d" => { "e" => "1" } } } } }
     expect(subject.decode(query)).to eq(expected)
   end
 
-  it 'decode_nested_final_value_overrides_any_type' do
+  it 'decodes nested final value overrides any type' do
     query    = 'a[b][c]=1&a[b]=2'
     expected = { "a" => { "b" => "2" } }
     expect(subject.decode(query)).to eq(expected)
   end
 
-  it 'encode_rack_compat' do
+  it 'encodes rack compat' do
     params   = { :a => [{ :one => "1", :two => "2" }, "3", ""] }
     result   = Faraday::Utils.unescape(Faraday::NestedParamsEncoder.encode(params)).split('&')
     expected = Rack::Utils.build_nested_query(params).split('&')
     expect(result).to match_array(expected)
+  end
+
+  it 'encodes empty string array value' do
+    expected = 'baz=&foo%5Bbar%5D='
+    result = Faraday::NestedParamsEncoder.encode(foo: {bar: ''}, baz: '')
+    expect(result).to eq(expected)
+  end
+
+  it 'encodes nil array value' do
+    expected = 'baz&foo%5Bbar%5D'
+    result = Faraday::NestedParamsEncoder.encode(foo: {bar: nil}, baz: nil)
+    expect(result).to eq(expected)
+  end
+
+  it 'encodes empty array value' do
+    expected = 'baz%5B%5D&foo%5Bbar%5D%5B%5D'
+    result = Faraday::NestedParamsEncoder.encode(foo: { bar: [] }, baz: [])
+    expect(result).to eq(expected)
   end
 
   shared_examples 'a wrong decoding' do
