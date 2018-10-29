@@ -354,7 +354,7 @@ stubs.verify_stubbed_calls
 This library aims to support and is [tested against][travis] the following Ruby
 implementations:
 
-* Ruby 2.2+
+* Ruby 2.3+
 
 If something doesn't work on one of these Ruby versions, it's a bug.
 
@@ -372,7 +372,7 @@ of a major release, support for that Ruby version may be dropped.
 ## Contribute
 
 Do you want to contribute to Faraday?
-Open the issues page and check for the `any volunteer?` label!
+Open the issues page and check for the `help wanted` label!
 But before you start coding, please read our [Contributing Guide](https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md)
 
 ## Copyright
