@@ -52,8 +52,8 @@ module Faraday
       end
     end
 
-    def initialize(handlers = [])
-      @adapter = nil
+    def initialize(handlers = [], adapter = nil)
+      @adapter = adapter
       @handlers = handlers
       if block_given?
         build(&Proc.new)
@@ -176,11 +176,11 @@ module Faraday
     end
 
     def ==(other)
-      other.is_a?(self.class) && @handlers == other.handlers
+      other.is_a?(self.class) && @handlers == other.handlers && @adapter == other.adapter
     end
 
     def dup
-      self.class.new(@handlers.dup)
+      self.class.new(@handlers.dup, @adapter.dup)
     end
 
     # ENV Keys

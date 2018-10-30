@@ -200,6 +200,13 @@ module Faraday
       end
     end
 
+    # Unregister a previously registered middleware class.
+    #
+    # @param key [Symbol] key for the registered middleware.
+    def unregister_middleware(key)
+      @registered_middleware.delete(key)
+    end
+
     # Lookup middleware class with a registered Symbol shortcut.
     #
     # @param key [Symbol] key for the registered middleware.

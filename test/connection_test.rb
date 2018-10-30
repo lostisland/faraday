@@ -53,6 +53,11 @@ class TestConnection < Faraday::TestCase
     end
   end
 
+  def test_builder_is_passed_to_new_faraday_connection
+    new_conn = Faraday::Connection.new :builder => @builder
+    assert_equal @builder, new_conn.builder
+  end
+
   def test_initialize_parses_host_out_of_given_url
     conn = Faraday::Connection.new 'http://sushi.com'
     assert_equal 'sushi.com', conn.host
