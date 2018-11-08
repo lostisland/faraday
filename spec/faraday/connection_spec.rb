@@ -18,6 +18,41 @@ shared_examples 'initializer with url' do
   end
 end
 
+shared_examples 'default connection options' do
+  after { Faraday.default_connection_options = nil }
+
+  it 'works with implicit url' do
+    conn = Faraday.new 'http://sushi.com/foo'
+    expect(conn.options.timeout).to eq(10)
+  end
+
+  it 'works with option url' do
+    conn = Faraday.new :url => 'http://sushi.com/foo'
+    expect(conn.options.timeout).to eq(10)
+  end
+
+  it 'works with instance connection options' do
+    conn = Faraday.new 'http://sushi.com/foo', request: { open_timeout: 1 }
+    expect(conn.options.timeout).to eq(10)
+    expect(conn.options.open_timeout).to eq(1)
+  end
+
+  it 'default connection options persist with an instance overriding' do
+    conn = Faraday.new 'http://nigiri.com/bar'
+    conn.options.timeout = 1
+    expect(Faraday.default_connection_options.request.timeout).to eq(10)
+
+    other = Faraday.new :url => 'https://sushi.com/foo'
+    other.options.timeout = 1
+
+    expect(Faraday.default_connection_options.request.timeout).to eq(10)
+  end
+
+  it 'default connection uses default connection options' do
+    expect(Faraday.default_connection.options.timeout).to eq(10)
+  end
+end
+
 RSpec.describe Faraday::Connection do
   let(:conn) { Faraday::Connection.new(url, options) }
   let(:url) { nil }
@@ -63,6 +98,30 @@ RSpec.describe Faraday::Connection do
       let(:options) { { headers: { user_agent: 'Faraday' } } }
 
       it { expect(subject.headers['User-agent']).to eq('Faraday') }
+    end
+
+    context 'with ssl false' do
+      let(:options) { { ssl: { verify: false } } }
+
+      it { expect(subject.ssl.verify?).to be_falsey }
+    end
+
+    context 'with empty block' do
+      let(:conn) { Faraday::Connection.new {} }
+
+      it { expect(conn.builder.handlers.size).to eq(0) }
+    end
+
+    context 'with block' do
+      let(:conn) do
+        Faraday::Connection.new(params: { 'a' => '1' }) do |faraday|
+          faraday.adapter :net_http
+          faraday.url_prefix = 'http://sushi.com/omnom'
+        end
+      end
+
+      it { expect(conn.builder.handlers.size).to eq(0) }
+      it { expect(conn.path_prefix).to eq('/omnom') }
     end
   end
 
@@ -387,6 +446,14 @@ RSpec.describe Faraday::Connection do
       end
     end
 
+    it 'ignores env proxy if set that way' do
+      with_env_proxy_disabled do
+        with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+          expect(conn.proxy).to be_nil
+        end
+      end
+    end
+
     context 'performing a request' do
       before { stub_request(:get, 'http://example.com') }
 
@@ -410,6 +477,59 @@ RSpec.describe Faraday::Connection do
           expect(conn.instance_variable_get('@temp_proxy')).to be_nil
         end
       end
+    end
+  end
+
+  describe '#dup' do
+    subject { conn.dup }
+
+    let(:url) { 'http://sushi.com/foo' }
+    let(:options) do
+      {
+        ssl: { verify: :none },
+        headers: { 'content-type' => 'text/plain' },
+        params: { 'a' => '1' },
+        request: { timeout: 5 }
+      }
+    end
+
+    it { expect(subject.build_exclusive_url).to eq(conn.build_exclusive_url) }
+    it { expect(subject.headers['content-type']).to eq('text/plain') }
+    it { expect(subject.params['a']).to eq('1') }
+
+    context 'after manual changes' do
+      before do
+        subject.basic_auth('', '')
+        subject.headers['content-length'] = 12
+        subject.params['b'] = '2'
+        subject.options[:open_timeout] = 10
+      end
+
+      it { expect(subject.builder.handlers.size).to eq(1) }
+      it { expect(conn.builder.handlers.size).to eq(1) }
+      it { expect(conn.headers.key?('content-length')).to be_falsey }
+      it { expect(conn.params.key?('b')).to be_falsey }
+      it { expect(subject.options[:timeout]).to eq(5) }
+      it { expect(conn.options[:open_timeout]).to be_nil }
+    end
+  end
+
+  describe '#respond_to?' do
+    it { expect(Faraday.respond_to?(:get)).to be_truthy }
+    it { expect(Faraday.respond_to?(:post)).to be_truthy }
+  end
+
+  describe 'default_connection_options' do
+    context 'assigning a default value' do
+      before { Faraday.default_connection_options.request.timeout = 10 }
+
+      it_behaves_like 'default connection options'
+    end
+
+    context 'assigning a hash' do
+      before { Faraday.default_connection_options = { request: { timeout: 10 } } }
+
+      it_behaves_like 'default connection options'
     end
   end
 end
