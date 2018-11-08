@@ -68,33 +68,6 @@ class TestConnection < Faraday::TestCase
     assert !request.headers.include?('Authorization')
   end
 
-  def test_env_url_parses_url_params_into_query
-    uri = env_url('http://sushi.com/sake.html', 'a[b]' => '1 + 2')
-    assert_equal 'a%5Bb%5D=1+%2B+2', uri.query
-  end
-
-  def test_env_url_escapes_per_spec
-    uri = env_url(nil, 'a' => '1+2 foo~bar.-baz')
-    assert_equal 'a=1%2B2+foo~bar.-baz', uri.query
-  end
-
-  def test_env_url_bracketizes_nested_params_in_query
-    url = env_url nil, 'a' => {'b' => 'c'}
-    assert_equal 'a%5Bb%5D=c', url.query
-  end
-
-  def test_env_url_bracketizes_repeated_params_in_query
-    uri = env_url('http://sushi.com/sake.html', 'a' => [1, 2])
-    assert_equal 'a%5B%5D=1&a%5B%5D=2', uri.query
-  end
-
-  def test_env_url_without_braketizing_repeated_params_in_query
-    uri = env_url 'http://sushi.com', 'a' => [1, 2] do |conn|
-      conn.options.params_encoder = Faraday::FlatParamsEncoder
-    end
-    assert_equal 'a=1&a=2', uri.query
-  end
-
   def test_proxy_accepts_string
     with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
       conn = Faraday::Connection.new
