@@ -49,16 +49,7 @@ class TestConnection < Faraday::TestCase
     assert !request.headers.include?('Authorization')
   end
 
-  def test_dynamic_proxy
-    with_test_conn do
-      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
-        Faraday.get('http://google.co.uk')
-        assert_equal 'duncan.proxy.com', Faraday.default_connection.instance_variable_get('@temp_proxy').host
-      end
-      Faraday.get('http://google.co.uk')
-      assert_nil Faraday.default_connection.instance_variable_get('@temp_proxy')
-    end
-  end
+
 
   def test_ignore_env_proxy
     with_env_proxy_disabled do
@@ -69,85 +60,6 @@ class TestConnection < Faraday::TestCase
     end
   end
 
-  if URI.parse('').respond_to?(:find_proxy)
-    def test_proxy_allowed_when_url_in_no_proxy_list
-      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
-        conn = Faraday::Connection.new('http://example.com')
-        assert_nil conn.proxy
-      end
-    end
-
-    def test_proxy_allowed_when_prefixed_url_is_not_in_no_proxy_list
-      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
-        conn = Faraday::Connection.new('http://prefixedexample.com')
-        assert_equal 'proxy.com', conn.proxy.host
-      end
-    end
-
-    def test_proxy_allowed_when_subdomain_url_is_in_no_proxy_list
-      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
-        conn = Faraday::Connection.new('http://subdomain.example.com')
-        assert_nil conn.proxy
-      end
-    end
-
-    def test_proxy_allowed_when_url_not_in_no_proxy_list
-      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example2.com' do
-        conn = Faraday::Connection.new('http://example.com')
-        assert_equal 'proxy.com', conn.proxy.host
-      end
-    end
-
-    def test_proxy_allowed_when_ip_address_is_not_in_no_proxy_list_but_url_is
-      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'localhost' do
-        conn = Faraday::Connection.new('http://127.0.0.1')
-        assert_nil conn.proxy
-      end
-    end
-
-    def test_proxy_allowed_when_url_is_not_in_no_proxy_list_but_ip_address_is
-      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => '127.0.0.1' do
-        conn = Faraday::Connection.new('http://localhost')
-        assert_nil conn.proxy
-      end
-    end
-
-    def test_proxy_allowed_in_multi_element_no_proxy_list
-      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example0.com,example.com,example1.com' do
-        assert_nil Faraday::Connection.new('http://example0.com').proxy
-        assert_nil Faraday::Connection.new('http://example.com').proxy
-        assert_nil Faraday::Connection.new('http://example1.com').proxy
-        assert_equal 'proxy.com', Faraday::Connection.new('http://example2.com').proxy.host
-      end
-    end
-
-    def test_dynamic_no_proxy
-      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'google.co.uk' do
-        conn = Faraday.new
-
-        assert_equal 'proxy.com', conn.instance_variable_get('@temp_proxy').host
-        conn.get('https://google.co.uk')
-        assert_nil conn.instance_variable_get('@temp_proxy')
-      end
-    end
-
-    def test_issue
-      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'google.co.uk' do
-        conn = Faraday.new
-        conn.proxy = 'http://proxy2.com'
-
-        assert_equal true, conn.instance_variable_get('@manual_proxy')
-        assert_equal 'proxy2.com', conn.proxy_for_request('https://google.co.uk').host
-      end
-    end
-  end
-
-  def test_proxy_requires_uri
-    conn = Faraday::Connection.new
-    assert_raises ArgumentError do
-      conn.proxy = {:uri => :bad_uri, :user => 'rick'}
-    end
-  end
 
   def test_dups_connection_object
     conn = Faraday::Connection.new 'http://sushi.com/foo',

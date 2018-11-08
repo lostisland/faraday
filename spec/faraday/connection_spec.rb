@@ -226,7 +226,7 @@ RSpec.describe Faraday::Connection do
     let(:options) { { params: @params } }
 
     it 'parses url params into query' do
-      @params = { 'a[b]' => '1 + 2'}
+      @params = { 'a[b]' => '1 + 2' }
       expect(subject.query).to eq('a%5Bb%5D=1+%2B+2')
     end
 
@@ -254,43 +254,43 @@ RSpec.describe Faraday::Connection do
 
   describe 'proxy support' do
     it 'accepts string' do
-      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+      with_env 'http_proxy' => 'http://proxy.com:80' do
         conn.proxy = 'http://proxy.com'
         expect(conn.proxy.host).to eq('proxy.com')
       end
     end
 
     it 'accepts uri' do
-      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+      with_env 'http_proxy' => 'http://proxy.com:80' do
         conn.proxy = URI.parse('http://proxy.com')
         expect(conn.proxy.host).to eq('proxy.com')
       end
     end
 
     it 'accepts hash with string uri' do
-      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
-        conn.proxy = {:uri => 'http://proxy.com', :user => 'rick'}
+      with_env 'http_proxy' => 'http://proxy.com:80' do
+        conn.proxy = { :uri => 'http://proxy.com', :user => 'rick' }
         expect(conn.proxy.host).to eq('proxy.com')
         expect(conn.proxy.user).to eq('rick')
       end
     end
 
     it 'accepts hash' do
-      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
-        conn.proxy = {:uri => URI.parse('http://proxy.com'), :user => 'rick'}
+      with_env 'http_proxy' => 'http://proxy.com:80' do
+        conn.proxy = { :uri => URI.parse('http://proxy.com'), :user => 'rick' }
         expect(conn.proxy.host).to eq('proxy.com')
         expect(conn.proxy.user).to eq('rick')
       end
     end
 
     it 'accepts http env' do
-      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
-        expect(conn.proxy.host).to eq('duncan.proxy.com')
+      with_env 'http_proxy' => 'http://proxy.com:80' do
+        expect(conn.proxy.host).to eq('proxy.com')
       end
     end
 
     it 'accepts http env with auth' do
-      with_env 'http_proxy' => 'http://a%40b:my%20pass@duncan.proxy.com:80' do
+      with_env 'http_proxy' => 'http://a%40b:my%20pass@proxy.com:80' do
         expect(conn.proxy.user).to eq('a@b')
         expect(conn.proxy.password).to eq('my pass')
       end
@@ -319,6 +319,96 @@ RSpec.describe Faraday::Connection do
     it 'does not accept uppercase env' do
       with_env 'HTTP_PROXY' => 'http://localhost:8888/' do
         expect(conn.proxy).to be_nil
+      end
+    end
+
+    it 'allows when url in no proxy list' do
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
+        conn = Faraday::Connection.new('http://example.com')
+        expect(conn.proxy).to be_nil
+      end
+    end
+
+    it 'allows when prefixed url is not in no proxy list' do
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
+        conn = Faraday::Connection.new('http://prefixedexample.com')
+        expect(conn.proxy.host).to eq('proxy.com')
+      end
+    end
+
+    it 'allows when subdomain url is in no proxy list' do
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
+        conn = Faraday::Connection.new('http://subdomain.example.com')
+        expect(conn.proxy).to be_nil
+      end
+    end
+
+    it 'allows when url not in no proxy list' do
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example2.com' do
+        conn = Faraday::Connection.new('http://example.com')
+        expect(conn.proxy.host).to eq('proxy.com')
+      end
+    end
+
+    it 'allows when ip address is not in no proxy list but url is' do
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'localhost' do
+        conn = Faraday::Connection.new('http://127.0.0.1')
+        expect(conn.proxy).to be_nil
+      end
+    end
+
+    it 'allows when url is not in no proxy list but ip address is' do
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => '127.0.0.1' do
+        conn = Faraday::Connection.new('http://localhost')
+        expect(conn.proxy).to be_nil
+      end
+    end
+
+    it 'allows in multi element no proxy list' do
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example0.com,example.com,example1.com' do
+        expect(Faraday::Connection.new('http://example0.com').proxy).to be_nil
+        expect(Faraday::Connection.new('http://example.com').proxy).to be_nil
+        expect(Faraday::Connection.new('http://example1.com').proxy).to be_nil
+        expect(Faraday::Connection.new('http://example2.com').proxy.host).to eq('proxy.com')
+      end
+    end
+
+    it 'test proxy requires uri' do
+      expect { conn.proxy = { uri: :bad_uri, user: 'rick' } }.to raise_error(ArgumentError)
+    end
+
+    it 'gives priority to manually set proxy' do
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'google.co.uk' do
+        conn = Faraday.new
+        conn.proxy = 'http://proxy2.com'
+
+        expect(conn.instance_variable_get('@manual_proxy')).to be_truthy
+        expect(conn.proxy_for_request('https://google.co.uk').host).to eq('proxy2.com')
+      end
+    end
+
+    context 'performing a request' do
+      before { stub_request(:get, 'http://example.com') }
+
+      it 'dynamically checks proxy' do
+        with_env 'http_proxy' => 'http://proxy.com:80' do
+          conn = Faraday.new
+          conn.get('http://example.com')
+          expect(conn.instance_variable_get('@temp_proxy').host).to eq('proxy.com')
+        end
+
+        conn.get('http://example.com')
+        expect(conn.instance_variable_get('@temp_proxy')).to be_nil
+      end
+
+      it 'dynamically check no proxy' do
+        with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
+          conn = Faraday.new
+
+          expect(conn.instance_variable_get('@temp_proxy').host).to eq('proxy.com')
+          conn.get('http://example.com')
+          expect(conn.instance_variable_get('@temp_proxy')).to be_nil
+        end
       end
     end
   end

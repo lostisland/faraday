@@ -61,6 +61,16 @@ module Faraday
       end
     end
 
+    def with_env_proxy_disabled
+      Faraday.ignore_env_proxy = true
+
+      begin
+        yield
+      ensure
+        Faraday.ignore_env_proxy = false
+      end
+    end
+
     def capture_warnings
       old, $stderr = $stderr, StringIO.new
       begin
