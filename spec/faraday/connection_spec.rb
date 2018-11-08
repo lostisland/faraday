@@ -251,4 +251,75 @@ RSpec.describe Faraday::Connection do
       expect(subject.query).to eq('a=1&a=2')
     end
   end
+
+  describe 'proxy support' do
+    it 'accepts string' do
+      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+        conn.proxy = 'http://proxy.com'
+        expect(conn.proxy.host).to eq('proxy.com')
+      end
+    end
+
+    it 'accepts uri' do
+      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+        conn.proxy = URI.parse('http://proxy.com')
+        expect(conn.proxy.host).to eq('proxy.com')
+      end
+    end
+
+    it 'accepts hash with string uri' do
+      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+        conn.proxy = {:uri => 'http://proxy.com', :user => 'rick'}
+        expect(conn.proxy.host).to eq('proxy.com')
+        expect(conn.proxy.user).to eq('rick')
+      end
+    end
+
+    it 'accepts hash' do
+      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+        conn.proxy = {:uri => URI.parse('http://proxy.com'), :user => 'rick'}
+        expect(conn.proxy.host).to eq('proxy.com')
+        expect(conn.proxy.user).to eq('rick')
+      end
+    end
+
+    it 'accepts http env' do
+      with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
+        expect(conn.proxy.host).to eq('duncan.proxy.com')
+      end
+    end
+
+    it 'accepts http env with auth' do
+      with_env 'http_proxy' => 'http://a%40b:my%20pass@duncan.proxy.com:80' do
+        expect(conn.proxy.user).to eq('a@b')
+        expect(conn.proxy.password).to eq('my pass')
+      end
+    end
+
+    it 'accepts env without scheme' do
+      with_env 'http_proxy' => 'localhost:8888' do
+        uri = conn.proxy[:uri]
+        expect(uri.host).to eq('localhost')
+        expect(uri.port).to eq(8888)
+      end
+    end
+
+    it 'fetches no proxy from nil env' do
+      with_env 'http_proxy' => nil do
+        expect(conn.proxy).to be_nil
+      end
+    end
+
+    it 'fetches no proxy from blank env' do
+      with_env 'http_proxy' => '' do
+        expect(conn.proxy).to be_nil
+      end
+    end
+
+    it 'does not accept uppercase env' do
+      with_env 'HTTP_PROXY' => 'http://localhost:8888/' do
+        expect(conn.proxy).to be_nil
+      end
+    end
+  end
 end

@@ -40,6 +40,27 @@ module Faraday
       end
     end
 
+    def with_env(new_env)
+      old_env = {}
+
+      new_env.each do |key, value|
+        old_env[key] = ENV.fetch(key, false)
+        ENV[key] = value
+      end
+
+      begin
+        yield
+      ensure
+        old_env.each do |key, value|
+          if value == false
+            ENV.delete key
+          else
+            ENV[key] = value
+          end
+        end
+      end
+    end
+
     def capture_warnings
       old, $stderr = $stderr, StringIO.new
       begin

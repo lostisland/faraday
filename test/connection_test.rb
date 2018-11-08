@@ -32,26 +32,7 @@ class TestConnection < Faraday::TestCase
     end
   end
 
-  def with_env(new_env)
-    old_env = {}
 
-    new_env.each do |key, value|
-      old_env[key] = ENV.fetch(key, false)
-      ENV[key] = value
-    end
-
-    begin
-      yield
-    ensure
-      old_env.each do |key, value|
-        if value == false
-          ENV.delete key
-        else
-          ENV[key] = value
-        end
-      end
-    end
-  end
 
 
   def test_request_header_change_does_not_modify_connection_header
@@ -66,84 +47,6 @@ class TestConnection < Faraday::TestCase
 
     assert_equal request.headers.keys.sort, []
     assert !request.headers.include?('Authorization')
-  end
-
-  def test_proxy_accepts_string
-    with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
-      conn = Faraday::Connection.new
-      conn.proxy = 'http://proxy.com'
-      assert_equal 'proxy.com', conn.proxy.host
-    end
-  end
-
-  def test_proxy_accepts_uri
-    with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
-      conn = Faraday::Connection.new
-      conn.proxy = URI.parse('http://proxy.com')
-      assert_equal 'proxy.com', conn.proxy.host
-    end
-  end
-
-  def test_proxy_accepts_hash_with_string_uri
-    with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
-      conn = Faraday::Connection.new
-      conn.proxy = {:uri => 'http://proxy.com', :user => 'rick'}
-      assert_equal 'proxy.com', conn.proxy.host
-      assert_equal 'rick',      conn.proxy.user
-    end
-  end
-
-  def test_proxy_accepts_hash
-    with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
-      conn = Faraday::Connection.new
-      conn.proxy = {:uri => URI.parse('http://proxy.com'), :user => 'rick'}
-      assert_equal 'proxy.com', conn.proxy.host
-      assert_equal 'rick',      conn.proxy.user
-    end
-  end
-
-  def test_proxy_accepts_http_env
-    with_env 'http_proxy' => 'http://duncan.proxy.com:80' do
-      conn = Faraday::Connection.new
-      assert_equal 'duncan.proxy.com', conn.proxy.host
-    end
-  end
-
-  def test_proxy_accepts_http_env_with_auth
-    with_env 'http_proxy' => 'http://a%40b:my%20pass@duncan.proxy.com:80' do
-      conn = Faraday::Connection.new
-      assert_equal 'a@b',     conn.proxy.user
-      assert_equal 'my pass', conn.proxy.password
-    end
-  end
-
-  def test_proxy_accepts_env_without_scheme
-    with_env 'http_proxy' => 'localhost:8888' do
-      uri = Faraday::Connection.new.proxy[:uri]
-      assert_equal 'localhost', uri.host
-      assert_equal 8888, uri.port
-    end
-  end
-
-  def test_no_proxy_from_env
-    with_env 'http_proxy' => nil do
-      conn = Faraday::Connection.new
-      assert_nil conn.proxy
-    end
-  end
-
-  def test_no_proxy_from_blank_env
-    with_env 'http_proxy' => '' do
-      conn = Faraday::Connection.new
-      assert_nil conn.proxy
-    end
-  end
-
-  def test_proxy_doesnt_accept_uppercase_env
-    with_env 'HTTP_PROXY' => 'http://localhost:8888/' do
-      conn = Faraday::Connection.new
-      assert_nil conn.proxy
-    end
   end
 
   def test_dynamic_proxy
