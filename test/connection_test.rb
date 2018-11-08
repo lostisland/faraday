@@ -54,19 +54,6 @@ class TestConnection < Faraday::TestCase
   end
 
 
-  def test_build_url_uses_params
-    conn = Faraday::Connection.new 'http://sushi.com/nigiri'
-    conn.params = {:a => 1, :b => 1}
-    assert_equal 'http://sushi.com/nigiri?a=1&b=1', conn.build_url.to_s
-  end
-
-  def test_build_url_merges_params
-    conn = Faraday::Connection.new 'http://sushi.com/nigiri'
-    conn.params = {:a => 1, :b => 1}
-    url = conn.build_url(nil, :b => 2, :c => 3)
-    assert_equal 'http://sushi.com/nigiri?a=1&b=2&c=3', url.to_s
-  end
-
   def test_request_header_change_does_not_modify_connection_header
     connection = Faraday.new(:url => 'https://asushi.com/sake.html')
     connection.headers = {'Authorization' => 'token abc123'}
@@ -106,45 +93,6 @@ class TestConnection < Faraday::TestCase
       conn.options.params_encoder = Faraday::FlatParamsEncoder
     end
     assert_equal 'a=1&a=2', uri.query
-  end
-
-  def test_build_exclusive_url_parses_url
-    conn = Faraday::Connection.new
-    uri = conn.build_exclusive_url('http://sushi.com/sake.html')
-    assert_equal 'http', uri.scheme
-    assert_equal 'sushi.com', uri.host
-    assert_equal '/sake.html', uri.path
-  end
-
-  def test_build_exclusive_url_parses_url_and_changes_scheme
-    conn = Faraday::Connection.new :url => 'http://sushi.com/sushi'
-    conn.scheme = 'https'
-    uri = conn.build_exclusive_url('sake.html')
-    assert_equal 'https://sushi.com/sushi/sake.html', uri.to_s
-  end
-
-  def test_build_exclusive_url_joins_url_to_base_with_ending_slash
-    conn = Faraday::Connection.new :url => 'http://sushi.com/sushi/'
-    uri = conn.build_exclusive_url('sake.html')
-    assert_equal 'http://sushi.com/sushi/sake.html', uri.to_s
-  end
-
-  def test_build_exclusive_url_used_default_base_with_ending_slash
-    conn = Faraday::Connection.new :url => 'http://sushi.com/sushi/'
-    uri = conn.build_exclusive_url
-    assert_equal 'http://sushi.com/sushi/', uri.to_s
-  end
-
-  def test_build_exclusive_url_overrides_base
-    conn = Faraday::Connection.new :url => 'http://sushi.com/sushi/'
-    uri = conn.build_exclusive_url('/sake/')
-    assert_equal 'http://sushi.com/sake/', uri.to_s
-  end
-
-  def test_build_exclusive_url_handles_uri_instances
-    conn = Faraday::Connection.new
-    uri = conn.build_exclusive_url(URI('/sake.html'))
-    assert_equal '/sake.html', uri.path
   end
 
   def test_proxy_accepts_string

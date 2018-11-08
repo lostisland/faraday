@@ -128,15 +128,20 @@ RSpec.describe Faraday::Connection do
         it { conn.path_prefix = '/fish/' }
       end
 
+      context 'with complete url' do
+        subject { conn.build_exclusive_url('http://sushi.com/sake.html?a=1') }
+
+        it { expect(subject.scheme).to eq('http') }
+        it { expect(subject.host).to eq('sushi.com') }
+        it { expect(subject.port).to eq(80) }
+        it { expect(subject.path).to eq('/sake.html') }
+        it { expect(subject.query).to eq('a=1') }
+      end
+
       it 'overrides connection port for absolute url' do
         conn.port = 23
         uri = conn.build_exclusive_url('http://sushi.com')
         expect(uri.port).to eq(80)
-      end
-
-      it 'parses url params into path' do
-        uri = conn.build_exclusive_url('http://sushi.com/sake.html')
-        expect(uri.path).to eq('/sake.html')
       end
 
       it 'does not add ending slash given nil url' do
@@ -164,6 +169,51 @@ RSpec.describe Faraday::Connection do
         params[:a] = 2
         uri = conn.build_exclusive_url(nil, params)
         expect(uri.to_s).to eq('http://sushi.com/nigiri?a=2')
+      end
+
+      it 'handles uri instances' do
+        uri = conn.build_exclusive_url(URI('/sake.html'))
+        expect(uri.path).to eq('/sake.html')
+      end
+
+      context 'with url_prefixed connection' do
+        let(:conn) { Faraday::Connection.new(url: 'http://sushi.com/sushi/') }
+
+        it 'parses url and changes scheme' do
+          conn.scheme = 'https'
+          uri = conn.build_exclusive_url('sake.html')
+          expect(uri.to_s).to eq('https://sushi.com/sushi/sake.html')
+        end
+
+        it 'joins url to base with ending slash' do
+          uri = conn.build_exclusive_url('sake.html')
+          expect(uri.to_s).to eq('http://sushi.com/sushi/sake.html')
+        end
+
+        it 'used default base with ending slash' do
+          uri = conn.build_exclusive_url
+          expect(uri.to_s).to eq('http://sushi.com/sushi/')
+        end
+
+        it 'overrides base' do
+          uri = conn.build_exclusive_url('/sake/')
+          expect(uri.to_s).to eq('http://sushi.com/sake/')
+        end
+      end
+    end
+
+    describe '#build_url' do
+      let(:url) { 'http://sushi.com/nigiri' }
+
+      it 'uses params' do
+        subject.params = { a: 1, b: 1 }
+        expect(subject.build_url.to_s).to eq('http://sushi.com/nigiri?a=1&b=1')
+      end
+
+      it 'merges params' do
+        subject.params = { a: 1, b: 1 }
+        url = subject.build_url(nil, b: 2, c: 3)
+        expect(url.to_s).to eq('http://sushi.com/nigiri?a=1&b=2&c=3')
       end
     end
   end
