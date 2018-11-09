@@ -56,7 +56,7 @@ end
 RSpec.describe Faraday::Connection do
   let(:conn) { Faraday::Connection.new(url, options) }
   let(:url) { nil }
-  let(:options) { {} }
+  let(:options) { nil }
 
   describe '.new' do
     subject { conn }
@@ -276,6 +276,21 @@ RSpec.describe Faraday::Connection do
       url = conn.build_url(nil, b: 2, c: 3)
       expect(url.to_s).to eq('http://sushi.com/nigiri?a=1&b=2&c=3')
     end
+  end
+
+  describe '#build_request' do
+    let(:url) { 'https://asushi.com/sake.html' }
+    let(:request) { conn.build_request(:get) }
+
+    before do
+      conn.headers = { 'Authorization' => 'token abc123' }
+      request.headers.delete('Authorization')
+    end
+
+    it { expect(conn.headers.keys).to eq(['Authorization']) }
+    it { expect(conn.headers.include?('Authorization')).to be_truthy }
+    it { expect(request.headers.keys).to be_empty }
+    it { expect(request.headers.include?('Authorization')).to be_falsey }
   end
 
   describe '#to_env' do
@@ -521,7 +536,10 @@ RSpec.describe Faraday::Connection do
 
   describe 'default_connection_options' do
     context 'assigning a default value' do
-      before { Faraday.default_connection_options.request.timeout = 10 }
+      before do
+        Faraday.default_connection_options = nil
+        Faraday.default_connection_options.request.timeout = 10
+      end
 
       it_behaves_like 'default connection options'
     end
@@ -530,6 +548,98 @@ RSpec.describe Faraday::Connection do
       before { Faraday.default_connection_options = { request: { timeout: 10 } } }
 
       it_behaves_like 'default connection options'
+    end
+  end
+
+  describe 'request params' do
+    context 'with simple url' do
+      let(:url) { 'http://example.com' }
+      let!(:stubbed) { stub_request(:get, 'http://example.com?a=a&p=3') }
+
+      after { expect(stubbed).to have_been_made.once }
+
+      it 'test_overrides_request_params' do
+        conn.get('?p=2&a=a', p: 3)
+      end
+
+      it 'test_overrides_request_params_block' do
+        conn.get('?p=1&a=a', p: 2) do |req|
+          req.params[:p] = 3
+        end
+      end
+
+      it 'test_overrides_request_params_block_url' do
+        conn.get(nil, p: 2) do |req|
+          req.url('?p=1&a=a', 'p' => 3)
+        end
+      end
+    end
+
+    context 'with url and extra params' do
+      let(:url) { 'http://example.com?a=1&b=2' }
+      let(:options) { { params: { c: 3 } } }
+
+      it 'merges connection and request params' do
+        stubbed = stub_request(:get, 'http://example.com?a=1&b=2&c=3&limit=5&page=1')
+        conn.get('?page=1', limit: 5)
+        expect(stubbed).to have_been_made.once
+      end
+
+      it 'allows to override all params' do
+        stubbed = stub_request(:get, 'http://example.com?b=b')
+        conn.get('?p=1&a=a', p: 2) do |req|
+          expect(req.params[:a]).to eq('a')
+          expect(req.params['c']).to eq(3)
+          expect(req.params['p']).to eq(2)
+          req.params = { :b => 'b' }
+          expect(req.params['b']).to eq('b')
+        end
+        expect(stubbed).to have_been_made.once
+      end
+
+      it 'allows to set params_encoder for single request' do
+        encoder = Object.new
+        def encoder.encode(params)
+          params.map { |k,v| "#{k.upcase}-#{v.to_s.upcase}" }.join(',')
+        end
+        stubbed = stub_request(:get, 'http://example.com/?A-1,B-2,C-3,FEELING-BLUE')
+
+        conn.get('/', feeling: 'blue') do |req|
+          req.options.params_encoder = encoder
+        end
+        expect(stubbed).to have_been_made.once
+      end
+    end
+
+    context 'with default params encoder' do
+      let!(:stubbed) { stub_request(:get, 'http://example.com?color%5B%5D=red&color%5B%5D=blue') }
+      after { expect(stubbed).to have_been_made.once }
+
+      it 'supports array params in url' do
+        conn.get('http://example.com?color[]=red&color[]=blue')
+      end
+
+      it 'supports array params in params' do
+        conn.get('http://example.com', { color: %w(red blue) })
+      end
+    end
+
+    context 'with flat params encoder' do
+      let(:options) { { request: { params_encoder: Faraday::FlatParamsEncoder } } }
+      let!(:stubbed) { stub_request(:get, 'http://example.com?color=blue') }
+      after { expect(stubbed).to have_been_made.once }
+
+      it 'supports array params in params' do
+        conn.get('http://example.com', { color: %w(red blue) })
+      end
+
+      context 'with array param in url' do
+        let(:url) { 'http://example.com?color[]=red&color[]=blue' }
+
+        it do
+          conn.get('/')
+        end
+      end
     end
   end
 end
