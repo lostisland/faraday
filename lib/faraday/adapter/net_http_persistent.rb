@@ -8,7 +8,9 @@ module Faraday
       def net_http_connection(env)
         @cached_connection ||=
           if Net::HTTP::Persistent.instance_method(:initialize).parameters.first == [:key, :name]
-            Net::HTTP::Persistent.new(name: 'Faraday')
+            options = {}
+            options[:pool_size] = @connection_options[:pool_size] if @connection_options.key?(:pool_size)
+            Net::HTTP::Persistent.new(name: 'Faraday', **options)
           else
             Net::HTTP::Persistent.new('Faraday')
           end
