@@ -64,6 +64,28 @@ module Adapters
       end
     end
 
+    def test_without_custom_connection_config
+      url = URI('https://example.com:1234')
+
+      adapter = Faraday::Adapter::NetHttpPersistent.new
+
+      http = adapter.send(:net_http_connection, :url => url, :request => {})
+
+      # `pool` is only present in net_http_persistent >= 3.0
+      assert http.pool.size != nil if http.respond_to?(:pool)
+    end
+
+    def test_custom_connection_config
+      url = URI('https://example.com:1234')
+
+      adapter = Faraday::Adapter::NetHttpPersistent.new(nil, {pool_size: 5})
+
+      http = adapter.send(:net_http_connection, :url => url, :request => {})
+
+      # `pool` is only present in net_http_persistent >= 3.0
+      assert_equal 5, http.pool.size if http.respond_to?(:pool)
+    end
+
     def test_custom_adapter_config
       url = URI('https://example.com:1234')
 
