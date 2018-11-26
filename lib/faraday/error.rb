@@ -1,6 +1,7 @@
 module Faraday
   # Faraday error base class.
-  class Error < StandardError; end
+  class Error < StandardError;
+  end
 
   # Faraday client error class.
   class ClientError < Error
@@ -45,15 +46,18 @@ module Faraday
   end
 
   # A unified client error for failed connections.
-  class ConnectionFailed < ClientError;   end
+  class ConnectionFailed < ClientError;
+  end
 
   # A 404 error used in the RaiseError middleware
   #
   # @see Faraday::Response::RaiseError
-  class ResourceNotFound < ClientError;   end
-  
+  class ResourceNotFound < ClientError;
+  end
+
   # Raised by FaradayMiddleware::ResponseMiddleware
-  class ParsingError     < ClientError;   end
+  class ParsingError < ClientError;
+  end
 
   # A unified client error for timeouts.
   class TimeoutError < ClientError
@@ -69,12 +73,11 @@ module Faraday
   # Exception used to control the Retry middleware.
   #
   # @see Faraday::Request::Retry
-  class RetriableResponse < ClientError; end
+  class RetriableResponse < ClientError;
+  end
 
   [:ClientError, :ConnectionFailed, :ResourceNotFound,
    :ParsingError, :TimeoutError, :SSLError, :RetriableResponse].each do |const|
     Error.const_set(const, Faraday.const_get(const))
   end
-
-
 end

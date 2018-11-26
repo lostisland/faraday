@@ -6,6 +6,10 @@ gem 'ffi-ncurses', '~> 0.3', :platforms => :jruby
 gem 'jruby-openssl', '~> 0.8.8', :platforms => :jruby
 gem 'rake'
 
+group :development, :test do
+  gem 'pry'
+end
+
 group :test do
   gem 'coveralls', :require => false
   gem 'em-http-request', '>= 1.1', :require => 'em-http'
@@ -22,6 +26,8 @@ group :test do
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 1.3', :require => 'typhoeus'
+  gem 'rspec', '~> 3.7'
+  gem 'webmock', '~> 3.4'
 end
 
 gemspec

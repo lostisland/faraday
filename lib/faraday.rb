@@ -17,6 +17,8 @@ require 'forwardable'
 #
 module Faraday
   VERSION = "0.15.3"
+  METHODS_WITH_QUERY = %w[get head delete]
+  METHODS_WITH_BODY = %w[post put patch]
 
   class << self
     # The root path that Faraday is being loaded from.
@@ -196,6 +198,13 @@ module Faraday
         @middleware_autoload_path = autoload_path if autoload_path
         (@registered_middleware ||= {}).update(mapping)
       end
+    end
+
+    # Unregister a previously registered middleware class.
+    #
+    # @param key [Symbol] key for the registered middleware.
+    def unregister_middleware(key)
+      @registered_middleware.delete(key)
     end
 
     # Lookup middleware class with a registered Symbol shortcut.

@@ -160,7 +160,7 @@ module Faraday
     # @return [Faraday::Response]
 
     # @!visibility private
-    %w[get head delete].each do |method|
+    METHODS_WITH_QUERY.each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, params = nil, headers = nil)
           run_request(:#{method}, url, nil, headers) { |request|
@@ -170,7 +170,7 @@ module Faraday
         end
       RUBY
     end
-    
+
     # @!method post(url = nil, body = nil, headers = nil)
     # Makes a POST HTTP request with a body.
     # @!scope class
@@ -217,7 +217,7 @@ module Faraday
     # @return [Faraday::Response]
 
     # @!visibility private
-    %w[post put patch].each do |method|
+    METHODS_WITH_BODY.each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, body = nil, headers = nil, &block)
           run_request(:#{method}, url, body, headers, &block)

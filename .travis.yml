@@ -1,17 +1,11 @@
 sudo: false
 language: ruby
-script: bundle exec script/test
 cache: bundler
-
 rvm:
   - 2.3
   - 2.4
   - 2.5
   - ruby-head
-env:
-  matrix:
-    - SSL=no
-    - SSL=yes
 deploy:
   provider: rubygems
   api_key:
@@ -21,5 +15,4 @@ deploy:
     tags: true
     repo: lostisland/faraday
     rvm: 2.5
-    condition: '"$SSL" = "yes"'
 
