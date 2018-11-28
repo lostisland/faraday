@@ -249,7 +249,7 @@ module Faraday
   end
 
   class ConnectionOptions < Options.new(:request, :proxy, :ssl, :builder, :url,
-    :parallel_manager, :params, :headers, :builder_class)
+    :parallel_manager, :params, :headers, :builder_class, :connection_class)
 
     options :request => RequestOptions, :ssl => SSLOptions
 
@@ -258,6 +258,8 @@ module Faraday
     memoized(:ssl) { self.class.options_for(:ssl).new }
 
     memoized(:builder_class) { RackBuilder }
+
+    memoized(:connection_class) { Faraday::Connection }
 
     def new_builder(block)
       builder_class.new(&block)

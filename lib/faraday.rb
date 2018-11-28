@@ -63,11 +63,11 @@ module Faraday
     #   Faraday.new :url => 'http://faraday.com',
     #     :params => {:page => 1}
     #
-    # Returns a Faraday::Connection.
+    # Returns an instance of the connection class (Faraday::Connection by default)
     def new(url = nil, options = nil)
       block = block_given? ? Proc.new : nil
       options = options ? default_connection_options.merge(options) : default_connection_options
-      Faraday::Connection.new(url, options, &block)
+      options[:connection_class].new(url, options, &block)
     end
 
     # Internal: Requires internal Faraday libraries.
