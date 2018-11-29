@@ -189,6 +189,9 @@ Faraday.new(...) do |conn|
   # POST/PUT params encoders:
   conn.request :multipart
   conn.request :url_encoded
+  
+  # add custom middleware
+  conn.use MyMiddleware
 
   # Last middleware must be the adapter:
   conn.adapter :net_http
