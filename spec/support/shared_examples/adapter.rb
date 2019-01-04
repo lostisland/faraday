@@ -1,4 +1,6 @@
 shared_examples 'an adapter' do |**options|
+  before { skip } if options[:skip]
+
   context 'with SSL enabled' do
     before { ENV['SSL'] = 'yes' }
     include_examples 'adapter examples', options
