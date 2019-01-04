@@ -4,7 +4,11 @@ ruby RUBY_VERSION
 
 gem 'ffi-ncurses', '~> 0.3', :platforms => :jruby
 gem 'jruby-openssl', '~> 0.8.8', :platforms => :jruby
-gem 'rake'
+if RUBY_VERSION > '2'
+  gem 'rake'
+else
+  gem 'rake', '= 12.2.1'
+end
 
 group :test do
   gem 'coveralls', :require => false

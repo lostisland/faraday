@@ -3,6 +3,7 @@ script: bundle exec script/test
 cache: bundler
 
 rvm:
+  - 1.9.3
   - 2.0.0
   - 2.1
   - 2.2
@@ -17,13 +18,6 @@ rvm:
   - jruby-head
 
 matrix:
-  include:
-    - rvm: "1.9.3"
-      before_install: "gem install rake -v 12.2.1"
-      env: SSL=no
-    - rvm: "1.9.3"
-      before_install: "gem install rake -v 12.2.1"
-      env: SSL=yes
   allow_failures:
     # "A fatal error has been detected by the Java Runtime Environment:
     #  Internal Error (sharedRuntime.cpp:843)"
