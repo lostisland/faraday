@@ -131,9 +131,9 @@ module Faraday
         end
       rescue EventMachine::Connectify::CONNECTError => err
         if err.message.include?("Proxy Authentication Required")
-          raise Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+          raise Faraday::ConnectionFailed, %{407 "Proxy Authentication Required "}
         else
-          raise Error::ConnectionFailed, err
+          raise Faraday::ConnectionFailed, err
         end
       rescue => err
         if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
@@ -170,15 +170,15 @@ module Faraday
       end
 
       def raise_error(msg)
-        errklass = Faraday::Error::ClientError
+        errklass = Faraday::ClientError
         if msg == Errno::ETIMEDOUT
-          errklass = Faraday::Error::TimeoutError
+          errklass = Faraday::TimeoutError
           msg = "request timed out"
         elsif msg == Errno::ECONNREFUSED
-          errklass = Faraday::Error::ConnectionFailed
+          errklass = Faraday::ConnectionFailed
           msg = "connection refused"
         elsif msg == "connection closed by server"
-          errklass = Faraday::Error::ConnectionFailed
+          errklass = Faraday::ConnectionFailed
         end
         raise errklass, msg
       end
@@ -226,7 +226,7 @@ module Faraday
               end
             end
             if @errors.size > 0
-              raise Faraday::Error::ClientError, @errors.first || "connection failed"
+              raise Faraday::ClientError, @errors.first || "connection failed"
             end
           end
         ensure
