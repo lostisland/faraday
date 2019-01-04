@@ -21,7 +21,7 @@ module Faraday
   # interval that is random between 0.1 and 0.15.
   class Request::Retry < Faraday::Middleware
 
-    DEFAULT_EXCEPTIONS = [Errno::ETIMEDOUT, 'Timeout::Error', Error::TimeoutError, Faraday::Error::RetriableResponse].freeze
+    DEFAULT_EXCEPTIONS = [Errno::ETIMEDOUT, 'Timeout::Error', Faraday::TimeoutError, Faraday::RetriableResponse].freeze
     IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
 
     class Options < Faraday::Options.new(:max, :interval, :max_interval, :interval_randomness,
@@ -90,7 +90,7 @@ module Faraday
     # @option options [Integer] :backoff_factor (1) The amount to multiple each successive retry's
     #                       interval amount by in order to provide backoff
     # @option options [Array] :exceptions ([Errno::ETIMEDOUT, 'Timeout::Error',
-    #                       Error::TimeoutError, Faraday::Error::RetriableResponse]) The list of
+    #                       Faraday::TimeoutError, Faraday::RetriableResponse]) The list of
     #                       exceptions to handle. Exceptions can be given as Class, Module, or String.
     # @option options [Array] :methods (the idempotent HTTP methods in IDEMPOTENT_METHODS) A list of
     #                       HTTP methods to retry without calling retry_if.  Pass
@@ -124,7 +124,7 @@ module Faraday
       begin
         env[:body] = request_body # after failure env[:body] is set to the response body
         @app.call(env).tap do |resp|
-          raise Faraday::Error::RetriableResponse.new(nil, resp) if @options.retry_statuses.include?(resp.status)
+          raise Faraday::RetriableResponse.new(nil, resp) if @options.retry_statuses.include?(resp.status)
         end
       rescue @errmatch => exception
         if retries > 0 && retry_request?(env, exception)
@@ -137,7 +137,7 @@ module Faraday
           end
         end
 
-        if exception.is_a?(Faraday::Error::RetriableResponse)
+        if exception.is_a?(Faraday::RetriableResponse)
           exception.response
         else
           raise

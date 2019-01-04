@@ -76,18 +76,18 @@ module Faraday
 
         @app.call env
       rescue Errno::ECONNREFUSED
-        raise Error::ConnectionFailed, $!
+        raise Faraday::ConnectionFailed, $!
       rescue EventMachine::Connectify::CONNECTError => err
         if err.message.include?("Proxy Authentication Required")
-          raise Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+          raise Faraday::ConnectionFailed, %{407 "Proxy Authentication Required "}
         else
-          raise Error::ConnectionFailed, err
+          raise Faraday::ConnectionFailed, err
         end
       rescue Errno::ETIMEDOUT => err
-        raise Error::TimeoutError, err
+        raise Faraday::TimeoutError, err
       rescue RuntimeError => err
         if err.message == "connection closed by server"
-          raise Error::ConnectionFailed, err
+          raise Faraday::ConnectionFailed, err
         else
           raise
         end

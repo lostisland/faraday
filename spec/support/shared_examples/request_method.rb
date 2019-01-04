@@ -30,7 +30,7 @@ shared_examples 'a request method' do |http_method|
 
   it 'handles connection error' do
     request_stub.disable
-    expect { conn.public_send(http_method, 'http://localhost:4') }.to raise_error(Faraday::Error::ConnectionFailed)
+    expect { conn.public_send(http_method, 'http://localhost:4') }.to raise_error(Faraday::ConnectionFailed)
   end
 
   # context 'when wrong ssl certificate is provided' do
@@ -61,16 +61,16 @@ shared_examples 'a request method' do |http_method|
   it 'supports timeout option' do
     conn_options[:request] = { timeout: 1 }
     request_stub.to_timeout
-    exc = adapter == 'NetHttp' ? Faraday::Error::ConnectionFailed : Faraday::TimeoutError
+    exc = adapter == 'NetHttp' ? Faraday::ConnectionFailed : Faraday::TimeoutError
     expect { conn.public_send(http_method, '/') }.to raise_error(exc)
   end
 
   # TODO: This needs reimplementation: see https://github.com/lostisland/faraday/issues/718
-  # Should raise Faraday::Error::ConnectionFailed
+  # Should raise Faraday::ConnectionFailed
   it 'supports open_timeout option' do
     conn_options[:request] = { open_timeout: 1 }
     request_stub.to_timeout
-    exc = adapter == 'NetHttp' ? Faraday::Error::ConnectionFailed : Faraday::TimeoutError
+    exc = adapter == 'NetHttp' ? Faraday::ConnectionFailed : Faraday::TimeoutError
     expect { conn.public_send(http_method, '/') }.to raise_error(exc)
   end
 
@@ -159,8 +159,8 @@ shared_examples 'a request method' do |http_method|
       end
 
       expect(conn.in_parallel?).to be_falsey
-      expect(resp1.body).to eq(payload1.to_json)
-      expect(resp2.body).to eq(payload2.to_json)
+      expect(resp1&.body).to eq(payload1.to_json)
+      expect(resp2&.body).to eq(payload2.to_json)
     end
   end
 
@@ -176,6 +176,6 @@ shared_examples 'a request method' do |http_method|
     conn_options[:proxy] = 'http://google.co.uk'
     request_stub.to_return(status: 407)
 
-    expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::Error::ConnectionFailed)
+    expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::ProxyAuthError)
   end
 end
