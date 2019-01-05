@@ -8,6 +8,7 @@ if RUBY_VERSION > '2'
   gem 'rake'
   gem 'tins'
 else
+  gem 'net-http-persistent', '< 3.0'
   gem 'rake', '= 12.2.1'
   gem 'tins', '= 1.6.0'
 end
