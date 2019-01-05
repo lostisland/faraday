@@ -1,6 +1,5 @@
 language: ruby
 script: bundle exec script/test
-cache: bundler
 
 rvm:
   - 1.9.3
