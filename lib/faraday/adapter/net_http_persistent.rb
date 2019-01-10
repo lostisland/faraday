@@ -12,7 +12,7 @@ module Faraday
             options[:pool_size] = @connection_options[:pool_size] if @connection_options.key?(:pool_size)
             Net::HTTP::Persistent.new(options)
           else
-            Net::HTTP::Persistent.new('Faraday')
+            Net::HTTP::Persistent.new(name: 'Faraday')
           end
 
         proxy_uri = proxy_uri(env)

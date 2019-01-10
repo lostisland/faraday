@@ -13,7 +13,7 @@ module Adapters
           if Net::HTTP::Persistent.instance_method(:initialize).parameters.first == [:key, :name]
             Net::HTTP::Persistent.new(name: 'Faraday').reconnect_ssl
           else
-            Net::HTTP::Persistent.new('Faraday').ssl_cleanup(4)
+            Net::HTTP::Persistent.new(name: 'Faraday').ssl_cleanup(4)
           end
         end
       end if ssl_mode?
