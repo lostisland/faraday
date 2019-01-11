@@ -16,6 +16,13 @@ rvm:
   - jruby-21mode
   - jruby-head
 
+before_install:
+  - |
+    export RVM_CURRENT=`rvm current|cut -c6-8`
+    if [ "${RVM_CURRENT}" == "2.2" ]; then
+      gem install bundler -v '< 2'
+    fi
+
 matrix:
   allow_failures:
     # "A fatal error has been detected by the Java Runtime Environment:
