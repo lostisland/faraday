@@ -4,7 +4,16 @@ ruby RUBY_VERSION
 
 gem 'ffi-ncurses', '~> 0.3', :platforms => :jruby
 gem 'jruby-openssl', '~> 0.8.8', :platforms => :jruby
-gem 'rake'
+if RUBY_VERSION > '2'
+  gem 'net-http-persistent', group: :test
+  gem 'rake'
+  gem 'tins'
+else
+  gem 'net-http-persistent', '< 3.0', group: :test
+  gem 'rake', '= 12.2.1'
+  gem 'tins', '= 1.6.0'
+end
+
 
 group :test do
   gem 'coveralls', :require => false
@@ -15,7 +24,6 @@ group :test do
   gem 'httpclient', '>= 2.2'
   gem 'mime-types', '~> 1.25', :platforms => [:jruby, :ruby_18]
   gem 'minitest', '>= 5.0.5'
-  gem 'net-http-persistent'
   gem 'patron', '>= 0.4.2', :platforms => :ruby
   gem 'rack-test', '>= 0.6', :require => 'rack/test'
   gem 'rest-client', '~> 1.6.0', :platforms => [:jruby, :ruby_18]

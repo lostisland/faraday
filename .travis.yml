@@ -1,21 +1,27 @@
-sudo: false
 language: ruby
 script: bundle exec script/test
-cache: bundler
 
 rvm:
   - 1.9.3
   - 2.0.0
-  - 2.1
-  - 2.2
-  - 2.3
-  - 2.4
-  - 2.5.0
+  - 2.1.10
+  - 2.2.10
+  - 2.3.8
+  - 2.4.5
+  - 2.5.3
+  - 2.6.0
   - ruby-head
   - jruby-19mode
   - jruby-20mode
   - jruby-21mode
   - jruby-head
+
+before_install:
+  - |
+    export RVM_CURRENT=`rvm current|cut -c6-8`
+    if [ "${RVM_CURRENT}" == "2.2" ]; then
+      gem install bundler -v '< 2'
+    fi
 
 matrix:
   allow_failures:
@@ -42,6 +48,6 @@ deploy:
   on:
     tags: true
     repo: lostisland/faraday
-    rvm: 2.4
+    rvm: 2.4.5
     condition: '"$SSL" = "yes"'
 
