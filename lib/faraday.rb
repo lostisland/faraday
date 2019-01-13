@@ -66,7 +66,7 @@ module Faraday
     # @example With an URL argument
     #   Faraday.new 'http://faraday.com'
     #   # => Faraday::Connection to http://faraday.com
-    #   
+    #
     # @example With an URL argument and an options hash
     #   Faraday.new 'http://faraday.com', :params => {:page => 1}
     #   # => Faraday::Connection to http://faraday.com?page=1
@@ -188,7 +188,7 @@ module Faraday
     #       register_middleware :baz => [:Baz, 'baz']
     #     end
     #   end
-    #       
+    #
     def register_middleware(autoload_path = nil, mapping = nil)
       if mapping.nil?
         mapping = autoload_path
@@ -265,16 +265,6 @@ module Faraday
         end
         load_middleware(key)
       end
-    end
-  end
-
-  # @private
-  def self.const_missing(name)
-    if name.to_sym == :Builder
-      warn "Faraday::Builder is now Faraday::RackBuilder."
-      const_set name, RackBuilder
-    else
-      super
     end
   end
 
