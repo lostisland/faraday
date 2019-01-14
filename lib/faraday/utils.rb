@@ -1,7 +1,7 @@
 require 'thread'
 
-require_relative 'utils/headers'
-require_relative 'utils/params_hash'
+require 'faraday/utils/headers'
+require 'faraday/utils/params_hash'
 
 module Faraday
   module Utils

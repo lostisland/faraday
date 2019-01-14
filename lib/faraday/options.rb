@@ -202,8 +202,8 @@ module Faraday
   end
 end
 
-require_relative 'options/request_options'
-require_relative 'options/ssl_options'
-require_relative 'options/proxy_options'
-require_relative 'options/connection_options'
-require_relative 'options/env'
+require 'faraday/options/request_options'
+require 'faraday/options/ssl_options'
+require 'faraday/options/proxy_options'
+require 'faraday/options/connection_options'
+require 'faraday/options/env'
