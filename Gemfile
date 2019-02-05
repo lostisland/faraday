@@ -25,7 +25,7 @@ group :test do
   gem 'rest-client', '~> 1.6.0', :platforms => [:jruby, :ruby_18]
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
-  gem 'typhoeus', '~> 1.3', :require => 'typhoeus'
+  gem 'typhoeus', '~> 1.3', :git => 'https://github.com/typhoeus/typhoeus.git', :require => 'typhoeus'
   gem 'rspec', '~> 3.7'
   gem 'webmock', '~> 3.4'
 end
