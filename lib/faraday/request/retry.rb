@@ -1,3 +1,5 @@
+require 'date'
+
 module Faraday
   # Catches exceptions and retries each request a limited number of times.
   #
