@@ -23,7 +23,7 @@ module Faraday
 
       def proxy_uri(env)
         proxy_uri = nil
-        if (proxy = env[:request][:proxy])
+        if (proxy = env.request[:proxy])
           proxy_uri = ::URI::HTTP === proxy[:uri] ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
           proxy_uri.user = proxy_uri.password = nil
           # awful patch for net-http-persistent 2.8 not unescaping user/password
@@ -36,7 +36,7 @@ module Faraday
       end
 
       def perform_request(http, env)
-        http.request env[:url], create_request(env)
+        http.request env.url, create_request(env)
       rescue Errno::ETIMEDOUT => error
         raise Faraday::TimeoutError, error
       rescue Net::HTTP::Persistent::Error => error

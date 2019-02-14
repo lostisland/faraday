@@ -12,12 +12,11 @@ module Faraday
     # of another type.
     #
     # @param env [Faraday::Env]
-    def call(env)
+    def on_request(env)
       match_content_type(env) do |data|
         params = Faraday::Utils::ParamsHash[data]
         env.body = params.to_query(env.params_encoder)
       end
-      @app.call env
     end
 
     # @param env [Faraday::Env]

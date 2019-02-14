@@ -8,7 +8,7 @@ module Faraday
         super
 
         opts = {}
-        if env[:url].scheme == 'https' && ssl = env[:ssl]
+        if env.url.scheme == 'https' && ssl = env.ssl
           opts[:ssl_verify_peer] = !!ssl.fetch(:verify, true)
           opts[:ssl_ca_path] = ssl[:ca_path] if ssl[:ca_path]
           opts[:ssl_ca_file] = ssl[:ca_file] if ssl[:ca_file]
@@ -25,7 +25,7 @@ module Faraday
           opts[:nonblock] = false
         end
 
-        if ( req = env[:request] )
+        if ( req = env.request )
           if req[:timeout]
             opts[:read_timeout]      = req[:timeout]
             opts[:connect_timeout]   = req[:timeout]
@@ -51,8 +51,8 @@ module Faraday
         conn = create_connection(env, opts)
 
         resp = conn.request \
-          :method  => env[:method].to_s.upcase,
-          :headers => env[:request_headers],
+          :method  => env.method.to_s.upcase,
+          :headers => env.request_headers,
           :body    => read_body(env)
 
         if req.stream_response?
@@ -60,8 +60,6 @@ module Faraday
           req.on_data.call(resp.body, resp.body.bytesize)
         end
         save_response(env, resp.status.to_i, resp.body, resp.headers, resp.reason_phrase)
-
-        @app.call env
       rescue ::Excon::Errors::SocketError => err
         if err.message =~ /\btimeout\b/
           raise Faraday::TimeoutError, err
@@ -76,12 +74,12 @@ module Faraday
 
       # @return [Excon]
       def create_connection(env, opts)
-        ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
+        ::Excon.new(env.url.to_s, opts.merge(@connection_options))
       end
 
       # TODO: support streaming requests
       def read_body(env)
-        env[:body].respond_to?(:read) ? env[:body].read : env[:body]
+        env.body.respond_to?(:read) ? env.body.read : env.body
       end
     end
   end

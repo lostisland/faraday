@@ -9,12 +9,12 @@ module Faraday
     #         # return static content
     #         [200, {'Content-Type' => 'application/json'}, 'hi world']
     #       end
-    #       
+    #
     #       # response with content generated based on request
     #       stub.get '/showget' do |env|
-    #         [200, {'Content-Type' => 'text/plain'}, env[:method].to_s]
+    #         [200, {'Content-Type' => 'text/plain'}, env.method.to_s]
     #       end
-    #       
+    #
     #       # regular expression can be used as matching filter
     #       stub.get /\A\/items\/(\d+)\z/ do |env, meta|
     #         # in case regular expression is used an instance of MatchData can be received
@@ -22,16 +22,16 @@ module Faraday
     #       end
     #     end
     #   end
-    #   
+    #
     #   resp = test.get '/resource.json'
     #   resp.body # => 'hi world'
-    #   
+    #
     #   resp = test.get '/showget'
     #   resp.body # => 'get'
-    #   
+    #
     #   resp = test.get '/items/1'
     #   resp.body # => 'showing item: 1'
-    #   
+    #
     #   resp = test.get '/items/2'
     #   resp.body # => 'showing item: 2'
     #
@@ -178,8 +178,7 @@ module Faraday
         end
       end
 
-      def initialize(app, stubs=nil, &block)
-        super(app)
+      def initialize(stubs=nil, &block)
         @stubs = stubs || Stubs.new
         configure(&block) if block
       end
@@ -190,13 +189,13 @@ module Faraday
 
       def call(env)
         super
-        host = env[:url].host
-        normalized_path = Faraday::Utils.normalize_path(env[:url])
+        host = env.url.host
+        normalized_path = Faraday::Utils.normalize_path(env.url)
         params_encoder = env.request.params_encoder || Faraday::Utils.default_params_encoder
 
-        stub, meta = stubs.match(env[:method], host, normalized_path, env.request_headers, env[:body])
+        stub, meta = stubs.match(env.method, host, normalized_path, env.request_headers, env.body)
         if stub
-          env[:params] = (query = env[:url].query) ?
+          env.params = (query = env.url.query) ?
             params_encoder.decode(query) : {}
           block_arity = stub.block.arity
           status, headers, body = (block_arity >= 0) ?
@@ -204,9 +203,8 @@ module Faraday
             stub.block.call(env, meta)
           save_response(env, status, body, headers)
         else
-          raise Stubs::NotFound, "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"
+          raise Stubs::NotFound, "no stubbed request for #{env.method} #{normalized_path} #{env.body}"
         end
-        @app.call(env)
       end
     end
   end

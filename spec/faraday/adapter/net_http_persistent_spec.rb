@@ -10,7 +10,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
       http.idle_timeout = 123
     end
 
-    http = adapter.send(:net_http_connection, url: url, request: {})
+    http = adapter.send(:net_http_connection, Faraday::Env.from(url: url, request: {}))
     adapter.send(:configure_request, http, {})
 
     expect(http.idle_timeout).to eq(123)
@@ -21,7 +21,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
 
     adapter = Faraday::Adapter::NetHttpPersistent.new
 
-    http = adapter.send(:net_http_connection, url: url, request: {})
+    http = adapter.send(:net_http_connection, Faraday::Env.from(url: url, request: {}))
     adapter.send(:configure_request, http, {})
 
     # `max_retries=` is only present in Ruby 2.5
@@ -31,9 +31,9 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
   it 'allows to set pool_size on initialize' do
     url = URI('https://example.com')
 
-    adapter = Faraday::Adapter::NetHttpPersistent.new(nil, { pool_size: 5 })
+    adapter = Faraday::Adapter::NetHttpPersistent.new({ pool_size: 5 })
 
-    http = adapter.send(:net_http_connection, url: url, request: {})
+    http = adapter.send(:net_http_connection, Faraday::Env.from(url: url, request: {}))
 
     # `pool` is only present in net_http_persistent >= 3.0
     expect(http.pool.size).to eq(5) if http.respond_to?(:pool)

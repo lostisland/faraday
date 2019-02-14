@@ -233,16 +233,31 @@ conn.put '/profile', payload
 ## Writing middleware
 
 Middleware are classes that implement a `call` instance method. They hook into
-the request/response cycle.
+the request/response cycle with two callback methods: `on_request` and `on_response`.
+
+```ruby
+def on_request(env)
+  # do something with the request
+  # env.request_headers.merge!(...)
+end
+
+def on_complete(env)
+  # do something with the response
+  # raise RuntimeError if env.response.status != 200
+end
+```
+
+Alternatively, if your middleware requires a special implementation, you can take control of the cycle
+by overriding the `call` method, and calling `@app.call` where necessary to hand the request over to the next middleware. 
 
 ```ruby
 def call(request_env)
   # do something with the request
-  # request_env[:request_headers].merge!(...)
+  # request_env.request_headers.merge!(...)
 
   @app.call(request_env).on_complete do |response_env|
     # do something with the response
-    # response_env[:response_headers].merge!(...)
+    # response_env.response_headers.merge!(...)
   end
 end
 ```

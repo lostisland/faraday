@@ -7,6 +7,11 @@ module Faraday
 
       dependency 'typhoeus'
       dependency 'typhoeus/adapters/faraday'
+
+      def initialize(adapter_options = {})
+        super()
+        @adapter_options = adapter_options
+      end
     end
   end
 end

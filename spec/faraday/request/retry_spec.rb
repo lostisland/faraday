@@ -10,7 +10,6 @@ RSpec.describe Faraday::Request::Retry do
         %w(get post).each do |method|
           stub.send(method, '/unstable') do |env|
             calls << env.dup
-            env[:body] = nil # simulate blanking out response body
             callback.call
           end
         end
@@ -136,11 +135,11 @@ RSpec.describe Faraday::Request::Retry do
       @check = lambda { |_, _| true }
       expect { conn.post('/unstable', body) }.to raise_error(Errno::ETIMEDOUT)
       expect(times_called).to eq(3)
-      expect(calls.all? { |env| env[:body] == body }).to be_truthy
+      expect(calls.all? { |env| env.body == body }).to be_truthy
     end
 
     it 'does not retry if retry_if block returns false checking env' do
-      @check = lambda { |env, _| env[:method] != :post }
+      @check = lambda { |env, _| env.method != :post }
       expect { conn.post('/unstable') }.to raise_error(Errno::ETIMEDOUT)
       expect(times_called).to eq(1)
     end

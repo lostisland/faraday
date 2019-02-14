@@ -44,19 +44,17 @@ module Faraday
   # @!attribute reason_phrase
   #   @return [String]
   class Env < Options.new(:method, :body, :url, :request, :request_headers,
-                          :ssl, :parallel_manager, :params, :response, :response_headers, :status,
-                          :reason_phrase)
+                          :ssl, :parallel_manager, :params, :response)
 
     ContentLength = 'Content-Length'.freeze
     StatusesWithoutBody = Set.new [204, 304]
-    SuccessfulStatuses = 200..299
 
     # A Set of HTTP verbs that typically send a body.  If no body is set for
     # these requests, the Content-Length header is set to 0.
     MethodsWithBodies = Set.new [:post, :put, :patch, :options]
 
     options :request => RequestOptions,
-            :request_headers => Utils::Headers, :response_headers => Utils::Headers
+            :request_headers => Utils::Headers
 
     extend Forwardable
 
@@ -93,11 +91,6 @@ module Faraday
       end
     end
 
-    # @return [Boolean] true if status is in the set of {SuccessfulStatuses}.
-    def success?
-      SuccessfulStatuses.include?(status)
-    end
-
     # @return [Boolean] true if there's no body yet, and the method is in the set of {MethodsWithBodies}.
     def needs_body?
       !body && MethodsWithBodies.include?(method)
@@ -117,6 +110,26 @@ module Faraday
     # @return [Boolean] true if there is a parallel_manager
     def parallel?
       !!parallel_manager
+    end
+
+    def response_headers
+      response.headers
+    end
+
+    def status
+      response.status
+    end
+
+    def response_body
+      response.body
+    end
+
+    def request_body
+      self[:body]
+    end
+
+    def body
+      response&.finished? ? response_body : request_body
     end
 
     def inspect

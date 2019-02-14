@@ -23,12 +23,12 @@ module Faraday
         super
         request = create_request(env)
 
-        http_method = env[:method].to_s.downcase.to_sym
+        http_method = env.method.to_s.downcase.to_sym
 
         # Queue requests for parallel execution.
-        if env[:parallel_manager]
-          env[:parallel_manager].add(request, http_method, request_config(env)) do |resp|
-            if (req = env[:request]).stream_response?
+        if env.parallel_manager
+          env.parallel_manager.add(request, http_method, request_config(env)) do |resp|
+            if (req = env.request).stream_response?
               warn "Streaming downloads for #{self.class.name} are not yet implemented."
               req.on_data.call(resp.response, resp.response.bytesize)
             end
@@ -40,7 +40,7 @@ module Faraday
             end
 
             # Finalize the response object with values from `env`.
-            env[:response].finish(env)
+            env.response.finish(env)
           end
 
         # Execute single request.
@@ -61,9 +61,9 @@ module Faraday
 
           raise client.error if client.error
 
-          if env[:request].stream_response?
+          if env.request.stream_response?
             warn "Streaming downloads for #{self.class.name} are not yet implemented."
-            env[:request].on_data.call(client.response, client.response.bytesize)
+            env.request.on_data.call(client.response, client.response.bytesize)
           end
           status = client.response_header.status
           reason = client.response_header.http_reason
@@ -100,7 +100,7 @@ module Faraday
       end
 
       def create_request(env)
-        EventMachine::HttpRequest.new(Utils::URI(env[:url].to_s), connection_config(env).merge(@connection_options))
+        EventMachine::HttpRequest.new(Utils::URI(env.url.to_s), connection_config(env).merge(@connection_options))
       end
     end
   end

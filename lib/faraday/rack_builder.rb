@@ -13,7 +13,8 @@ module Faraday
     attr_accessor :handlers
 
     # Error raised when trying to modify the stack after calling `lock!`
-    class StackLocked < RuntimeError; end
+    class StackLocked < RuntimeError;
+    end
 
     # borrowed from ActiveSupport::Dependencies::Reference &
     # ActionDispatch::MiddlewareStack::Middleware
@@ -34,8 +35,13 @@ module Faraday
         @args, @block = args, block
       end
 
-      def klass() @@constants[@name] end
-      def inspect() @name end
+      def klass()
+        @@constants[@name]
+      end
+
+      def inspect()
+        @name
+      end
 
       def ==(other)
         if other.is_a? Handler
@@ -47,8 +53,12 @@ module Faraday
         end
       end
 
-      def build(app)
-        klass.new(app, *@args, &@block)
+      def build(app = nil)
+        if klass.ancestors.include?(Faraday::Adapter)
+          klass.new(*@args, &@block)
+        else
+          klass.new(app, *@args, &@block)
+        end
       end
     end
 
@@ -160,19 +170,14 @@ module Faraday
     def app
       @app ||= begin
         lock!
-        to_app(lambda { |env|
-          response = Response.new
-          env.response = response
-          response.finish(env) unless env.parallel?
-          response
-        })
+        to_app
       end
     end
 
-    def to_app(inner_app)
+    def to_app
       # last added handler is the deepest and thus closest to the inner app
       # adapter is always the last one
-      (@handlers + [@adapter]).reverse.inject(inner_app) { |app, handler| handler.build(app) }
+      (@handlers).reverse.inject(@adapter.build) { |app, handler| handler.build(app) }
     end
 
     def ==(other)
@@ -201,9 +206,9 @@ module Faraday
     # :ssl - Hash of options for configuring SSL requests.
     def build_env(connection, request)
       Env.new(request.method, request.body,
-        connection.build_exclusive_url(request.path, request.params, request.options.params_encoder),
-        request.options, request.headers, connection.ssl,
-        connection.parallel_manager)
+              connection.build_exclusive_url(request.path, request.params, request.options.params_encoder),
+              request.options, request.headers, connection.ssl,
+              connection.parallel_manager)
     end
 
     private

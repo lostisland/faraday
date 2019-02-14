@@ -39,11 +39,10 @@ module Faraday
     end
 
     # @param env [Faraday::Env]
-    def call(env)
+    def on_request(env)
       unless env.request_headers[KEY]
         env.request_headers[KEY] = @header_value
       end
-      @app.call(env)
     end
   end
 end

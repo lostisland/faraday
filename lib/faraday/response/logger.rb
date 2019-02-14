@@ -1,7 +1,7 @@
 require 'forwardable'
 
 module Faraday
-  class Response::Logger < Response::Middleware
+  class Response::Logger < Middleware
     extend Forwardable
 
     DEFAULT_OPTIONS = { :headers => true, :bodies => false }
@@ -19,21 +19,20 @@ module Faraday
 
     def_delegators :@logger, :debug, :info, :warn, :error, :fatal
 
-    def call(env)
-      info('request')  { "#{env.method.upcase} #{apply_filters(env.url.to_s)}" }
-      debug('request') { apply_filters( dump_headers env.request_headers ) } if log_headers?(:request)
-      debug('request') { apply_filters( dump_body(env[:body]) ) } if env[:body] && log_body?(:request)
-      super
+    def on_request(env)
+      info('request') { "#{env.method.upcase} #{apply_filters(env.url.to_s)}" }
+      debug('request') { apply_filters(dump_headers(env.request_headers)) } if log_headers?(:request)
+      debug('request') { apply_filters(dump_body(env.body)) } if env.body && log_body?(:request)
     end
 
     def on_complete(env)
-      info('response')  { "Status #{env.status.to_s}" }
-      debug('response') { apply_filters( dump_headers env.response_headers ) } if log_headers?(:response)
-      debug('response') { apply_filters( dump_body env[:body] ) } if env[:body] && log_body?(:response)
+      info('response') { "Status #{env.response.status.to_s}" }
+      debug('response') { apply_filters(dump_headers(env.response.headers)) } if log_headers?(:response)
+      debug('response') { apply_filters(dump_body(env.response.body)) } if env.response.body && log_body?(:response)
     end
 
     def filter(filter_word, filter_replacement)
-      @filter.push([ filter_word, filter_replacement ])
+      @filter.push([filter_word, filter_replacement])
     end
 
     private
@@ -57,15 +56,19 @@ module Faraday
 
     def log_headers?(type)
       case @options[:headers]
-      when Hash then @options[:headers][type]
-      else @options[:headers]
+      when Hash then
+        @options[:headers][type]
+      else
+        @options[:headers]
       end
     end
 
     def log_body?(type)
       case @options[:bodies]
-      when Hash then @options[:bodies][type]
-      else @options[:bodies]
+      when Hash then
+        @options[:bodies][type]
+      else
+        @options[:bodies]
       end
     end
 

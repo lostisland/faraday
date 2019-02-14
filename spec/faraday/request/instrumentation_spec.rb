@@ -46,7 +46,7 @@ RSpec.describe Faraday::Request::Instrumentation do
 
     name, env = instrumenter.instrumentations.first
     expect(name).to eq('request.faraday')
-    expect(env[:url].path).to eq('/')
+    expect(env.url.path).to eq('/')
   end
 
   context 'with custom name' do
@@ -62,7 +62,7 @@ RSpec.describe Faraday::Request::Instrumentation do
 
       name, env = instrumenter.instrumentations.first
       expect(name).to eq('custom')
-      expect(env[:url].path).to eq('/')
+      expect(env.url.path).to eq('/')
     end
   end
 

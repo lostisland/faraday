@@ -6,7 +6,7 @@ RSpec.describe Faraday::Adapter::NetHttp do
   context 'checking http' do
     let(:url) { URI('http://example.com') }
     let(:adapter) { Faraday::Adapter::NetHttp.new }
-    let(:http) { adapter.send(:net_http_connection, url: url, request: {}) }
+    let(:http) { adapter.send(:net_http_connection, Faraday::Env.from(url: url, request: {})) }
 
     it { expect(http.port).to eq(80) }
     it 'sets max_retries to 0' do

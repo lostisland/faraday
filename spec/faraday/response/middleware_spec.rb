@@ -1,4 +1,4 @@
-RSpec.describe Faraday::Response::Middleware do
+RSpec.describe Faraday::Middleware do
   let(:conn) do
     Faraday.new do |b|
       b.use custom_middleware
@@ -12,7 +12,7 @@ RSpec.describe Faraday::Response::Middleware do
 
   context 'with a custom ResponseMiddleware' do
     let(:custom_middleware) do
-      Class.new(Faraday::Response::Middleware) do
+      Class.new(Faraday::Middleware) do
         def parse(body)
           body.upcase
         end
@@ -26,7 +26,7 @@ RSpec.describe Faraday::Response::Middleware do
 
   context 'with a custom ResponseMiddleware but empty response' do
     let(:custom_middleware) do
-      Class.new(Faraday::Response::Middleware) do
+      Class.new(Faraday::Middleware) do
         def parse(body)
           raise 'this should not be called'
         end

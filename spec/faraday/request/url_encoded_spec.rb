@@ -5,8 +5,8 @@ RSpec.describe Faraday::Request::UrlEncoded do
       b.request :url_encoded
       b.adapter :test do |stub|
         stub.post('/echo') do |env|
-          posted_as = env[:request_headers]['Content-Type']
-          [200, {'Content-Type' => posted_as}, env[:body]]
+          posted_as = env.request_headers['Content-Type']
+          [200, {'Content-Type' => posted_as}, env.body]
         end
       end
     end

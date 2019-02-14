@@ -7,13 +7,13 @@ module Faraday
       def call(env)
         super
         # TODO: support streaming requests
-        env[:body] = env[:body].read if env[:body].respond_to? :read
+        env.body = env.body.read if env.body.respond_to? :read
 
         session = ::Patron::Session.new
         @config_block.call(session) if @config_block
-        configure_ssl(session, env[:ssl]) if env[:url].scheme == 'https' and env[:ssl]
+        configure_ssl(session, env.ssl) if env.url.scheme == 'https' and env.ssl
 
-        if req = env[:request]
+        if req = env.request
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
           session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
 
@@ -26,13 +26,13 @@ module Faraday
         end
 
         response = begin
-          data = env[:body] ? env[:body].to_s : nil
-          session.request(env[:method], env[:url].to_s, env[:request_headers], :data => data)
+          data = env.body ? env.body.to_s : nil
+          session.request(env.method, env.url.to_s, env.request_headers, :data => data)
         rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
           raise Faraday::ConnectionFailed, $!
         end
 
-        if (req = env[:request]).stream_response?
+        if (req = env.request).stream_response?
           warn "Streaming downloads for #{self.class.name} are not yet implemented."
           req.on_data.call(response.body, response.body.bytesize)
         end
@@ -40,8 +40,6 @@ module Faraday
         reason_phrase = response.status_line.gsub(/^.* \d{3} /, '')
 
         save_response(env, response.status, response.body, response.headers, reason_phrase)
-
-        @app.call env
       rescue ::Patron::TimeoutError => err
         if connection_timed_out_message?(err.message)
           raise Faraday::ConnectionFailed, err

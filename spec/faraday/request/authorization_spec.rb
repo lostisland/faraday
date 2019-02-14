@@ -4,7 +4,7 @@ RSpec.describe Faraday::Request::Authorization do
       b.request auth_type, *auth_config
       b.adapter :test do |stub|
         stub.get('/auth-echo') do |env|
-          [200, {}, env[:request_headers]['Authorization']]
+          [200, {}, env.request_headers['Authorization']]
         end
       end
     end

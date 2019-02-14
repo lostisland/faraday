@@ -1,3 +1,5 @@
+require 'date'
+
 module Faraday
   # Catches exceptions and retries each request a limited number of times.
   #
@@ -120,16 +122,15 @@ module Faraday
     # @param env [Faraday::Env]
     def call(env)
       retries = @options.max
-      request_body = env[:body]
       begin
-        env[:body] = request_body # after failure env[:body] is set to the response body
+        env.response = nil
         @app.call(env).tap do |resp|
           raise Faraday::RetriableResponse.new(nil, resp) if @options.retry_statuses.include?(resp.status)
         end
       rescue @errmatch => exception
         if retries > 0 && retry_request?(env, exception)
           retries -= 1
-          rewind_files(request_body)
+          rewind_files(env.request_body)
           @options.retry_block.call(env, @options, retries, exception)
           if (sleep_amount = calculate_sleep_amount(retries + 1, env))
             sleep sleep_amount
@@ -170,7 +171,7 @@ module Faraday
     private
 
     def retry_request?(env, exception)
-      @options.methods.include?(env[:method]) || @options.retry_if.call(env, exception)
+      @options.methods.include?(env.method) || @options.retry_if.call(env, exception)
     end
 
     def rewind_files(body)
@@ -184,10 +185,10 @@ module Faraday
 
     # MDN spec for Retry-After header: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
     def calculate_retry_after(env)
-      response_headers = env[:response_headers]
+      response_headers = env.response_headers
       return unless response_headers
 
-      retry_after_value = env[:response_headers]["Retry-After"]
+      retry_after_value = env.response_headers["Retry-After"]
 
       # Try to parse date from the header value
       begin

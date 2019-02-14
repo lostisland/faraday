@@ -18,7 +18,7 @@ module Faraday
         def request_config(env)
           options = {
             :body => read_body(env),
-            :head => env[:request_headers],
+            :head => env.request_headers,
             # :keepalive => true,
             # :file => 'path/to/file', # stream data off disk
           }
@@ -27,7 +27,7 @@ module Faraday
         end
 
         def read_body(env)
-          body = env[:body]
+          body = env.body
           body.respond_to?(:read) ? body.read : body
         end
 
@@ -54,10 +54,10 @@ module Faraday
 
         # Reads out SSL certificate settings from env into options
         def configure_ssl(options, env)
-          if env[:url].scheme == 'https' && env[:ssl]
+          if env.url.scheme == 'https' && env.ssl
             options[:ssl] = {
-              :cert_chain_file => env[:ssl][:ca_file],
-              :verify_peer => env[:ssl].fetch(:verify, true)
+              :cert_chain_file => env.ssl[:ca_file],
+              :verify_peer => env.ssl.fetch(:verify, true)
             }
           end
         end
@@ -71,13 +71,13 @@ module Faraday
 
         # Reads out compression header settings from env into options
         def configure_compression(options, env)
-          if env[:method] == :get and not options[:head].key? 'accept-encoding'
+          if env.method == :get and not options[:head].key? 'accept-encoding'
             options[:head]['accept-encoding'] = 'gzip, compressed'
           end
         end
 
         def request_options(env)
-          env[:request]
+          env.request
         end
       end
 
@@ -100,10 +100,10 @@ module Faraday
 
       def perform_request(env)
         if parallel?(env)
-          manager = env[:parallel_manager]
+          manager = env.parallel_manager
           manager.add {
             perform_single_request(env).
-              callback { env[:response].finish(env) }
+              callback { env.response.finish(env) }
           }
         else
           unless EventMachine.reactor_running?
@@ -120,9 +120,9 @@ module Faraday
             raise_error(error) if error
           else
             # EM is running: instruct upstream that this is an async request
-            env[:parallel_manager] = true
+            env.parallel_manager = true
             perform_single_request(env).
-              callback { env[:response].finish(env) }.
+              callback { env.response.finish(env) }.
               errback {
                 # TODO: no way to communicate the error in async mode
                 raise NotImplementedError
@@ -146,10 +146,10 @@ module Faraday
       # TODO: reuse the connection to support pipelining
       def perform_single_request(env)
         req = create_request(env)
-        req.setup_request(env[:method], request_config(env)).callback { |client|
-          if env[:request].stream_response?
+        req.setup_request(env.method, request_config(env)).callback { |client|
+          if env.request.stream_response?
             warn "Streaming downloads for #{self.class.name} are not yet implemented."
-            env[:request].on_data.call(client.response, client.response.bytesize)
+            env.request.on_data.call(client.response, client.response.bytesize)
           end
           status = client.response_header.status
           reason = client.response_header.http_reason
@@ -162,7 +162,7 @@ module Faraday
       end
 
       def create_request(env)
-        EventMachine::HttpRequest.new(env[:url], connection_config(env).merge(@connection_options))
+        EventMachine::HttpRequest.new(env.url, connection_config(env).merge(@connection_options))
       end
 
       def error_message(client)
@@ -185,7 +185,7 @@ module Faraday
 
       # @return [Boolean]
       def parallel?(env)
-        !!env[:parallel_manager]
+        !!env.parallel_manager
       end
 
       # This parallel manager is designed to start an EventMachine loop

@@ -15,7 +15,7 @@ module Faraday
         # enable compression
         client.transparent_gzip_decompression = true
 
-        if req = env[:request]
+        if req = env.request
           if proxy = req[:proxy]
             configure_proxy proxy
           end
@@ -27,7 +27,7 @@ module Faraday
           configure_timeouts req
         end
 
-        if env[:url].scheme == 'https' && ssl = env[:ssl]
+        if env.url.scheme == 'https' && ssl = env.ssl
           configure_ssl ssl
         end
 
@@ -35,19 +35,17 @@ module Faraday
 
         # TODO Don't stream yet.
         # https://github.com/nahi/httpclient/pull/90
-        env[:body] = env[:body].read if env[:body].respond_to? :read
+        env.body = env.body.read if env.body.respond_to? :read
 
-        resp = client.request env[:method], env[:url],
-          :body   => env[:body],
-          :header => env[:request_headers]
+        resp = client.request env.method, env.url,
+          :body   => env.body,
+          :header => env.request_headers
 
-        if (req = env[:request]).stream_response?
+        if (req = env.request).stream_response?
           warn "Streaming downloads for #{self.class.name} are not yet implemented."
           req.on_data.call(resp.body, resp.body.bytesize)
         end
         save_response env, resp.status, resp.body, resp.headers, resp.reason
-
-        @app.call env
       rescue ::HTTPClient::TimeoutError, Errno::ETIMEDOUT
         raise Faraday::TimeoutError, $!
       rescue ::HTTPClient::BadResponseError => err

@@ -9,7 +9,7 @@ module Adapters
           [200, {'Content-Type' => 'text/html'}, 'hello']
         end
         stub.get('/method-echo') do |env|
-          [200, {'Content-Type' => 'text/html'}, env[:method].to_s]
+          [200, {'Content-Type' => 'text/html'}, env.method.to_s]
         end
         stub.get(/\A\/resources\/\d+(?:\?|\z)/) do
           [200, {'Content-Type' => 'text/html'}, 'show']
@@ -95,10 +95,10 @@ module Adapters
 
     def test_yields_env_to_stubs
       @stubs.get '/hello' do |env|
-        assert_equal '/hello',     env[:url].path
-        assert_equal 'foo.com',    env[:url].host
-        assert_equal '1',          env[:params]['a']
-        assert_equal 'text/plain', env[:request_headers]['Accept']
+        assert_equal '/hello',     env.url.path
+        assert_equal 'foo.com',    env.url.host
+        assert_equal '1',          env.params['a']
+        assert_equal 'text/plain', env.request_headers['Accept']
         [200, {}, 'a']
       end
 
@@ -108,7 +108,7 @@ module Adapters
 
     def test_parses_params_with_default_encoder
       @stubs.get '/hello' do |env|
-        assert_equal '1', env[:params]['a']['b']
+        assert_equal '1', env.params['a']['b']
         [200, {}, 'a']
       end
 
@@ -117,7 +117,7 @@ module Adapters
 
     def test_parses_params_with_nested_encoder
       @stubs.get '/hello' do |env|
-        assert_equal '1', env[:params]['a']['b']
+        assert_equal '1', env.params['a']['b']
         [200, {}, 'a']
       end
 
@@ -127,7 +127,7 @@ module Adapters
 
     def test_parses_params_with_flat_encoder
       @stubs.get '/hello' do |env|
-        assert_equal '1', env[:params]['a[b]']
+        assert_equal '1', env.params['a[b]']
         [200, {}, 'a']
       end
 

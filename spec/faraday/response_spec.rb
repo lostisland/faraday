@@ -1,9 +1,8 @@
 RSpec.describe Faraday::Response do
-  subject { Faraday::Response.new(env) }
+  subject { Faraday::Response.new.finish(params) }
 
-  let(:env) do
-    Faraday::Env.from(status: 404, body: 'yikes',
-                      response_headers: { 'Content-Type' => 'text/plain' })
+  let(:params) do
+    { status: 404, body: 'yikes', headers: { 'Content-Type' => 'text/plain' }, reason_phrase: 'not found' }
   end
 
   it { expect(subject.finished?).to be_truthy }
@@ -14,21 +13,12 @@ RSpec.describe Faraday::Response do
   it { expect(subject.headers['Content-Type']).to eq('text/plain') }
   it { expect(subject['content-type']).to eq('text/plain') }
 
-  describe '#apply_request' do
-    before { subject.apply_request(body: 'a=b', method: :post) }
+  describe '#apply_params' do
+    subject { Faraday::Response.new }
+    before { subject.apply_params(body: 'yikes', status: 200) }
 
     it { expect(subject.body).to eq('yikes') }
-    it { expect(subject.env[:method]).to eq(:post) }
-  end
-
-  describe '#to_hash' do
-    let(:hash) { subject.to_hash }
-
-    it { expect(hash).to be_a(Hash) }
-    it { expect(hash).to eq(env.to_hash) }
-    it { expect(hash[:status]).to eq(subject.status) }
-    it { expect(hash[:response_headers]).to eq(subject.headers) }
-    it { expect(hash[:body]).to eq(subject.body) }
+    it { expect(subject.status).to eq(200) }
   end
 
   describe 'marshal serialization support' do
@@ -37,38 +27,38 @@ RSpec.describe Faraday::Response do
 
     before do
       subject.on_complete {}
-      subject.finish(env.merge(params: 'moo'))
+      subject.finish(params)
     end
 
-    it { expect(loaded.env[:params]).to be_nil }
-    it { expect(loaded.env[:body]).to eq(env[:body]) }
-    it { expect(loaded.env[:response_headers]).to eq(env[:response_headers]) }
-    it { expect(loaded.env[:status]).to eq(env[:status]) }
+    it { expect(loaded.body).to eq(params[:body]) }
+    it { expect(loaded.headers).to eq(params[:headers]) }
+    it { expect(loaded.status).to eq(params[:status]) }
+    it { expect(loaded.reason_phrase).to eq(params[:reason_phrase]) }
   end
 
   describe '#on_complete' do
     subject { Faraday::Response.new }
 
     it 'parse body on finish' do
-      subject.on_complete { |env| env[:body] = env[:body].upcase }
-      subject.finish(env)
+      subject.on_complete { |response| response.body = response.body.upcase }
+      subject.finish(params)
 
       expect(subject.body).to eq('YIKES')
     end
 
     it 'can access response body in on_complete callback' do
-      subject.on_complete { |env| env[:body] = subject.body.upcase }
-      subject.finish(env)
+      subject.on_complete { |response| response.body = subject.body.upcase }
+      subject.finish(params)
 
       expect(subject.body).to eq('YIKES')
     end
 
-    it 'can access response body in on_complete callback' do
-      callback_env = nil
-      subject.on_complete { |env| callback_env = env }
+    it 'can access response in on_complete callback' do
+      callback_response = nil
+      subject.on_complete { |response| callback_response = response }
       subject.finish({})
 
-      expect(subject.env).to eq(callback_env)
+      expect(subject).to eq(callback_response)
     end
   end
 end

@@ -10,13 +10,12 @@ module Faraday
     # Checks for files in the payload, otherwise leaves everything untouched.
     #
     # @param env [Faraday::Env]
-    def call(env)
+    def on_request(env)
       match_content_type(env) do |params|
         env.request.boundary ||= unique_boundary
         env.request_headers[CONTENT_TYPE] += "; boundary=#{env.request.boundary}"
         env.body = create_multipart(env, params)
       end
-      @app.call env
     end
 
     # @param env [Faraday::Env]
