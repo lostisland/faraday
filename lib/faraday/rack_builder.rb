@@ -47,7 +47,7 @@ module Faraday
         end
       end
 
-      def build(app)
+      def build(app = nil)
         klass.new(app, *@args, &@block)
       end
     end
@@ -160,19 +160,14 @@ module Faraday
     def app
       @app ||= begin
         lock!
-        to_app(lambda { |env|
-          response = Response.new
-          env.response = response
-          response.finish(env) unless env.parallel?
-          response
-        })
+        to_app
       end
     end
 
-    def to_app(inner_app)
+    def to_app
       # last added handler is the deepest and thus closest to the inner app
       # adapter is always the last one
-      (@handlers + [@adapter]).reverse.inject(inner_app) { |app, handler| handler.build(app) }
+      (@handlers).reverse.inject(@adapter.build) { |app, handler| handler.build(app) }
     end
 
     def ==(other)
