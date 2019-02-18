@@ -21,7 +21,7 @@ If you're using a custom adapter, please ensure to change its initializer and `c
 ### Faraday::Env
 The `Faraday::Env` has been refactored by moving all response-related fields into the response.
 This means that if you need to access the response `body`, `headers`, `reason_phrase` or `status`, you'll need to pass through the `response`. (e.g. `env.response.headers`)
-However, the following helper methods have been introduced in `Faraday::Env` to ensure backwords compatibility when READING these fields: `response_body`, `response_headers`, `reason_phrase` and `status`.
+However, the following helper methods have been introduced in `Faraday::Env` to ensure backwards compatibility when READING these fields: `response_body`, `response_headers`, `reason_phrase` and `status`.
 Moreover, since many existing middlewares still rely on the fact that the `body` is overridden after the response, the `body` getter maintains that functionality.
 But now you can access the request body even after a request has been completed using the `request_body` getter.
 
