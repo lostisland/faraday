@@ -3,8 +3,6 @@ module Faraday
     attr_accessor :load_error
     private :load_error=
 
-    # self.load_error = nil
-
     # Executes a block which should try to require and reference dependent libraries
     def dependency(lib = nil)
       lib ? require(lib) : yield
