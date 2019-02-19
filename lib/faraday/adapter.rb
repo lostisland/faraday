@@ -1,7 +1,10 @@
 module Faraday
   # Base class for all Faraday adapters. Adapters are
   # responsible for fulfilling a Faraday request.
-  class Adapter < Middleware
+  class Adapter
+    extend MiddlewareRegistry
+    extend DependencyLoader
+
     CONTENT_LENGTH = 'Content-Length'.freeze
 
     register_middleware File.expand_path('../adapter', __FILE__),
@@ -31,13 +34,14 @@ module Faraday
     self.supports_parallel = false
 
     def initialize(app = nil, opts = {}, &block)
-      super(app)
+      @app = lambda { |env| env.response }
       @connection_options = opts
       @config_block = block
     end
 
     def call(env)
       env.clear_body if env.needs_body?
+      env.response = Response.new
     end
 
     private
@@ -50,6 +54,9 @@ module Faraday
         response_headers.update headers unless headers.nil?
         yield(response_headers) if block_given?
       end
+
+      env.response.finish(env) unless env.parallel?
+      env.response
     end
   end
 end
