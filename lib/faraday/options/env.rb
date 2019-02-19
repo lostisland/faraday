@@ -43,9 +43,9 @@ module Faraday
   #
   # @!attribute reason_phrase
   #   @return [String]
-  class Env < Options.new(:method, :body, :url, :request, :request_headers,
+  class Env < Options.new(:method, :request_body, :url, :request, :request_headers,
                           :ssl, :parallel_manager, :params, :response, :response_headers, :status,
-                          :reason_phrase)
+                          :reason_phrase, :response_body)
 
     ContentLength = 'Content-Length'.freeze
     StatusesWithoutBody = Set.new [204, 304]
@@ -76,6 +76,7 @@ module Faraday
 
     # @param key [Object]
     def [](key)
+      return self[current_body] if key == :body
       if in_member_set?(key)
         super(key)
       else
@@ -86,11 +87,24 @@ module Faraday
     # @param key [Object]
     # @param value [Object]
     def []=(key, value)
+      return super(current_body, value) if key == :body
       if in_member_set?(key)
         super(key, value)
       else
         custom_members[key] = value
       end
+    end
+
+    def current_body
+      !!status ? :response_body : :request_body
+    end
+
+    def body
+      self[:body]
+    end
+
+    def body=(value)
+      self[:body] = value
     end
 
     # @return [Boolean] true if status is in the set of {SuccessfulStatuses}.

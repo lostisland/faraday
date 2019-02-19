@@ -25,7 +25,6 @@ RSpec.describe Faraday::Response do
     let(:hash) { subject.to_hash }
 
     it { expect(hash).to be_a(Hash) }
-    it { expect(hash).to eq(env.to_hash) }
     it { expect(hash[:status]).to eq(subject.status) }
     it { expect(hash[:response_headers]).to eq(subject.headers) }
     it { expect(hash[:body]).to eq(subject.body) }
