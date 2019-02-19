@@ -292,9 +292,32 @@ module Faraday
       env
     end
 
+    def request_body
+      if defined?(@request_body)
+        @request_body
+      else
+        body
+      end
+    end
+
+    def response_body
+      if defined?(@request_body)
+        body
+      else
+        nil
+      end
+    end
+
+    def status=(value)
+      @request_body = self[:body] unless defined?(@request_body)
+      super
+    end
+
     # Public
     def [](key)
-      if in_member_set?(key)
+      if key == :request_body || key == :response_body
+        send(key)
+      elsif in_member_set?(key)
         super(key)
       else
         custom_members[key]
@@ -303,7 +326,9 @@ module Faraday
 
     # Public
     def []=(key, value)
-      if in_member_set?(key)
+      if key == :status
+        send(:status=, value)
+      elsif in_member_set?(key)
         super(key, value)
       else
         custom_members[key] = value
