@@ -13,6 +13,10 @@ Please note `Faraday::ClientError` was previously used for both.
   * Faraday::ProxyAuthError (407). Please note this raised a `Faraday::ConnectionFailed` before.
   * Faraday::UnprocessableEntityError (422)
 
+### Custom adapters
+If you have written a custom adapter, please be aware that `env.body` is now an alias to the two new properties `request_body` and `response_body`.
+This should work without you noticing if your adapter inherits from `Faraday::Adapter` and calls `save_response`, but if it doesn't, then please ensure you set the `status` BEFORE the `body` while processing the response.
+
 ### Others
 * Dropped support for jruby and Rubinius.
 * Officially supports Ruby 2.3+
