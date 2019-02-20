@@ -1,3 +1,8 @@
+### THIS IS FARADAY MASTER BRANCH, WHICH CONTAINS VERSION 1.0
+VERSION 1.0 IS NOT OFFICIALLY RELEASED YET
+
+IF YOU WANT TO SEE/CONTRIBUTE TO THE LATEST STABLE RELEASE, PLEASE CHECK THE BRANCH FOR VERSION [0.15](https://github.com/lostisland/faraday/tree/0.1x)
+
 # Faraday
 
 [![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
