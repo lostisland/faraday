@@ -1,7 +1,7 @@
 ### THIS IS FARADAY `master` BRANCH, WHICH CONTAINS VERSION 1.0
 VERSION 1.0 IS NOT OFFICIALLY RELEASED YET
 
-`LATEST STABLE RELEASE v0.15 IS IN BRANCH [0.1x](https://github.com/lostisland/faraday/tree/0.1x)`
+LATEST STABLE RELEASE v0.15 IS IN BRANCH [0.1x](https://github.com/lostisland/faraday/tree/0.1x)
 
 # Faraday
 
