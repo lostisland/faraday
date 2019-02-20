@@ -23,7 +23,7 @@ module Faraday
         Net::HTTPHeaderSyntaxError,
         Net::ProtocolError,
         SocketError,
-        Zlib::GzipFile::Error,
+        Zlib::GzipFile::Error
       ]
 
       NET_HTTP_EXCEPTIONS << OpenSSL::SSL::SSLError if defined?(OpenSSL)

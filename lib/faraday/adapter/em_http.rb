@@ -18,7 +18,7 @@ module Faraday
         def request_config(env)
           options = {
             :body => read_body(env),
-            :head => env[:request_headers],
+            :head => env[:request_headers]
             # :keepalive => true,
             # :file => 'path/to/file', # stream data off disk
           }
