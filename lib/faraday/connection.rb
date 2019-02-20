@@ -163,8 +163,16 @@ module Faraday
     METHODS_WITH_QUERY.each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, params = nil, headers = nil)
+          if params
+            headers ||= {}
+            if headers[:url_params]
+              headers[:url_params] = params.update(headers[:url_params])
+            else
+              headers[:url_params] = params
+            end
+          end
+
           run_request(:#{method}, url, nil, headers) { |request|
-            request.params.update(params) if params
             yield(request) if block_given?
           }
         end
@@ -418,12 +426,18 @@ module Faraday
         raise ArgumentError, "unknown http method: #{method}"
       end
 
+      params = nil
+      if headers
+        body ||= headers.delete(:body)
+        params = headers.delete(:url_params)
+      end
+
       # Resets temp_proxy
       @temp_proxy = proxy_for_request(url)
 
       request = build_request(method) do |req|
         req.options = req.options.merge(:proxy => @temp_proxy)
-        req.url(url)                if url
+        req.url(url, params)        if url
         req.headers.update(headers) if headers
         req.body = body             if body
         yield(req) if block_given?

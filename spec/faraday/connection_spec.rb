@@ -587,10 +587,26 @@ RSpec.describe Faraday::Connection do
 
       it 'allows to override all params' do
         stubbed = stub_request(:get, 'http://example.com?b=b')
-        conn.get('?p=1&a=a', p: 2) do |req|
+        conn.get('?p=1&up=1&a=a', p: 2) do |req|
           expect(req.params[:a]).to eq('a')
           expect(req.params['c']).to eq(3)
           expect(req.params['p']).to eq(2)
+          req.params = { :b => 'b' }
+          expect(req.params['b']).to eq('b')
+        end
+        expect(stubbed).to have_been_made.once
+      end
+
+      it 'allows to override all params and headers' do
+        stubbed = stub_request(:get, 'http://example.com?b=b')
+        conn.get('?p=1&up=1&a=a', {p: 2, up: 2}, body: 'body', url_params: { up: 3 }) do |req|
+          expect(req.params[:a]).to eq('a')
+          expect(req.params['c']).to eq(3)
+          expect(req.params['p']).to eq(2)
+          expect(req.params['up']).to eq(3)
+          expect(req.params['body']).to be(nil)
+          expect(req.params['url_params']).to be(nil)
+          expect(req.body).to eq('body')
           req.params = { :b => 'b' }
           expect(req.params['b']).to eq('b')
         end
