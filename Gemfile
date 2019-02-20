@@ -11,10 +11,10 @@ group :development, :test do
 end
 
 group :test do
+  gem 'addressable', '< 2.4.0'
   gem 'coveralls', :require => false
   gem 'em-http-request', '>= 1.1', :require => 'em-http'
   gem 'em-synchrony', '>= 1.0.3', :require => ['em-synchrony', 'em-synchrony/em-http']
-  gem 'addressable', '< 2.4.0'
   gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
   gem 'mime-types', '~> 1.25', :platforms => [:jruby, :ruby_18]
@@ -23,11 +23,11 @@ group :test do
   gem 'patron', '>= 0.4.2', :platforms => :ruby
   gem 'rack-test', '>= 0.6', :require => 'rack/test'
   gem 'rest-client', '~> 1.6.0', :platforms => [:jruby, :ruby_18]
+  gem 'rspec', '~> 3.7'
   gem 'rubocop', '~> 0.65.0'
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 1.3', :git => 'https://github.com/typhoeus/typhoeus.git', :require => 'typhoeus'
-  gem 'rspec', '~> 3.7'
   gem 'webmock', '~> 3.4'
 end
 
