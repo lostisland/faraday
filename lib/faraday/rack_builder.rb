@@ -35,6 +35,7 @@ module Faraday
       end
 
       def klass() @@constants[@name] end
+
       def inspect() @name end
 
       def ==(other)
