@@ -112,7 +112,6 @@ RSpec.describe Faraday::Options do
       end
     end
 
-
     describe '#empty?' do
       it 'returns true only if all options are nil' do
         options = SubOptions.new
