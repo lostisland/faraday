@@ -63,6 +63,7 @@ module Faraday
 
     def finish(env)
       raise "response already finished" if finished?
+
       @env = env.is_a?(Env) ? env : Env.from(env)
       @on_complete_callbacks.each { |callback| callback.call(@env) }
       return self
@@ -92,6 +93,7 @@ module Faraday
     # Useful for applying request params after restoring a marshalled Response.
     def apply_request(request_env)
       raise "response didn't finish yet" unless finished?
+
       @env = Env.from(request_env).update(@env)
       return self
     end

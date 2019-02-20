@@ -175,6 +175,7 @@ module Faraday
 
     def rewind_files(body)
       return unless body.is_a?(Hash)
+
       body.each do |_, value|
         if value.is_a? UploadIO
           value.rewind

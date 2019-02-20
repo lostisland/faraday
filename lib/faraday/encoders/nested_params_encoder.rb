@@ -48,6 +48,7 @@ module Faraday
         elsif value.is_a?(Array)
           new_parent = "#{parent}%5B%5D"
           return new_parent if value.empty?
+
           buffer = ""
           value.each_with_index do |val, i|
             buffer << "#{to_query.call(new_parent, val)}&"
@@ -81,6 +82,7 @@ module Faraday
       params = {}
       query.split("&").each do |pair|
         next if pair.empty?
+
         key, value = pair.split("=", 2)
         key = unescape(key)
         value = unescape(value.gsub(/\+/, ' ')) if value

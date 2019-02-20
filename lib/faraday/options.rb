@@ -10,6 +10,7 @@ module Faraday
     # Public
     def each
       return to_enum(:each) unless block_given?
+
       members.each do |key|
         yield(key.to_sym, send(key))
       end
@@ -98,6 +99,7 @@ module Faraday
     # Public
     def each_key
       return to_enum(:each_key) unless block_given?
+
       keys.each do |key|
         yield(key)
       end
@@ -113,6 +115,7 @@ module Faraday
     # Public
     def each_value
       return to_enum(:each_value) unless block_given?
+
       values.each do |value|
         yield(value)
       end

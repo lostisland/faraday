@@ -117,6 +117,7 @@ module Faraday
       # @return [OpenSSL::X509::Store]
       def ssl_cert_store(ssl)
         return ssl[:cert_store] if ssl[:cert_store]
+
         # Memoize the cert store so that the same one is passed to
         # HTTPClient each time, to avoid resyncing SSL sesions when
         # it's changed
