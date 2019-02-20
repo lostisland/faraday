@@ -55,6 +55,7 @@ module Faraday
 
         def match(request_method, host, path, headers, body)
           return false if !@stack.key?(request_method)
+
           stack = @stack[request_method]
           consumed = (@consumed[request_method] ||= [])
 

@@ -77,6 +77,7 @@ module Faraday
     # @param key [Object]
     def [](key)
       return self[current_body] if key == :body
+
       if in_member_set?(key)
         super(key)
       else
@@ -88,6 +89,7 @@ module Faraday
     # @param value [Object]
     def []=(key, value)
       return super(current_body, value) if key == :body
+
       if in_member_set?(key)
         super(key, value)
       else

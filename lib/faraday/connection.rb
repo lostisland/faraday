@@ -503,6 +503,7 @@ module Faraday
 
     def proxy_from_env(url)
       return if Faraday.ignore_env_proxy
+
       uri = nil
       if URI.parse('').respond_to?(:find_proxy)
         case url
@@ -531,6 +532,7 @@ module Faraday
 
     def proxy_for_request(url)
       return self.proxy if @manual_proxy
+
       if url && Utils.URI(url).absolute?
         proxy_from_env(url)
       else

@@ -35,6 +35,7 @@ module Faraday
       end
 
       def klass() @@constants[@name] end
+
       def inspect() @name end
 
       def ==(other)
@@ -226,6 +227,7 @@ module Faraday
     def assert_index(index)
       idx = index.is_a?(Integer) ? index : @handlers.index(index)
       raise "No such handler: #{index.inspect}" unless idx
+
       idx
     end
   end

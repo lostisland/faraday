@@ -21,6 +21,7 @@ shared_examples 'adapter examples' do |**options|
 
   let(:adapter_options) do
     return [] unless options[:adapter_options]
+
     if options[:adapter_options].is_a?(Array)
       options[:adapter_options]
     else

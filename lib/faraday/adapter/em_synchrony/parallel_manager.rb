@@ -35,7 +35,6 @@ module Faraday
           result
         end
 
-
         private
 
         # The request queue.

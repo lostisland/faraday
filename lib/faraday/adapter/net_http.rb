@@ -167,6 +167,7 @@ module Faraday
       def ssl_cert_store(ssl)
         return ssl[:cert_store] if ssl[:cert_store]
         return @cert_store if @cert_store
+
         # Use the default cert store by default, i.e. system ca certs
         @cert_store = OpenSSL::X509::Store.new
         @cert_store.set_default_paths

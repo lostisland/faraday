@@ -126,7 +126,6 @@ shared_examples 'a request method' do |http_method|
       context 'when response contains big data' do
         before { request_stub.to_return(body: big_string) }
 
-
         it 'handles streaming' do
           response = conn.public_send(http_method, '/') do |req|
             req.options.on_data = Proc.new { |*args| streamed << args }
