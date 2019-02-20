@@ -163,12 +163,35 @@ module Faraday
     METHODS_WITH_QUERY.each do |method|
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{method}(url = nil, params = nil, headers = nil)
-          run_request(:#{method}, url, nil, headers) { |request|
+          run_request(:#{method}, url, nil, headers) do |request|
             request.params.update(params) if params
-            yield(request) if block_given?
-          }
+            yield request if block_given?
+          end
         end
       RUBY
+    end
+
+    # @!method options(url = nil, params = nil, headers = nil)
+    # Makes an OPTIONS HTTP request without a body.
+    # @!scope class
+    #
+    # @param url [String] The optional String base URL to use as a prefix for all
+    #           requests.  Can also be the options Hash.
+    # @param params [Hash] Hash of URI query unencoded key/value pairs.
+    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    #
+    # @example
+    #   conn.options '/items/1'
+    #
+    # @yield [Faraday::Request] for further request customizations
+    # @return [Faraday::Response]
+    def options(*args)
+      return @options if args.size.zero?
+      url, params, headers = *args
+      run_request(:options, url, nil, headers) do |request|
+        request.params.update(params) if params
+        yield request if block_given?
+      end
     end
 
     # @!method post(url = nil, body = nil, headers = nil)
