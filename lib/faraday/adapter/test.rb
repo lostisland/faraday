@@ -98,13 +98,13 @@ module Faraday
         def verify_stubbed_calls
           failed_stubs = []
           @stack.each do |method, stubs|
-            unless stubs.size == 0
+            unless stubs.empty?
               failed_stubs.concat(stubs.map {|stub|
                 "Expected #{method} #{stub}."
               })
             end
           end
-          raise failed_stubs.join(" ") unless failed_stubs.size == 0
+          raise failed_stubs.join(" ") unless failed_stubs.empty?
         end
 
         protected

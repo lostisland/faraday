@@ -69,7 +69,7 @@ module Faraday
     def fetch(key, *args)
       unless symbolized_key_set.include?(key.to_sym)
         key_setter = "#{key}="
-        if args.size > 0
+        if !args.empty?
           send(key_setter, args.first)
         elsif block_given?
           send(key_setter, Proc.new.call(key))
