@@ -31,8 +31,6 @@ module Faraday
 
     attr_reader :env
 
-    def_delegators :env, :to_hash
-
     def status
       finished? ? env.status : nil
     end
@@ -74,12 +72,16 @@ module Faraday
       finished? && env.success?
     end
 
+    def to_hash
+      {
+        :status => env.status, :body => env.body,
+        :response_headers => env.response_headers
+      }
+    end
+
     # because @on_complete_callbacks cannot be marshalled
     def marshal_dump
-      !finished? ? nil : {
-        :status => @env.status, :body => @env.body,
-        :response_headers => @env.response_headers
-      }
+      finished? ? to_hash : nil
     end
 
     def marshal_load(env)

@@ -167,7 +167,6 @@ shared_examples 'a request method' do |http_method|
   it 'handles requests with proxy' do
     conn_options[:proxy] = 'http://google.co.uk'
 
-    # binding.pry
     res = conn.public_send(http_method, '/')
     expect(res.status).to eq(200)
   end
