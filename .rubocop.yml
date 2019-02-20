@@ -1,0 +1,13 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  TargetRubyVersion: 2.3
+
+Naming/MethodName:
+  Exclude:
+    - test/adapters/integration.rb
+    - test/adapters/rack_test.rb
+
+
