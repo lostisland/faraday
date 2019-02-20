@@ -10,4 +10,8 @@ Naming/MethodName:
     - test/adapters/integration.rb
     - test/adapters/rack_test.rb
 
+Lint/AssignmentInCondition:
+  Enabled: false
+
+
 
