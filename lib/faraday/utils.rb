@@ -49,7 +49,7 @@ module Faraday
     # url - A String or URI.
     #
     # Returns a parsed URI.
-    def URI(url)
+    def URI(url) # rubocop:disable Naming/MethodName
       if url.respond_to?(:host)
         url
       elsif url.respond_to?(:to_str)
