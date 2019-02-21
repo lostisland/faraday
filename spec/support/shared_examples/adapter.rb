@@ -4,7 +4,7 @@ shared_examples 'an adapter' do |**options|
   context 'with SSL enabled' do
     before { ENV['SSL'] = 'yes' }
     include_examples 'adapter examples', options
-  end
+  end 
 
   context 'with SSL disabled' do
     before { ENV['SSL'] = 'no' }
@@ -50,6 +50,18 @@ shared_examples 'adapter examples' do |**options|
     expect(request_stub).to have_been_requested unless request_stub.disabled?
   end
 
+  describe '#connect' do
+    let(:http_method) { :connect }
+
+    it_behaves_like 'a request method', :connect
+  end
+
+  describe '#delete' do
+    let(:http_method) { :delete }
+
+    it_behaves_like 'a request method', :delete
+  end
+
   describe '#get' do
     let(:http_method) { :get }
 
@@ -66,6 +78,24 @@ shared_examples 'adapter examples' do |**options|
     end
   end
 
+  describe '#head' do
+    let(:http_method) { :head }
+
+    it_behaves_like 'a request method', :head
+  end
+
+  describe '#options' do
+   let(:http_method) { :options }
+
+    it_behaves_like 'a request method', :options
+  end
+
+  describe '#patch' do
+    let(:http_method) { :patch }
+
+    it_behaves_like 'a request method', :patch
+  end
+
   describe '#post' do
     let(:http_method) { :post }
 
@@ -78,28 +108,9 @@ shared_examples 'adapter examples' do |**options|
     it_behaves_like 'a request method', :put
   end
 
-  describe '#delete' do
-    let(:http_method) { :delete }
+  describe '#trace' do
+   let(:http_method) { :trace }
 
-    it_behaves_like 'a request method', :delete
+    it_behaves_like 'a request method', :trace
   end
-
-  describe '#patch' do
-    let(:http_method) { :patch }
-
-    it_behaves_like 'a request method', :patch
-  end
-
-  describe '#head' do
-    let(:http_method) { :head }
-
-    it_behaves_like 'a request method', :head
-  end
-
-  # TODO: Enable after adding API for options method
-  # describe '#options' do
-  #   let(:http_method) { :options }
-  #
-  #   it_behaves_like 'a request method'
-  # end
 end
