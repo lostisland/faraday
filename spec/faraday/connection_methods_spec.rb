@@ -11,15 +11,18 @@ describe 'making requests with' do
   shared_examples 'method with query' do
     it 'makes request with path' do
       stubbed = stub_request(method, 'http://example.com/a?a=1')
-      conn.send(method, '/a', a: 1)
+      res = conn.send(method, '/a', a: 1)
+      expect(res.env.request_body).to be_nil
       expect(stubbed).to have_been_made.once
     end
 
     it 'makes request with block' do
       stubbed = stub_request(method, 'http://example.com/a?a=1')
-      conn.send(method, '/a') do |req|
+      res = conn.send(method, '/a') do |req|
         req.params[:a] = 1
+        req.body = 'body'
       end
+      expect(res.env.request_body).to eq('body')
       expect(stubbed).to have_been_made.once
     end
   end
