@@ -44,10 +44,27 @@ shared_examples 'a request method' do |http_method|
   #   end
   # end
 
+  it 'sends request body' do
+    request_stub.with(Hash[:body, "test"])
+    res = if query_or_body == :body
+      conn.public_send(http_method, '/', 'test')
+    else
+      conn.public_send(http_method, '/') do |req|
+        req.body = 'test'
+      end
+    end
+    expect(res.env.request_body).to eq('test')
+  end
+
   it 'sends url encoded parameters' do
     payload = { name: 'zack' }
     request_stub.with(Hash[query_or_body, payload])
-    conn.public_send(http_method, '/', payload)
+    res = conn.public_send(http_method, '/', payload)
+    if query_or_body == :query
+      expect(res.env.request_body).to be_nil
+    else
+      expect(res.env.request_body).to eq('name=zack')
+    end
   end
 
   it 'sends url encoded nested parameters' do
