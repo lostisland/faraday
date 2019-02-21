@@ -611,26 +611,6 @@ RSpec.describe Faraday::Connection do
       end
     end
 
-    context 'with options' do
-      let(:url) { 'http://example.com' }
-
-      it 'returns connection options with no args' do
-        expect(conn.options).to be_a(Faraday::Options)
-      end
-
-      it 'makes request with path' do
-        stubbed = stub_request(:options, 'http://example.com/a?a=1')
-        conn.options('/a', a: 1)
-        expect(stubbed).to have_been_made.once
-      end
-
-      it 'makes request with nil path' do
-        stubbed = stub_request(:options, 'http://example.com')
-        conn.options(nil)
-        expect(stubbed).to have_been_made.once
-      end
-    end
-
     context 'with default params encoder' do
       let!(:stubbed) { stub_request(:get, 'http://example.com?color%5B%5D=red&color%5B%5D=blue') }
       after { expect(stubbed).to have_been_made.once }
