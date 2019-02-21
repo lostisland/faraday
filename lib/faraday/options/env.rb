@@ -53,7 +53,7 @@ module Faraday
 
     # A Set of HTTP verbs that typically send a body.  If no body is set for
     # these requests, the Content-Length header is set to 0.
-    MethodsWithBodies = Set.new [:post, :put, :patch]
+    MethodsWithBodies = Set.new(Faraday::METHODS_WITH_BODY.map(&:to_sym))
 
     options :request => RequestOptions,
             :request_headers => Utils::Headers, :response_headers => Utils::Headers
