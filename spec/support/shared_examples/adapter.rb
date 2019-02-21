@@ -50,10 +50,12 @@ shared_examples 'adapter examples' do |**options|
     expect(request_stub).to have_been_requested unless request_stub.disabled?
   end
 
-  describe '#connect' do
-    let(:http_method) { :connect }
+  on_feature :connect_method do
+    describe '#connect' do
+      let(:http_method) { :connect }
 
-    it_behaves_like 'a request method', :connect
+      it_behaves_like 'a request method', :connect
+    end
   end
 
   describe '#delete' do
@@ -98,9 +100,11 @@ shared_examples 'adapter examples' do |**options|
     it_behaves_like 'a request method', :put
   end
 
-  describe '#trace' do
-   let(:http_method) { :trace }
+  on_feature :trace_method do
+    describe '#trace' do
+     let(:http_method) { :trace }
 
-    it_behaves_like 'a request method', :trace
+      it_behaves_like 'a request method', :trace
+    end
   end
 end

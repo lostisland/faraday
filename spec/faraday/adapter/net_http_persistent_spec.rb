@@ -1,5 +1,5 @@
 RSpec.describe Faraday::Adapter::NetHttpPersistent do
-  features :body_on_get, :reason_phrase_parse, :compression
+  features :body_on_get, :reason_phrase_parse, :compression, :trace_method, :connect_method
 
   it_behaves_like 'an adapter'
 
