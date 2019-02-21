@@ -42,6 +42,11 @@ describe 'making requests with' do
     end
   end
 
+  context '#connect' do
+    let(:method) { :connect }
+    it_behaves_like 'method with query'
+  end
+
   context '#delete' do
     let(:method) { :delete }
     it_behaves_like 'method with query'
@@ -85,5 +90,10 @@ describe 'making requests with' do
   context '#put' do
     let(:method) { :put }
     it_behaves_like 'method with body'
+  end
+
+  context '#trace' do
+    let(:method) { :trace }
+    it_behaves_like 'method with query'
   end
 end

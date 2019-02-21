@@ -12,7 +12,7 @@ module Faraday
   #
   class Connection
     # A Set of allowed HTTP verbs.
-    METHODS = Set.new [:get, :post, :put, :delete, :head, :patch, :options]
+    METHODS = Set.new [:get, :post, :put, :delete, :head, :patch, :options, :trace, :connect]
 
     # @return [Hash] URI query unencoded key/value pairs.
     attr_reader :params

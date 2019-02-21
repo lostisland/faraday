@@ -19,7 +19,7 @@ require 'faraday/dependency_loader'
 #
 module Faraday
   VERSION = "0.15.3"
-  METHODS_WITH_QUERY = %w[get head delete]
+  METHODS_WITH_QUERY = %w[get head delete connect trace]
   METHODS_WITH_BODY = %w[post put patch]
 
   class << self
