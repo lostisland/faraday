@@ -4,7 +4,7 @@ shared_examples 'an adapter' do |**options|
   context 'with SSL enabled' do
     before { ENV['SSL'] = 'yes' }
     include_examples 'adapter examples', options
-  end 
+  end
 
   context 'with SSL disabled' do
     before { ENV['SSL'] = 'no' }
@@ -66,16 +66,6 @@ shared_examples 'adapter examples' do |**options|
     let(:http_method) { :get }
 
     it_behaves_like 'a request method', :get
-
-    on_feature :body_on_get do
-      it 'handles request body' do
-        body = { bodyrock: 'true' }
-        request_stub.with(body: body)
-        conn.get('/') do |req|
-          req.body = body
-        end
-      end
-    end
   end
 
   describe '#head' do
