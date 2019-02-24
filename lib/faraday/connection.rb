@@ -533,9 +533,9 @@ module Faraday
         when String
             uri = Utils.URI(url)
             uri = URI.parse("#{uri.scheme}://#{uri.hostname}").find_proxy
-          when URI
+        when URI
             uri = url.find_proxy
-          when nil
+        when nil
             uri = find_default_proxy
         end
       else

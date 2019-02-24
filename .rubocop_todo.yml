@@ -41,15 +41,6 @@ Layout/BlockEndNewline:
   Exclude:
     - 'spec/faraday/request/multipart_spec.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentOneStep, IndentationWidth.
-# SupportedStyles: case, end
-Layout/CaseIndentation:
-  Exclude:
-    - 'lib/faraday/connection.rb'
-    - 'test/helper.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Layout/CommentIndentation:
