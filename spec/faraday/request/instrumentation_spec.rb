@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::Request::Instrumentation do
   class FakeInstrumenter
     attr_reader :instrumentations

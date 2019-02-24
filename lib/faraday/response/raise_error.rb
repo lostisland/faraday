@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   class Response::RaiseError < Response::Middleware
     ClientErrorStatuses = 400...500

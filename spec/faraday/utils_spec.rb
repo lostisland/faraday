@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::Utils do
   describe 'headers parsing' do
     let(:multi_response_headers) {

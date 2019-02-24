@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # emulates ActiveSupport::SafeBuffer#gsub
 FakeSafeBuffer = Struct.new(:string) do
   def to_s; self end

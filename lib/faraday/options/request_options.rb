@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
                                      :timeout, :open_timeout, :write_timeout, :boundary,

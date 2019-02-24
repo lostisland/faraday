@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'a params encoder' do
   it 'escapes safe buffer' do
     monies = FakeSafeBuffer.new('$32,000.00')

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   class Request::TokenAuthentication < Request.load_middleware(:authorization)
     # Public

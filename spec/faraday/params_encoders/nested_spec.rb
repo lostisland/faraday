@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rack/utils'
 
 RSpec.describe Faraday::NestedParamsEncoder do

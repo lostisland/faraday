@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::ProxyOptions do
   describe '#from' do
     it 'works with string' do

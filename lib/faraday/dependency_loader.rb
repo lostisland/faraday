@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   module DependencyLoader
     attr_accessor :load_error

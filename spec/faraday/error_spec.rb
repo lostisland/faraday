@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::ClientError do
   describe '.initialize' do
     subject { described_class.new(exception, response) }

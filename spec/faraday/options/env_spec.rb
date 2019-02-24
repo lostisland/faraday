@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::Env do
   subject(:env) { described_class.new }
 

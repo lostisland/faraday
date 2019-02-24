@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'initializer with url' do
   context 'with simple url' do
     let(:address) { 'http://sushi.com' }

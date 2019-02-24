@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::Request::Retry do
   let(:calls) { [] }
   let(:times_called) { calls.size }

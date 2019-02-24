@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   # Faraday error base class.
   class Error < StandardError
@@ -27,7 +29,7 @@ module Faraday
     end
 
     def inspect
-      inner = ''
+      inner = String.new
       if @wrapped_exception
         inner << " wrapped=#{@wrapped_exception.inspect}"
       end

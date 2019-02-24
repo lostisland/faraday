@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   # A Builder that processes requests into responses by passing through an inner
   # middleware stack (heavily inspired by Rack).

@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 # Usage: script/proxy-server [-p PORT] [-u USER:PASSWORD]
 require 'webrick'
 require 'webrick/httpproxy'

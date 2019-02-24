@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::RequestOptions do
   it 'allows to set the request proxy' do
     options = Faraday::RequestOptions.new
