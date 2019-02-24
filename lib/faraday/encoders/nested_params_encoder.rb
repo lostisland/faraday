@@ -21,7 +21,7 @@ module Faraday
       if !params.is_a?(Array)
         if !params.respond_to?(:to_hash)
           raise TypeError,
-                "Can't convert #{params.class} into Hash."
+            "Can't convert #{params.class} into Hash."
         end
         params = params.to_hash
         params = params.map do |key, value|

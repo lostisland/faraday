@@ -46,8 +46,8 @@ module Faraday
   # @!attribute reason_phrase
   #   @return [String]
   class Env < Options.new(:method, :request_body, :url, :request, :request_headers,
-                          :ssl, :parallel_manager, :params, :response, :response_headers, :status,
-                          :reason_phrase, :response_body)
+    :ssl, :parallel_manager, :params, :response, :response_headers, :status,
+    :reason_phrase, :response_body)
 
     ContentLength = 'Content-Length'
     StatusesWithoutBody = Set.new [204, 304]

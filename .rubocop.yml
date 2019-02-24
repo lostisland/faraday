@@ -5,7 +5,11 @@ AllCops:
   DisplayStyleGuide: true
   TargetRubyVersion: 2.3
 
+Layout/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
 Naming/MethodName:
   Exclude:
     - test/adapters/integration.rb
     - test/adapters/rack_test.rb
+

@@ -27,8 +27,8 @@ module Faraday
     IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
 
     class Options < Faraday::Options.new(:max, :interval, :max_interval, :interval_randomness,
-                                         :backoff_factor, :exceptions, :methods, :retry_if, :retry_block,
-                                         :retry_statuses)
+      :backoff_factor, :exceptions, :methods, :retry_if, :retry_block,
+      :retry_statuses)
 
       DEFAULT_CHECK = lambda { |env,exception| false }
 
