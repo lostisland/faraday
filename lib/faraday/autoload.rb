@@ -53,16 +53,16 @@ module Faraday
   class Adapter
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
-      :NetHttp           => 'net_http',
+      :NetHttp => 'net_http',
       :NetHttpPersistent => 'net_http_persistent',
-      :EMSynchrony       => 'em_synchrony',
-      :EMHttp            => 'em_http',
-      :Typhoeus          => 'typhoeus',
-      :Patron            => 'patron',
-      :Excon             => 'excon',
-      :Test              => 'test',
-      :Rack              => 'rack',
-      :HTTPClient        => 'httpclient'
+      :EMSynchrony => 'em_synchrony',
+      :EMHttp => 'em_http',
+      :Typhoeus => 'typhoeus',
+      :Patron => 'patron',
+      :Excon => 'excon',
+      :Test => 'test',
+      :Rack => 'rack',
+      :HTTPClient => 'httpclient'
   end
 
   class Request
@@ -81,6 +81,6 @@ module Faraday
     extend AutoloadHelper
     autoload_all 'faraday/response',
       :RaiseError => 'raise_error',
-      :Logger     => 'logger'
+      :Logger => 'logger'
   end
 end

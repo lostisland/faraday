@@ -6,21 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 25
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedHashRocketStyle, EnforcedColonStyle, EnforcedLastArgumentHashStyle.
-# SupportedHashRocketStyles: key, separator, table
-# SupportedColonStyles: key, separator, table
-# SupportedLastArgumentHashStyles: always_inspect, always_ignore, ignore_implicit, ignore_explicit
-Layout/AlignHash:
-  Exclude:
-    - 'lib/faraday/adapter/excon.rb'
-    - 'lib/faraday/adapter/httpclient.rb'
-    - 'lib/faraday/adapter/rack.rb'
-    - 'lib/faraday/autoload.rb'
-    - 'lib/faraday/request.rb'
-    - 'script/server'
-
 # Offense count: 12
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
