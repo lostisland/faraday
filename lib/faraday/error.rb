@@ -29,7 +29,7 @@ module Faraday
     end
 
     def inspect
-      inner = String.new
+      inner = +""
       if @wrapped_exception
         inner << " wrapped=#{@wrapped_exception.inspect}"
       end

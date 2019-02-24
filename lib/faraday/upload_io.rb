@@ -37,7 +37,7 @@ module Faraday
     # @param outbuf [String, nil]
     def read(length = nil, outbuf = nil)
       got_result = false
-      outbuf = outbuf ? (+outbuf).replace("") : String.new
+      outbuf = outbuf ? (+outbuf).replace("") : +""
 
       while io = current_io
         if result = io.read(length)
