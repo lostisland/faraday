@@ -122,15 +122,6 @@ Layout/MultilineBlockLayout:
   Exclude:
     - 'spec/faraday/request/multipart_spec.rb'
 
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: aligned, indented
-Layout/MultilineOperationIndentation:
-  Exclude:
-    - 'lib/faraday/adapter/test.rb'
-    - 'lib/faraday/utils.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Layout/RescueEnsureAlignment:

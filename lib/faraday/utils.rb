@@ -78,7 +78,7 @@ module Faraday
     def normalize_path(url)
       url = URI(url)
       (url.path.start_with?('/') ? url.path : '/' + url.path) +
-      (url.query ? "?#{sort_query_params(url.query)}" : "")
+        (url.query ? "?#{sort_query_params(url.query)}" : "")
     end
 
     # Recursive hash update
