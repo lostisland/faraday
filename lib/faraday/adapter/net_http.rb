@@ -158,7 +158,7 @@ module Faraday
         end
         http.open_timeout  = req[:open_timeout]  if req[:open_timeout]
         http.write_timeout = req[:write_timeout] if req[:write_timeout] && http.respond_to?(:write_timeout=)
-          # Only set if Net::Http supports it, since Ruby 2.5.
+        # Only set if Net::Http supports it, since Ruby 2.5.
         http.max_retries  = 0                    if http.respond_to?(:max_retries=)
 
         @config_block.call(http) if @config_block

@@ -41,12 +41,6 @@ Layout/BlockEndNewline:
   Exclude:
     - 'spec/faraday/request/multipart_spec.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Layout/CommentIndentation:
-  Exclude:
-    - 'lib/faraday/adapter/net_http.rb'
-
 # Offense count: 7
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
