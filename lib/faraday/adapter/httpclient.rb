@@ -38,8 +38,8 @@ module Faraday
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
         resp = client.request env[:method], env[:url],
-          :body => env[:body],
-          :header => env[:request_headers]
+                              :body => env[:body],
+                              :header => env[:request_headers]
 
         if (req = env[:request]).stream_response?
           warn "Streaming downloads for #{self.class.name} are not yet implemented."

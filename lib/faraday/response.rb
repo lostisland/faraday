@@ -21,8 +21,8 @@ module Faraday
     extend MiddlewareRegistry
 
     register_middleware File.expand_path('../response', __FILE__),
-      :raise_error => [:RaiseError, 'raise_error'],
-      :logger => [:Logger, 'logger']
+                        :raise_error => [:RaiseError, 'raise_error'],
+                        :logger => [:Logger, 'logger']
 
     def initialize(env = nil)
       @env = Env.from(env) if env
