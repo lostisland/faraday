@@ -24,9 +24,9 @@ if ENV['SSL_KEY']
   require 'openssl'
   require 'webrick/https'
   webrick_opts.update \
-    :SSLEnable       => true,
-    :SSLPrivateKey   => OpenSSL::PKey::RSA.new(File.read(ENV['SSL_KEY'])),
-    :SSLCertificate  => OpenSSL::X509::Certificate.new(File.read(ENV['SSL_FILE'])),
+    :SSLEnable => true,
+    :SSLPrivateKey => OpenSSL::PKey::RSA.new(File.read(ENV['SSL_KEY'])),
+    :SSLCertificate => OpenSSL::X509::Certificate.new(File.read(ENV['SSL_FILE'])),
     :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE
 end
 

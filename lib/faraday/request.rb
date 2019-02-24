@@ -104,11 +104,11 @@ module Faraday
     # @return [Hash] the hash ready to be serialized in Marshal.
     def marshal_dump
       {
-        :method  => method,
-        :body    => body,
+        :method => method,
+        :body => body,
         :headers => headers,
-        :path    => path,
-        :params  => params,
+        :path => path,
+        :params => params,
         :options => options
       }
     end

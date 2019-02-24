@@ -38,11 +38,11 @@ module Faraday
 
           if req[:proxy]
             opts[:proxy] = {
-              :host     => req[:proxy][:uri].host,
+              :host => req[:proxy][:uri].host,
               :hostname => req[:proxy][:uri].hostname,
-              :port     => req[:proxy][:uri].port,
-              :scheme   => req[:proxy][:uri].scheme,
-              :user     => req[:proxy][:user],
+              :port => req[:proxy][:uri].port,
+              :scheme => req[:proxy][:uri].scheme,
+              :user => req[:proxy][:user],
               :password => req[:proxy][:password]
             }
           end
@@ -51,9 +51,9 @@ module Faraday
         conn = create_connection(env, opts)
 
         resp = conn.request \
-          :method  => env[:method].to_s.upcase,
+          :method => env[:method].to_s.upcase,
           :headers => env[:request_headers],
-          :body    => read_body(env)
+          :body => read_body(env)
 
         if req.stream_response?
           warn "Streaming downloads for #{self.class.name} are not yet implemented."
