@@ -105,7 +105,7 @@ module Faraday
       default_connection.respond_to?(symbol, include_private) || super
     end
 
-  private
+    private
     # Internal: Proxies method calls on the Faraday constant to
     # .default_connection.
     def method_missing(name, *args, &block)
