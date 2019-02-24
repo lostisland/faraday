@@ -398,7 +398,7 @@ module Faraday
     # @return [String] the new path prefix
     def path_prefix=(value)
       url_prefix.path = if value
-        value = '/' + value unless value[0,1] == '/'
+                          value = '/' + value unless value[0,1] == '/'
         value
       end
     end
@@ -520,7 +520,7 @@ module Faraday
 
     def set_authorization_header(header_type, *args)
       header = Faraday::Request.lookup_middleware(header_type).
-        header(*args)
+               header(*args)
       headers[Faraday::Request::Authorization::KEY] = header
     end
 
@@ -531,12 +531,12 @@ module Faraday
       if URI.parse('').respond_to?(:find_proxy)
         case url
         when String
-            uri = Utils.URI(url)
+          uri = Utils.URI(url)
             uri = URI.parse("#{uri.scheme}://#{uri.hostname}").find_proxy
-          when URI
-            uri = url.find_proxy
-          when nil
-            uri = find_default_proxy
+        when URI
+          uri = url.find_proxy
+        when nil
+          uri = find_default_proxy
         end
       else
         warn 'no_proxy is unsupported' if ENV['no_proxy'] || ENV['NO_PROXY']

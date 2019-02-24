@@ -26,21 +26,6 @@ Layout/BlockEndNewline:
   Exclude:
     - 'spec/faraday/request/multipart_spec.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentOneStep, IndentationWidth.
-# SupportedStyles: case, end
-Layout/CaseIndentation:
-  Exclude:
-    - 'lib/faraday/connection.rb'
-    - 'test/helper.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Layout/CommentIndentation:
-  Exclude:
-    - 'lib/faraday/adapter/net_http.rb'
-
 # Offense count: 7
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
@@ -116,41 +101,11 @@ Layout/IndentHash:
   Exclude:
     - 'spec/support/streaming_response_checker.rb'
 
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: Width, IgnoredPatterns.
-Layout/IndentationWidth:
-  Exclude:
-    - 'lib/faraday/adapter/rack.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/options.rb'
-    - 'lib/faraday/utils.rb'
-    - 'test/live_server.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Layout/MultilineBlockLayout:
   Exclude:
     - 'spec/faraday/request/multipart_spec.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: aligned, indented, indented_relative_to_receiver
-Layout/MultilineMethodCallIndentation:
-  Exclude:
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/utils/headers.rb'
-    - 'spec/support/shared_examples/request_method.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: aligned, indented
-Layout/MultilineOperationIndentation:
-  Exclude:
-    - 'lib/faraday/adapter/test.rb'
-    - 'lib/faraday/utils.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.

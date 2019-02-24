@@ -148,10 +148,10 @@ module Faraday
           # that will be yielded to consumer block
           meta = {}
           return (host.nil? || host == request_host) &&
-            path_match?(request_path, meta) &&
-            params_match?(request_params) &&
-            (body.to_s.size.zero? || request_body == body) &&
-            headers_match?(request_headers), meta
+                 path_match?(request_path, meta) &&
+                 params_match?(request_params) &&
+                 (body.to_s.size.zero? || request_body == body) &&
+                 headers_match?(request_headers), meta
         end
 
         def path_match?(request_path, meta)

@@ -21,10 +21,10 @@ module Faraday
   module LiveServerConfig
     def live_server=(value)
       @@live_server = case value
-      when /^http/
-        URI(value)
-      when /./
-        URI('http://127.0.0.1:4567')
+                      when /^http/
+                        URI(value)
+                      when /./
+                        URI('http://127.0.0.1:4567')
       end
     end
 
