@@ -116,17 +116,6 @@ Layout/IndentHash:
   Exclude:
     - 'spec/support/streaming_response_checker.rb'
 
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: Width, IgnoredPatterns.
-Layout/IndentationWidth:
-  Exclude:
-    - 'lib/faraday/adapter/rack.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/options.rb'
-    - 'lib/faraday/utils.rb'
-    - 'test/live_server.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Layout/MultilineBlockLayout:

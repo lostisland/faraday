@@ -197,7 +197,7 @@ module Faraday
 
     def self.fetch_error_class
       @fetch_error_class ||= if Object.const_defined?(:KeyError)
-        ::KeyError
+                               ::KeyError
       else
         ::IndexError
       end

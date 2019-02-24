@@ -68,7 +68,7 @@ module Faraday
 
     def default_uri_parser=(parser)
       @default_uri_parser = if parser.respond_to?(:call) || parser.nil?
-        parser
+                              parser
       else
         parser.method(:parse)
       end
