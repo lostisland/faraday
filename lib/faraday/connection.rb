@@ -27,9 +27,6 @@ module Faraday
     # @return [Faraday::Builder] Builder for this Connection.
     attr_reader :builder
 
-    # @return [Hash] request options.
-    attr_reader :options
-
     # @return [Hash] SSL options.
     attr_reader :ssl
 
@@ -187,6 +184,7 @@ module Faraday
     # @return [Faraday::Response]
     def options(*args)
       return @options if args.size.zero?
+
       url, params, headers = *args
       run_request(:options, url, nil, headers) do |request|
         request.params.update(params) if params
@@ -399,7 +397,7 @@ module Faraday
     def path_prefix=(value)
       url_prefix.path = if value
                           value = '/' + value unless value[0,1] == '/'
-        value
+                          value
       end
     end
 
@@ -532,7 +530,7 @@ module Faraday
         case url
         when String
           uri = Utils.URI(url)
-            uri = URI.parse("#{uri.scheme}://#{uri.hostname}").find_proxy
+          uri = URI.parse("#{uri.scheme}://#{uri.hostname}").find_proxy
         when URI
           uri = url.find_proxy
         when nil
