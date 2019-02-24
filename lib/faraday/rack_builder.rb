@@ -197,9 +197,9 @@ module Faraday
     # :ssl - Hash of options for configuring SSL requests.
     def build_env(connection, request)
       Env.new(request.method, request.body,
-        connection.build_exclusive_url(request.path, request.params, request.options.params_encoder),
-        request.options, request.headers, connection.ssl,
-        connection.parallel_manager)
+              connection.build_exclusive_url(request.path, request.params, request.options.params_encoder),
+              request.options, request.headers, connection.ssl,
+              connection.parallel_manager)
     end
 
     private

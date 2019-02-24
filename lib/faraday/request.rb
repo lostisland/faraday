@@ -26,13 +26,13 @@ module Faraday
     extend MiddlewareRegistry
 
     register_middleware File.expand_path('../request', __FILE__),
-      :url_encoded => [:UrlEncoded, 'url_encoded'],
-      :multipart => [:Multipart, 'multipart'],
-      :retry => [:Retry, 'retry'],
-      :authorization => [:Authorization, 'authorization'],
-      :basic_auth => [:BasicAuthentication, 'basic_authentication'],
-      :token_auth => [:TokenAuthentication, 'token_authentication'],
-      :instrumentation => [:Instrumentation, 'instrumentation']
+                        :url_encoded => [:UrlEncoded, 'url_encoded'],
+                        :multipart => [:Multipart, 'multipart'],
+                        :retry => [:Retry, 'retry'],
+                        :authorization => [:Authorization, 'authorization'],
+                        :basic_auth => [:BasicAuthentication, 'basic_authentication'],
+                        :token_auth => [:TokenAuthentication, 'token_authentication'],
+                        :instrumentation => [:Instrumentation, 'instrumentation']
 
     # @param request_method [String]
     # @yield [request] for block customization, if block given
@@ -128,7 +128,7 @@ module Faraday
     # @return [Env] the Env for this Request
     def to_env(connection)
       Env.new(method, body, connection.build_exclusive_url(path, params),
-        options, headers, connection.ssl, connection.parallel_manager)
+              options, headers, connection.ssl, connection.parallel_manager)
     end
   end
 end
