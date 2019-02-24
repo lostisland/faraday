@@ -520,7 +520,7 @@ module Faraday
 
     def set_authorization_header(header_type, *args)
       header = Faraday::Request.lookup_middleware(header_type).
-        header(*args)
+               header(*args)
       headers[Faraday::Request::Authorization::KEY] = header
     end
 

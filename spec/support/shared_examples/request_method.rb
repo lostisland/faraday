@@ -144,9 +144,9 @@ shared_examples 'a request method' do |http_method|
       payload1 = { a: '1' }
       payload2 = { b: '2' }
       request_stub.with(Hash[query_or_body, payload1])
-        .to_return(body: payload1.to_json)
+                  .to_return(body: payload1.to_json)
       stub_request(http_method, remote).with(Hash[query_or_body, payload2])
-        .to_return(body: payload2.to_json)
+                                       .to_return(body: payload2.to_json)
 
       conn.in_parallel do
         resp1 = conn.public_send(http_method, '/', payload1)
