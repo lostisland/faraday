@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   # @!attribute method
   #   @return [Symbol] HTTP method (`:get`, `:post`)
@@ -47,7 +49,7 @@ module Faraday
                           :ssl, :parallel_manager, :params, :response, :response_headers, :status,
                           :reason_phrase, :response_body)
 
-    ContentLength = 'Content-Length'.freeze
+    ContentLength = 'Content-Length'
     StatusesWithoutBody = Set.new [204, 304]
     SuccessfulStatuses = 200..299
 

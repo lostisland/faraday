@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   class Adapter
     # Typhoeus adapter. This class is just a stub, the real adapter is in https://github.com/philsturgeon/typhoeus/blob/master/lib/typhoeus/adapters/faraday.rb

@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 module Faraday
   # Middleware for supporting urlencoded requests.
   class Request::UrlEncoded < Faraday::Middleware
-    CONTENT_TYPE = 'Content-Type'.freeze unless defined? CONTENT_TYPE
+    CONTENT_TYPE = 'Content-Type' unless defined? CONTENT_TYPE
 
     class << self
       attr_accessor :mime_type
     end
-    self.mime_type = 'application/x-www-form-urlencoded'.freeze
+    self.mime_type = 'application/x-www-form-urlencoded'
 
     # Encodes as "application/x-www-form-urlencoded" if not already encoded or
     # of another type.

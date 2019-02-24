@@ -603,13 +603,6 @@ Style/FormatStringToken:
     - 'test/adapters/integration.rb'
     - 'test/live_server.rb'
 
-# Offense count: 96
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: when_needed, always, never
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
 # Offense count: 2
 # Configuration parameters: AllowedVariables.
 Style/GlobalVars:

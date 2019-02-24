@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Faraday
   # Request middleware for the Authorization HTTP header
   class Request::Authorization < Faraday::Middleware
-    KEY = "Authorization".freeze unless defined? KEY
+    KEY = "Authorization" unless defined? KEY
 
     # @param type [String, Symbol]
     # @param token [String, Symbol, Hash]

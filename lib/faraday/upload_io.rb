@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 begin
   require 'composite_io'
   require 'parts'
@@ -35,7 +37,7 @@ module Faraday
     # @param outbuf [String, nil]
     def read(length = nil, outbuf = nil)
       got_result = false
-      outbuf = outbuf ? outbuf.replace("") : ""
+      outbuf = outbuf ? (+outbuf).replace("") : +""
 
       while io = current_io
         if result = io.read(length)

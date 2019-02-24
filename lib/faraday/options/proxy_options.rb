@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   class ProxyOptions < Options.new(:uri, :user, :password)
     extend Forwardable

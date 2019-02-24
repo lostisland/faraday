@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   # Middleware for instrumenting Requests.
   class Request::Instrumentation < Faraday::Middleware

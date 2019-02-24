@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   module Shared
     def self.big_string

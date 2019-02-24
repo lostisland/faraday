@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   # Catches exceptions and retries each request a limited number of times.
   #

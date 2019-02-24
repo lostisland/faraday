@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'a request method' do |http_method|
   let(:query_or_body) { method_with_body?(http_method) ? :body : :query }
   let(:response) { conn.public_send(http_method, '/') }

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::Request do
   let(:conn) do
     Faraday.new(url: 'http://sushi.com/api',

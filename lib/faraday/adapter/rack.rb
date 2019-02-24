@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   class Adapter
     # Sends requests to a Rack app.

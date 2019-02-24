@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::Adapter::Typhoeus do
   features :body_on_get, :parallel
 

@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::RackBuilder do
   # mock handler classes
   class Handler < Struct.new(:app)
     def call(env)
-      (env[:request_headers]['X-Middleware'] ||= '') << ":#{self.class.name.split('::').last}"
+      env[:request_headers]['X-Middleware'] ||= ''
+      env[:request_headers]['X-Middleware'] += ":#{self.class.name.split('::').last}"
       app.call(env)
     end
   end

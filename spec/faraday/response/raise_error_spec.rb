@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::Response::RaiseError do
   let(:conn) do
     Faraday.new do |b|

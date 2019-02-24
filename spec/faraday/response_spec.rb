@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Faraday::Response do
   subject { Faraday::Response.new(env) }
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'forwardable'
 require File.expand_path("../../helper", __FILE__)
 require File.expand_path("../../shared", __FILE__)

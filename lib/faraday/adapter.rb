@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   # Base class for all Faraday adapters. Adapters are
   # responsible for fulfilling a Faraday request.
@@ -5,7 +7,7 @@ module Faraday
     extend MiddlewareRegistry
     extend DependencyLoader
 
-    CONTENT_LENGTH = 'Content-Length'.freeze
+    CONTENT_LENGTH = 'Content-Length'
 
     register_middleware File.expand_path('../adapter', __FILE__),
       :test => [:Test, 'test'],

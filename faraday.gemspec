@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 lib = "faraday"
 lib_file = File.expand_path("../lib/#{lib}.rb", __FILE__)
 File.read(lib_file) =~ /\bVERSION\s*=\s*["'](.+?)["']/

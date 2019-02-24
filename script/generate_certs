@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 # Usage: generate_certs
 # Generate test certs for testing Faraday with SSL
 

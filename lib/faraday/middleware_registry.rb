@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   # Adds the ability for other modules to register and lookup
   # middleware classes.

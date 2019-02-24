@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Faraday
   module FlatParamsEncoder
     class << self
@@ -24,7 +26,7 @@ module Faraday
       end
 
       # The params have form [['key1', 'value1'], ['key2', 'value2']].
-      buffer = ''
+      buffer = +""
       params.each do |key, value|
         encoded_key = escape(key)
         value = value.to_s if value == true || value == false
