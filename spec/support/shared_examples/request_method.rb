@@ -44,7 +44,7 @@ shared_examples 'a request method' do |http_method|
   #   end
   # end
 
-  on_feature :body_on_get do
+  on_feature :request_body_on_query_methods do
     it 'sends request body' do
       request_stub.with(Hash[:body, "test"])
       res = if query_or_body == :body
