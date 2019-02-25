@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Faraday::Adapter::HTTPClient do
-  features :body_on_get, :reason_phrase_parse, :compression
+  features :request_body_on_query_methods, :reason_phrase_parse, :compression, :trace_method, :connect_method
 
   it_behaves_like 'an adapter'
 

@@ -52,20 +52,42 @@ shared_examples 'adapter examples' do |**options|
     expect(request_stub).to have_been_requested unless request_stub.disabled?
   end
 
+  on_feature :connect_method do
+    describe '#connect' do
+      let(:http_method) { :connect }
+
+      it_behaves_like 'a request method', :connect
+    end
+  end
+
+  describe '#delete' do
+    let(:http_method) { :delete }
+
+    it_behaves_like 'a request method', :delete
+  end
+
   describe '#get' do
     let(:http_method) { :get }
 
     it_behaves_like 'a request method', :get
+  end
 
-    on_feature :body_on_get do
-      it 'handles request body' do
-        body = { bodyrock: 'true' }
-        request_stub.with(body: body)
-        conn.get('/') do |req|
-          req.body = body
-        end
-      end
-    end
+  describe '#head' do
+    let(:http_method) { :head }
+
+    it_behaves_like 'a request method', :head
+  end
+
+  describe '#options' do
+   let(:http_method) { :options }
+
+    it_behaves_like 'a request method', :options
+  end
+
+  describe '#patch' do
+    let(:http_method) { :patch }
+
+    it_behaves_like 'a request method', :patch
   end
 
   describe '#post' do
@@ -80,28 +102,11 @@ shared_examples 'adapter examples' do |**options|
     it_behaves_like 'a request method', :put
   end
 
-  describe '#delete' do
-    let(:http_method) { :delete }
+  on_feature :trace_method do
+    describe '#trace' do
+     let(:http_method) { :trace }
 
-    it_behaves_like 'a request method', :delete
+      it_behaves_like 'a request method', :trace
+    end
   end
-
-  describe '#patch' do
-    let(:http_method) { :patch }
-
-    it_behaves_like 'a request method', :patch
-  end
-
-  describe '#head' do
-    let(:http_method) { :head }
-
-    it_behaves_like 'a request method', :head
-  end
-
-  # TODO: Enable after adding API for options method
-  # describe '#options' do
-  #   let(:http_method) { :options }
-  #
-  #   it_behaves_like 'a request method'
-  # end
 end
