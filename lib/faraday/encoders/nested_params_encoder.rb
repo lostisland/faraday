@@ -41,7 +41,7 @@ module Faraday
             [key, val]
           end
           value.sort!
-          buffer = +""
+          buffer = +''
           value.each do |key, val|
             new_parent = "#{parent}%5B#{key}%5D"
             buffer << "#{to_query.call(new_parent, val)}&"
@@ -51,7 +51,7 @@ module Faraday
           new_parent = "#{parent}%5B%5D"
           return new_parent if value.empty?
 
-          buffer = +""
+          buffer = +''
           value.each_with_index do |val, i|
             buffer << "#{to_query.call(new_parent, val)}&"
           end
@@ -65,7 +65,7 @@ module Faraday
       end
 
       # The params have form [['key1', 'value1'], ['key2', 'value2']].
-      buffer = +""
+      buffer = +''
       params.each do |parent, value|
         encoded_parent = escape(parent)
         buffer << "#{to_query.call(encoded_parent, value)}&"
@@ -82,10 +82,10 @@ module Faraday
       return nil if query == nil
 
       params = {}
-      query.split("&").each do |pair|
+      query.split('&').each do |pair|
         next if pair.empty?
 
-        key, value = pair.split("=", 2)
+        key, value = pair.split('=', 2)
         key = unescape(key)
         value = unescape(value.gsub(/\+/, ' ')) if value
 

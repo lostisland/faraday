@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'forwardable'
-require File.expand_path("../../helper", __FILE__)
-require File.expand_path("../../shared", __FILE__)
+require File.expand_path('../../helper', __FILE__)
+require File.expand_path('../../shared', __FILE__)
 Faraday.require_lib 'autoload'
 
 module Adapters
@@ -19,9 +19,9 @@ module Adapters
         features.each { |name| base.send(:include, self.const_get(name)) }
         yield if block_given?
       elsif !defined? @warned
-        warn "Warning: Not running integration tests against a live server."
-        warn "Start the server `ruby test/live_server.rb` and set the LIVE=1 env variable."
-        warn "See CONTRIBUTING for usage."
+        warn 'Warning: Not running integration tests against a live server.'
+        warn 'Start the server `ruby test/live_server.rb` and set the LIVE=1 env variable.'
+        warn 'See CONTRIBUTING for usage.'
         @warned = true
       end
     end
@@ -37,7 +37,7 @@ module Adapters
           end
         end
         assert response
-        assert_match "no parallel-capable adapter on Faraday stack", err
+        assert_match 'no parallel-capable adapter on Faraday stack', err
         assert_match __FILE__, err
       end
     end
@@ -100,7 +100,7 @@ module Adapters
         err = assert_raises Faraday::SSLError do
           conn.get('/ssl')
         end
-        assert_includes err.message, "certificate"
+        assert_includes err.message, 'certificate'
       end
     end
 
@@ -109,7 +109,7 @@ module Adapters
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
 
       def adapter
-        raise NotImplementedError.new("Need to override #adapter")
+        raise NotImplementedError.new('Need to override #adapter')
       end
 
       # extra options to pass when building the adapter

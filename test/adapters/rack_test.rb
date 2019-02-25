@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require File.expand_path("../integration", __FILE__)
+require File.expand_path('../integration', __FILE__)
 require File.expand_path('../../live_server', __FILE__)
 
 module Adapters

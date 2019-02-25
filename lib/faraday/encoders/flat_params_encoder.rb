@@ -26,7 +26,7 @@ module Faraday
       end
 
       # The params have form [['key1', 'value1'], ['key2', 'value2']].
-      buffer = +""
+      buffer = +''
       params.each do |key, value|
         encoded_key = escape(key)
         value = value.to_s if value == true || value == false
@@ -56,7 +56,7 @@ module Faraday
         pair[0] = unescape(pair[0])
         pair[1] = true if pair[1].nil?
         if pair[1].respond_to?(:to_str)
-          pair[1] = unescape(pair[1].to_str.gsub(/\+/, " "))
+          pair[1] = unescape(pair[1].to_str.gsub(/\+/, ' '))
         end
         if accu[pair[0]].kind_of?(Array)
           accu[pair[0]] << pair[1]

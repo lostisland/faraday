@@ -132,7 +132,7 @@ module Faraday
           end
         end
       rescue EventMachine::Connectify::CONNECTError => err
-        if err.message.include?("Proxy Authentication Required")
+        if err.message.include?('Proxy Authentication Required')
           raise Faraday::ConnectionFailed, %{407 "Proxy Authentication Required "}
         else
           raise Faraday::ConnectionFailed, err
@@ -168,18 +168,18 @@ module Faraday
       end
 
       def error_message(client)
-        client.error or "request failed"
+        client.error or 'request failed'
       end
 
       def raise_error(msg)
         errklass = Faraday::ClientError
         if msg == Errno::ETIMEDOUT
           errklass = Faraday::TimeoutError
-          msg = "request timed out"
+          msg = 'request timed out'
         elsif msg == Errno::ECONNREFUSED
           errklass = Faraday::ConnectionFailed
-          msg = "connection refused"
-        elsif msg == "connection closed by server"
+          msg = 'connection refused'
+        elsif msg == 'connection closed by server'
           errklass = Faraday::ConnectionFailed
         end
         raise errklass, msg
@@ -228,7 +228,7 @@ module Faraday
               end
             end
             if !@errors.empty?
-              raise Faraday::ClientError, @errors.first || "connection failed"
+              raise Faraday::ClientError, @errors.first || 'connection failed'
             end
           end
         ensure
@@ -254,7 +254,7 @@ end
 begin
   require 'openssl'
 rescue LoadError
-  warn "Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support"
+  warn 'Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support'
 else
   require 'faraday/adapter/em_http_ssl_patch'
 end if Faraday::Adapter::EMHttp.loaded?

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require File.expand_path("../url_encoded", __FILE__)
+require File.expand_path('../url_encoded', __FILE__)
 require 'securerandom'
 
 module Faraday
   # Middleware for supporting multi-part requests.
   class Request::Multipart < Request::UrlEncoded
     self.mime_type = 'multipart/form-data'
-    DEFAULT_BOUNDARY_PREFIX = "-----------RubyMultipartPost" unless defined? DEFAULT_BOUNDARY_PREFIX
+    DEFAULT_BOUNDARY_PREFIX = '-----------RubyMultipartPost' unless defined? DEFAULT_BOUNDARY_PREFIX
 
     # Checks for files in the payload, otherwise leaves everything untouched.
     #

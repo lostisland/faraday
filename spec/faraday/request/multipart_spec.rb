@@ -21,7 +21,7 @@ RSpec.describe Faraday::Request::Multipart do
       response = conn.post('/echo', payload)
 
       expect(response.body).to be_a_kind_of(Faraday::CompositeReadIO)
-      match = "multipart/form-data; boundary=%s" % Faraday::Request::Multipart::DEFAULT_BOUNDARY_PREFIX
+      match = 'multipart/form-data; boundary=%s' % Faraday::Request::Multipart::DEFAULT_BOUNDARY_PREFIX
       expect(response.headers['Content-Type']).to start_with(match)
 
       response.body.send(:ios).map { |io| io.read }.each do |io|

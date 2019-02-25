@@ -28,12 +28,12 @@ RSpec.describe Faraday::Env do
   end
 
   it 'retains custom members' do
-    env[:foo] = "custom 1"
+    env[:foo] = 'custom 1'
     env[:bar] = :custom_2
     env2 = Faraday::Env.from(env)
-    env2[:baz] = "custom 3"
+    env2[:baz] = 'custom 3'
 
-    expect(env2[:foo]).to eq("custom 1")
+    expect(env2[:foo]).to eq('custom 1')
     expect(env2[:bar]).to eq(:custom_2)
     expect(env[:baz]).to be_nil
   end

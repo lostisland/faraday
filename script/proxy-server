@@ -15,7 +15,7 @@ if (found = ARGV.index('-u'))
 end
 
 match_credentials = lambda { |credentials|
-  got_username, got_password = credentials.to_s.unpack("m*")[0].split(":", 2)
+  got_username, got_password = credentials.to_s.unpack('m*')[0].split(':', 2)
   got_username == username && got_password == password
 }
 
@@ -24,11 +24,11 @@ log_io.sync = true
 
 webrick_opts = {
   :Port => port, :Logger => WEBrick::Log::new(log_io),
-  :AccessLog => [[log_io, "[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b"]],
+  :AccessLog => [[log_io, '[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b']],
   :ProxyAuthProc => lambda { |req, res|
     if username
       type, credentials = req.header['proxy-authorization'].first.to_s.split(/\s+/, 2)
-      unless "Basic" == type && match_credentials.call(credentials)
+      unless 'Basic' == type && match_credentials.call(credentials)
         res['proxy-authenticate'] = %{Basic realm="testing"}
         raise WEBrick::HTTPStatus::ProxyAuthenticationRequired
       end

@@ -57,7 +57,7 @@ RSpec.describe Faraday::Request::UrlEncoded do
 
   it 'works with unicode' do
     err = capture_warnings {
-      response = conn.post('/echo', {:str => "eé cç aã aâ"})
+      response = conn.post('/echo', {:str => 'eé cç aã aâ'})
       expect(response.body).to eq('str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2')
     }
     expect(err.empty?).to be_truthy
@@ -65,6 +65,6 @@ RSpec.describe Faraday::Request::UrlEncoded do
 
   it 'works with nested keys' do
     response = conn.post('/echo', {'a'=>{'b'=>{'c'=>['d']}}})
-    expect(response.body).to eq("a%5Bb%5D%5Bc%5D%5B%5D=d")
+    expect(response.body).to eq('a%5Bb%5D%5Bc%5D%5B%5D=d')
   end
 end

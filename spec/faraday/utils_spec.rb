@@ -13,12 +13,12 @@ RSpec.describe Faraday::Utils do
 
       result = headers.to_hash
 
-      expect(result["Content-Type"]).to eq("application/json; charset=UTF-8")
+      expect(result['Content-Type']).to eq('application/json; charset=UTF-8')
     end
   end
 
   describe 'URI parsing' do
-    let(:url) { "http://example.com/abc" }
+    let(:url) { 'http://example.com/abc' }
 
     it 'escapes safe buffer' do
       str = FakeSafeBuffer.new('$32,000.00')

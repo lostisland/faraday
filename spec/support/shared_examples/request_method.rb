@@ -48,7 +48,7 @@ shared_examples 'a request method' do |http_method|
 
   on_feature :request_body_on_query_methods do
     it 'sends request body' do
-      request_stub.with(Hash[:body, "test"])
+      request_stub.with(Hash[:body, 'test'])
       res = if query_or_body == :body
               conn.public_send(http_method, '/', 'test')
             else
@@ -99,7 +99,7 @@ shared_examples 'a request method' do |http_method|
   if method_with_body?(http_method)
     it 'sends files' do
       payload = { uploaded_file: multipart_file }
-      request_stub.with(headers: { "Content-Type" => %r[\Amultipart/form-data] }) do |request|
+      request_stub.with(headers: { 'Content-Type' => %r[\Amultipart/form-data] }) do |request|
         # WebMock does not support matching body for multipart/form-data requests yet :(
         # https://github.com/bblimke/webmock/issues/623
         request.body =~ %r[RubyMultipartPost]
@@ -140,7 +140,7 @@ shared_examples 'a request method' do |http_method|
             req.options.on_data = Proc.new { |*args| streamed << args }
           end
 
-          expect(streamed).to eq([["", 0]])
+          expect(streamed).to eq([['', 0]])
         end
       end
 

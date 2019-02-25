@@ -64,7 +64,7 @@ module Faraday
     end
 
     def finish(env)
-      raise "response already finished" if finished?
+      raise 'response already finished' if finished?
 
       @env = env.is_a?(Env) ? env : Env.from(env)
       @on_complete_callbacks.each { |callback| callback.call(@env) }

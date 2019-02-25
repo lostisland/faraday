@@ -4,7 +4,7 @@ require 'rake/testtask'
 
 task :default => :test
 
-desc "Run all tests"
+desc 'Run all tests'
 task :test do
   exec 'rspec'
 end

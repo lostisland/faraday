@@ -13,7 +13,7 @@ RSpec.describe Faraday::NestedParamsEncoder do
 
   it 'decodes hashes' do
     query    = 'a[b1]=one&a[b2]=two&a[b][c]=foo'
-    expected = { "a" => { "b1" => "one", "b2" => "two", "b" => { "c" => "foo" } } }
+    expected = { 'a' => { 'b1' => 'one', 'b2' => 'two', 'b' => { 'c' => 'foo' } } }
     expect(subject.decode(query)).to eq(expected)
   end
 
@@ -31,13 +31,13 @@ RSpec.describe Faraday::NestedParamsEncoder do
 
   it 'decodes nested ignores invalid array' do
     query    = '[][a]=1&b=2'
-    expected = { "a" => "1", "b" => "2" }
+    expected = { 'a' => '1', 'b' => '2' }
     expect(subject.decode(query)).to eq(expected)
   end
 
   it 'decodes nested ignores repeated array notation' do
     query    = 'a[][][]=1'
-    expected = { "a" => ["1"] }
+    expected = { 'a' => ['1'] }
     expect(subject.decode(query)).to eq(expected)
   end
 
@@ -49,18 +49,18 @@ RSpec.describe Faraday::NestedParamsEncoder do
 
   it 'decodes nested subkeys dont have to be in brackets' do
     query    = 'a[b]c[d]e=1'
-    expected = { "a" => { "b" => { "c" => { "d" => { "e" => "1" } } } } }
+    expected = { 'a' => { 'b' => { 'c' => { 'd' => { 'e' => '1' } } } } }
     expect(subject.decode(query)).to eq(expected)
   end
 
   it 'decodes nested final value overrides any type' do
     query    = 'a[b][c]=1&a[b]=2'
-    expected = { "a" => { "b" => "2" } }
+    expected = { 'a' => { 'b' => '2' } }
     expect(subject.decode(query)).to eq(expected)
   end
 
   it 'encodes rack compat' do
-    params   = { :a => [{ :one => "1", :two => "2" }, "3", ""] }
+    params   = { :a => [{ :one => '1', :two => '2' }, '3', ''] }
     result   = Faraday::Utils.unescape(Faraday::NestedParamsEncoder.encode(params)).split('&')
     expected = Rack::Utils.build_nested_query(params).split('&')
     expect(result).to match_array(expected)

@@ -36,7 +36,7 @@ module Faraday
       send(method, '/empty_stream') do
         content_type :txt
         stream do |out|
-          out << ""
+          out << ''
         end
       end
     end
@@ -48,7 +48,7 @@ module Faraday
 
     post '/file' do
       if params[:uploaded_file].respond_to? :each_key
-        "file %s %s %d" % [
+        'file %s %s %d' % [
           params[:uploaded_file][:filename],
           params[:uploaded_file][:type],
           params[:uploaded_file][:tempfile].size

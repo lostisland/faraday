@@ -3,7 +3,7 @@
 begin
   require 'net/https'
 rescue LoadError
-  warn "Warning: no such file to load -- net/https. Make sure openssl is installed if you want ssl support"
+  warn 'Warning: no such file to load -- net/https. Make sure openssl is installed if you want ssl support'
   require 'net/http'
 end
 require 'zlib'
@@ -93,7 +93,7 @@ module Faraday
               env[:request].on_data.call(chunk, size)
             end
           end
-          env[:request].on_data.call("", 0) unless yielded
+          env[:request].on_data.call('', 0) unless yielded
           # Net::HTTP returns something, but it's not meaningful according to the docs.
           http_response.body = nil
           http_response

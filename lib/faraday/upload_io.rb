@@ -5,7 +5,7 @@ begin
   require 'parts'
   require 'stringio'
 rescue LoadError
-  $stderr.puts "Install the multipart-post gem."
+  $stderr.puts 'Install the multipart-post gem.'
   raise
 end
 
@@ -37,12 +37,12 @@ module Faraday
     # @param outbuf [String, nil]
     def read(length = nil, outbuf = nil)
       got_result = false
-      outbuf = outbuf ? (+outbuf).replace("") : +""
+      outbuf = outbuf ? (+outbuf).replace('') : +''
 
       while (io = current_io)
         if (result = io.read(length))
           got_result ||= !result.nil?
-          result.force_encoding("BINARY") if result.respond_to?(:force_encoding)
+          result.force_encoding('BINARY') if result.respond_to?(:force_encoding)
           outbuf << result
           length -= result.length if length
           break if length == 0

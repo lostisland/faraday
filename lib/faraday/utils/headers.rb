@@ -47,7 +47,7 @@ module Faraday
                 end
         keymap_mutex.synchronize { map[key] = value }
       end
-      KeyMap[:etag] = "ETag"
+      KeyMap[:etag] = 'ETag'
 
       def [](k)
         k = KeyMap[k]
