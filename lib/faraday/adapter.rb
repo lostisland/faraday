@@ -10,16 +10,16 @@ module Faraday
     CONTENT_LENGTH = 'Content-Length'
 
     register_middleware File.expand_path('../adapter', __FILE__),
-      :test => [:Test, 'test'],
-      :net_http => [:NetHttp, 'net_http'],
-      :net_http_persistent => [:NetHttpPersistent, 'net_http_persistent'],
-      :typhoeus => [:Typhoeus, 'typhoeus'],
-      :patron => [:Patron, 'patron'],
-      :em_synchrony => [:EMSynchrony, 'em_synchrony'],
-      :em_http => [:EMHttp, 'em_http'],
-      :excon => [:Excon, 'excon'],
-      :rack => [:Rack, 'rack'],
-      :httpclient => [:HTTPClient, 'httpclient']
+                        :test => [:Test, 'test'],
+                        :net_http => [:NetHttp, 'net_http'],
+                        :net_http_persistent => [:NetHttpPersistent, 'net_http_persistent'],
+                        :typhoeus => [:Typhoeus, 'typhoeus'],
+                        :patron => [:Patron, 'patron'],
+                        :em_synchrony => [:EMSynchrony, 'em_synchrony'],
+                        :em_http => [:EMHttp, 'em_http'],
+                        :excon => [:Excon, 'excon'],
+                        :rack => [:Rack, 'rack'],
+                        :httpclient => [:HTTPClient, 'httpclient']
 
     # This module marks an Adapter as supporting parallel requests.
     module Parallelism

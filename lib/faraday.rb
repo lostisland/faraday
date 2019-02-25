@@ -152,7 +152,7 @@ module Faraday
   end
 
   require_libs "utils", "options", "connection", "rack_builder", "parameters",
-    "middleware", "adapter", "request", "response", "upload_io", "error"
+               "middleware", "adapter", "request", "response", "upload_io", "error"
 
   if !ENV["FARADAY_NO_AUTOLOAD"]
     require_lib 'autoload'
