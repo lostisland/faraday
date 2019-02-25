@@ -15,11 +15,11 @@ module Faraday
         @config_block.call(session) if @config_block
         configure_ssl(session, env[:ssl]) if env[:url].scheme == 'https' and env[:ssl]
 
-        if req = env[:request]
+        if (req = env[:request])
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
           session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
 
-          if proxy = req[:proxy]
+          if (proxy = req[:proxy])
             proxy_uri = proxy[:uri].dup
             proxy_uri.user = proxy[:user] && Utils.escape(proxy[:user]).gsub('+', '%20')
             proxy_uri.password = proxy[:password] && Utils.escape(proxy[:password]).gsub('+', '%20')

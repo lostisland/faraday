@@ -212,21 +212,6 @@ Layout/TrailingWhitespace:
 
 # Offense count: 20
 # Configuration parameters: AllowSafeAssignment.
-Lint/AssignmentInCondition:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/excon.rb'
-    - 'lib/faraday/adapter/httpclient.rb'
-    - 'lib/faraday/adapter/net_http.rb'
-    - 'lib/faraday/adapter/patron.rb'
-    - 'lib/faraday/middleware_registry.rb'
-    - 'lib/faraday/options.rb'
-    - 'lib/faraday/options/env.rb'
-    - 'lib/faraday/options/proxy_options.rb'
-    - 'lib/faraday/request.rb'
-    - 'lib/faraday/upload_io.rb'
-    - 'script/proxy-server'
-    - 'script/server'
 
 # Offense count: 1
 Lint/HandleExceptions:

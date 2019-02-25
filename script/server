@@ -10,7 +10,7 @@ end
 require 'webrick'
 
 port = 4000
-if found = ARGV.index('-p')
+if (found = ARGV.index('-p'))
   port = ARGV[found + 1].to_i
 end
 

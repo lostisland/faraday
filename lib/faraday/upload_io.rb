@@ -39,8 +39,8 @@ module Faraday
       got_result = false
       outbuf = outbuf ? (+outbuf).replace("") : +""
 
-      while io = current_io
-        if result = io.read(length)
+      while (io = current_io)
+        if (result = io.read(length))
           got_result ||= !result.nil?
           result.force_encoding("BINARY") if result.respond_to?(:force_encoding)
           outbuf << result

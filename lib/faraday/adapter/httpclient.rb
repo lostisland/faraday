@@ -17,19 +17,19 @@ module Faraday
         # enable compression
         client.transparent_gzip_decompression = true
 
-        if req = env[:request]
-          if proxy = req[:proxy]
+        if (req = env[:request])
+          if (proxy = req[:proxy])
             configure_proxy proxy
           end
 
-          if bind = req[:bind]
+          if (bind = req[:bind])
             configure_socket bind
           end
 
           configure_timeouts req
         end
 
-        if env[:url].scheme == 'https' && ssl = env[:ssl]
+        if env[:url].scheme == 'https' && (ssl = env[:ssl])
           configure_ssl ssl
         end
 

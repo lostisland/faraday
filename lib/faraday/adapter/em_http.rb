@@ -35,7 +35,7 @@ module Faraday
 
         # Reads out proxy settings from env into options
         def configure_proxy(options, env)
-          if proxy = request_options(env)[:proxy]
+          if (proxy = request_options(env)[:proxy])
             options[:proxy] = {
               :host => proxy[:uri].host,
               :port => proxy[:uri].port,
@@ -46,7 +46,7 @@ module Faraday
 
         # Reads out host and port settings from env into options
         def configure_socket(options, env)
-          if bind = request_options(env)[:bind]
+          if (bind = request_options(env)[:bind])
             options[:bind] = {
               :host => bind[:host],
               :port => bind[:port]

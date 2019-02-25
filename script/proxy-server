@@ -7,10 +7,10 @@ require 'webrick/httpproxy'
 
 port = 4001
 
-if found = ARGV.index('-p')
+if (found = ARGV.index('-p'))
   port = ARGV[found + 1].to_i
 end
-if found = ARGV.index('-u')
+if (found = ARGV.index('-u'))
   username, password = ARGV[found + 1].split(':', 2)
 end
 
