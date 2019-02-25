@@ -22,14 +22,6 @@ Layout/DotPosition:
     - 'lib/faraday/autoload.rb'
     - 'lib/faraday/connection.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-Layout/ElseAlignment:
-  Exclude:
-    - 'lib/faraday/adapter/rack.rb'
-    - 'lib/faraday/options.rb'
-    - 'lib/faraday/utils.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Layout/EmptyLinesAroundAccessModifier:
