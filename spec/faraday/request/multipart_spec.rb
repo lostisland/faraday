@@ -21,10 +21,13 @@ RSpec.describe Faraday::Request::Multipart do
       response = conn.post('/echo', payload)
 
       expect(response.body).to be_a_kind_of(Faraday::CompositeReadIO)
-      match = 'multipart/form-data; boundary=%s' % Faraday::Request::Multipart::DEFAULT_BOUNDARY_PREFIX
+      match = format(
+        'multipart/form-data; boundary=%<boundary>s',
+        boundary: Faraday::Request::Multipart::DEFAULT_BOUNDARY_PREFIX
+      )
       expect(response.headers['Content-Type']).to start_with(match)
 
-      response.body.send(:ios).map { |io| io.read }.each do |io|
+      response.body.send(:ios).map(&:read).each do |io|
         re = regexes.detect { |r| io =~ r }
         regexes.delete(re) if re
       end
@@ -34,25 +37,47 @@ RSpec.describe Faraday::Request::Multipart do
     it 'generates a unique boundary for each request' do
       response1 = conn.post('/echo', payload)
       response2 = conn.post('/echo', payload)
-      expect(response1.headers['Content-Type']).not_to eq(response2.headers['Content-Type'])
+      expect(response1.headers['Content-Type']).not_to eq(
+        response2.headers['Content-Type']
+      )
     end
   end
 
   context 'when multipart objects in param' do
-    let(:regexes) { [/name\=\"a\"/,
-                     /name=\"b\[c\]\"\; filename\=\"multipart_spec\.rb\"/,
-                     /name=\"b\[d\]\"/] }
+    let(:regexes) do
+      [/name\=\"a\"/,
+       /name=\"b\[c\]\"\; filename\=\"multipart_spec\.rb\"/,
+       /name=\"b\[d\]\"/]
+    end
 
-    let(:payload) { { :a => 1, :b => { :c => Faraday::UploadIO.new(__FILE__, 'text/x-ruby'), :d => 2 } } }
+    let(:payload) do
+      {
+        a: 1,
+        b: {
+          c: Faraday::UploadIO.new(__FILE__, 'text/x-ruby'),
+          d: 2
+        }
+      }
+    end
     it_behaves_like 'a multipart request'
   end
 
   context 'when multipart objects in array param' do
-    let(:regexes) { [/name\=\"a\"/,
-                     /name=\"b\[\]\[c\]\"\; filename\=\"multipart_spec\.rb\"/,
-                     /name=\"b\[\]\[d\]\"/] }
+    let(:regexes) do
+      [/name\=\"a\"/,
+       /name=\"b\[\]\[c\]\"\; filename\=\"multipart_spec\.rb\"/,
+       /name=\"b\[\]\[d\]\"/]
+    end
 
-    let(:payload) { { :a => 1, :b => [{ :c => Faraday::UploadIO.new(__FILE__, 'text/x-ruby'), :d => 2 }] } }
+    let(:payload) do
+      {
+        a: 1,
+        b: [{
+          c: Faraday::UploadIO.new(__FILE__, 'text/x-ruby'),
+          d: 2
+        }]
+      }
+    end
     it_behaves_like 'a multipart request'
   end
 end
