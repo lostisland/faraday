@@ -79,7 +79,7 @@ shared_examples 'adapter examples' do |**options|
   end
 
   describe '#options' do
-   let(:http_method) { :options }
+    let(:http_method) { :options }
 
     it_behaves_like 'a request method', :options
   end
@@ -104,7 +104,7 @@ shared_examples 'adapter examples' do |**options|
 
   on_feature :trace_method do
     describe '#trace' do
-     let(:http_method) { :trace }
+      let(:http_method) { :trace }
 
       it_behaves_like 'a request method', :trace
     end

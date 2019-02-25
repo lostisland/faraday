@@ -71,9 +71,9 @@ module Faraday
     def default_uri_parser=(parser)
       @default_uri_parser = if parser.respond_to?(:call) || parser.nil?
                               parser
-      else
-        parser.method(:parse)
-      end
+                            else
+                              parser.method(:parse)
+                            end
     end
 
     # Receives a String or URI and returns just the path with the query string sorted.
