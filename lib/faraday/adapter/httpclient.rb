@@ -35,7 +35,7 @@ module Faraday
 
         configure_client
 
-        # TODO Don't stream yet.
+        # TODO: Don't stream yet.
         # https://github.com/nahi/httpclient/pull/90
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
