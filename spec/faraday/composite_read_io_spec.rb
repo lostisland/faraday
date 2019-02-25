@@ -67,13 +67,13 @@ RSpec.describe Faraday::CompositeReadIO do
   end
 
   context 'with utf8 multibyte part' do
-    subject { composite_io(part("\x86"), part("ファイル")) }
+    subject { composite_io(part("\x86"), part('ファイル')) }
 
-    it { expect(subject.read).to eq(String.new("\x86\xE3\x83\x95\xE3\x82\xA1\xE3\x82\xA4\xE3\x83\xAB", encoding: "BINARY"))}
+    it { expect(subject.read).to eq(String.new("\x86\xE3\x83\x95\xE3\x82\xA1\xE3\x82\xA4\xE3\x83\xAB", encoding: 'BINARY'))}
     it 'allows to read in chunks' do
-      expect(subject.read(3)).to eq(String.new("\x86\xE3\x83", encoding: "BINARY"))
-      expect(subject.read(3)).to eq(String.new("\x95\xE3\x82", encoding: "BINARY"))
-      expect(subject.read(8)).to eq(String.new("\xA1\xE3\x82\xA4\xE3\x83\xAB", encoding: "BINARY"))
+      expect(subject.read(3)).to eq(String.new("\x86\xE3\x83", encoding: 'BINARY'))
+      expect(subject.read(3)).to eq(String.new("\x95\xE3\x82", encoding: 'BINARY'))
+      expect(subject.read(8)).to eq(String.new("\xA1\xE3\x82\xA4\xE3\x83\xAB", encoding: 'BINARY'))
       expect(subject.read(3)).to be_nil
     end
   end

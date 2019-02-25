@@ -15,11 +15,11 @@ module Faraday
         @config_block.call(session) if @config_block
         configure_ssl(session, env[:ssl]) if env[:url].scheme == 'https' and env[:ssl]
 
-        if req = env[:request]
+        if (req = env[:request])
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
           session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
 
-          if proxy = req[:proxy]
+          if (proxy = req[:proxy])
             proxy_uri = proxy[:uri].dup
             proxy_uri.user = proxy[:user] && Utils.escape(proxy[:user]).gsub('+', '%20')
             proxy_uri.password = proxy[:password] && Utils.escape(proxy[:password]).gsub('+', '%20')
@@ -51,7 +51,7 @@ module Faraday
           raise Faraday::TimeoutError, err
         end
       rescue ::Patron::Error => err
-        if err.message.include?("code 407")
+        if err.message.include?('code 407')
           raise Faraday::ConnectionFailed, %{407 "Proxy Authentication Required "}
         else
           raise Faraday::ConnectionFailed, err
@@ -67,8 +67,8 @@ module Faraday
             actions << :options unless actions.include? :options
           else
             # Patron 0.4.20 and up
-            actions << "PATCH" unless actions.include? "PATCH"
-            actions << "OPTIONS" unless actions.include? "OPTIONS"
+            actions << 'PATCH' unless actions.include? 'PATCH'
+            actions << 'OPTIONS' unless actions.include? 'OPTIONS'
           end
         end
       end
@@ -84,14 +84,14 @@ module Faraday
       private
 
       CURL_TIMEOUT_MESSAGES = [
-          "Connection time-out",
-          "Connection timed out",
-          "Timed out before name resolve",
-          "server connect has timed out",
-          "Resolving timed out",
-          "name lookup timed out",
-          "timed out before SSL",
-          "connect() timed out"
+          'Connection time-out',
+          'Connection timed out',
+          'Timed out before name resolve',
+          'server connect has timed out',
+          'Resolving timed out',
+          'name lookup timed out',
+          'timed out before SSL',
+          'connect() timed out'
         ].freeze
 
       def connection_timed_out_message?(message)

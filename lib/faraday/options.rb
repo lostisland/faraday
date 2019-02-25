@@ -147,7 +147,7 @@ module Faraday
         value = send(member)
         values << "#{member}=#{value.inspect}" if value
       end
-      values = values.empty? ? ' (empty)' : (' ' << values.join(", "))
+      values = values.empty? ? ' (empty)' : (' ' << values.join(', '))
 
       %(#<#{self.class}#{values}>)
     end
@@ -180,7 +180,7 @@ module Faraday
 
     def [](key)
       key = key.to_sym
-      if method = self.class.memoized_attributes[key]
+      if (method = self.class.memoized_attributes[key])
         super(key) || (self[key] = instance_eval(&method))
       else
         super

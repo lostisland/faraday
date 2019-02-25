@@ -3,7 +3,7 @@
 module Faraday
   # Request middleware for the Authorization HTTP header
   class Request::Authorization < Faraday::Middleware
-    KEY = "Authorization" unless defined? KEY
+    KEY = 'Authorization' unless defined? KEY
 
     # @param type [String, Symbol]
     # @param token [String, Symbol, Hash]
@@ -24,7 +24,7 @@ module Faraday
     # @return [String] type followed by comma-separated key=value pairs
     # @api private
     def self.build_hash(type, hash)
-      comma = ", "
+      comma = ', '
       values = []
       hash.each do |key, value|
         values << "#{key}=#{value.to_s.inspect}"

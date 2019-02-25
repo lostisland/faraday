@@ -140,7 +140,7 @@ module Faraday
     def inspect
       attrs = [nil]
       members.each do |mem|
-        if value = send(mem)
+        if (value = send(mem))
           attrs << "@#{mem}=#{value.inspect}"
         end
       end

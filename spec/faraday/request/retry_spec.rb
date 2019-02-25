@@ -171,7 +171,7 @@ RSpec.describe Faraday::Request::Retry do
       let(:options) { [{ retry_if: @check, methods: [:post] }] }
 
       it 'does not call retry_if for specified methods' do
-        @check = lambda { |_, _| raise "this should have never been called" }
+        @check = lambda { |_, _| raise 'this should have never been called' }
         expect { conn.post('/unstable') }.to raise_error(Errno::ETIMEDOUT)
         expect(times_called).to eq(3)
       end

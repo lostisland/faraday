@@ -110,7 +110,7 @@ module Faraday
       when Array
         middleware_mutex do
           const, path = value
-          if root = @middleware_autoload_path
+          if (root = @middleware_autoload_path)
             path = "#{root}/#{path}"
           end
           require(path)

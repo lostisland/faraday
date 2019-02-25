@@ -80,7 +80,7 @@ module Faraday
       rescue Errno::ECONNREFUSED
         raise Faraday::ConnectionFailed, $!
       rescue EventMachine::Connectify::CONNECTError => err
-        if err.message.include?("Proxy Authentication Required")
+        if err.message.include?('Proxy Authentication Required')
           raise Faraday::ConnectionFailed, %{407 "Proxy Authentication Required "}
         else
           raise Faraday::ConnectionFailed, err
@@ -88,7 +88,7 @@ module Faraday
       rescue Errno::ETIMEDOUT => err
         raise Faraday::TimeoutError, err
       rescue RuntimeError => err
-        if err.message == "connection closed by server"
+        if err.message == 'connection closed by server'
           raise Faraday::ConnectionFailed, err
         else
           raise
@@ -113,7 +113,7 @@ require 'faraday/adapter/em_synchrony/parallel_manager'
 begin
   require 'openssl'
 rescue LoadError
-  warn "Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support"
+  warn 'Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support'
 else
   require 'faraday/adapter/em_http_ssl_patch'
 end if Faraday::Adapter::EMSynchrony.loaded?

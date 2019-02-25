@@ -57,7 +57,7 @@ module Faraday
       elsif url.respond_to?(:to_str)
         default_uri_parser.call(url)
       else
-        raise ArgumentError, "bad argument (expected URI object or URI string)"
+        raise ArgumentError, 'bad argument (expected URI object or URI string)'
       end
     end
 
@@ -80,7 +80,7 @@ module Faraday
     def normalize_path(url)
       url = URI(url)
       (url.path.start_with?('/') ? url.path : '/' + url.path) +
-        (url.query ? "?#{sort_query_params(url.query)}" : "")
+        (url.query ? "?#{sort_query_params(url.query)}" : '')
     end
 
     # Recursive hash update

@@ -190,7 +190,7 @@ module Faraday
       response_headers = env[:response_headers]
       return unless response_headers
 
-      retry_after_value = env[:response_headers]["Retry-After"]
+      retry_after_value = env[:response_headers]['Retry-After']
 
       # Try to parse date from the header value
       begin

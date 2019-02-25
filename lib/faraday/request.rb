@@ -75,7 +75,7 @@ module Faraday
     # @return [void]
     def url(path, params = nil)
       if path.respond_to? :query
-        if query = path.query
+        if (query = path.query)
           path = path.dup
           path.query = nil
         end

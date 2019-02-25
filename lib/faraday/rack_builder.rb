@@ -211,7 +211,7 @@ module Faraday
     end
 
     def raise_if_adapter(klass)
-      raise "Adapter should be set using the `adapter` method, not `use`" if is_adapter?(klass)
+      raise 'Adapter should be set using the `adapter` method, not `use`' if is_adapter?(klass)
     end
 
     def adapter_set?

@@ -20,7 +20,7 @@ require 'faraday/dependency_loader'
 #   conn.get '/'
 #
 module Faraday
-  VERSION = "0.15.3"
+  VERSION = '0.15.3'
   METHODS_WITH_QUERY = %w[get head delete connect trace]
   METHODS_WITH_BODY = %w[post put patch]
 
@@ -116,8 +116,8 @@ module Faraday
   end
 
   self.ignore_env_proxy = false
-  self.root_path = File.expand_path "..", __FILE__
-  self.lib_path = File.expand_path "../faraday", __FILE__
+  self.root_path = File.expand_path '..', __FILE__
+  self.lib_path = File.expand_path '../faraday', __FILE__
   self.default_adapter = :net_http
 
   # @overload default_connection
@@ -151,10 +151,10 @@ module Faraday
     Timer = Timeout
   end
 
-  require_libs "utils", "options", "connection", "rack_builder", "parameters",
-               "middleware", "adapter", "request", "response", "upload_io", "error"
+  require_libs 'utils', 'options', 'connection', 'rack_builder', 'parameters',
+               'middleware', 'adapter', 'request', 'response', 'upload_io', 'error'
 
-  if !ENV["FARADAY_NO_AUTOLOAD"]
+  if !ENV['FARADAY_NO_AUTOLOAD']
     require_lib 'autoload'
   end
 end

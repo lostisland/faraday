@@ -10,7 +10,7 @@ end
 require 'webrick'
 
 port = 4000
-if found = ARGV.index('-p')
+if (found = ARGV.index('-p'))
   port = ARGV[found + 1].to_i
 end
 
@@ -19,7 +19,7 @@ log_io.sync = true
 
 webrick_opts = {
   :Port => port, :Logger => WEBrick::Log::new(log_io),
-  :AccessLog => [[log_io, "[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b"]]
+  :AccessLog => [[log_io, '[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b']]
 }
 
 if ENV['SSL_KEY']

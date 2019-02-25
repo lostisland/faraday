@@ -91,8 +91,8 @@ module Adapters
     def test_middleware_allow_different_outcomes_for_the_same_request
       @stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
       @stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'world'] }
-      assert_equal 'hello', @conn.get("/hello").body
-      assert_equal 'world', @conn.get("/hello").body
+      assert_equal 'hello', @conn.get('/hello').body
+      assert_equal 'world', @conn.get('/hello').body
     end
 
     def test_yields_env_to_stubs

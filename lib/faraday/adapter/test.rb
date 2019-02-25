@@ -107,7 +107,7 @@ module Faraday
               })
             end
           end
-          raise failed_stubs.join(" ") unless failed_stubs.empty?
+          raise failed_stubs.join(' ') unless failed_stubs.empty?
         end
 
         protected
@@ -134,7 +134,7 @@ module Faraday
 
       class Stub < Struct.new(:host, :path, :params, :headers, :body, :block)
         def initialize(host, full, headers, body, block)
-          path, query = full.respond_to?(:split) ? full.split("?") : full
+          path, query = full.respond_to?(:split) ? full.split('?') : full
           params = query ?
             Faraday::Utils.parse_nested_query(query) :
             {}
