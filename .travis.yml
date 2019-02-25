@@ -1,11 +1,24 @@
 language: ruby
 cache: bundler
+
 rvm:
   - 2.3
   - 2.4
   - 2.5
   - 2.6
   - ruby-head
+
+jobs:
+  include:
+    - stage: linting
+      rvm: ruby-2.4.1 # Pre-installed on TravisCI
+      install: true # Do not bundle install
+      script: gem install rubocop --no-document && rubocop
+
+stages:
+  - linting
+  - test
+
 deploy:
   provider: rubygems
   api_key:
@@ -15,4 +28,3 @@ deploy:
     tags: true
     repo: lostisland/faraday
     rvm: 2.5
-
