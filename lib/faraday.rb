@@ -108,6 +108,7 @@ module Faraday
     end
 
     private
+
     # Internal: Proxies method calls on the Faraday constant to
     # .default_connection.
     def method_missing(name, *args, &block)
