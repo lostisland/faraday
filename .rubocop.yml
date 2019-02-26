@@ -9,3 +9,7 @@ Naming/MethodName:
   Exclude:
     - test/adapters/integration.rb
     - test/adapters/rack_test.rb
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*.rb
