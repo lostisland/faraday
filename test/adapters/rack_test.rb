@@ -26,7 +26,7 @@ module Adapters
 
     # not using shared test because error is swallowed by Sinatra
     def test_timeout
-      conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
+      conn = create_connection(request: {timeout: 1, open_timeout: 1})
       begin
         conn.get '/slow'
       rescue Faraday::ClientError

@@ -41,7 +41,7 @@ module Faraday
         value = if key.respond_to?(:to_str)
                   key
                 else
-                  key.to_s.split('_') # :user_agent => %w(user agent)
+                  key.to_s.split('_') # user_agent: %w(user agent)
                      .each { |w| w.capitalize! } # => %w(User Agent)
                      .join('-') # => "User-Agent"
                 end

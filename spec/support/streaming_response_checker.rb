@@ -4,8 +4,8 @@ module Faraday
   module StreamingResponseChecker
     def check_streaming_response(streamed, options = {})
       opts = {
-          :prefix => '',
-          :streaming? => true
+          prefix: '',
+          streaming?: true
       }.merge(options)
 
       expected_response = opts[:prefix] + big_string

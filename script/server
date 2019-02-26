@@ -18,18 +18,18 @@ log_io = $stdout
 log_io.sync = true
 
 webrick_opts = {
-  :Port => port, :Logger => WEBrick::Log::new(log_io),
-  :AccessLog => [[log_io, '[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b']]
+  Port: port, Logger: WEBrick::Log::new(log_io),
+  AccessLog: [[log_io, '[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b']]
 }
 
 if ENV['SSL_KEY']
   require 'openssl'
   require 'webrick/https'
   webrick_opts.update \
-    :SSLEnable => true,
-    :SSLPrivateKey => OpenSSL::PKey::RSA.new(File.read(ENV['SSL_KEY'])),
-    :SSLCertificate => OpenSSL::X509::Certificate.new(File.read(ENV['SSL_FILE'])),
-    :SSLVerifyClient => OpenSSL::SSL::VERIFY_NONE
+    SSLEnable: true,
+    SSLPrivateKey: OpenSSL::PKey::RSA.new(File.read(ENV['SSL_KEY'])),
+    SSLCertificate: OpenSSL::X509::Certificate.new(File.read(ENV['SSL_FILE'])),
+    SSLVerifyClient: OpenSSL::SSL::VERIFY_NONE
 end
 
 Rack::Handler::WEBrick.run(Faraday::LiveServer, webrick_opts) do |server|

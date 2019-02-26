@@ -13,7 +13,7 @@ module Adapters
 
       def test_binds_local_socket
         host = '1.2.3.4'
-        conn = create_connection :request => { :bind => { :host => host } }
+        conn = create_connection request: { bind: { host: host } }
         assert_equal host, conn.options[:bind][:host]
       end
     end unless jruby? and ssl_mode?

@@ -72,12 +72,12 @@ module Faraday
     #   # => Faraday::Connection to http://faraday.com
     #
     # @example With an URL argument and an options hash
-    #   Faraday.new 'http://faraday.com', :params => {:page => 1}
+    #   Faraday.new 'http://faraday.com', params: { page: 1 }
     #   # => Faraday::Connection to http://faraday.com?page=1
     #
     # @example With everything in an options hash
-    #   Faraday.new :url => 'http://faraday.com',
-    #               :params => {:page => 1}
+    #   Faraday.new url: 'http://faraday.com',
+    #               params: { page: 1 }
     #   # => Faraday::Connection to http://faraday.com?page=1
     def new(url = nil, options = nil, &block)
       options = options ? default_connection_options.merge(options) : default_connection_options

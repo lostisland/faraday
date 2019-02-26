@@ -20,7 +20,7 @@ module Faraday
     #   module Faraday
     #     class Whatever
     #       # Middleware looked up by :foo returns Faraday::Whatever::Foo.
-    #       register_middleware :foo => Foo
+    #       register_middleware foo: Foo
     #     end
     #   end
     #
@@ -29,7 +29,7 @@ module Faraday
     #   module Faraday
     #     class Whatever
     #       # Middleware looked up by :bar returns Faraday::Whatever.const_get(:Bar)
-    #       register_middleware :bar => :Bar
+    #       register_middleware bar: :Bar
     #     end
     #   end
     #
@@ -38,7 +38,7 @@ module Faraday
     #   module Faraday
     #     class Whatever
     #       # Middleware looked up by :baz requires 'baz' and returns Faraday::Whatever.const_get(:Baz)
-    #       register_middleware :baz => [:Baz, 'baz']
+    #       register_middleware baz: [:Baz, 'baz']
     #     end
     #   end
     #
@@ -70,7 +70,7 @@ module Faraday
     #
     #   module Faraday
     #     class Whatever
-    #       register_middleware :foo => Foo
+    #       register_middleware foo: Foo
     #     end
     #   end
     #

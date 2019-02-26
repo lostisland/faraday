@@ -16,7 +16,7 @@ module Faraday
     # @example
     #
     #   Faraday.autoload_all 'faraday/foo',
-    #     :Bar => 'bar'
+    #     Bar: 'bar'
     #
     #   # requires faraday/foo/bar to load Faraday::Bar.
     #   Faraday::Bar
@@ -55,34 +55,34 @@ module Faraday
   class Adapter
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
-                 :NetHttp => 'net_http',
-                 :NetHttpPersistent => 'net_http_persistent',
-                 :EMSynchrony => 'em_synchrony',
-                 :EMHttp => 'em_http',
-                 :Typhoeus => 'typhoeus',
-                 :Patron => 'patron',
-                 :Excon => 'excon',
-                 :Test => 'test',
-                 :Rack => 'rack',
-                 :HTTPClient => 'httpclient'
+                 NetHttp: 'net_http',
+                 NetHttpPersistent: 'net_http_persistent',
+                 EMSynchrony: 'em_synchrony',
+                 EMHttp: 'em_http',
+                 Typhoeus: 'typhoeus',
+                 Patron: 'patron',
+                 Excon: 'excon',
+                 Test: 'test',
+                 Rack: 'rack',
+                 HTTPClient: 'httpclient'
   end
 
   class Request
     extend AutoloadHelper
     autoload_all 'faraday/request',
-                 :UrlEncoded => 'url_encoded',
-                 :Multipart => 'multipart',
-                 :Retry => 'retry',
-                 :Authorization => 'authorization',
-                 :BasicAuthentication => 'basic_authentication',
-                 :TokenAuthentication => 'token_authentication',
-                 :Instrumentation => 'instrumentation'
+                 UrlEncoded: 'url_encoded',
+                 Multipart: 'multipart',
+                 Retry: 'retry',
+                 Authorization: 'authorization',
+                 BasicAuthentication: 'basic_authentication',
+                 TokenAuthentication: 'token_authentication',
+                 Instrumentation: 'instrumentation'
   end
 
   class Response
     extend AutoloadHelper
     autoload_all 'faraday/response',
-                 :RaiseError => 'raise_error',
-                 :Logger => 'logger'
+                 RaiseError: 'raise_error',
+                 Logger: 'logger'
   end
 end

@@ -29,7 +29,7 @@ shared_examples 'default connection options' do
   end
 
   it 'works with option url' do
-    conn = Faraday.new :url => 'http://sushi.com/foo'
+    conn = Faraday.new url: 'http://sushi.com/foo'
     expect(conn.options.timeout).to eq(10)
   end
 
@@ -44,7 +44,7 @@ shared_examples 'default connection options' do
     conn.options.timeout = 1
     expect(Faraday.default_connection_options.request.timeout).to eq(10)
 
-    other = Faraday.new :url => 'https://sushi.com/foo'
+    other = Faraday.new url: 'https://sushi.com/foo'
     other.options.timeout = 1
 
     expect(Faraday.default_connection_options.request.timeout).to eq(10)
@@ -221,13 +221,13 @@ RSpec.describe Faraday::Connection do
 
     it 'does not use connection params' do
       conn.url_prefix = 'http://sushi.com/nigiri'
-      conn.params = { :a => 1 }
+      conn.params = { a: 1 }
       expect(conn.build_exclusive_url.to_s).to eq('http://sushi.com/nigiri')
     end
 
     it 'allows to provide params argument' do
       conn.url_prefix = 'http://sushi.com/nigiri'
-      conn.params = { :a => 1 }
+      conn.params = { a: 1 }
       params = Faraday::Utils::ParamsHash.new
       params[:a] = 2
       uri = conn.build_exclusive_url(nil, params)
@@ -345,7 +345,7 @@ RSpec.describe Faraday::Connection do
 
     it 'accepts hash with string uri' do
       with_env 'http_proxy' => 'http://proxy.com:80' do
-        conn.proxy = { :uri => 'http://proxy.com', :user => 'rick' }
+        conn.proxy = { uri: 'http://proxy.com', user: 'rick' }
         expect(conn.proxy.host).to eq('proxy.com')
         expect(conn.proxy.user).to eq('rick')
       end
@@ -353,7 +353,7 @@ RSpec.describe Faraday::Connection do
 
     it 'accepts hash' do
       with_env 'http_proxy' => 'http://proxy.com:80' do
-        conn.proxy = { :uri => URI.parse('http://proxy.com'), :user => 'rick' }
+        conn.proxy = { uri: URI.parse('http://proxy.com'), user: 'rick' }
         expect(conn.proxy.host).to eq('proxy.com')
         expect(conn.proxy.user).to eq('rick')
       end
@@ -593,7 +593,7 @@ RSpec.describe Faraday::Connection do
           expect(req.params[:a]).to eq('a')
           expect(req.params['c']).to eq(3)
           expect(req.params['p']).to eq(2)
-          req.params = { :b => 'b' }
+          req.params = { b: 'b' }
           expect(req.params['b']).to eq('b')
         end
         expect(stubbed).to have_been_made.once

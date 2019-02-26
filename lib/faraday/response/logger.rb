@@ -6,7 +6,7 @@ module Faraday
   class Response::Logger < Response::Middleware
     extend Forwardable
 
-    DEFAULT_OPTIONS = { :headers => true, :bodies => false }
+    DEFAULT_OPTIONS = { headers: true, bodies: false }
 
     def initialize(app, logger = nil, options = {})
       super(app)

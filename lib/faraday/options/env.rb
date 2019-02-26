@@ -57,8 +57,8 @@ module Faraday
     # these requests, the Content-Length header is set to 0.
     MethodsWithBodies = Set.new(Faraday::METHODS_WITH_BODY.map(&:to_sym))
 
-    options :request => RequestOptions,
-            :request_headers => Utils::Headers, :response_headers => Utils::Headers
+    options request: RequestOptions,
+            request_headers: Utils::Headers, response_headers: Utils::Headers
 
     extend Forwardable
 

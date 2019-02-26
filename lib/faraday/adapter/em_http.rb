@@ -19,10 +19,10 @@ module Faraday
 
         def request_config(env)
           options = {
-            :body => read_body(env),
-            :head => env[:request_headers]
-            # :keepalive => true,
-            # :file => 'path/to/file', # stream data off disk
+            body: read_body(env),
+            head: env[:request_headers]
+            # keepalive: true,
+            # file: 'path/to/file', # stream data off disk
           }
           configure_compression(options, env)
           options
@@ -37,9 +37,9 @@ module Faraday
         def configure_proxy(options, env)
           if (proxy = request_options(env)[:proxy])
             options[:proxy] = {
-              :host => proxy[:uri].host,
-              :port => proxy[:uri].port,
-              :authorization => [proxy[:user], proxy[:password]]
+              host: proxy[:uri].host,
+              port: proxy[:uri].port,
+              authorization: [proxy[:user], proxy[:password]]
             }
           end
         end
@@ -48,8 +48,8 @@ module Faraday
         def configure_socket(options, env)
           if (bind = request_options(env)[:bind])
             options[:bind] = {
-              :host => bind[:host],
-              :port => bind[:port]
+              host: bind[:host],
+              port: bind[:port]
             }
           end
         end
@@ -58,8 +58,8 @@ module Faraday
         def configure_ssl(options, env)
           if env[:url].scheme == 'https' && env[:ssl]
             options[:ssl] = {
-              :cert_chain_file => env[:ssl][:ca_file],
-              :verify_peer => env[:ssl].fetch(:verify, true)
+              cert_chain_file: env[:ssl][:ca_file],
+              verify_peer: env[:ssl].fetch(:verify, true)
             }
           end
         end
