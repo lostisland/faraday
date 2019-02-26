@@ -104,17 +104,17 @@ module Faraday
         if parallel?(env)
           manager = env[:parallel_manager]
           manager.add {
-            perform_single_request(env).
-              callback { env[:response].finish(env) }
+            perform_single_request(env)
+              .callback { env[:response].finish(env) }
           }
         else
           unless EventMachine.reactor_running?
             error = nil
             # start EM, block until request is completed
             EventMachine.run do
-              perform_single_request(env).
-                callback { EventMachine.stop }.
-                errback { |client|
+              perform_single_request(env)
+                .callback { EventMachine.stop }
+                .errback { |client|
                   error = error_message(client)
                   EventMachine.stop
                 }
@@ -123,9 +123,9 @@ module Faraday
           else
             # EM is running: instruct upstream that this is an async request
             env[:parallel_manager] = true
-            perform_single_request(env).
-              callback { env[:response].finish(env) }.
-              errback {
+            perform_single_request(env)
+              .callback { env[:response].finish(env) }
+              .errback {
                 # TODO: no way to communicate the error in async mode
                 raise NotImplementedError
               }
