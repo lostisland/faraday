@@ -21,8 +21,8 @@ module Faraday
           options = {
             body: read_body(env),
             head: env[:request_headers]
-            # :keepalive => true,
-            # :file => 'path/to/file', # stream data off disk
+            # keepalive: true,
+            # file: 'path/to/file', # stream data off disk
           }
           configure_compression(options, env)
           options

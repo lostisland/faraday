@@ -116,13 +116,13 @@ module Faraday
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
     # @example
-    #   conn.get '/items', {:page => 1}, :accept => 'application/json'
+    #   conn.get '/items', { page: 1 }, :accept => 'application/json'
     #
     #   # ElasticSearch example sending a body with GET.
     #   conn.get '/twitter/tweet/_search' do |req|
     #     req.headers[:content_type] = 'application/json'
     #     req.params[:routing] = 'kimchy'
-    #     req.body = JSON.generate(:query => {...})
+    #     req.body = JSON.generate(query: {...})
     #   end
     #
     # @yield [Faraday::Request] for further request customizations
@@ -234,13 +234,13 @@ module Faraday
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
     # @example
-    #   conn.post '/items', data, :content_type => 'application/json'
+    #   conn.post '/items', data, content_type: 'application/json'
     #
     #   # Simple ElasticSearch indexing sample.
     #   conn.post '/twitter/tweet' do |req|
     #     req.headers[:content_type] = 'application/json'
     #     req.params[:routing] = 'kimchy'
-    #     req.body = JSON.generate(:user => 'kimchy', ...)
+    #     req.body = JSON.generate(user: 'kimchy', ...)
     #   end
     #
     # @yield [Faraday::Request] for further request customizations
@@ -257,13 +257,13 @@ module Faraday
     #
     # @example
     #   # TODO: Make it a PUT example
-    #   conn.post '/items', data, :content_type => 'application/json'
+    #   conn.post '/items', data, content_type: 'application/json'
     #
     #   # Simple ElasticSearch indexing sample.
     #   conn.post '/twitter/tweet' do |req|
     #     req.headers[:content_type] = 'application/json'
     #     req.params[:routing] = 'kimchy'
-    #     req.body = JSON.generate(:user => 'kimchy', ...)
+    #     req.body = JSON.generate(user: 'kimchy', ...)
     #   end
     #
     # @yield [Faraday::Request] for further request customizations
@@ -302,7 +302,7 @@ module Faraday
     #
     # @example
     #
-    #   conn.token_auth 'abcdef', :foo => 'bar'
+    #   conn.token_auth 'abcdef', foo: 'bar'
     #   conn.headers['Authorization']
     #   # => "Token token=\"abcdef\",
     #               foo=\"bar\""
@@ -324,7 +324,7 @@ module Faraday
     #   conn.headers['Authorization']
     #   # => "Bearer mF_9.B5f-4.1JqM"
     #
-    #   conn.authorization :Token, :token => 'abcdef', :foo => 'bar'
+    #   conn.authorization :Token, token: 'abcdef', foo: 'bar'
     #   conn.headers['Authorization']
     #   # => "Token token=\"abcdef\",
     #               foo=\"bar\""
@@ -446,7 +446,7 @@ module Faraday
     #   conn.path_prefix # => "/api"
     #
     #   conn.build_url("nigiri?page=2")      # => https://sushi.com/api/nigiri?token=abc&page=2
-    #   conn.build_url("nigiri", :page => 2) # => https://sushi.com/api/nigiri?token=abc&page=2
+    #   conn.build_url("nigiri", page: 2) # => https://sushi.com/api/nigiri?token=abc&page=2
     #
     def build_url(url = nil, extra_params = nil)
       uri = build_exclusive_url(url)

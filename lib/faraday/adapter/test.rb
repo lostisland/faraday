@@ -11,12 +11,12 @@ module Faraday
     #         # return static content
     #         [200, {'Content-Type' => 'application/json'}, 'hi world']
     #       end
-    #       
+    #
     #       # response with content generated based on request
     #       stub.get '/showget' do |env|
     #         [200, {'Content-Type' => 'text/plain'}, env[:method].to_s]
     #       end
-    #       
+    #
     #       # regular expression can be used as matching filter
     #       stub.get /\A\/items\/(\d+)\z/ do |env, meta|
     #         # in case regular expression is used an instance of MatchData can be received
@@ -24,16 +24,16 @@ module Faraday
     #       end
     #     end
     #   end
-    #   
+    #
     #   resp = test.get '/resource.json'
     #   resp.body # => 'hi world'
-    #   
+    #
     #   resp = test.get '/showget'
     #   resp.body # => 'get'
-    #   
+    #
     #   resp = test.get '/items/1'
     #   resp.body # => 'showing item: 1'
-    #   
+    #
     #   resp = test.get '/items/2'
     #   resp.body # => 'showing item: 2'
     #
@@ -46,7 +46,7 @@ module Faraday
         end
 
         def initialize
-          # {:get => [Stub, Stub]}
+          # { get: [Stub, Stub] }
           @stack, @consumed = {}, {}
           yield(self) if block_given?
         end

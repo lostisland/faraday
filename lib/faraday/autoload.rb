@@ -16,7 +16,7 @@ module Faraday
     # @example
     #
     #   Faraday.autoload_all 'faraday/foo',
-    #     :Bar => 'bar'
+    #     Bar: 'bar'
     #
     #   # requires faraday/foo/bar to load Faraday::Bar.
     #   Faraday::Bar

@@ -30,8 +30,8 @@ module Faraday
       def call(env)
         super
         rack_env = {
-          :method => env[:method],
-          :input => env[:body].respond_to?(:read) ? env[:body].read : env[:body],
+          method: env[:method],
+          input: env[:body].respond_to?(:read) ? env[:body].read : env[:body],
           'rack.url_scheme' => env[:url].scheme
         }
 
