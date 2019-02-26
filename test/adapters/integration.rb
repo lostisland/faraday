@@ -51,7 +51,7 @@ module Adapters
         err = capture_warnings do
           connection.in_parallel do
             resp1, streamed1 = streaming_request(connection, :get, 'stream?a=1')
-            resp2, streamed2 = streaming_request(connection, :get, 'stream?b=2', :chunk_size => 16 * 1024)
+            resp2, streamed2 = streaming_request(connection, :get, 'stream?b=2', chunk_size: 16 * 1024)
             assert connection.in_parallel?
             assert_nil resp1.body
             assert_nil resp2.body
@@ -61,9 +61,9 @@ module Adapters
         end
         assert !connection.in_parallel?
         assert_match(/Streaming .+ not yet implemented/, err)
-        opts = { :streaming? => false, :chunk_size => 16 * 1024 }
-        check_streaming_response(streamed1, opts.merge(:prefix => '{"a"=>"1"}'))
-        check_streaming_response(streamed2, opts.merge(:prefix => '{"b"=>"2"}'))
+        opts = { streaming?: false, chunk_size: 16 * 1024 }
+        check_streaming_response(streamed1, opts.merge(prefix: '{"a"=>"1"}'))
+        check_streaming_response(streamed2, opts.merge(prefix: '{"b"=>"2"}'))
       end
     end
 
@@ -76,7 +76,7 @@ module Adapters
           response, streamed = streaming_request(create_connection, :get, 'stream')
         end
         assert_match(/Streaming .+ not yet implemented/, err)
-        check_streaming_response(streamed, :streaming? => false)
+        check_streaming_response(streamed, streaming?: false)
         assert_equal big_string, response.body
       end
 
@@ -88,7 +88,7 @@ module Adapters
 
         assert_match(/Streaming .+ not yet implemented/, err)
 
-        check_streaming_response(streamed, :streaming? => false)
+        check_streaming_response(streamed, streaming?: false)
         assert_equal big_string, response.body
       end
     end
@@ -96,7 +96,7 @@ module Adapters
     module SSL
       def test_GET_ssl_fails_with_bad_cert
         ca_file = 'tmp/faraday-different-ca-cert.crt'
-        conn = create_connection(:ssl => { :ca_file => ca_file })
+        conn = create_connection(ssl: { ca_file: ca_file })
         err = assert_raises Faraday::SSLError do
           conn.get('/ssl')
         end

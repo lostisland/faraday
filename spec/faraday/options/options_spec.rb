@@ -169,7 +169,7 @@ RSpec.describe Faraday::Options do
         expect(options.a).to eq(1)
         expect(options.b).to be_nil
 
-        updated = options.update :a => 2, :b => 3
+        updated = options.update a: 2, b: 3
         expect(options.a).to eq(2)
         expect(options.b).to eq(3)
         expect(updated).to eq(options)

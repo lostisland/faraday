@@ -13,10 +13,10 @@ module Faraday
         # @param args [Array] the rest of the positional arguments
         def add(request, method, *args, &block)
           queue << {
-            :request => request,
-            :method => method,
-            :args => args,
-            :block => block
+            request: request,
+            method: method,
+            args: args,
+            block: block
           }
         end
 

@@ -475,7 +475,7 @@ module Faraday
       @temp_proxy = proxy_for_request(url)
 
       request = build_request(method) do |req|
-        req.options = req.options.merge(:proxy => @temp_proxy)
+        req.options = req.options.merge(proxy: @temp_proxy)
         req.url(url)                if url
         req.headers.update(headers) if headers
         req.body = body             if body
@@ -527,11 +527,11 @@ module Faraday
     # @return [Faraday::Connection]
     def dup
       self.class.new(build_exclusive_url,
-                     :headers => headers.dup,
-                     :params => params.dup,
-                     :builder => builder.dup,
-                     :ssl => ssl.dup,
-                     :request => options.dup)
+                     headers: headers.dup,
+                     params: params.dup,
+                     builder: builder.dup,
+                     ssl: ssl.dup,
+                     request: options.dup)
     end
 
     # Yields username and password extracted from a URI if they both exist.
