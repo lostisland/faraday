@@ -22,7 +22,6 @@ module Faraday
   # This example will result in a first interval that is random between 0.05 and 0.075 and a second
   # interval that is random between 0.1 and 0.15.
   class Request::Retry < Faraday::Middleware
-
     DEFAULT_EXCEPTIONS = [Errno::ETIMEDOUT, 'Timeout::Error', Faraday::TimeoutError, Faraday::RetriableResponse].freeze
     IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
 

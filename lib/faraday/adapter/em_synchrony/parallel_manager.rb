@@ -5,7 +5,6 @@ module Faraday
     class EMSynchrony < Faraday::Adapter
       # A parallel manager for EMSynchrony.
       class ParallelManager
-
         # Add requests to queue.
         #
         # @param request [EM::HttpRequest]
@@ -64,7 +63,6 @@ module Faraday
           # Block fiber until all requests have returned.
           multi.perform
         end
-
       end
     end
   end

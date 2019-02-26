@@ -6,20 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 8
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: empty_lines, empty_lines_except_namespace, empty_lines_special, no_empty_lines, beginning_only, ending_only
-Layout/EmptyLinesAroundClassBody:
-  Exclude:
-    - 'lib/faraday/adapter/em_synchrony/parallel_manager.rb'
-    - 'lib/faraday/adapter/patron.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'lib/faraday/response/logger.rb'
-    - 'test/adapters/em_http_test.rb'
-    - 'test/adapters/em_synchrony_test.rb'
-    - 'test/adapters/rack_test.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyleAlignWith, AutoCorrect, Severity.

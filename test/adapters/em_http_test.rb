@@ -4,7 +4,6 @@ require File.expand_path('../integration', __FILE__)
 
 module Adapters
   class EMHttpTest < Faraday::TestCase
-
     def adapter() :em_http end
 
     Integration.apply(self, :Parallel, :NonStreaming, :ParallelNonStreaming) do
