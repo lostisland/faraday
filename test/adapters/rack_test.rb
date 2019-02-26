@@ -5,7 +5,6 @@ require File.expand_path('../../live_server', __FILE__)
 
 module Adapters
   class RackTest < Faraday::TestCase
-
     def adapter() :rack end
 
     def adapter_options

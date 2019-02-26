@@ -77,6 +77,5 @@ module Faraday
       end
       output
     end
-
   end
 end

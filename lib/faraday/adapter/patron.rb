@@ -97,7 +97,6 @@ module Faraday
       def connection_timed_out_message?(message)
         CURL_TIMEOUT_MESSAGES.any? { |curl_message| message.include?(curl_message) }
       end
-
     end
   end
 end
