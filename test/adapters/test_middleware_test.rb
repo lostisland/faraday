@@ -29,7 +29,7 @@ module Adapters
           [404, {'Content-Type' => 'text/html'}]
         end
       end
-      @conn  = Faraday.new do |builder|
+      @conn = Faraday.new do |builder|
         builder.adapter :test, @stubs
       end
       @resp = @conn.get('/hello')

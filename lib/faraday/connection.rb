@@ -512,7 +512,7 @@ module Faraday
       base = url_prefix
       if url and base.path and base.path !~ /\/$/
         base = base.dup
-        base.path = base.path + '/'  # ensure trailing slash
+        base.path = base.path + '/' # ensure trailing slash
       end
       uri = url ? base + url : base
       uri.query = params.to_query(params_encoder || options.params_encoder) if params
