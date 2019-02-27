@@ -7,12 +7,6 @@
 # versions of RuboCop, may require this file to be generated again.
 
 # Offense count: 1
-# Cop supports --auto-correct.
-Layout/RescueEnsureAlignment:
-  Exclude:
-    - 'lib/faraday/adapter/patron.rb'
-
-# Offense count: 1
 Lint/HandleExceptions:
   Exclude:
     - 'test/adapters/rack_test.rb'
