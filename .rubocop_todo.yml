@@ -83,17 +83,6 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 13
-# Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
-# AllowedNames: io, id, to, by, on, in, at, ip, db
-Naming/UncommunicativeMethodParamName:
-  Exclude:
-    - 'lib/faraday/error.rb'
-    - 'lib/faraday/utils.rb'
-    - 'lib/faraday/utils/headers.rb'
-    - 'script/generate_certs'
-    - 'spec/spec_helper.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Performance/RedundantBlockCall:

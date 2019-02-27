@@ -49,35 +49,35 @@ module Faraday
       end
       KeyMap[:etag] = 'ETag'
 
-      def [](k)
-        k = KeyMap[k]
-        super(k) || super(@names[k.downcase])
+      def [](key)
+        key = KeyMap[key]
+        super(key) || super(@names[key.downcase])
       end
 
-      def []=(k, v)
-        k = KeyMap[k]
-        k = (@names[k.downcase] ||= k)
+      def []=(key, val)
+        key = KeyMap[key]
+        key = (@names[key.downcase] ||= key)
         # join multiple values with a comma
-        v = v.to_ary.join(', ') if v.respond_to? :to_ary
-        super(k, v)
+        val = val.to_ary.join(', ') if val.respond_to?(:to_ary)
+        super(key, val)
       end
 
-      def fetch(k, *args, &block)
-        k = KeyMap[k]
-        key = @names.fetch(k.downcase, k)
+      def fetch(key, *args, &block)
+        key = KeyMap[key]
+        key = @names.fetch(key.downcase, key)
         super(key, *args, &block)
       end
 
-      def delete(k)
-        k = KeyMap[k]
-        if (k = @names[k.downcase])
-          @names.delete k.downcase
-          super(k)
+      def delete(key)
+        key = KeyMap[key]
+        if (key = @names[key.downcase])
+          @names.delete key.downcase
+          super(key)
         end
       end
 
-      def include?(k)
-        @names.include? k.downcase
+      def include?(key)
+        @names.include? key.downcase
       end
 
       alias has_key? include?

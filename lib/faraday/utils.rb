@@ -19,13 +19,13 @@ module Faraday
 
     ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
 
-    def escape(s)
-      s.to_s.gsub(ESCAPE_RE) { |match|
+    def escape(str)
+      str.to_s.gsub(ESCAPE_RE) { |match|
         '%' + match.unpack('H2' * match.bytesize).join('%').upcase
       }.tr(' ', '+')
     end
 
-    def unescape(s) CGI.unescape s.to_s end
+    def unescape(str) CGI.unescape str.to_s end
 
     DEFAULT_SEP = /[&;] */n
 
