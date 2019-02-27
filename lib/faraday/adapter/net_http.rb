@@ -32,7 +32,7 @@ module Faraday
       NET_HTTP_EXCEPTIONS << Net::OpenTimeout if defined?(Net::OpenTimeout)
 
       def initialize(app = nil, opts = {}, &block)
-        @cert_store = nil
+        @ssl_cert_store = nil
         super(app, opts, &block)
       end
 
@@ -98,7 +98,7 @@ module Faraday
           http_response.body = nil
           http_response
         else
-          http_response = perform_request_with_wrapped_block(http, env)
+          perform_request_with_wrapped_block(http, env)
         end
       end
 
@@ -168,12 +168,11 @@ module Faraday
 
       def ssl_cert_store(ssl)
         return ssl[:cert_store] if ssl[:cert_store]
-        return @cert_store if @cert_store
 
-        # Use the default cert store by default, i.e. system ca certs
-        @cert_store = OpenSSL::X509::Store.new
-        @cert_store.set_default_paths
-        @cert_store
+        @ssl_cert_store ||= begin
+          # Use the default cert store by default, i.e. system ca certs
+          OpenSSL::X509::Store.new.tap(&:set_default_paths)
+        end
       end
 
       def ssl_verify_mode(ssl)

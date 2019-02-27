@@ -18,13 +18,6 @@ Lint/ReturnInVoidContext:
 
 # Offense count: 2
 # Cop supports --auto-correct.
-Lint/StringConversionInInterpolation:
-  Exclude:
-    - 'lib/faraday/response/logger.rb'
-    - 'test/live_server.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
 Lint/UnneededRequireStatement:
   Exclude:
     - 'lib/faraday.rb'
@@ -50,11 +43,6 @@ Lint/UnusedMethodArgument:
     - 'lib/faraday/adapter/em_synchrony.rb'
     - 'script/generate_certs'
     - 'spec/faraday/response/middleware_spec.rb'
-
-# Offense count: 1
-Lint/UselessAssignment:
-  Exclude:
-    - 'lib/faraday/adapter/net_http.rb'
 
 # Offense count: 1
 # Configuration parameters: CheckForMethodsWithNoSideEffects.
@@ -100,13 +88,6 @@ Naming/ConstantName:
   Exclude:
     - 'lib/faraday/options/env.rb'
     - 'lib/faraday/response/raise_error.rb'
-
-# Offense count: 1
-# Configuration parameters: EnforcedStyleForLeadingUnderscores.
-# SupportedStylesForLeadingUnderscores: disallowed, required, optional
-Naming/MemoizedInstanceVariableName:
-  Exclude:
-    - 'lib/faraday/adapter/httpclient.rb'
 
 # Offense count: 2
 # Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist, MethodDefinitionMacros.

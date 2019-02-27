@@ -29,7 +29,7 @@ module Faraday
     end
 
     def on_complete(env)
-      info('response')  { "Status #{env.status.to_s}" }
+      info('response')  { "Status #{env.status}" }
       debug('response') { apply_filters(dump_headers env.response_headers) } if log_headers?(:response)
       debug('response') { apply_filters(dump_body env[:body]) } if env[:body] && log_body?(:response)
     end

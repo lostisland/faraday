@@ -80,7 +80,7 @@ module Faraday
     end
 
     error do |e|
-      "#{e.class}\n#{e.to_s}\n#{e.backtrace.join("\n")}"
+      "#{e.class}\n#{e}\n#{e.backtrace.join("\n")}"
     end
   end
 end
