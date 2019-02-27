@@ -738,15 +738,6 @@ Style/UnlessElse:
     - 'lib/faraday/adapter/em_http.rb'
     - 'lib/faraday/adapter/em_http_ssl_patch.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, MinSize, WordRegex.
-# SupportedStyles: percent, brackets
-Style/WordArray:
-  Exclude:
-    - 'script/generate_certs'
-    - 'spec/faraday/request/url_encoded_spec.rb'
-
 # Offense count: 5
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
@@ -757,7 +748,7 @@ Style/YodaCondition:
     - 'script/proxy-server'
     - 'test/helper.rb'
 
-# Offense count: 273
+# Offense count: 272
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
 Metrics/LineLength:

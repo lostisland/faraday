@@ -33,7 +33,7 @@ def write(file, contents, env_var)
 end
 
 # One cert / CA for ease of testing when ignoring verification
-cert, key = create_self_signed_cert(1024, [['CN', 'localhost']], 'Faraday Test CA')
+cert, key = create_self_signed_cert(1024, [%w[CN localhost]], 'Faraday Test CA')
 write 'tmp/faraday-cert.key', key,  'SSL_KEY'
 write 'tmp/faraday-cert.crt', cert, 'SSL_FILE'
 
