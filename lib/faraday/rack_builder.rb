@@ -170,7 +170,7 @@ module Faraday
     def to_app
       # last added handler is the deepest and thus closest to the inner app
       # adapter is always the last one
-      (@handlers).reverse.inject(@adapter.build) { |app, handler| handler.build(app) }
+      @handlers.reverse.inject(@adapter.build) { |app, handler| handler.build(app) }
     end
 
     def ==(other)
