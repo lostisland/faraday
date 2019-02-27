@@ -16,7 +16,7 @@ module Adapters
         stub.get(/\A\/resources\/\d+(?:\?|\z)/) do
           [200, { 'Content-Type' => 'text/html' }, 'show']
         end
-        stub.get(/\A\/resources\/(specified)\z/) do |env, meta|
+        stub.get(/\A\/resources\/(specified)\z/) do |_env, meta|
           [200, { 'Content-Type' => 'text/html' }, "show #{meta[:match_data][1]}"]
         end
         stub.get('http://domain.test/hello') do

@@ -23,16 +23,6 @@ Lint/UnneededRequireStatement:
     - 'lib/faraday.rb'
     - 'lib/faraday/utils.rb'
 
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: IgnoreEmptyBlocks, AllowUnusedKeywordArguments.
-Lint/UnusedBlockArgument:
-  Exclude:
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'spec/faraday/options/options_spec.rb'
-    - 'test/adapters/test_middleware_test.rb'
-
 # Offense count: 41
 Metrics/AbcSize:
   Max: 86
