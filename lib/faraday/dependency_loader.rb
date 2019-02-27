@@ -2,8 +2,7 @@
 
 module Faraday
   module DependencyLoader
-    attr_accessor :load_error
-    private :load_error=
+    attr_reader :load_error
 
     # Executes a block which should try to require and reference dependent libraries
     def dependency(lib = nil)
@@ -26,5 +25,9 @@ module Faraday
       super
       subclass.send(:load_error=, load_error)
     end
+
+    private
+
+    attr_writer :load_error
   end
 end

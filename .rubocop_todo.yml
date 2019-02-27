@@ -126,13 +126,6 @@ Performance/StringReplacement:
     - 'lib/faraday/encoders/nested_params_encoder.rb'
     - 'lib/faraday/request/basic_authentication.rb'
 
-# Offense count: 1
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: inline, group
-Style/AccessModifierDeclarations:
-  Exclude:
-    - 'lib/faraday/dependency_loader.rb'
-
 # Offense count: 9
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
