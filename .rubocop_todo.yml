@@ -83,12 +83,6 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 4
-Naming/ConstantName:
-  Exclude:
-    - 'lib/faraday/options/env.rb'
-    - 'lib/faraday/response/raise_error.rb'
-
 # Offense count: 2
 # Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist, MethodDefinitionMacros.
 # NamePrefix: is_, has_, have_
