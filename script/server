@@ -18,7 +18,7 @@ log_io = $stdout
 log_io.sync = true
 
 webrick_opts = {
-  Port: port, Logger: WEBrick::Log::new(log_io),
+  Port: port, Logger: WEBrick::Log.new(log_io),
   AccessLog: [[log_io, '[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b']]
 }
 
