@@ -44,12 +44,6 @@ Lint/UnusedMethodArgument:
     - 'script/generate_certs'
     - 'spec/faraday/response/middleware_spec.rb'
 
-# Offense count: 1
-# Configuration parameters: CheckForMethodsWithNoSideEffects.
-Lint/Void:
-  Exclude:
-    - 'lib/faraday/connection.rb'
-
 # Offense count: 41
 Metrics/AbcSize:
   Max: 86

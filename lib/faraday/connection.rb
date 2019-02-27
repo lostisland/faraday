@@ -403,8 +403,6 @@ module Faraday
     #   conn.path_prefix # => "/api"
     #
     #   conn.get("nigiri?page=2") # accesses https://sushi.com/api/nigiri
-    #
-    # @return [URI] the parsed URI from the given input
     def url_prefix=(url, encoder = nil)
       uri = @url_prefix = Utils.URI(url)
       self.path_prefix = uri.path
@@ -416,8 +414,6 @@ module Faraday
         basic_auth user, password
         uri.user = uri.password = nil
       end
-
-      uri
     end
 
     # Sets the path prefix and ensures that it always has a leading
