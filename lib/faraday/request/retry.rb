@@ -29,7 +29,7 @@ module Faraday
                                          :backoff_factor, :exceptions, :methods, :retry_if, :retry_block,
                                          :retry_statuses)
 
-      DEFAULT_CHECK = lambda { |env,exception| false }
+      DEFAULT_CHECK = lambda { |env, exception| false }
 
       def self.from(value)
         if Integer === value
