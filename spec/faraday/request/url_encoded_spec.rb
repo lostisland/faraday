@@ -46,11 +46,11 @@ RSpec.describe Faraday::Request::UrlEncoded do
   end
 
   it 'works with non nested params' do
-    response = conn.post('/echo', { dimensions: ['date', 'location'] }) do |req|
+    response = conn.post('/echo', { dimensions: %w[date location] }) do |req|
       req.options.params_encoder = Faraday::FlatParamsEncoder
     end
     expect(response.headers['Content-Type']).to eq('application/x-www-form-urlencoded')
-    expected = { 'dimensions' => ['date', 'location'] }
+    expected = { 'dimensions' => %w[date location] }
     expect(Faraday::Utils.parse_query(response.body)).to eq(expected)
     expect(response.body).to eq('dimensions=date&dimensions=location')
   end
