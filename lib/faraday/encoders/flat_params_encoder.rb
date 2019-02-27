@@ -56,7 +56,7 @@ module Faraday
         pair[0] = unescape(pair[0])
         pair[1] = true if pair[1].nil?
         if pair[1].respond_to?(:to_str)
-          pair[1] = unescape(pair[1].to_str.gsub(/\+/, ' '))
+          pair[1] = unescape(pair[1].to_str.tr('+', ' '))
         end
         if accu[pair[0]].kind_of?(Array)
           accu[pair[0]] << pair[1]

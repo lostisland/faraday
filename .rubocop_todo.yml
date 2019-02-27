@@ -83,14 +83,6 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 3
-# Cop supports --auto-correct.
-Performance/StringReplacement:
-  Exclude:
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'lib/faraday/request/basic_authentication.rb'
-
 # Offense count: 13
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, ProceduralMethods, FunctionalMethods, IgnoredMethods.
