@@ -35,7 +35,7 @@ module Faraday
     end
 
     def filter(filter_word, filter_replacement)
-      @filter.push([ filter_word, filter_replacement ])
+      @filter.push([filter_word, filter_replacement])
     end
 
     private
