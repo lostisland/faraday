@@ -34,7 +34,7 @@ module Faraday
     #
     # @param obj [Object]
     # @return [Boolean]
-    def has_multipart?(obj)
+    def has_multipart?(obj) # rubocop:disable Naming/PredicateName
       if obj.respond_to?(:each)
         (obj.respond_to?(:values) ? obj.values : obj).each do |val|
           return true if (val.respond_to?(:content_type) || has_multipart?(val))

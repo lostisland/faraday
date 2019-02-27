@@ -218,7 +218,7 @@ module Faraday
       !@adapter.nil?
     end
 
-    def is_adapter?(klass)
+    def is_adapter?(klass) # rubocop:disable Naming/PredicateName
       klass.ancestors.include?(Faraday::Adapter)
     end
 
