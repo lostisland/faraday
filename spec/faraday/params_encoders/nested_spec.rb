@@ -68,13 +68,13 @@ RSpec.describe Faraday::NestedParamsEncoder do
 
   it 'encodes empty string array value' do
     expected = 'baz=&foo%5Bbar%5D='
-    result = Faraday::NestedParamsEncoder.encode(foo: {bar: ''}, baz: '')
+    result = Faraday::NestedParamsEncoder.encode(foo: { bar: '' }, baz: '')
     expect(result).to eq(expected)
   end
 
   it 'encodes nil array value' do
     expected = 'baz&foo%5Bbar%5D'
-    result = Faraday::NestedParamsEncoder.encode(foo: {bar: nil}, baz: nil)
+    result = Faraday::NestedParamsEncoder.encode(foo: { bar: nil }, baz: nil)
     expect(result).to eq(expected)
   end
 

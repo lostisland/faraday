@@ -49,7 +49,7 @@ RSpec.describe Faraday::Utils do
       headers = Faraday::Utils::Headers.new('authorization' => 't0ps3cr3t!')
       expect(headers).to have_key('authorization')
 
-      headers.replace({'content-type' => 'text/plain'})
+      headers.replace({ 'content-type' => 'text/plain' })
       expect(headers).not_to have_key('authorization')
     end
   end

@@ -8,9 +8,9 @@ module Faraday
     def self.from(value)
       case value
       when String
-        value = {uri: Utils.URI(value)}
+        value = { uri: Utils.URI(value) }
       when URI
-        value = {uri: value}
+        value = { uri: value }
       when Hash, Options
         if (uri = value.delete(:uri))
           value[:uri] = Utils.URI(uri)
