@@ -11,7 +11,7 @@ $shell = ARGV.include? '-s'
 
 # Adapted from WEBrick::Utils. Skips cert extensions so it
 # can be used as a CA bundle
-def create_self_signed_cert(bits, cn, comment)
+def create_self_signed_cert(bits, cn)
   rsa = OpenSSL::PKey::RSA.new(bits)
   cert = OpenSSL::X509::Certificate.new
   cert.version = 2

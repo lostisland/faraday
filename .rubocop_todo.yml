@@ -33,17 +33,6 @@ Lint/UnusedBlockArgument:
     - 'spec/faraday/options/options_spec.rb'
     - 'test/adapters/test_middleware_test.rb'
 
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
-Lint/UnusedMethodArgument:
-  Exclude:
-    - 'lib/faraday/adapter.rb'
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'script/generate_certs'
-    - 'spec/faraday/response/middleware_spec.rb'
-
 # Offense count: 41
 Metrics/AbcSize:
   Max: 86
