@@ -40,7 +40,7 @@ RSpec.describe Faraday::Utils do
     end
 
     it 'parses with block' do
-      with_default_uri_parser(lambda {|u| "booya#{"!" * u.size}" }) do
+      with_default_uri_parser(lambda { |u| "booya#{"!" * u.size}" }) do
         expect(normalize(url)).to eq('booya!!!!!!!!!!!!!!!!!!!!!!')
       end
     end
@@ -49,7 +49,7 @@ RSpec.describe Faraday::Utils do
       headers = Faraday::Utils::Headers.new('authorization' => 't0ps3cr3t!')
       expect(headers).to have_key('authorization')
 
-      headers.replace({'content-type' => 'text/plain'})
+      headers.replace({ 'content-type' => 'text/plain' })
       expect(headers).not_to have_key('authorization')
     end
   end

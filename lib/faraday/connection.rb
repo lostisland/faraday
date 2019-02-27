@@ -368,7 +368,7 @@ module Faraday
     def in_parallel(manager = nil)
       @parallel_manager = manager || default_parallel_manager {
         warn 'Warning: `in_parallel` called but no parallel-capable adapter on Faraday stack'
-        warn caller[2,10].join("\n")
+        warn caller[2, 10].join("\n")
         nil
       }
       yield
@@ -428,7 +428,7 @@ module Faraday
     # @return [String] the new path prefix
     def path_prefix=(value)
       url_prefix.path = if value
-                          value = '/' + value unless value[0,1] == '/'
+                          value = '/' + value unless value[0, 1] == '/'
                           value
       end
     end
@@ -512,7 +512,7 @@ module Faraday
       base = url_prefix
       if url and base.path and base.path !~ /\/$/
         base = base.dup
-        base.path = base.path + '/'  # ensure trailing slash
+        base.path = base.path + '/' # ensure trailing slash
       end
       uri = url ? base + url : base
       uri.query = params.to_query(params_encoder || options.params_encoder) if params

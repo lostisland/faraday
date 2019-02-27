@@ -8,28 +8,28 @@ module Adapters
     def setup
       @stubs = Stubs.new do |stub|
         stub.get('/hello') do
-          [200, {'Content-Type' => 'text/html'}, 'hello']
+          [200, { 'Content-Type' => 'text/html' }, 'hello']
         end
         stub.get('/method-echo') do |env|
-          [200, {'Content-Type' => 'text/html'}, env[:method].to_s]
+          [200, { 'Content-Type' => 'text/html' }, env[:method].to_s]
         end
         stub.get(/\A\/resources\/\d+(?:\?|\z)/) do
-          [200, {'Content-Type' => 'text/html'}, 'show']
+          [200, { 'Content-Type' => 'text/html' }, 'show']
         end
         stub.get(/\A\/resources\/(specified)\z/) do |env, meta|
-          [200, {'Content-Type' => 'text/html'}, "show #{meta[:match_data][1]}"]
+          [200, { 'Content-Type' => 'text/html' }, "show #{meta[:match_data][1]}"]
         end
         stub.get('http://domain.test/hello') do
-          [200, {'Content-Type' => 'text/html'}, 'domain: hello']
+          [200, { 'Content-Type' => 'text/html' }, 'domain: hello']
         end
         stub.get('http://wrong.test/hello') do
-          [200, {'Content-Type' => 'text/html'}, 'wrong: hello']
+          [200, { 'Content-Type' => 'text/html' }, 'wrong: hello']
         end
         stub.get('http://wrong.test/bait') do
-          [404, {'Content-Type' => 'text/html'}]
+          [404, { 'Content-Type' => 'text/html' }]
         end
       end
-      @conn  = Faraday.new do |builder|
+      @conn = Faraday.new do |builder|
         builder.adapter :test, @stubs
       end
       @resp = @conn.get('/hello')
@@ -89,8 +89,8 @@ module Adapters
     end
 
     def test_middleware_allow_different_outcomes_for_the_same_request
-      @stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'hello'] }
-      @stubs.get('/hello') { [200, {'Content-Type' => 'text/html'}, 'world'] }
+      @stubs.get('/hello') { [200, { 'Content-Type' => 'text/html' }, 'hello'] }
+      @stubs.get('/hello') { [200, { 'Content-Type' => 'text/html' }, 'world'] }
       assert_equal 'hello', @conn.get('/hello').body
       assert_equal 'world', @conn.get('/hello').body
     end
@@ -139,7 +139,7 @@ module Adapters
 
     def test_raises_an_error_if_no_stub_is_found_for_request
       assert_raises Stubs::NotFound do
-        @conn.get('/invalid'){ [200, {}, []] }
+        @conn.get('/invalid') { [200, {}, []] }
       end
     end
 

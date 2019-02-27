@@ -602,7 +602,7 @@ RSpec.describe Faraday::Connection do
       it 'allows to set params_encoder for single request' do
         encoder = Object.new
         def encoder.encode(params)
-          params.map { |k,v| "#{k.upcase}-#{v.to_s.upcase}" }.join(',')
+          params.map { |k, v| "#{k.upcase}-#{v.to_s.upcase}" }.join(',')
         end
         stubbed = stub_request(:get, 'http://example.com/?A-1,B-2,C-3,FEELING-BLUE')
 

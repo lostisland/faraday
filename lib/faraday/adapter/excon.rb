@@ -27,7 +27,7 @@ module Faraday
           opts[:nonblock] = false
         end
 
-        if ( req = env[:request] )
+        if (req = env[:request])
           if req[:timeout]
             opts[:read_timeout]      = req[:timeout]
             opts[:connect_timeout]   = req[:timeout]

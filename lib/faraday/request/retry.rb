@@ -29,7 +29,7 @@ module Faraday
                                          :backoff_factor, :exceptions, :methods, :retry_if, :retry_block,
                                          :retry_statuses)
 
-      DEFAULT_CHECK = lambda { |env,exception| false }
+      DEFAULT_CHECK = lambda { |env, exception| false }
 
       def self.from(value)
         if Integer === value
@@ -202,7 +202,7 @@ module Faraday
 
     def calculate_retry_interval(retries)
       retry_index = @options.max - retries
-      current_interval = @options.interval * (@options.backoff_factor ** retry_index)
+      current_interval = @options.interval * (@options.backoff_factor**retry_index)
       current_interval = [current_interval, @options.max_interval].min
       random_interval  = rand * @options.interval_randomness.to_f * @options.interval
 
