@@ -37,7 +37,7 @@ module Faraday
     #                   urlencoded.
     def process_request?(env)
       type = request_type(env)
-      env.body and (type.empty? or type == self.class.mime_type)
+      env.body && (type.empty? || (type == self.class.mime_type))
     end
 
     # @param env [Faraday::Env]

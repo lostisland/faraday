@@ -15,7 +15,7 @@ module Faraday
         if @features.nil?
           superclass.on_feature(name, &block) if superclass.respond_to?(:on_feature)
         else
-          yield if block_given? and @features.include?(name)
+          yield if block_given? && @features.include?(name)
         end
       end
 

@@ -36,7 +36,7 @@ module Faraday
 
     # Returns an object that responds to `host` and `port`.
     def live_server
-      live_server? and @@live_server
+      live_server? && @@live_server
     end
   end
 
@@ -59,11 +59,11 @@ module Faraday
     end
 
     def self.jruby?
-      defined? RUBY_ENGINE and 'jruby' == RUBY_ENGINE
+      defined? RUBY_ENGINE && ('jruby' == RUBY_ENGINE)
     end
 
     def self.rbx?
-      defined? RUBY_ENGINE and 'rbx' == RUBY_ENGINE
+      defined? RUBY_ENGINE && ('rbx' == RUBY_ENGINE)
     end
 
     def self.ruby_22_plus?

@@ -15,7 +15,7 @@ module Adapters
         conn = create_connection request: { bind: { host: host } }
         assert_equal host, conn.options[:bind][:host]
       end
-    end unless jruby? and ssl_mode?
+    end unless jruby? && ssl_mode?
     # https://github.com/eventmachine/eventmachine/issues/180
 
     def test_custom_adapter_config

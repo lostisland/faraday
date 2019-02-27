@@ -73,7 +73,7 @@ module Faraday
 
         # Reads out compression header settings from env into options
         def configure_compression(options, env)
-          if env[:method] == :get and not options[:head].key? 'accept-encoding'
+          if (env[:method] == :get) && !options[:head].key?('accept-encoding')
             options[:head]['accept-encoding'] = 'gzip, compressed'
           end
         end
@@ -168,7 +168,7 @@ module Faraday
       end
 
       def error_message(client)
-        client.error or 'request failed'
+        client.error || 'request failed'
       end
 
       def raise_error(msg)

@@ -344,7 +344,7 @@ module Faraday
       @default_parallel_manager ||= begin
         adapter = @builder.adapter.klass if @builder.adapter
 
-        if adapter and adapter.respond_to?(:supports_parallel?) and adapter.supports_parallel?
+        if adapter && adapter.respond_to?(:supports_parallel?) && adapter.supports_parallel?
           adapter.setup_parallel_manager
         elsif block_given?
           yield
@@ -508,15 +508,15 @@ module Faraday
     #
     # @return [URI]
     def build_exclusive_url(url = nil, params = nil, params_encoder = nil)
-      url = nil if url.respond_to?(:empty?) and url.empty?
+      url = nil if url.respond_to?(:empty?) && url.empty?
       base = url_prefix
-      if url and base.path and base.path !~ /\/$/
+      if url && base.path && base.path !~ /\/$/
         base = base.dup
         base.path = base.path + '/' # ensure trailing slash
       end
       uri = url ? base + url : base
       uri.query = params.to_query(params_encoder || options.params_encoder) if params
-      uri.query = nil if uri.query and uri.query.empty?
+      uri.query = nil if uri.query && uri.query.empty?
       uri
     end
 
@@ -543,7 +543,7 @@ module Faraday
     # @return [void]
     # @api private
     def with_uri_credentials(uri)
-      if uri.user and uri.password
+      if uri.user && uri.password
         yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
       end
     end

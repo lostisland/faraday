@@ -126,23 +126,6 @@ Performance/StringReplacement:
     - 'lib/faraday/encoders/nested_params_encoder.rb'
     - 'lib/faraday/request/basic_authentication.rb'
 
-# Offense count: 24
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: always, conditionals
-Style/AndOr:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/net_http.rb'
-    - 'lib/faraday/adapter/patron.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/request/multipart.rb'
-    - 'lib/faraday/request/url_encoded.rb'
-    - 'lib/faraday/utils.rb'
-    - 'spec/support/helper_methods.rb'
-    - 'test/adapters/em_http_test.rb'
-    - 'test/helper.rb'
-
 # Offense count: 13
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, ProceduralMethods, FunctionalMethods, IgnoredMethods.
@@ -452,11 +435,10 @@ Style/NilComparison:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
     - 'lib/faraday/encoders/nested_params_encoder.rb'
 
-# Offense count: 2
+# Offense count: 1
 # Cop supports --auto-correct.
 Style/Not:
   Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
     - 'lib/faraday/response.rb'
 
 # Offense count: 7

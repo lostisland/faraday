@@ -24,9 +24,9 @@ module Faraday
     # @param env [Faraday::Env]
     def process_request?(env)
       type = request_type(env)
-      env.body.respond_to?(:each_key) and !env.body.empty? and (
-        (type.empty? and has_multipart?(env.body)) or
-        type == self.class.mime_type
+      env.body.respond_to?(:each_key) && !env.body.empty? && (
+        (type.empty? && has_multipart?(env.body)) ||
+        (type == self.class.mime_type)
       )
     end
 
