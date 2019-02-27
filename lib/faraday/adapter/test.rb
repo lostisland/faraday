@@ -77,15 +77,15 @@ module Faraday
           new_stub(:head, path, headers, &block)
         end
 
-        def post(path, body=nil, headers = {}, &block)
+        def post(path, body = nil, headers = {}, &block)
           new_stub(:post, path, headers, body, &block)
         end
 
-        def put(path, body=nil, headers = {}, &block)
+        def put(path, body = nil, headers = {}, &block)
           new_stub(:put, path, headers, body, &block)
         end
 
-        def patch(path, body=nil, headers = {}, &block)
+        def patch(path, body = nil, headers = {}, &block)
           new_stub(:patch, path, headers, body, &block)
         end
 
@@ -112,7 +112,7 @@ module Faraday
 
         protected
 
-        def new_stub(request_method, path, headers = {}, body=nil, &block)
+        def new_stub(request_method, path, headers = {}, body = nil, &block)
           normalized_path, host =
             if path.is_a?(Regexp)
               path
@@ -181,7 +181,7 @@ module Faraday
         end
       end
 
-      def initialize(app, stubs=nil, &block)
+      def initialize(app, stubs = nil, &block)
         super(app)
         @stubs = stubs || Stubs.new
         configure(&block) if block
