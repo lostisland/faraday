@@ -38,6 +38,61 @@ RSpec.describe Faraday::Response::Logger do
     expect(resp.body).to eq('hello')
   end
 
+  context 'without configuration' do
+    let(:conn) do
+      Faraday.new do |b|
+        b.response :logger
+        b.adapter :test do |stubs|
+          stubs.get('/hello') { [200, { 'Content-Type' => 'text/html' }, 'hello'] }
+        end
+      end
+    end
+
+    it 'defaults to stdout' do
+      expect(Logger).to receive(:new).with($stdout).and_return(Logger.new(nil))
+      conn.get('/hello')
+    end
+  end
+
+  context 'with default formatter' do
+    let(:formatter) { instance_double(Faraday::Logging::Formatter, request: true, response: true, filter: []) }
+
+    before { allow(Faraday::Logging::Formatter).to receive(:new).and_return(formatter) }
+
+    it 'delegates logging to the formatter' do
+      expect(formatter).to receive(:request).with(an_instance_of(Faraday::Env))
+      expect(formatter).to receive(:response).with(an_instance_of(Faraday::Env))
+      conn.get '/hello'
+    end
+  end
+
+  context 'with custom formatter' do
+    let(:formatter_class) do
+      Class.new(Faraday::Logging::Formatter) do
+        def initialize(*args)
+          super
+        end
+
+        def request(_env)
+          info 'Custom log formatter request'
+        end
+
+        def response(_env)
+          info 'Custom log formatter response'
+        end
+      end
+    end
+
+    let(:logger_options) { { formatter: formatter_class } }
+
+    it 'logs with custom formatter' do
+      conn.get '/hello'
+
+      expect(string_io.string).to match('Custom log formatter request')
+      expect(string_io.string).to match('Custom log formatter response')
+    end
+  end
+
   it 'logs method and url' do
     conn.get '/hello', nil, accept: 'text/html'
     expect(string_io.string).to match('GET http:/hello')
