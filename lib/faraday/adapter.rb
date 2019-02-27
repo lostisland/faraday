@@ -28,7 +28,7 @@ module Faraday
 
       def inherited(subclass)
         super
-        subclass.supports_parallel = self.supports_parallel?
+        subclass.supports_parallel = supports_parallel?
       end
     end
 
