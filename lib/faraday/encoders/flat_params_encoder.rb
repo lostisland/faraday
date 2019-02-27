@@ -42,7 +42,7 @@ module Faraday
           buffer << "#{encoded_key}=#{encoded_value}&"
         end
       end
-      return buffer.chop
+      buffer.chop
     end
 
     def self.decode(query)
@@ -52,7 +52,7 @@ module Faraday
       split_query = (query.split('&').map do |pair|
         pair.split('=', 2) if pair && !pair.empty?
       end).compact
-      return split_query.inject(empty_accumulator.dup) do |accu, pair|
+      split_query.inject(empty_accumulator.dup) do |accu, pair|
         pair[0] = unescape(pair[0])
         pair[1] = true if pair[1].nil?
         if pair[1].respond_to?(:to_str)

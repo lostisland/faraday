@@ -60,7 +60,7 @@ module Faraday
       else
         yield(env)
       end
-      return self
+      self
     end
 
     def finish(env)
@@ -68,7 +68,7 @@ module Faraday
 
       @env = env.is_a?(Env) ? env : Env.from(env)
       @on_complete_callbacks.each { |callback| callback.call(@env) }
-      return self
+      self
     end
 
     def success?
@@ -97,7 +97,7 @@ module Faraday
       raise "response didn't finish yet" unless finished?
 
       @env = Env.from(request_env).update(@env)
-      return self
+      self
     end
   end
 end
