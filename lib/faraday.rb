@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'thread'
 require 'cgi'
 require 'set'
 require 'forwardable'

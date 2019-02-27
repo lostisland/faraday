@@ -16,13 +16,6 @@ Lint/ReturnInVoidContext:
   Exclude:
     - 'lib/faraday/options/env.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Lint/UnneededRequireStatement:
-  Exclude:
-    - 'lib/faraday.rb'
-    - 'lib/faraday/utils.rb'
-
 # Offense count: 41
 Metrics/AbcSize:
   Max: 86
