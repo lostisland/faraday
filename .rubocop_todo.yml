@@ -83,12 +83,6 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Performance/RedundantBlockCall:
-  Exclude:
-    - 'lib/faraday/request/multipart.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 Performance/StringReplacement:

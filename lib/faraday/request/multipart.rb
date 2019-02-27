@@ -76,7 +76,9 @@ module Faraday
         when Hash
           process_params(value, key, all, &block)
         else
+          # rubocop:disable Performance/RedundantBlockCall
           all << block.call(key, value)
+          # rubocop:enable Performance/RedundantBlockCall
         end
       end
     end
