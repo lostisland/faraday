@@ -98,7 +98,7 @@ module Faraday
           http_response.body = nil
           http_response
         else
-          http_response = perform_request_with_wrapped_block(http, env)
+          perform_request_with_wrapped_block(http, env)
         end
       end
 
