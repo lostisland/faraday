@@ -24,7 +24,7 @@ module Faraday
 
     def inherited(subclass)
       super
-      subclass.send(:load_error=, self.load_error)
+      subclass.send(:load_error=, load_error)
     end
   end
 end

@@ -56,7 +56,7 @@ module Faraday
         end
 
         def match(request_method, host, path, headers, body)
-          return false if !@stack.key?(request_method)
+          return false unless @stack.key?(request_method)
 
           stack = @stack[request_method]
           consumed = (@consumed[request_method] ||= [])
@@ -149,11 +149,11 @@ module Faraday
           # meta is a hash use as carrier
           # that will be yielded to consumer block
           meta = {}
-          return (host.nil? || host == request_host) &&
-                 path_match?(request_path, meta) &&
-                 params_match?(request_params) &&
-                 (body.to_s.size.zero? || request_body == body) &&
-                 headers_match?(request_headers), meta
+          [(host.nil? || host == request_host) &&
+            path_match?(request_path, meta) &&
+            params_match?(request_params) &&
+            (body.to_s.size.zero? || request_body == body) &&
+            headers_match?(request_headers), meta]
         end
 
         def path_match?(request_path, meta)

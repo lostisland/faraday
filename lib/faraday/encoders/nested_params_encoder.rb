@@ -70,7 +70,7 @@ module Faraday
         encoded_parent = escape(parent)
         buffer << "#{to_query.call(encoded_parent, value)}&"
       end
-      return buffer.chop
+      buffer.chop
     end
 
     # @param query [nil, String]

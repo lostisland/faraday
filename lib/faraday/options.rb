@@ -30,7 +30,7 @@ module Faraday
           new_value = value
         end
 
-        self.send("#{key}=", new_value) unless new_value.nil?
+        send("#{key}=", new_value) unless new_value.nil?
       end
       self
     end
@@ -50,10 +50,10 @@ module Faraday
     # Public
     def merge!(other)
       other.each do |key, other_value|
-        self_value = self.send(key)
+        self_value = send(key)
         sub_options = self.class.options_for(key)
         new_value = (self_value && sub_options && other_value) ? self_value.merge(other_value) : other_value
-        self.send("#{key}=", new_value) unless new_value.nil?
+        send("#{key}=", new_value) unless new_value.nil?
       end
       self
     end

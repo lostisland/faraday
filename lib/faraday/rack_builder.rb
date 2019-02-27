@@ -42,7 +42,7 @@ module Faraday
 
       def ==(other)
         if other.is_a? Handler
-          self.name == other.name
+          name == other.name
         elsif other.respond_to? :name
           klass == other
         else
@@ -62,7 +62,7 @@ module Faraday
         build(&block)
       elsif @handlers.empty?
         # default stack, if nothing else is configured
-        self.request :url_encoded
+        request :url_encoded
         self.adapter Faraday.default_adapter
       end
     end
@@ -170,7 +170,7 @@ module Faraday
     def to_app
       # last added handler is the deepest and thus closest to the inner app
       # adapter is always the last one
-      (@handlers).reverse.inject(@adapter.build) { |app, handler| handler.build(app) }
+      @handlers.reverse.inject(@adapter.build) { |app, handler| handler.build(app) }
     end
 
     def ==(other)

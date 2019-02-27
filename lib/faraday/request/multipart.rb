@@ -54,7 +54,7 @@ module Faraday
 
       body = Faraday::CompositeReadIO.new(parts)
       env.request_headers[Faraday::Env::ContentLength] = body.length.to_s
-      return body
+      body
     end
 
     # @return [String]

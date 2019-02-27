@@ -9,7 +9,7 @@ RSpec.describe Faraday::Adapter::Patron do
     conn = Faraday.new do |f|
       f.adapter :patron do |session|
         session.max_redirects = 10
-        raise RuntimeError, 'Configuration block called'
+        raise 'Configuration block called'
       end
     end
 

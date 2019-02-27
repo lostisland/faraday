@@ -20,7 +20,7 @@ module Faraday
       def initialize(hash = nil)
         super()
         @names = {}
-        self.update(hash || {})
+        update(hash || {})
       end
 
       def initialize_names
@@ -99,7 +99,7 @@ module Faraday
       def replace(other)
         clear
         @names.clear
-        self.update other
+        update other
         self
       end
 

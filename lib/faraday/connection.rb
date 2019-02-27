@@ -493,9 +493,9 @@ module Faraday
     # @return [Faraday::Request]
     def build_request(method)
       Request.create(method) do |req|
-        req.params  = self.params.dup
-        req.headers = self.headers.dup
-        req.options = self.options
+        req.params  = params.dup
+        req.headers = headers.dup
+        req.options = options
         yield(req) if block_given?
       end
     end
@@ -586,12 +586,12 @@ module Faraday
     end
 
     def proxy_for_request(url)
-      return self.proxy if @manual_proxy
+      return proxy if @manual_proxy
 
       if url && Utils.URI(url).absolute?
         proxy_from_env(url)
       else
-        self.proxy
+        proxy
       end
     end
   end

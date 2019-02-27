@@ -16,7 +16,7 @@ module Adapters
         features = [:Common]
         features.concat extra_features
         features << :SSL if base.ssl_mode?
-        features.each { |name| base.send(:include, self.const_get(name)) }
+        features.each { |name| base.send(:include, const_get(name)) }
         yield if block_given?
       elsif !defined? @warned
         warn 'Warning: Not running integration tests against a live server.'
