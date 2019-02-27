@@ -20,9 +20,9 @@ module Faraday
         super(convert_key(key))
       end
 
-      alias_method :has_key?, :include?
-      alias_method :member?, :include?
-      alias_method :key?, :include?
+      alias has_key? include?
+      alias member? include?
+      alias key? include?
 
       def update(params)
         params.each do |key, value|
@@ -30,7 +30,7 @@ module Faraday
         end
         self
       end
-      alias_method :merge!, :update
+      alias merge! update
 
       def merge(params)
         dup.update(params)

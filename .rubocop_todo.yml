@@ -126,16 +126,6 @@ Performance/StringReplacement:
     - 'lib/faraday/encoders/nested_params_encoder.rb'
     - 'lib/faraday/request/basic_authentication.rb'
 
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: prefer_alias, prefer_alias_method
-Style/Alias:
-  Exclude:
-    - 'lib/faraday/rack_builder.rb'
-    - 'lib/faraday/utils/headers.rb'
-    - 'lib/faraday/utils/params_hash.rb'
-
 # Offense count: 24
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

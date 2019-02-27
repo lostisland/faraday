@@ -80,16 +80,16 @@ module Faraday
         @names.include? k.downcase
       end
 
-      alias_method :has_key?, :include?
-      alias_method :member?, :include?
-      alias_method :key?, :include?
+      alias has_key? include?
+      alias member? include?
+      alias key? include?
 
       def merge!(other)
         other.each { |k, v| self[k] = v }
         self
       end
 
-      alias_method :update, :merge!
+      alias update merge!
 
       def merge(other)
         hash = dup

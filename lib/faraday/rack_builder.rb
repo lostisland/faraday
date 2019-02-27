@@ -123,7 +123,7 @@ module Faraday
       @handlers.insert(index, handler)
     end
 
-    alias_method :insert_before, :insert
+    alias insert_before insert
 
     def insert_after(index, *args, &block)
       index = assert_index(index)
