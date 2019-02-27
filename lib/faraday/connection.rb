@@ -430,7 +430,7 @@ module Faraday
       url_prefix.path = if value
                           value = '/' + value unless value[0, 1] == '/'
                           value
-      end
+                        end
     end
 
     # Takes a relative url for a request and combines it with the defaults

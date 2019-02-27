@@ -27,7 +27,7 @@ module Faraday
                         URI(value)
                       when /./
                         URI('http://127.0.0.1:4567')
-      end
+                      end
     end
 
     def live_server?
