@@ -30,8 +30,8 @@ module Faraday
         response = begin
           data = env[:body] ? env[:body].to_s : nil
           session.request(env[:method], env[:url].to_s, env[:request_headers], data: data)
-        rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
-          raise Faraday::ConnectionFailed, $!
+                   rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
+                     raise Faraday::ConnectionFailed, $!
         end
 
         if (req = env[:request]).stream_response?
@@ -84,15 +84,15 @@ module Faraday
       private
 
       CURL_TIMEOUT_MESSAGES = [
-          'Connection time-out',
-          'Connection timed out',
-          'Timed out before name resolve',
-          'server connect has timed out',
-          'Resolving timed out',
-          'name lookup timed out',
-          'timed out before SSL',
-          'connect() timed out'
-        ].freeze
+        'Connection time-out',
+        'Connection timed out',
+        'Timed out before name resolve',
+        'server connect has timed out',
+        'Resolving timed out',
+        'name lookup timed out',
+        'timed out before SSL',
+        'connect() timed out'
+      ].freeze
 
       def connection_timed_out_message?(message)
         CURL_TIMEOUT_MESSAGES.any? { |curl_message| message.include?(curl_message) }
