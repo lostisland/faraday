@@ -102,7 +102,7 @@ module Faraday
           failed_stubs = []
           @stack.each do |method, stubs|
             unless stubs.empty?
-              failed_stubs.concat(stubs.map {|stub|
+              failed_stubs.concat(stubs.map { |stub|
                 "Expected #{method} #{stub}."
               })
             end

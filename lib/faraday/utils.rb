@@ -20,7 +20,7 @@ module Faraday
     ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
 
     def escape(s)
-      s.to_s.gsub(ESCAPE_RE) {|match|
+      s.to_s.gsub(ESCAPE_RE) { |match|
         '%' + match.unpack('H2' * match.bytesize).join('%').upcase
       }.tr(' ', '+')
     end

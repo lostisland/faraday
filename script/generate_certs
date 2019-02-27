@@ -28,7 +28,7 @@ end
 
 def write(file, contents, env_var)
   FileUtils.mkdir_p(File.dirname(file))
-  File.open(file, 'w') {|f| f.puts(contents) }
+  File.open(file, 'w') { |f| f.puts(contents) }
   puts %(export #{env_var}="#{file}") if $shell
 end
 

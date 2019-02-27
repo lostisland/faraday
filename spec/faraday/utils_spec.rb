@@ -40,7 +40,7 @@ RSpec.describe Faraday::Utils do
     end
 
     it 'parses with block' do
-      with_default_uri_parser(lambda {|u| "booya#{"!" * u.size}" }) do
+      with_default_uri_parser(lambda { |u| "booya#{"!" * u.size}" }) do
         expect(normalize(url)).to eq('booya!!!!!!!!!!!!!!!!!!!!!!')
       end
     end
