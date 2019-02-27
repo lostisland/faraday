@@ -84,15 +84,15 @@ module Faraday
       private
 
       CURL_TIMEOUT_MESSAGES = [
-          'Connection time-out',
-          'Connection timed out',
-          'Timed out before name resolve',
-          'server connect has timed out',
-          'Resolving timed out',
-          'name lookup timed out',
-          'timed out before SSL',
-          'connect() timed out'
-        ].freeze
+        'Connection time-out',
+        'Connection timed out',
+        'Timed out before name resolve',
+        'server connect has timed out',
+        'Resolving timed out',
+        'name lookup timed out',
+        'timed out before SSL',
+        'connect() timed out'
+      ].freeze
 
       def connection_timed_out_message?(message)
         CURL_TIMEOUT_MESSAGES.any? { |curl_message| message.include?(curl_message) }
