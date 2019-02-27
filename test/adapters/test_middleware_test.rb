@@ -139,7 +139,7 @@ module Adapters
 
     def test_raises_an_error_if_no_stub_is_found_for_request
       assert_raises Stubs::NotFound do
-        @conn.get('/invalid'){ [200, {}, []] }
+        @conn.get('/invalid') { [200, {}, []] }
       end
     end
 
