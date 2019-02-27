@@ -11,11 +11,6 @@ Lint/HandleExceptions:
   Exclude:
     - 'test/adapters/rack_test.rb'
 
-# Offense count: 1
-Lint/ReturnInVoidContext:
-  Exclude:
-    - 'lib/faraday/options/env.rb'
-
 # Offense count: 41
 Metrics/AbcSize:
   Max: 86
