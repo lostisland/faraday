@@ -20,7 +20,7 @@ def create_self_signed_cert(bits, cn, comment)
   cert.subject = name
   cert.issuer = name
   cert.not_before = Time.now
-  cert.not_after = Time.now + (365*24*60*60)
+  cert.not_after = Time.now + (365 * 24 * 60 * 60)
   cert.public_key = rsa.public_key
   cert.sign(rsa, OpenSSL::Digest::SHA1.new)
   return [cert, rsa]

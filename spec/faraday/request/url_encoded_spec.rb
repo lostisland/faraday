@@ -33,7 +33,7 @@ RSpec.describe Faraday::Request::UrlEncoded do
   end
 
   it 'works with with headers' do
-    response = conn.post('/echo', {'a'=>123}, 'content-type' => 'application/x-www-form-urlencoded')
+    response = conn.post('/echo', {'a' => 123}, 'content-type' => 'application/x-www-form-urlencoded')
     expect(response.headers['Content-Type']).to eq('application/x-www-form-urlencoded')
     expect(response.body).to eq('a=123')
   end
@@ -64,7 +64,7 @@ RSpec.describe Faraday::Request::UrlEncoded do
   end
 
   it 'works with nested keys' do
-    response = conn.post('/echo', {'a'=>{'b'=>{'c'=>['d']}}})
+    response = conn.post('/echo', {'a' => {'b' => {'c' => ['d']}}})
     expect(response.body).to eq('a%5Bb%5D%5Bc%5D%5B%5D=d')
   end
 end
