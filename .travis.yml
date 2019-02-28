@@ -46,7 +46,7 @@ stages:
   - before build
   - linting
   - test
-  - after-build
+  - after build
   - release
 
 branches:
