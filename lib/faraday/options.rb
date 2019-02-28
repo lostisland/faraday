@@ -52,7 +52,7 @@ module Faraday
       other.each do |key, other_value|
         self_value = send(key)
         sub_options = self.class.options_for(key)
-        new_value = (self_value && sub_options && other_value) ? self_value.merge(other_value) : other_value
+        new_value = self_value && sub_options && other_value ? self_value.merge(other_value) : other_value
         send("#{key}=", new_value) unless new_value.nil?
       end
       self
@@ -188,7 +188,7 @@ module Faraday
     end
 
     def symbolized_key_set
-      @symbolized_key_set ||= Set.new(keys.map { |k| k.to_sym })
+      @symbolized_key_set ||= Set.new(keys.map(&:to_sym))
     end
 
     def self.inherited(subclass)

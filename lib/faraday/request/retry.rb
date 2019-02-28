@@ -23,7 +23,7 @@ module Faraday
   # interval that is random between 0.1 and 0.15.
   class Request::Retry < Faraday::Middleware
     DEFAULT_EXCEPTIONS = [Errno::ETIMEDOUT, 'Timeout::Error', Faraday::TimeoutError, Faraday::RetriableResponse].freeze
-    IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
+    IDEMPOTENT_METHODS = %i[delete get head options put]
 
     class Options < Faraday::Options.new(:max, :interval, :max_interval, :interval_randomness,
                                          :backoff_factor, :exceptions, :methods, :retry_if, :retry_block,
