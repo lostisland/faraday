@@ -30,10 +30,10 @@ module EmHttpSslPatch
   def ssl_handshake_completed
     return true unless verify_peer?
 
-    unless OpenSSL::SSL.verify_certificate_identity(@last_seen_cert, host)
-      raise OpenSSL::SSL::SSLError.new(%(host "#{host}" does not match the server certificate))
-    else
+    if OpenSSL::SSL.verify_certificate_identity(@last_seen_cert, host)
       true
+    else
+      raise OpenSSL::SSL::SSLError.new(%(host "#{host}" does not match the server certificate))
     end
   end
 

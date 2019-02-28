@@ -42,7 +42,7 @@ module Faraday
                   key
                 else
                   key.to_s.split('_') # user_agent: %w(user agent)
-                     .each { |w| w.capitalize! } # => %w(User Agent)
+                     .each(&:capitalize!) # => %w(User Agent)
                      .join('-') # => "User-Agent"
                 end
         keymap_mutex.synchronize { map[key] = value }
@@ -125,9 +125,7 @@ module Faraday
 
       protected
 
-      def names
-        @names
-      end
+      attr_reader :names
 
       private
 

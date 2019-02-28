@@ -14,7 +14,7 @@ module Faraday
   class CompositeReadIO
     def initialize(*parts)
       @parts = parts.flatten
-      @ios = @parts.map { |part| part.to_io }
+      @ios = @parts.map(&:to_io)
       @index = 0
     end
 
@@ -27,7 +27,7 @@ module Faraday
     #
     # @return [void]
     def rewind
-      @ios.each { |io| io.rewind }
+      @ios.each(&:rewind)
       @index = 0
     end
 
@@ -49,14 +49,14 @@ module Faraday
         end
         advance_io
       end
-      (!got_result && length) ? nil : outbuf
+      !got_result && length ? nil : outbuf
     end
 
     # Close each of the IOs.
     #
     # @return [void]
     def close
-      @ios.each { |io| io.close }
+      @ios.each(&:close)
     end
 
     def ensure_open_and_readable

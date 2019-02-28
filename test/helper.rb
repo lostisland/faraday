@@ -59,11 +59,11 @@ module Faraday
     end
 
     def self.jruby?
-      defined? RUBY_ENGINE && ('jruby' == RUBY_ENGINE)
+      defined? RUBY_ENGINE && (RUBY_ENGINE == 'jruby')
     end
 
     def self.rbx?
-      defined? RUBY_ENGINE && ('rbx' == RUBY_ENGINE)
+      defined? RUBY_ENGINE && (RUBY_ENGINE == 'rbx')
     end
 
     def self.ruby_22_plus?
