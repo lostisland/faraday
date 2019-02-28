@@ -13,7 +13,7 @@ module Faraday
 
         session = ::Patron::Session.new
         @config_block.call(session) if @config_block
-        configure_ssl(session, env[:ssl]) if env[:url].scheme == 'https' and env[:ssl]
+        configure_ssl(session, env[:ssl]) if (env[:url].scheme == 'https') && env[:ssl]
 
         if (req = env[:request])
           session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]

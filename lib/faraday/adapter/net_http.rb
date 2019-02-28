@@ -39,7 +39,7 @@ module Faraday
       def call(env)
         super
         with_net_http_connection(env) do |http|
-          configure_ssl(http, env[:ssl]) if env[:url].scheme == 'https' and env[:ssl]
+          configure_ssl(http, env[:ssl]) if (env[:url].scheme == 'https') && env[:ssl]
           configure_request(http, env[:request])
 
           begin
@@ -103,7 +103,7 @@ module Faraday
       end
 
       def perform_request_with_wrapped_block(http, env, &block)
-        if :get == env[:method] and !env[:body]
+        if (:get == env[:method]) && !env[:body]
           # prefer `get` to `request` because the former handles gzip (ruby 1.9)
           request_via_get_method(http, env, &block)
         else

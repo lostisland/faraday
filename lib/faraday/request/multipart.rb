@@ -24,9 +24,9 @@ module Faraday
     # @param env [Faraday::Env]
     def process_request?(env)
       type = request_type(env)
-      env.body.respond_to?(:each_key) and !env.body.empty? and (
-        (type.empty? and has_multipart?(env.body)) or
-        type == self.class.mime_type
+      env.body.respond_to?(:each_key) && !env.body.empty? && (
+        (type.empty? && has_multipart?(env.body)) ||
+        (type == self.class.mime_type)
       )
     end
 
@@ -34,7 +34,7 @@ module Faraday
     #
     # @param obj [Object]
     # @return [Boolean]
-    def has_multipart?(obj)
+    def has_multipart?(obj) # rubocop:disable Naming/PredicateName
       if obj.respond_to?(:each)
         (obj.respond_to?(:values) ? obj.values : obj).each do |val|
           return true if (val.respond_to?(:content_type) || has_multipart?(val))
@@ -76,7 +76,9 @@ module Faraday
         when Hash
           process_params(value, key, all, &block)
         else
+          # rubocop:disable Performance/RedundantBlockCall
           all << block.call(key, value)
+          # rubocop:enable Performance/RedundantBlockCall
         end
       end
     end

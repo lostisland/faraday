@@ -39,83 +39,6 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 4
-Naming/ConstantName:
-  Exclude:
-    - 'lib/faraday/options/env.rb'
-    - 'lib/faraday/response/raise_error.rb'
-
-# Offense count: 2
-# Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist, MethodDefinitionMacros.
-# NamePrefix: is_, has_, have_
-# NamePrefixBlacklist: is_, has_, have_
-# NameWhitelist: is_a?
-# MethodDefinitionMacros: define_method, define_singleton_method
-Naming/PredicateName:
-  Exclude:
-    - 'spec/**/*'
-    - 'lib/faraday/rack_builder.rb'
-    - 'lib/faraday/request/multipart.rb'
-
-# Offense count: 13
-# Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
-# AllowedNames: io, id, to, by, on, in, at, ip, db
-Naming/UncommunicativeMethodParamName:
-  Exclude:
-    - 'lib/faraday/error.rb'
-    - 'lib/faraday/utils.rb'
-    - 'lib/faraday/utils/headers.rb'
-    - 'script/generate_certs'
-    - 'spec/spec_helper.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Performance/RedundantBlockCall:
-  Exclude:
-    - 'lib/faraday/request/multipart.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-Performance/StringReplacement:
-  Exclude:
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'lib/faraday/request/basic_authentication.rb'
-
-# Offense count: 1
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: inline, group
-Style/AccessModifierDeclarations:
-  Exclude:
-    - 'lib/faraday/dependency_loader.rb'
-
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: prefer_alias, prefer_alias_method
-Style/Alias:
-  Exclude:
-    - 'lib/faraday/rack_builder.rb'
-    - 'lib/faraday/utils/headers.rb'
-    - 'lib/faraday/utils/params_hash.rb'
-
-# Offense count: 24
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: always, conditionals
-Style/AndOr:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/net_http.rb'
-    - 'lib/faraday/adapter/patron.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/request/multipart.rb'
-    - 'lib/faraday/request/url_encoded.rb'
-    - 'lib/faraday/utils.rb'
-    - 'spec/support/helper_methods.rb'
-    - 'test/adapters/em_http_test.rb'
-    - 'test/helper.rb'
-
 # Offense count: 13
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, ProceduralMethods, FunctionalMethods, IgnoredMethods.
@@ -425,11 +348,10 @@ Style/NilComparison:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
     - 'lib/faraday/encoders/nested_params_encoder.rb'
 
-# Offense count: 2
+# Offense count: 1
 # Cop supports --auto-correct.
 Style/Not:
   Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
     - 'lib/faraday/response.rb'
 
 # Offense count: 7

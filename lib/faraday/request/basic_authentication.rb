@@ -11,7 +11,7 @@ module Faraday
     # @return [String] a Basic Authentication header line
     def self.header(login, pass)
       value = Base64.encode64([login, pass].join(':'))
-      value.gsub!("\n", '')
+      value.delete!("\n")
       super(:Basic, value)
     end
   end
