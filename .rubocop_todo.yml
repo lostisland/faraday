@@ -591,16 +591,6 @@ Style/SymbolProc:
     - 'spec/support/helper_methods.rb'
     - 'test/shared.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, AllowSafeAssignment.
-# SupportedStyles: require_parentheses, require_no_parentheses, require_parentheses_when_complex
-Style/TernaryParentheses:
-  Exclude:
-    - 'lib/faraday/adapter/test.rb'
-    - 'lib/faraday/options.rb'
-    - 'lib/faraday/upload_io.rb'
-
 # Offense count: 272
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

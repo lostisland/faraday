@@ -49,7 +49,7 @@ module Faraday
         end
         advance_io
       end
-      (!got_result && length) ? nil : outbuf
+      !got_result && length ? nil : outbuf
     end
 
     # Close each of the IOs.

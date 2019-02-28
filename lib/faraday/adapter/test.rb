@@ -202,7 +202,7 @@ module Faraday
           env[:params] = (query = env[:url].query) ?
             params_encoder.decode(query) : {}
           block_arity = stub.block.arity
-          status, headers, body = (block_arity >= 0) ?
+          status, headers, body = block_arity >= 0 ?
             stub.block.call(*[env, meta].take(block_arity)) :
             stub.block.call(env, meta)
           save_response(env, status, body, headers)
