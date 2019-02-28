@@ -70,7 +70,7 @@ module Faraday
         request = Net::HTTPGenericRequest.new \
           env[:method].to_s.upcase,    # request method
           !!env[:body],                # is there request body
-          :head != env[:method],       # is there response body
+          env[:method] != :head,       # is there response body
           env[:url].request_uri,       # request uri path
           env[:request_headers]        # request headers
 
@@ -103,7 +103,7 @@ module Faraday
       end
 
       def perform_request_with_wrapped_block(http, env, &block)
-        if (:get == env[:method]) && !env[:body]
+        if (env[:method] == :get) && !env[:body]
           # prefer `get` to `request` because the former handles gzip (ruby 1.9)
           request_via_get_method(http, env, &block)
         else
