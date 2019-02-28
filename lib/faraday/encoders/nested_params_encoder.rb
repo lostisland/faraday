@@ -87,7 +87,7 @@ module Faraday
 
         key, value = pair.split('=', 2)
         key = unescape(key)
-        value = unescape(value.gsub(/\+/, ' ')) if value
+        value = unescape(value.tr('+', ' ')) if value
 
         subkeys = key.scan(/[^\[\]]+(?:\]?\[\])?/)
         context = params

@@ -49,9 +49,11 @@ module Faraday
                           :ssl, :parallel_manager, :params, :response, :response_headers, :status,
                           :reason_phrase, :response_body)
 
+    # rubocop:disable Naming/ConstantName
     ContentLength = 'Content-Length'
     StatusesWithoutBody = Set.new [204, 304]
     SuccessfulStatuses = 200..299
+    # rubocop:enable Naming/ConstantName
 
     # A Set of HTTP verbs that typically send a body.  If no body is set for
     # these requests, the Content-Length header is set to 0.

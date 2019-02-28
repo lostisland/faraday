@@ -123,7 +123,7 @@ module Faraday
       @handlers.insert(index, handler)
     end
 
-    alias_method :insert_before, :insert
+    alias insert_before insert
 
     def insert_after(index, *args, &block)
       index = assert_index(index)
@@ -218,7 +218,7 @@ module Faraday
       !@adapter.nil?
     end
 
-    def is_adapter?(klass)
+    def is_adapter?(klass) # rubocop:disable Naming/PredicateName
       klass.ancestors.include?(Faraday::Adapter)
     end
 

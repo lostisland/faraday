@@ -120,10 +120,10 @@ end
 
 # Extends RSpec DocumentationFormatter to hide skipped tests.
 module FormatterOverrides
-  def example_pending(_)
+  def example_pending(_arg)
   end
 
-  def dump_pending(_)
+  def dump_pending(_arg)
   end
 
   RSpec::Core::Formatters::DocumentationFormatter.prepend self

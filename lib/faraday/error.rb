@@ -5,18 +5,18 @@ module Faraday
   class Error < StandardError
     attr_reader :response, :wrapped_exception
 
-    def initialize(ex, response = nil)
+    def initialize(exc, response = nil)
       @wrapped_exception = nil
       @response = response
 
-      if ex.respond_to?(:backtrace)
-        super(ex.message)
-        @wrapped_exception = ex
-      elsif ex.respond_to?(:each_key)
-        super("the server responded with status #{ex[:status]}")
-        @response = ex
+      if exc.respond_to?(:backtrace)
+        super(exc.message)
+        @wrapped_exception = exc
+      elsif exc.respond_to?(:each_key)
+        super("the server responded with status #{exc[:status]}")
+        @response = exc
       else
-        super(ex.to_s)
+        super(exc.to_s)
       end
     end
 
@@ -77,8 +77,8 @@ module Faraday
 
   # A unified client error for timeouts.
   class TimeoutError < ServerError
-    def initialize(ex = 'timeout', response = nil)
-      super(ex, response)
+    def initialize(exc = 'timeout', response = nil)
+      super(exc, response)
     end
   end
 
