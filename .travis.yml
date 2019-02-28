@@ -8,14 +8,6 @@ rvm:
   - 2.6
   - ruby-head
 
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-
-after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
-
 jobs:
   include:
     - stage: before build
@@ -30,7 +22,7 @@ jobs:
       script: gem install rubocop --no-document && rubocop
     - stage: after build
       rvm: 2.6
-      script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+      script: ./cc-test-reporter after-build
     - stage: release
       rvm: 2.6
       deploy:
