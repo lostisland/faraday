@@ -188,7 +188,7 @@ module Faraday
     end
 
     def symbolized_key_set
-      @symbolized_key_set ||= Set.new(keys.map { |k| k.to_sym })
+      @symbolized_key_set ||= Set.new(keys.map(&:to_sym))
     end
 
     def self.inherited(subclass)

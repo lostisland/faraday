@@ -579,18 +579,6 @@ Style/StructInheritance:
 Style/SymbolArray:
   EnforcedStyle: brackets
 
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: IgnoredMethods.
-# IgnoredMethods: respond_to, define_method
-Style/SymbolProc:
-  Exclude:
-    - 'lib/faraday/options.rb'
-    - 'lib/faraday/upload_io.rb'
-    - 'lib/faraday/utils/headers.rb'
-    - 'spec/support/helper_methods.rb'
-    - 'test/shared.rb'
-
 # Offense count: 272
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
