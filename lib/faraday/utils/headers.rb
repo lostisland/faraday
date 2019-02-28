@@ -125,9 +125,7 @@ module Faraday
 
       protected
 
-      def names
-        @names
-      end
+      attr_reader :names
 
       private
 
