@@ -90,7 +90,7 @@ module Faraday
       self.supports_parallel = true
 
       # @return [Manager]
-      def self.setup_parallel_manager(options = nil)
+      def self.setup_parallel_manager(_options = nil)
         Manager.new
       end
 

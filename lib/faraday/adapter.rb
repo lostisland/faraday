@@ -35,7 +35,7 @@ module Faraday
     extend Parallelism
     self.supports_parallel = false
 
-    def initialize(app = nil, opts = {}, &block)
+    def initialize(_app = nil, opts = {}, &block)
       @app = lambda { |env| env.response }
       @connection_options = opts
       @config_block = block

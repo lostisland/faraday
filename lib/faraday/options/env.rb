@@ -92,7 +92,10 @@ module Faraday
     # @param key [Object]
     # @param value [Object]
     def []=(key, value)
-      return super(current_body, value) if key == :body
+      if key == :body
+        super(current_body, value)
+        return
+      end
 
       if in_member_set?(key)
         super(key, value)

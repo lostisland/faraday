@@ -52,7 +52,7 @@ module Faraday
           return new_parent if value.empty?
 
           buffer = +''
-          value.each_with_index do |val, i|
+          value.each do |val|
             buffer << "#{to_query.call(new_parent, val)}&"
           end
           return buffer.chop

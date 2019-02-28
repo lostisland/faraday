@@ -255,7 +255,7 @@ RSpec.describe Faraday::Options do
 
       context 'when the fetched key has no value' do
         it 'uses falsey default' do
-          expect(subject.fetch(:sub_a, false) { |k| :blah }).to be_falsey
+          expect(subject.fetch(:sub_a, false) { |_| :blah }).to be_falsey
         end
 
         it 'accepts block' do
@@ -273,7 +273,7 @@ RSpec.describe Faraday::Options do
         end
 
         it 'grabs value' do
-          expect(subject.fetch(:sub_a, false) { |k| :blah }).to eq(1)
+          expect(subject.fetch(:sub_a, false) { |_| :blah }).to eq(1)
         end
 
         it 'works with key' do

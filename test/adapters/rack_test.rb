@@ -28,7 +28,7 @@ module Adapters
       conn = create_connection(request: { timeout: 1, open_timeout: 1 })
       begin
         conn.get '/slow'
-      rescue Faraday::ClientError
+      rescue Faraday::ClientError # rubocop:disable Lint/HandleExceptions
       end
     end
 

@@ -6,50 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 1
-Lint/HandleExceptions:
-  Exclude:
-    - 'test/adapters/rack_test.rb'
-
-# Offense count: 1
-Lint/ReturnInVoidContext:
-  Exclude:
-    - 'lib/faraday/options/env.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Lint/UnneededRequireStatement:
-  Exclude:
-    - 'lib/faraday.rb'
-    - 'lib/faraday/utils.rb'
-
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: IgnoreEmptyBlocks, AllowUnusedKeywordArguments.
-Lint/UnusedBlockArgument:
-  Exclude:
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'spec/faraday/options/options_spec.rb'
-    - 'test/adapters/test_middleware_test.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
-Lint/UnusedMethodArgument:
-  Exclude:
-    - 'lib/faraday/adapter.rb'
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'script/generate_certs'
-    - 'spec/faraday/response/middleware_spec.rb'
-
-# Offense count: 1
-# Configuration parameters: CheckForMethodsWithNoSideEffects.
-Lint/Void:
-  Exclude:
-    - 'lib/faraday/connection.rb'
-
 # Offense count: 41
 Metrics/AbcSize:
   Max: 86
@@ -63,7 +19,7 @@ Metrics/BlockLength:
 # Offense count: 5
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 217
+  Max: 216
 
 # Offense count: 20
 Metrics/CyclomaticComplexity:
