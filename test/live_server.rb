@@ -9,7 +9,7 @@ module Faraday
     disable :logging
     disable :protection
 
-    [:get, :post, :put, :patch, :delete, :options].each do |method|
+    %i[get post put patch delete options].each do |method|
       send(method, '/echo') do
         kind = request.request_method.downcase
         out = kind.dup
@@ -21,7 +21,7 @@ module Faraday
       end
     end
 
-    [:get, :post].each do |method|
+    %i[get post].each do |method|
       send(method, '/stream') do
         content_type :txt
         stream do |out|
@@ -32,7 +32,7 @@ module Faraday
       end
     end
 
-    [:get, :post].each do |method|
+    %i[get post].each do |method|
       send(method, '/empty_stream') do
         content_type :txt
         stream do |out|
