@@ -107,29 +107,27 @@ module Faraday
             perform_single_request(env)
               .callback { env[:response].finish(env) }
           }
+        elsif EventMachine.reactor_running?
+          # EM is running: instruct upstream that this is an async request
+          env[:parallel_manager] = true
+          perform_single_request(env)
+            .callback { env[:response].finish(env) }
+            .errback {
+              # TODO: no way to communicate the error in async mode
+              raise NotImplementedError
+            }
         else
-          unless EventMachine.reactor_running?
-            error = nil
-            # start EM, block until request is completed
-            EventMachine.run do
-              perform_single_request(env)
-                .callback { EventMachine.stop }
-                .errback { |client|
-                  error = error_message(client)
-                  EventMachine.stop
-                }
-            end
-            raise_error(error) if error
-          else
-            # EM is running: instruct upstream that this is an async request
-            env[:parallel_manager] = true
+          error = nil
+          # start EM, block until request is completed
+          EventMachine.run do
             perform_single_request(env)
-              .callback { env[:response].finish(env) }
-              .errback {
-                # TODO: no way to communicate the error in async mode
-                raise NotImplementedError
+              .callback { EventMachine.stop }
+              .errback { |client|
+                error = error_message(client)
+                EventMachine.stop
               }
           end
+          raise_error(error) if error
         end
       rescue EventMachine::Connectify::CONNECTError => err
         if err.message.include?('Proxy Authentication Required')

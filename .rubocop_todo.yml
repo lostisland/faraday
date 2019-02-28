@@ -609,13 +609,6 @@ Style/TrivialAccessors:
   Exclude:
     - 'lib/faraday/utils/headers.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/UnlessElse:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/em_http_ssl_patch.rb'
-
 # Offense count: 272
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
