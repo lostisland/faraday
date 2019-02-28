@@ -8,28 +8,48 @@ rvm:
   - 2.6
   - ruby-head
 
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+
 jobs:
   include:
+    - stage: before build
+      rvm: 2.6
+      script:
+        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        - chmod +x ./cc-test-reporter
+        - ./cc-test-reporter before-build
     - stage: linting
       rvm: ruby-2.4.1 # Pre-installed on TravisCI
       install: true # Do not bundle install
       script: gem install rubocop --no-document && rubocop
+    - stage: after build
+      rvm: 2.6
+      script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+    - stage: release
+      rvm: 2.6
+      deploy:
+        provider: rubygems
+        api_key:
+          secure: EqbOu9BQp5jkivJ8qvTo89f3J49KOByBueU3XulrJ2Kqm/ov4RDFsmp9/uHAnSLdmKSkzZaeq79t1AUNfKGX1ZqkKgq/Nw2BKGFnh5ZOjrkrRZR1Vm09OHxqiViEbtg+jZ8VOLY/iDFEkNIzuj9/H3iHGXC0XiKH2LTHOFH63Bs=
+        gem: faraday
+        on:
+          tags: true
+          repo: lostisland/faraday
 
 stages:
+  - before build
   - linting
   - test
+  - after-build
+  - release
 
 branches:
   only:
     - master
     - 0.1x
-
-deploy:
-  provider: rubygems
-  api_key:
-    secure: EqbOu9BQp5jkivJ8qvTo89f3J49KOByBueU3XulrJ2Kqm/ov4RDFsmp9/uHAnSLdmKSkzZaeq79t1AUNfKGX1ZqkKgq/Nw2BKGFnh5ZOjrkrRZR1Vm09OHxqiViEbtg+jZ8VOLY/iDFEkNIzuj9/H3iHGXC0XiKH2LTHOFH63Bs=
-  gem: faraday
-  on:
-    tags: true
-    repo: lostisland/faraday
-    rvm: 2.5
