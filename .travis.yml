@@ -10,14 +10,16 @@ rvm:
   - ruby-head
 
 matrix:
+  fast_finish: true
   include:
     - rvm: 2.6 # Run custom before/after scripts for latest supported Ruby version.
-      before_script:
-        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        - chmod +x ./cc-test-reporter
-        - ./cc-test-reporter before-build
-      after_script:
-        - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+      before_script: |
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
+        ./cc-test-reporter before-build
+      after_script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  allow_failures:
+    - ruby-head
 
 jobs:
   include:
