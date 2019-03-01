@@ -29,6 +29,7 @@ jobs:
       rvm: 2.6
       install: true # Do not bundle install
       script: skip
+      if: tag IS present
       deploy:
         provider: rubygems
         api_key:
