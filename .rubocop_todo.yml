@@ -440,13 +440,6 @@ Style/StringLiteralsInInterpolation:
     - 'lib/faraday/options/env.rb'
     - 'spec/faraday/utils_spec.rb'
 
-# Offense count: 3
-Style/StructInheritance:
-  Exclude:
-    - 'lib/faraday/adapter/test.rb'
-    - 'lib/faraday/request.rb'
-    - 'spec/faraday/rack_builder_spec.rb'
-
 # Offense count: 271
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

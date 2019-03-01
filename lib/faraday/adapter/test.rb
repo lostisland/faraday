@@ -132,7 +132,10 @@ module Faraday
         end
       end
 
+      # rubocop:disable Style/StructInheritance
       class Stub < Struct.new(:host, :path, :params, :headers, :body, :block)
+        # rubocop:enable Style/StructInheritance
+
         def initialize(host, full, headers, body, block)
           path, query = full.respond_to?(:split) ? full.split('?') : full
           params = query ?
