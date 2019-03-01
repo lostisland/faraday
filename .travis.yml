@@ -1,8 +1,6 @@
 language: ruby
 cache:
   bundler: true
-  directories:
-    - tools
 
 rvm:
   - 2.3
@@ -11,27 +9,24 @@ rvm:
   - 2.6
   - ruby-head
 
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+
 jobs:
   include:
-    - stage: before build
-      rvm: 2.6
-      install: true # Do not bundle install
-      script:
-        - mkdir -p tools
-        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > tools/cc-test-reporter
-        - chmod +x tools/cc-test-reporter
-        - tools/cc-test-reporter before-build
     - stage: linting
       rvm: ruby-2.4.1 # Pre-installed on TravisCI
       install: true # Do not bundle install
       script: gem install rubocop --no-document && rubocop
-    - stage: after build
-      rvm: 2.6
-      install: true # Do not bundle install
-      script: tools/cc-test-reporter after-build
     - stage: release
       rvm: 2.6
       install: true # Do not bundle install
+      script: skip
       deploy:
         provider: rubygems
         api_key:
@@ -42,10 +37,8 @@ jobs:
           repo: lostisland/faraday
 
 stages:
-  - before build
   - linting
   - test
-  - after build
   - release
 
 branches:
