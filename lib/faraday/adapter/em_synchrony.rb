@@ -48,7 +48,7 @@ module Faraday
         # Execute single request.
         else
           client = nil
-          block = lambda { request.send(http_method, request_config(env)) }
+          block = -> { request.send(http_method, request_config(env)) }
 
           if !EM.reactor_running?
             EM.run do

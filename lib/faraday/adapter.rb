@@ -36,7 +36,7 @@ module Faraday
     self.supports_parallel = false
 
     def initialize(_app = nil, opts = {}, &block)
-      @app = lambda { |env| env.response }
+      @app = ->(env) { env.response }
       @connection_options = opts
       @config_block = block
     end

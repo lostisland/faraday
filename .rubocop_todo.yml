@@ -210,19 +210,6 @@ Style/IfInsideElse:
 Style/IfUnlessModifier:
   Enabled: false
 
-# Offense count: 19
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: line_count_dependent, lambda, literal
-Style/Lambda:
-  Exclude:
-    - 'lib/faraday/adapter.rb'
-    - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'spec/faraday/rack_builder_spec.rb'
-    - 'spec/faraday/request/retry_spec.rb'
-    - 'spec/faraday/utils_spec.rb'
-
 # Offense count: 1
 Style/MethodMissingSuper:
   Exclude:
