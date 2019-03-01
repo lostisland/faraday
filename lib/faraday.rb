@@ -116,8 +116,8 @@ module Faraday
   end
 
   self.ignore_env_proxy = false
-  self.root_path = File.expand_path '..', __FILE__
-  self.lib_path = File.expand_path '../faraday', __FILE__
+  self.root_path = File.expand_path __dir__
+  self.lib_path = File.expand_path 'faraday', __dir__
   self.default_adapter = :net_http
 
   # @overload default_connection

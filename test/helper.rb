@@ -14,7 +14,7 @@ end
 gem 'minitest' if defined? Bundler
 require 'minitest/autorun'
 
-require File.expand_path('../../lib/faraday', __FILE__)
+require File.expand_path('../lib/faraday', __dir__)
 
 require 'stringio'
 require 'uri'

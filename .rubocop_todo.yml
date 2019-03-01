@@ -167,23 +167,6 @@ Style/EmptyMethod:
   Exclude:
     - 'spec/spec_helper.rb'
 
-# Offense count: 15
-# Cop supports --auto-correct.
-Style/ExpandPathArguments:
-  Exclude:
-    - 'lib/faraday.rb'
-    - 'lib/faraday/adapter.rb'
-    - 'lib/faraday/request.rb'
-    - 'lib/faraday/request/multipart.rb'
-    - 'lib/faraday/response.rb'
-    - 'script/server'
-    - 'test/adapters/em_http_test.rb'
-    - 'test/adapters/em_synchrony_test.rb'
-    - 'test/adapters/integration.rb'
-    - 'test/adapters/rack_test.rb'
-    - 'test/adapters/test_middleware_test.rb'
-    - 'test/helper.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

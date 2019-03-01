@@ -22,7 +22,7 @@ module Faraday
     extend Forwardable
     extend MiddlewareRegistry
 
-    register_middleware File.expand_path('../response', __FILE__),
+    register_middleware File.expand_path('response', __dir__),
                         raise_error: [:RaiseError, 'raise_error'],
                         logger: [:Logger, 'logger']
 
