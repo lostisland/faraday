@@ -103,9 +103,11 @@ module Faraday
           @stack.each do |method, stubs|
             next if stubs.empty?
 
-            failed_stubs.concat(stubs.map { |stub|
-              "Expected #{method} #{stub}."
-            })
+            failed_stubs.concat(
+              stubs.map do |stub|
+                "Expected #{method} #{stub}."
+              end
+            )
           end
           raise failed_stubs.join(' ') unless failed_stubs.empty?
         end

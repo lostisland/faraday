@@ -103,29 +103,29 @@ module Faraday
       def perform_request(env)
         if parallel?(env)
           manager = env[:parallel_manager]
-          manager.add {
+          manager.add do
             perform_single_request(env)
               .callback { env[:response].finish(env) }
-          }
+          end
         elsif EventMachine.reactor_running?
           # EM is running: instruct upstream that this is an async request
           env[:parallel_manager] = true
           perform_single_request(env)
             .callback { env[:response].finish(env) }
-            .errback {
+            .errback do
               # TODO: no way to communicate the error in async mode
               raise NotImplementedError
-            }
+            end
         else
           error = nil
           # start EM, block until request is completed
           EventMachine.run do
             perform_single_request(env)
               .callback { EventMachine.stop }
-              .errback { |client|
+              .errback do |client|
                 error = error_message(client)
                 EventMachine.stop
-              }
+              end
           end
           raise_error(error) if error
         end
@@ -146,7 +146,7 @@ module Faraday
       # TODO: reuse the connection to support pipelining
       def perform_single_request(env)
         req = create_request(env)
-        req.setup_request(env[:method], request_config(env)).callback { |client|
+        req.setup_request(env[:method], request_config(env)).callback do |client|
           if env[:request].stream_response?
             warn "Streaming downloads for #{self.class.name} are not yet implemented."
             env[:request].on_data.call(client.response, client.response.bytesize)
@@ -158,7 +158,7 @@ module Faraday
               resp_headers[name.to_sym] = value
             end
           end
-        }
+        end
       end
 
       def create_request(env)
