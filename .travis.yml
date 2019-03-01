@@ -6,18 +6,10 @@ rvm:
   - 2.3
   - 2.4
   - 2.5
-  - 2.6
   - ruby-head
 
 matrix:
-  fast_finish: true
-  include:
-    - rvm: 2.6 # Run custom before/after scripts for latest supported Ruby version.
-      before_script: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
-        ./cc-test-reporter before-build
-      after_script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  fast_finish: true # do not wait for ruby-head to mark the build as finished
   allow_failures:
     - ruby-head
 
@@ -27,6 +19,13 @@ jobs:
       rvm: ruby-2.4.1 # Pre-installed on TravisCI
       install: true # Do not bundle install
       script: gem install rubocop --no-document && rubocop
+    - stage: latest
+      rvm: 2.6 # Run custom before/after scripts for latest supported Ruby version.
+      before_script:
+        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        - chmod +x ./cc-test-reporter
+        - ./cc-test-reporter before-build
+      after_script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
     - stage: release
       rvm: 2.6
       install: true # Do not bundle install
