@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require File.expand_path('../integration', __FILE__)
-require File.expand_path('../../live_server', __FILE__)
+require File.expand_path('integration', __dir__)
+require File.expand_path('../live_server', __dir__)
 
 module Adapters
   class RackTest < Faraday::TestCase

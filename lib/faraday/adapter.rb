@@ -9,7 +9,7 @@ module Faraday
 
     CONTENT_LENGTH = 'Content-Length'
 
-    register_middleware File.expand_path('../adapter', __FILE__),
+    register_middleware File.expand_path('adapter', __dir__),
                         test: [:Test, 'test'],
                         net_http: [:NetHttp, 'net_http'],
                         net_http_persistent: [:NetHttpPersistent, 'net_http_persistent'],
@@ -36,7 +36,7 @@ module Faraday
     self.supports_parallel = false
 
     def initialize(_app = nil, opts = {}, &block)
-      @app = lambda { |env| env.response }
+      @app = ->(env) { env.response }
       @connection_options = opts
       @config_block = block
     end

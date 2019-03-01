@@ -116,8 +116,8 @@ module Faraday
   end
 
   self.ignore_env_proxy = false
-  self.root_path = File.expand_path '..', __FILE__
-  self.lib_path = File.expand_path '../faraday', __FILE__
+  self.root_path = File.expand_path __dir__
+  self.lib_path = File.expand_path 'faraday', __dir__
   self.default_adapter = :net_http
 
   # @overload default_connection
@@ -154,7 +154,7 @@ module Faraday
   require_libs 'utils', 'options', 'connection', 'rack_builder', 'parameters',
                'middleware', 'adapter', 'request', 'response', 'upload_io', 'error'
 
-  if !ENV['FARADAY_NO_AUTOLOAD']
+  unless ENV['FARADAY_NO_AUTOLOAD']
     require_lib 'autoload'
   end
 end

@@ -21,7 +21,7 @@ RSpec.describe Faraday::Request::Retry do
   end
 
   context 'when an unexpected error happens' do
-    let(:callback) { lambda { raise 'boom!' } }
+    let(:callback) { -> { raise 'boom!' } }
 
     before { expect { conn.get('/unstable') }.to raise_error(RuntimeError) }
 
@@ -35,7 +35,7 @@ RSpec.describe Faraday::Request::Retry do
   end
 
   context 'when an expected error happens' do
-    let(:callback) { lambda { raise Errno::ETIMEDOUT } }
+    let(:callback) { -> { raise Errno::ETIMEDOUT } }
 
     before do
       @started = Time.now
@@ -81,13 +81,13 @@ RSpec.describe Faraday::Request::Retry do
     before { conn.get('/unstable') }
 
     context 'and response code is in retry_statuses' do
-      let(:callback) { lambda { [429, {}, ''] } }
+      let(:callback) { -> { [429, {}, ''] } }
 
       it { expect(times_called).to eq(2) }
     end
 
     context 'and response code is not in retry_statuses' do
-      let(:callback) { lambda { [503, {}, ''] } }
+      let(:callback) { -> { [503, {}, ''] } }
 
       it { expect(times_called).to eq(1) }
     end
@@ -122,7 +122,7 @@ RSpec.describe Faraday::Request::Retry do
   end
 
   context 'when method is not idempotent' do
-    let(:callback) { lambda { raise Errno::ETIMEDOUT } }
+    let(:callback) { -> { raise Errno::ETIMEDOUT } }
 
     before { expect { conn.post('/unstable') }.to raise_error(Errno::ETIMEDOUT) }
 
@@ -130,25 +130,25 @@ RSpec.describe Faraday::Request::Retry do
   end
 
   describe 'retry_if option' do
-    let(:callback) { lambda { raise Errno::ETIMEDOUT } }
+    let(:callback) { -> { raise Errno::ETIMEDOUT } }
     let(:options) { [{ retry_if: @check }] }
 
     it 'retries if retry_if block always returns true' do
       body = { foo: :bar }
-      @check = lambda { |_, _| true }
+      @check = ->(_, _) { true }
       expect { conn.post('/unstable', body) }.to raise_error(Errno::ETIMEDOUT)
       expect(times_called).to eq(3)
       expect(calls.all? { |env| env[:body] == body }).to be_truthy
     end
 
     it 'does not retry if retry_if block returns false checking env' do
-      @check = lambda { |env, _| env[:method] != :post }
+      @check = ->(env, _) { env[:method] != :post }
       expect { conn.post('/unstable') }.to raise_error(Errno::ETIMEDOUT)
       expect(times_called).to eq(1)
     end
 
     it 'does not retry if retry_if block returns false checking exception' do
-      @check = lambda { |_, exception| !exception.kind_of?(Errno::ETIMEDOUT) }
+      @check = ->(_, exception) { !exception.kind_of?(Errno::ETIMEDOUT) }
       expect { conn.post('/unstable') }.to raise_error(Errno::ETIMEDOUT)
       expect(times_called).to eq(1)
     end
@@ -158,9 +158,9 @@ RSpec.describe Faraday::Request::Retry do
       upload_io = Faraday::UploadIO.new(io, 'application/octet/stream')
 
       rewound = 0
-      rewind = lambda { rewound += 1 }
+      rewind = -> { rewound += 1 }
 
-      @check = lambda { |_, _| true }
+      @check = ->(_, _) { true }
       allow(upload_io).to receive(:rewind, &rewind)
       expect { conn.post('/unstable', { file: upload_io }) }.to raise_error(Errno::ETIMEDOUT)
       expect(times_called).to eq(3)
@@ -171,7 +171,7 @@ RSpec.describe Faraday::Request::Retry do
       let(:options) { [{ retry_if: @check, methods: [:post] }] }
 
       it 'does not call retry_if for specified methods' do
-        @check = lambda { |_, _| raise 'this should have never been called' }
+        @check = ->(_, _) { raise 'this should have never been called' }
         expect { conn.post('/unstable') }.to raise_error(Errno::ETIMEDOUT)
         expect(times_called).to eq(3)
       end
@@ -181,7 +181,7 @@ RSpec.describe Faraday::Request::Retry do
       let(:options) { [{ retry_if: @check, methods: [] }] }
 
       it 'calls retry_if for all methods' do
-        @check = lambda { |_, _| calls.size < 2 }
+        @check = ->(_, _) { calls.size < 2 }
         expect { conn.get('/unstable') }.to raise_error(Errno::ETIMEDOUT)
         expect(times_called).to eq(2)
       end
@@ -189,7 +189,7 @@ RSpec.describe Faraday::Request::Retry do
   end
 
   describe 'retry_after header support' do
-    let(:callback) { lambda { [504, headers, ''] } }
+    let(:callback) { -> { [504, headers, ''] } }
     let(:elapsed) { Time.now - @started }
 
     before do

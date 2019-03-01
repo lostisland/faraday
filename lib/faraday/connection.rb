@@ -463,7 +463,7 @@ module Faraday
     #
     # @return [Faraday::Response]
     def run_request(method, url, body, headers)
-      if !METHODS.include?(method)
+      unless METHODS.include?(method)
         raise ArgumentError, "unknown http method: #{method}"
       end
 

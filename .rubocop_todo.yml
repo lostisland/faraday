@@ -159,12 +159,6 @@ Style/DoubleNegation:
     - 'lib/faraday/options/env.rb'
     - 'lib/faraday/response.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/EachWithObject:
-  Exclude:
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
@@ -172,33 +166,6 @@ Style/EachWithObject:
 Style/EmptyMethod:
   Exclude:
     - 'spec/spec_helper.rb'
-
-# Offense count: 15
-# Cop supports --auto-correct.
-Style/ExpandPathArguments:
-  Exclude:
-    - 'lib/faraday.rb'
-    - 'lib/faraday/adapter.rb'
-    - 'lib/faraday/request.rb'
-    - 'lib/faraday/request/multipart.rb'
-    - 'lib/faraday/response.rb'
-    - 'script/server'
-    - 'test/adapters/em_http_test.rb'
-    - 'test/adapters/em_synchrony_test.rb'
-    - 'test/adapters/integration.rb'
-    - 'test/adapters/rack_test.rb'
-    - 'test/adapters/test_middleware_test.rb'
-    - 'test/helper.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: format, sprintf, percent
-Style/FormatString:
-  Exclude:
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'test/adapters/integration.rb'
-    - 'test/live_server.rb'
 
 # Offense count: 9
 # Configuration parameters: EnforcedStyle.
@@ -242,19 +209,6 @@ Style/IfInsideElse:
 # Cop supports --auto-correct.
 Style/IfUnlessModifier:
   Enabled: false
-
-# Offense count: 19
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: line_count_dependent, lambda, literal
-Style/Lambda:
-  Exclude:
-    - 'lib/faraday/adapter.rb'
-    - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'spec/faraday/rack_builder_spec.rb'
-    - 'spec/faraday/request/retry_spec.rb'
-    - 'spec/faraday/utils_spec.rb'
 
 # Offense count: 1
 Style/MethodMissingSuper:
@@ -310,35 +264,6 @@ Style/MutableConstant:
     - 'lib/faraday/response/raise_error.rb'
     - 'lib/faraday/utils.rb'
 
-# Offense count: 8
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: both, prefix, postfix
-Style/NegatedIf:
-  Exclude:
-    - 'lib/faraday.rb'
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'lib/faraday/options/env.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: Whitelist.
-# Whitelist: be, be_a, be_an, be_between, be_falsey, be_kind_of, be_instance_of, be_truthy, be_within, eq, eql, end_with, include, match, raise_error, respond_to, start_with
-Style/NestedParenthesizedCalls:
-  Exclude:
-    - 'lib/faraday/response/logger.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, MinBodyLength.
-# SupportedStyles: skip_modifier_ifs, always
-Style/Next:
-  Exclude:
-    - 'lib/faraday/adapter/test.rb'
-
 # Offense count: 5
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
@@ -347,12 +272,6 @@ Style/NilComparison:
   Exclude:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
     - 'lib/faraday/encoders/nested_params_encoder.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/Not:
-  Exclude:
-    - 'lib/faraday/response.rb'
 
 # Offense count: 7
 # Cop supports --auto-correct.

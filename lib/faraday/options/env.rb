@@ -149,7 +149,7 @@ module Faraday
           attrs << "@#{mem}=#{value.inspect}"
         end
       end
-      if !custom_members.empty?
+      unless custom_members.empty?
         attrs << "@custom=#{custom_members.inspect}"
       end
       %(#<#{self.class}#{attrs.join(" ")}>)

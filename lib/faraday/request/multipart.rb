@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require File.expand_path('../url_encoded', __FILE__)
+require File.expand_path('url_encoded', __dir__)
 require 'securerandom'
 
 module Faraday

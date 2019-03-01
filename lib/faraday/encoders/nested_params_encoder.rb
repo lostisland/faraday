@@ -18,8 +18,8 @@ module Faraday
     def self.encode(params)
       return nil if params == nil
 
-      if !params.is_a?(Array)
-        if !params.respond_to?(:to_hash)
+      unless params.is_a?(Array)
+        unless params.respond_to?(:to_hash)
           raise TypeError,
                 "Can't convert #{params.class} into Hash."
         end
@@ -99,12 +99,9 @@ module Faraday
           if !last_subkey || is_array
             value_type = is_array ? Array : Hash
             if context[subkey] && !context[subkey].is_a?(value_type)
-              raise TypeError, "expected %s (got %s) for param `%s'" % [
-                value_type.name,
-                context[subkey].class.name,
-                subkey
-              ]
+              raise TypeError, format("expected %s (got %s) for param `%s'", value_type.name, context[subkey].class.name, subkey)
             end
+
             context = (context[subkey] ||= value_type.new)
           end
 

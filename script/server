@@ -3,7 +3,7 @@
 
 old_verbose, $VERBOSE = $VERBOSE, nil
 begin
-  require File.expand_path('../../test/live_server', __FILE__)
+  require File.expand_path('../test/live_server', __dir__)
 ensure
   $VERBOSE = old_verbose
 end

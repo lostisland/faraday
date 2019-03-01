@@ -141,7 +141,7 @@ RSpec.describe Faraday::RackBuilder do
     end
 
     it 'allows to register with Proc' do
-      Faraday::Middleware.register_middleware(apple: lambda { Apple })
+      Faraday::Middleware.register_middleware(apple: -> { Apple })
       subject.use(:apple)
       expect(subject.handlers).to eq([Apple])
     end

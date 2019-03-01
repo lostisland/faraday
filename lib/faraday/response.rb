@@ -22,7 +22,7 @@ module Faraday
     extend Forwardable
     extend MiddlewareRegistry
 
-    register_middleware File.expand_path('../response', __FILE__),
+    register_middleware File.expand_path('response', __dir__),
                         raise_error: [:RaiseError, 'raise_error'],
                         logger: [:Logger, 'logger']
 
@@ -55,7 +55,7 @@ module Faraday
     end
 
     def on_complete
-      if not finished?
+      if !finished?
         @on_complete_callbacks << Proc.new
       else
         yield(env)

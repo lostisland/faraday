@@ -10,8 +10,8 @@ module Faraday
     def self.encode(params)
       return nil if params == nil
 
-      if !params.is_a?(Array)
-        if !params.respond_to?(:to_hash)
+      unless params.is_a?(Array)
+        unless params.respond_to?(:to_hash)
           raise TypeError,
                 "Can't convert #{params.class} into Hash."
         end
@@ -52,7 +52,7 @@ module Faraday
       split_query = (query.split('&').map do |pair|
         pair.split('=', 2) if pair && !pair.empty?
       end).compact
-      split_query.inject(empty_accumulator.dup) do |accu, pair|
+      split_query.each_with_object(empty_accumulator.dup) do |pair, accu|
         pair[0] = unescape(pair[0])
         pair[1] = true if pair[1].nil?
         if pair[1].respond_to?(:to_str)
@@ -65,7 +65,6 @@ module Faraday
         else
           accu[pair[0]] = pair[1]
         end
-        accu
       end
     end
   end
