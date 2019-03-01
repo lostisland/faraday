@@ -25,7 +25,7 @@ module Faraday
         end
         params = params.to_hash
         params = params.map do |key, value|
-          key = key.to_s if key.kind_of?(Symbol)
+          key = key.to_s if key.is_a?(Symbol)
           [key, value]
         end
         # Useful default for OAuth and caching.
@@ -130,7 +130,7 @@ module Faraday
     # @!visibility private
     def self.dehash(hash, depth)
       hash.each do |key, value|
-        hash[key] = dehash(value, depth + 1) if value.kind_of?(Hash)
+        hash[key] = dehash(value, depth + 1) if value.is_a?(Hash)
       end
 
       if depth > 0 && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
