@@ -264,19 +264,6 @@ Style/MutableConstant:
     - 'lib/faraday/response/raise_error.rb'
     - 'lib/faraday/utils.rb'
 
-# Offense count: 8
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: both, prefix, postfix
-Style/NegatedIf:
-  Exclude:
-    - 'lib/faraday.rb'
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'lib/faraday/options/env.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: Whitelist.

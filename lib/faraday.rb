@@ -154,7 +154,7 @@ module Faraday
   require_libs 'utils', 'options', 'connection', 'rack_builder', 'parameters',
                'middleware', 'adapter', 'request', 'response', 'upload_io', 'error'
 
-  if !ENV['FARADAY_NO_AUTOLOAD']
+  unless ENV['FARADAY_NO_AUTOLOAD']
     require_lib 'autoload'
   end
 end

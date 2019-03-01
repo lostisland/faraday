@@ -18,8 +18,8 @@ module Faraday
     def self.encode(params)
       return nil if params == nil
 
-      if !params.is_a?(Array)
-        if !params.respond_to?(:to_hash)
+      unless params.is_a?(Array)
+        unless params.respond_to?(:to_hash)
           raise TypeError,
                 "Can't convert #{params.class} into Hash."
         end

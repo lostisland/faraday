@@ -225,7 +225,7 @@ module Faraday
                 perform_request(&proc)
               end
             end
-            if !@errors.empty?
+            unless @errors.empty?
               raise Faraday::ClientError, @errors.first || 'connection failed'
             end
           end
