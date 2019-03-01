@@ -1,6 +1,5 @@
 language: ruby
-cache:
-  bundler: true
+cache: bundler
 
 rvm:
   - 2.3
@@ -22,7 +21,7 @@ jobs:
     - stage: latest
       rvm: 2.6 # Run custom before/after scripts for latest supported Ruby version.
       before_script:
-        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        - curl -o ./cc-test-reporter -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
         - chmod +x ./cc-test-reporter
         - ./cc-test-reporter before-build
       after_script: ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
