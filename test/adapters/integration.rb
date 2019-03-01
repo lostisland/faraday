@@ -129,7 +129,7 @@ module Adapters
         end
 
         server = self.class.live_server
-        url = '%s://%s:%d' % [server.scheme, server.host, server.port]
+        url = format('%s://%s:%d', server.scheme, server.host, server.port)
 
         options[:ssl] ||= {}
         options[:ssl][:ca_file] ||= ENV['SSL_FILE']

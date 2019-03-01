@@ -167,16 +167,6 @@ Style/EmptyMethod:
   Exclude:
     - 'spec/spec_helper.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: format, sprintf, percent
-Style/FormatString:
-  Exclude:
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'test/adapters/integration.rb'
-    - 'test/live_server.rb'
-
 # Offense count: 9
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: annotated, template, unannotated
