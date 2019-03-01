@@ -28,7 +28,7 @@ RSpec.describe Faraday::Request::Authorization do
     let(:auth_type) { :basic_auth }
 
     context 'when passed correct params' do
-      let(:auth_config) { %w(aladdin opensesame) }
+      let(:auth_config) { %w[aladdin opensesame] }
 
       it { expect(response.body).to eq('Basic YWxhZGRpbjpvcGVuc2VzYW1l') }
 

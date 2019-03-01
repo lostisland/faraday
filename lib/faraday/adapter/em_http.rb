@@ -131,7 +131,7 @@ module Faraday
         end
       rescue EventMachine::Connectify::CONNECTError => err
         if err.message.include?('Proxy Authentication Required')
-          raise Faraday::ConnectionFailed, %{407 "Proxy Authentication Required "}
+          raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ")
         else
           raise Faraday::ConnectionFailed, err
         end
