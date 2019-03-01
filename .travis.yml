@@ -42,6 +42,7 @@ jobs:
 stages:
   - linting
   - test
+  - latest
   - release
 
 branches:
