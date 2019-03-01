@@ -273,12 +273,6 @@ Style/NilComparison:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
     - 'lib/faraday/encoders/nested_params_encoder.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/Not:
-  Exclude:
-    - 'lib/faraday/response.rb'
-
 # Offense count: 7
 # Cop supports --auto-correct.
 # Configuration parameters: AutoCorrect, EnforcedStyle, IgnoredMethods.

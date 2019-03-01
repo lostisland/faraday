@@ -55,7 +55,7 @@ module Faraday
     end
 
     def on_complete
-      if not finished?
+      if !finished?
         @on_complete_callbacks << Proc.new
       else
         yield(env)
