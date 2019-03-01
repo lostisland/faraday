@@ -264,14 +264,6 @@ Style/MutableConstant:
     - 'lib/faraday/response/raise_error.rb'
     - 'lib/faraday/utils.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, MinBodyLength.
-# SupportedStyles: skip_modifier_ifs, always
-Style/Next:
-  Exclude:
-    - 'lib/faraday/adapter/test.rb'
-
 # Offense count: 5
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
