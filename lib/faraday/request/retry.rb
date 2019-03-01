@@ -32,7 +32,7 @@ module Faraday
       DEFAULT_CHECK = ->(_env, _exception) { false }
 
       def self.from(value)
-        if Integer === value
+        if value.is_a?(Integer)
           new(value)
         else
           super(value)

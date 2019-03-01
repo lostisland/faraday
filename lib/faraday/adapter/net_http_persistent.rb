@@ -26,7 +26,7 @@ module Faraday
       def proxy_uri(env)
         proxy_uri = nil
         if (proxy = env[:request][:proxy])
-          proxy_uri = ::URI::HTTP === proxy[:uri] ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
+          proxy_uri = proxy[:uri].is_a?(::URI::HTTP) ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
           proxy_uri.user = proxy_uri.password = nil
           # awful patch for net-http-persistent 2.8 not unescaping user/password
           (class << proxy_uri; self; end).class_eval do
