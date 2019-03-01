@@ -159,12 +159,6 @@ Style/DoubleNegation:
     - 'lib/faraday/options/env.rb'
     - 'lib/faraday/response.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/EachWithObject:
-  Exclude:
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
