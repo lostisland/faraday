@@ -506,7 +506,7 @@ module Faraday
     def build_exclusive_url(url = nil, params = nil, params_encoder = nil)
       url = nil if url.respond_to?(:empty?) && url.empty?
       base = url_prefix
-      if url && base.path && base.path !~ /\/$/
+      if url && base.path && base.path !~ %r{/$}
         base = base.dup
         base.path = base.path + '/' # ensure trailing slash
       end

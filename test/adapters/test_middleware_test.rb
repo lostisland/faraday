@@ -13,10 +13,10 @@ module Adapters
         stub.get('/method-echo') do |env|
           [200, { 'Content-Type' => 'text/html' }, env[:method].to_s]
         end
-        stub.get(/\A\/resources\/\d+(?:\?|\z)/) do
+        stub.get(%r{\A/resources/\d+(?:\?|\z)}) do
           [200, { 'Content-Type' => 'text/html' }, 'show']
         end
-        stub.get(/\A\/resources\/(specified)\z/) do |_env, meta|
+        stub.get(%r{\A/resources/(specified)\z}) do |_env, meta|
           [200, { 'Content-Type' => 'text/html' }, "show #{meta[:match_data][1]}"]
         end
         stub.get('http://domain.test/hello') do

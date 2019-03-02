@@ -260,18 +260,6 @@ Style/RaiseArgs:
 
 # Offense count: 10
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, AllowInnerSlashes.
-# SupportedStyles: slashes, percent_r, mixed
-Style/RegexpLiteral:
-  Exclude:
-    - 'lib/faraday/autoload.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/utils/headers.rb'
-    - 'spec/support/shared_examples/request_method.rb'
-    - 'test/adapters/test_middleware_test.rb'
-
-# Offense count: 10
-# Cop supports --auto-correct.
 # Configuration parameters: ConvertCodeThatCanStartToReturnNil, Whitelist.
 # Whitelist: present?, blank?, presence, try, try!
 Style/SafeNavigation:

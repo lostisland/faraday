@@ -17,8 +17,8 @@ shared_examples 'a request method' do |http_method|
 
   it 'retrieves the response headers' do
     request_stub.to_return(headers: { 'Content-Type' => 'text/plain' })
-    expect(response.headers['Content-Type']).to match(/text\/plain/)
-    expect(response.headers['content-type']).to match(/text\/plain/)
+    expect(response.headers['Content-Type']).to match(%r{text/plain})
+    expect(response.headers['content-type']).to match(%r{text/plain})
   end
 
   it 'sends user agent' do
@@ -102,7 +102,7 @@ shared_examples 'a request method' do |http_method|
       request_stub.with(headers: { 'Content-Type' => %r{\Amultipart/form-data} }) do |request|
         # WebMock does not support matching body for multipart/form-data requests yet :(
         # https://github.com/bblimke/webmock/issues/623
-        request.body =~ %r{RubyMultipartPost}
+        request.body =~ /RubyMultipartPost/
       end
       conn.public_send(http_method, '/', payload)
     end
@@ -119,12 +119,12 @@ shared_examples 'a request method' do |http_method|
     # Accept-Encoding header not sent for HEAD requests as body is not expected in the response.
     unless http_method == :head
       it 'handles gzip compression' do
-        request_stub.with(headers: { 'Accept-Encoding' => %r{\bgzip\b} })
+        request_stub.with(headers: { 'Accept-Encoding' => /\bgzip\b/ })
         conn.public_send(http_method, '/')
       end
 
       it 'handles deflate compression' do
-        request_stub.with(headers: { 'Accept-Encoding' => %r{\bdeflate\b} })
+        request_stub.with(headers: { 'Accept-Encoding' => /\bdeflate\b/ })
         conn.public_send(http_method, '/')
       end
     end
