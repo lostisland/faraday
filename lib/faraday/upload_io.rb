@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
-begin
-  require 'composite_io'
-  require 'parts'
-  require 'stringio'
-rescue LoadError
-  $stderr.puts 'Install the multipart-post gem.'
-  raise
-end
+require 'stringio'
+
+# multipart-post gem
+require 'composite_io'
+require 'parts'
 
 module Faraday
   # Similar to, but not compatible with [::CompositeReadIO](https://github.com/nicksieger/multipart-post/blob/master/lib/composite_io.rb) provided by [multipart-post](https://github.com/nicksieger/multipart-post).
