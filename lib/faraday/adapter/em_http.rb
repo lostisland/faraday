@@ -136,7 +136,7 @@ module Faraday
           raise Faraday::ConnectionFailed, err
         end
       rescue => err
-        if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
+        if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
           raise Faraday::SSLError, err
         else
           raise

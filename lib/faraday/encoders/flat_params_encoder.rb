@@ -17,7 +17,7 @@ module Faraday
         end
         params = params.to_hash
         params = params.map do |key, value|
-          key = key.to_s if key.kind_of?(Symbol)
+          key = key.to_s if key.is_a?(Symbol)
           [key, value]
         end
         # Useful default for OAuth and caching.
@@ -32,7 +32,7 @@ module Faraday
         value = value.to_s if value == true || value == false
         if value == nil
           buffer << "#{encoded_key}&"
-        elsif value.kind_of?(Array)
+        elsif value.is_a?(Array)
           value.each do |sub_value|
             encoded_value = escape(sub_value)
             buffer << "#{encoded_key}=#{encoded_value}&"
@@ -58,7 +58,7 @@ module Faraday
         if pair[1].respond_to?(:to_str)
           pair[1] = unescape(pair[1].to_str.tr('+', ' '))
         end
-        if accu[pair[0]].kind_of?(Array)
+        if accu[pair[0]].is_a?(Array)
           accu[pair[0]] << pair[1]
         elsif accu[pair[0]]
           accu[pair[0]] = [accu[pair[0]], pair[1]]

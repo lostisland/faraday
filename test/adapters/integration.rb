@@ -118,15 +118,15 @@ module Adapters
       end
 
       def create_connection(options = {}, &optional_connection_config_blk)
-        if adapter == :default
-          builder_block = nil
-        else
-          builder_block = Proc.new do |b|
-            b.request :multipart
-            b.request :url_encoded
-            b.adapter adapter, *adapter_options, &optional_connection_config_blk
-          end
-        end
+        builder_block = if adapter == :default
+                          nil
+                        else
+                          Proc.new do |b|
+                            b.request :multipart
+                            b.request :url_encoded
+                            b.adapter adapter, *adapter_options, &optional_connection_config_blk
+                          end
+                        end
 
         server = self.class.live_server
         url = format('%s://%s:%d', server.scheme, server.host, server.port)

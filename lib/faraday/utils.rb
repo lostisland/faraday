@@ -84,11 +84,11 @@ module Faraday
     # Recursive hash update
     def deep_merge!(target, hash)
       hash.each do |key, value|
-        if (Hash === value) && (Hash === target[key])
-          target[key] = deep_merge(target[key], value)
-        else
-          target[key] = value
-        end
+        target[key] = if value.is_a?(Hash) && target[key].is_a?(Hash)
+                        deep_merge(target[key], value)
+                      else
+                        value
+                      end
       end
       target
     end

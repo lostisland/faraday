@@ -39,57 +39,11 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 8
-Style/CaseEquality:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'lib/faraday/adapter/httpclient.rb'
-    - 'lib/faraday/adapter/net_http.rb'
-    - 'lib/faraday/adapter/net_http_persistent.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'lib/faraday/utils.rb'
-
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, EnforcedStyle.
-# SupportedStyles: nested, compact
-Style/ClassAndModuleChildren:
-  Exclude:
-    - 'lib/faraday/request/authorization.rb'
-    - 'lib/faraday/request/basic_authentication.rb'
-    - 'lib/faraday/request/instrumentation.rb'
-    - 'lib/faraday/request/multipart.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'lib/faraday/request/token_authentication.rb'
-    - 'lib/faraday/request/url_encoded.rb'
-    - 'lib/faraday/response/logger.rb'
-    - 'lib/faraday/response/raise_error.rb'
-
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: is_a?, kind_of?
-Style/ClassCheck:
-  Exclude:
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'spec/faraday/request/retry_spec.rb'
-
 # Offense count: 3
 Style/ClassVars:
   Exclude:
     - 'lib/faraday/rack_builder.rb'
     - 'test/helper.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.
-# SupportedStyles: assign_to_condition, assign_inside_condition
-Style/ConditionalAssignment:
-  Exclude:
-    - 'lib/faraday/utils.rb'
-    - 'test/adapters/integration.rb'
 
 # Offense count: 19
 Style/Documentation:

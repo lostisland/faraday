@@ -148,7 +148,7 @@ RSpec.describe Faraday::Request::Retry do
     end
 
     it 'does not retry if retry_if block returns false checking exception' do
-      @check = ->(_, exception) { !exception.kind_of?(Errno::ETIMEDOUT) }
+      @check = ->(_, exception) { !exception.is_a?(Errno::ETIMEDOUT) }
       expect { conn.post('/unstable') }.to raise_error(Errno::ETIMEDOUT)
       expect(times_called).to eq(1)
     end
