@@ -12,7 +12,7 @@ module Faraday
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
         session = ::Patron::Session.new
-        @config_block.call(session) if @config_block
+        @config_block&.call(session)
         configure_ssl(session, env[:ssl]) if (env[:url].scheme == 'https') && env[:ssl]
 
         if (req = env[:request])

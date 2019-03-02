@@ -280,20 +280,6 @@ Style/RescueStandardError:
     - 'lib/faraday/adapter/em_synchrony.rb'
     - 'lib/faraday/adapter/httpclient.rb'
 
-# Offense count: 10
-# Cop supports --auto-correct.
-# Configuration parameters: ConvertCodeThatCanStartToReturnNil, Whitelist.
-# Whitelist: present?, blank?, presence, try, try!
-Style/SafeNavigation:
-  Exclude:
-    - 'lib/faraday/adapter.rb'
-    - 'lib/faraday/adapter/httpclient.rb'
-    - 'lib/faraday/adapter/net_http.rb'
-    - 'lib/faraday/adapter/patron.rb'
-    - 'lib/faraday/adapter/rack.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/options/proxy_options.rb'
-
 # Offense count: 280
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

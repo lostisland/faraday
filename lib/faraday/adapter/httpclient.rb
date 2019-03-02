@@ -112,7 +112,7 @@ module Faraday
       end
 
       def configure_client
-        @config_block.call(client) if @config_block
+        @config_block&.call(client)
       end
 
       # @param ssl [Hash]

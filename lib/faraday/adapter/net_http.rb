@@ -163,7 +163,7 @@ module Faraday
         # Only set if Net::Http supports it, since Ruby 2.5.
         http.max_retries = 0 if http.respond_to?(:max_retries=)
 
-        @config_block.call(http) if @config_block
+        @config_block&.call(http)
       end
 
       def ssl_cert_store(ssl)
