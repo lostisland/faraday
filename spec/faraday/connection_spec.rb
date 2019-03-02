@@ -622,7 +622,7 @@ RSpec.describe Faraday::Connection do
       end
 
       it 'supports array params in params' do
-        conn.get('http://example.com', color: %w(red blue))
+        conn.get('http://example.com', color: %w[red blue])
       end
     end
 
@@ -632,7 +632,7 @@ RSpec.describe Faraday::Connection do
       after { expect(stubbed).to have_been_made.once }
 
       it 'supports array params in params' do
-        conn.get('http://example.com', color: %w(red blue))
+        conn.get('http://example.com', color: %w[red blue])
       end
 
       context 'with array param in url' do

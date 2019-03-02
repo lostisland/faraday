@@ -52,7 +52,7 @@ module Faraday
         end
       rescue ::Patron::Error => err
         if err.message.include?('code 407')
-          raise Faraday::ConnectionFailed, %{407 "Proxy Authentication Required "}
+          raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ")
         else
           raise Faraday::ConnectionFailed, err
         end

@@ -34,7 +34,7 @@ RSpec.describe Faraday::ClientError do
     end
 
     context 'with anything else #to_s' do
-      let(:exception) { %w(error1 error2) }
+      let(:exception) { %w[error1 error2] }
 
       it { expect(subject.wrapped_exception).to be_nil }
       it { expect(subject.response).to be_nil }

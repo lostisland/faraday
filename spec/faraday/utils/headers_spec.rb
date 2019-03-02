@@ -62,7 +62,7 @@ RSpec.describe Faraday::Utils::Headers do
     context 'when response headers leave http status line out' do
       let(:headers) { "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" }
 
-      it { expect(subject.keys).to eq(%w(Content-Type)) }
+      it { expect(subject.keys).to eq(%w[Content-Type]) }
       it { expect(subject['Content-Type']).to eq('text/html') }
       it { expect(subject['content-type']).to eq('text/html') }
     end

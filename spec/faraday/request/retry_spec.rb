@@ -9,7 +9,7 @@ RSpec.describe Faraday::Request::Retry do
       b.request :retry, *options
 
       b.adapter :test do |stub|
-        %w(get post).each do |method|
+        %w[get post].each do |method|
           stub.send(method, '/unstable') do |env|
             calls << env.dup
             env[:body] = nil # simulate blanking out response body

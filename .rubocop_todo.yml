@@ -270,26 +270,6 @@ Style/ParenthesesAroundCondition:
   Exclude:
     - 'lib/faraday/request/multipart.rb'
 
-# Offense count: 18
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredDelimiters.
-Style/PercentLiteralDelimiters:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'lib/faraday/adapter/httpclient.rb'
-    - 'lib/faraday/adapter/patron.rb'
-    - 'lib/faraday/response/raise_error.rb'
-    - 'script/proxy-server'
-    - 'spec/faraday/connection_spec.rb'
-    - 'spec/faraday/error_spec.rb'
-    - 'spec/faraday/params_encoders/flat_spec.rb'
-    - 'spec/faraday/params_encoders/nested_spec.rb'
-    - 'spec/faraday/request/authorization_spec.rb'
-    - 'spec/faraday/request/retry_spec.rb'
-    - 'spec/faraday/utils/headers_spec.rb'
-    - 'spec/support/shared_examples/request_method.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/PerlBackrefs:
