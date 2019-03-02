@@ -24,7 +24,11 @@ module Faraday
   #   @return [Hash] body
   # @!attribute options
   #   @return [RequestOptions] options
+  #
+  # rubocop:disable Style/StructInheritance
   class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
+    # rubocop:enable Style/StructInheritance
+
     extend MiddlewareRegistry
 
     register_middleware File.expand_path('request', __dir__),

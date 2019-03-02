@@ -54,7 +54,7 @@ module Faraday
         raise Faraday::TimeoutError, $!
       rescue ::HTTPClient::BadResponseError => err
         if err.message.include?('status 407')
-          raise Faraday::ConnectionFailed, %{407 "Proxy Authentication Required "}
+          raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ")
         else
           raise Faraday::ClientError, $!
         end

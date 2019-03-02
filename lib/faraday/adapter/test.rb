@@ -103,9 +103,11 @@ module Faraday
           @stack.each do |method, stubs|
             next if stubs.empty?
 
-            failed_stubs.concat(stubs.map { |stub|
-              "Expected #{method} #{stub}."
-            })
+            failed_stubs.concat(
+              stubs.map do |stub|
+                "Expected #{method} #{stub}."
+              end
+            )
           end
           raise failed_stubs.join(' ') unless failed_stubs.empty?
         end
@@ -132,7 +134,10 @@ module Faraday
         end
       end
 
+      # rubocop:disable Style/StructInheritance
       class Stub < Struct.new(:host, :path, :params, :headers, :body, :block)
+        # rubocop:enable Style/StructInheritance
+
         def initialize(host, full, headers, body, block)
           path, query = full.respond_to?(:split) ? full.split('?') : full
           params = query ?

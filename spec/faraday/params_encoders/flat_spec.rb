@@ -7,7 +7,7 @@ RSpec.describe Faraday::FlatParamsEncoder do
 
   it 'decodes arrays' do
     query = 'a=one&a=two&a=three'
-    expected = { 'a' => %w(one two three) }
+    expected = { 'a' => %w[one two three] }
     expect(subject.decode(query)).to eq(expected)
   end
 end

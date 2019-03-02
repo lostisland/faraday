@@ -2,7 +2,7 @@
 
 RSpec.describe Faraday::RackBuilder do
   # mock handler classes
-  class Handler < Struct.new(:app)
+  (Handler = Struct.new(:app)).class_eval do
     def call(env)
       env[:request_headers]['X-Middleware'] ||= ''
       env[:request_headers]['X-Middleware'] += ":#{self.class.name.split('::').last}"

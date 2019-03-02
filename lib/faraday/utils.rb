@@ -18,9 +18,9 @@ module Faraday
     ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
 
     def escape(str)
-      str.to_s.gsub(ESCAPE_RE) { |match|
+      str.to_s.gsub(ESCAPE_RE) do |match|
         '%' + match.unpack('H2' * match.bytesize).join('%').upcase
-      }.tr(' ', '+')
+      end.tr(' ', '+')
     end
 
     def unescape(str) CGI.unescape str.to_s end

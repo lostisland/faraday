@@ -2,10 +2,10 @@
 
 RSpec.describe Faraday::Utils do
   describe 'headers parsing' do
-    let(:multi_response_headers) {
+    let(:multi_response_headers) do
       "HTTP/1.x 500 OK\r\nContent-Type: text/html; charset=UTF-8\r\n" \
       "HTTP/1.x 200 OK\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"
-    }
+    end
 
     it 'parse headers for aggregated responses' do
       headers = Faraday::Utils::Headers.new
@@ -49,7 +49,7 @@ RSpec.describe Faraday::Utils do
       headers = Faraday::Utils::Headers.new('authorization' => 't0ps3cr3t!')
       expect(headers).to have_key('authorization')
 
-      headers.replace({ 'content-type' => 'text/plain' })
+      headers.replace('content-type' => 'text/plain')
       expect(headers).not_to have_key('authorization')
     end
   end

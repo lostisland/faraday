@@ -24,12 +24,12 @@ module Faraday
         def run
           result = nil
           if !EM.reactor_running?
-            EM.run {
+            EM.run do
               Fiber.new do
                 result = perform
                 EM.stop
               end.resume
-            }
+            end
           else
             result = perform
           end

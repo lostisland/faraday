@@ -9,7 +9,7 @@ RSpec.describe Faraday::Request::Retry do
       b.request :retry, *options
 
       b.adapter :test do |stub|
-        %w(get post).each do |method|
+        %w[get post].each do |method|
           stub.send(method, '/unstable') do |env|
             calls << env.dup
             env[:body] = nil # simulate blanking out response body
@@ -162,7 +162,7 @@ RSpec.describe Faraday::Request::Retry do
 
       @check = ->(_, _) { true }
       allow(upload_io).to receive(:rewind, &rewind)
-      expect { conn.post('/unstable', { file: upload_io }) }.to raise_error(Errno::ETIMEDOUT)
+      expect { conn.post('/unstable', file: upload_io) }.to raise_error(Errno::ETIMEDOUT)
       expect(times_called).to eq(3)
       expect(rewound).to eq(2)
     end

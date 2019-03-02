@@ -7,7 +7,7 @@ RSpec.describe Faraday::NestedParamsEncoder do
 
   it 'decodes arrays' do
     query    = 'a[1]=one&a[2]=two&a[3]=three'
-    expected = { 'a' => %w(one two three) }
+    expected = { 'a' => %w[one two three] }
     expect(subject.decode(query)).to eq(expected)
   end
 
