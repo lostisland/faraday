@@ -52,10 +52,10 @@ module Faraday
 
           if !EM.reactor_running?
             EM.run do
-              Fiber.new {
+              Fiber.new do
                 client = block.call
                 EM.stop
-              }.resume
+              end.resume
             end
           else
             client = block.call

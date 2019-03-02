@@ -56,10 +56,10 @@ RSpec.describe Faraday::Request::UrlEncoded do
   end
 
   it 'works with unicode' do
-    err = capture_warnings {
+    err = capture_warnings do
       response = conn.post('/echo', str: 'eé cç aã aâ')
       expect(response.body).to eq('str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2')
-    }
+    end
     expect(err.empty?).to be_truthy
   end
 

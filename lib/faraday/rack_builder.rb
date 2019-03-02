@@ -21,10 +21,10 @@ module Faraday
     # ActionDispatch::MiddlewareStack::Middleware
     class Handler
       @@constants_mutex = Mutex.new
-      @@constants = Hash.new { |h, k|
+      @@constants = Hash.new do |h, k|
         value = k.respond_to?(:constantize) ? k.constantize : Object.const_get(k)
         @@constants_mutex.synchronize { h[k] = value }
-      }
+      end
 
       attr_reader :name
 

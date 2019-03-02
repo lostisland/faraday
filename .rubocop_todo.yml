@@ -39,26 +39,6 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 21
 
-# Offense count: 13
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, ProceduralMethods, FunctionalMethods, IgnoredMethods.
-# SupportedStyles: line_count_based, semantic, braces_for_chaining
-# ProceduralMethods: benchmark, bm, bmbm, create, each_with_object, measure, new, realtime, tap, with_object
-# FunctionalMethods: let, let!, subject, watch
-# IgnoredMethods: lambda, proc, it
-Style/BlockDelimiters:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'lib/faraday/adapter/em_synchrony/parallel_manager.rb'
-    - 'lib/faraday/adapter/test.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/rack_builder.rb'
-    - 'lib/faraday/utils.rb'
-    - 'spec/faraday/request/url_encoded_spec.rb'
-    - 'spec/faraday/utils_spec.rb'
-    - 'spec/support/fake_safe_buffer.rb'
-
 # Offense count: 8
 Style/CaseEquality:
   Exclude:
