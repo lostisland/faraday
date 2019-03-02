@@ -270,16 +270,6 @@ Style/RegexpLiteral:
     - 'spec/support/shared_examples/request_method.rb'
     - 'test/adapters/test_middleware_test.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: implicit, explicit
-Style/RescueStandardError:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'lib/faraday/adapter/httpclient.rb'
-
 # Offense count: 10
 # Cop supports --auto-correct.
 # Configuration parameters: ConvertCodeThatCanStartToReturnNil, Whitelist.
