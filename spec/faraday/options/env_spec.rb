@@ -43,7 +43,7 @@ RSpec.describe Faraday::Env do
 
     context 'when response is not finished yet' do
       it 'returns the request body' do
-        expect(env.body).to eq({ foo: 'bar' })
+        expect(env.body).to eq(foo: 'bar')
       end
     end
 
@@ -55,15 +55,15 @@ RSpec.describe Faraday::Env do
       end
 
       it 'returns the response body' do
-        expect(env.body).to eq({ bar: 'foo' })
+        expect(env.body).to eq(bar: 'foo')
       end
 
       it 'allows to access request_body' do
-        expect(env.request_body).to eq({ foo: 'bar' })
+        expect(env.request_body).to eq(foo: 'bar')
       end
 
       it 'allows to access response_body' do
-        expect(env.response_body).to eq({ bar: 'foo' })
+        expect(env.response_body).to eq(bar: 'foo')
       end
     end
   end

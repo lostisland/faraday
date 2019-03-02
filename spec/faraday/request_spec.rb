@@ -26,15 +26,15 @@ RSpec.describe Faraday::Request do
     let(:block) { Proc.new { |req| req.url URI.parse('foo.json?a=1') } }
 
     it { expect(subject.path).to eq(URI.parse('foo.json')) }
-    it { expect(subject.params).to eq({ 'a' => '1' }) }
+    it { expect(subject.params).to eq('a' => '1') }
     it { expect(subject.to_env(conn).url.to_s).to eq('http://sushi.com/api/foo.json?a=1') }
   end
 
   context 'when setting the url on setup with a string path and params' do
-    let(:block) { Proc.new { |req| req.url 'foo.json', { 'a' => 1 } } }
+    let(:block) { Proc.new { |req| req.url 'foo.json', 'a' => 1 } }
 
     it { expect(subject.path).to eq('foo.json') }
-    it { expect(subject.params).to eq({ 'a' => 1 }) }
+    it { expect(subject.params).to eq('a' => 1) }
     it { expect(subject.to_env(conn).url.to_s).to eq('http://sushi.com/api/foo.json?a=1') }
   end
 
@@ -42,7 +42,7 @@ RSpec.describe Faraday::Request do
     let(:block) { Proc.new { |req| req.url 'foo.json?b=2&a=1#qqq' } }
 
     it { expect(subject.path).to eq('foo.json') }
-    it { expect(subject.params).to eq({ 'a' => '1', 'b' => '2' }) }
+    it { expect(subject.params).to eq('a' => '1', 'b' => '2') }
     it { expect(subject.to_env(conn).url.to_s).to eq('http://sushi.com/api/foo.json?a=1&b=2') }
   end
 
@@ -95,7 +95,7 @@ RSpec.describe Faraday::Request do
       it { expect(env_request.timeout).to eq(10) }
       it { expect(env_request.open_timeout).to eq(5) }
       it { expect(env_request.boundary).to eq('boo') }
-      it { expect(env_request.context).to eq({ foo: 'foo', bar: 'bar' }) }
+      it { expect(env_request.context).to eq(foo: 'foo', bar: 'bar') }
       it do
         oauth_expected = { consumer_secret: 'xyz', consumer_key: 'anonymous' }
         expect(env_request.oauth).to eq(oauth_expected)
