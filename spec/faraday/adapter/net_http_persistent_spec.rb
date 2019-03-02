@@ -33,7 +33,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
   it 'allows to set pool_size on initialize' do
     url = URI('https://example.com')
 
-    adapter = Faraday::Adapter::NetHttpPersistent.new(nil, { pool_size: 5 })
+    adapter = Faraday::Adapter::NetHttpPersistent.new(nil, pool_size: 5)
 
     http = adapter.send(:net_http_connection, url: url, request: {})
 
