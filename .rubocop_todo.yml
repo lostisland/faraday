@@ -294,20 +294,6 @@ Style/SafeNavigation:
     - 'lib/faraday/connection.rb'
     - 'lib/faraday/options/proxy_options.rb'
 
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: AllowIfMethodIsEmpty.
-Style/SingleLineMethods:
-  Exclude:
-    - 'lib/faraday/adapter.rb'
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/rack_builder.rb'
-    - 'lib/faraday/utils.rb'
-    - 'spec/support/fake_safe_buffer.rb'
-    - 'test/adapters/em_http_test.rb'
-    - 'test/adapters/em_synchrony_test.rb'
-    - 'test/adapters/rack_test.rb'
-
 # Offense count: 280
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
