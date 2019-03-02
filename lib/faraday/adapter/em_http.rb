@@ -235,8 +235,14 @@ module Faraday
 
         def perform_request
           client = yield
-          client.callback { @num_succeeded += 1; check_finished }
-          client.errback { @errors << client.error; check_finished }
+          client.callback do
+            @num_succeeded += 1
+            check_finished
+          end
+          client.errback do
+            @errors << client.error
+            check_finished
+          end
         end
 
         def check_finished

@@ -10,11 +10,11 @@ RSpec.describe Faraday::RackBuilder do
     end
   end
 
-  class Apple < Handler;
+  class Apple < Handler
   end
-  class Orange < Handler;
+  class Orange < Handler
   end
-  class Banana < Handler;
+  class Banana < Handler
   end
 
   class Broken < Faraday::Middleware
