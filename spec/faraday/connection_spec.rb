@@ -16,7 +16,7 @@ shared_examples 'initializer with url' do
 
     it { expect(subject.port).to eq(815) }
     it { expect(subject.path_prefix).to eq('/fish') }
-    it { expect(subject.params).to eq({ 'a' => '1' }) }
+    it { expect(subject.params).to eq('a' => '1') }
   end
 end
 
@@ -87,13 +87,13 @@ RSpec.describe Faraday::Connection do
     context 'with custom params' do
       let(:options) { { params: { a: 1 } } }
 
-      it { expect(subject.params).to eq({ 'a' => 1 }) }
+      it { expect(subject.params).to eq('a' => 1) }
     end
 
     context 'with custom params and params in url' do
       let(:url) { 'http://sushi.com/fish?a=1&b=2' }
       let(:options) { { params: { a: 3 } } }
-      it { expect(subject.params).to eq({ 'a' => 3, 'b' => '2' }) }
+      it { expect(subject.params).to eq('a' => 3, 'b' => '2') }
     end
 
     context 'with custom headers' do
@@ -622,7 +622,7 @@ RSpec.describe Faraday::Connection do
       end
 
       it 'supports array params in params' do
-        conn.get('http://example.com', { color: %w[red blue] })
+        conn.get('http://example.com', color: %w[red blue])
       end
     end
 
@@ -632,7 +632,7 @@ RSpec.describe Faraday::Connection do
       after { expect(stubbed).to have_been_made.once }
 
       it 'supports array params in params' do
-        conn.get('http://example.com', { color: %w[red blue] })
+        conn.get('http://example.com', color: %w[red blue])
       end
 
       context 'with array param in url' do

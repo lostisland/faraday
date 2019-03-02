@@ -82,7 +82,7 @@ module Adapters
     end
 
     def test_middleware_with_http_headers
-      @stubs.get('/yo', { 'X-HELLO' => 'hello' }) { [200, {}, 'a'] }
+      @stubs.get('/yo', 'X-HELLO' => 'hello') { [200, {}, 'a'] }
       @stubs.get('/yo') { [200, {}, 'b'] }
       assert_equal 'a', @conn.get('/yo') { |env| env.headers['X-HELLO'] = 'hello' }.body
       assert_equal 'b', @conn.get('/yo').body
@@ -150,7 +150,7 @@ module Adapters
     end
 
     def test_raises_an_error_if_no_stub_is_found_for_request_without_this_header
-      @stubs.get('/yo', { 'X-HELLO' => 'hello' }) { [200, {}, 'a'] }
+      @stubs.get('/yo', 'X-HELLO' => 'hello') { [200, {}, 'a'] }
       assert_raises Faraday::Adapter::Test::Stubs::NotFound do
         @conn.get('/yo')
       end
