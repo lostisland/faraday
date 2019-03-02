@@ -308,13 +308,6 @@ Style/SingleLineMethods:
     - 'test/adapters/em_synchrony_test.rb'
     - 'test/adapters/rack_test.rb'
 
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: .
-# SupportedStyles: use_perl_names, use_english_names
-Style/SpecialGlobalVars:
-  EnforcedStyle: use_perl_names
-
 # Offense count: 280
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

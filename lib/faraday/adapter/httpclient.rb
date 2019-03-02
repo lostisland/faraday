@@ -51,15 +51,15 @@ module Faraday
 
         @app.call env
       rescue ::HTTPClient::TimeoutError, Errno::ETIMEDOUT
-        raise Faraday::TimeoutError, $!
+        raise Faraday::TimeoutError, $ERROR_INFO
       rescue ::HTTPClient::BadResponseError => err
         if err.message.include?('status 407')
           raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ")
         else
-          raise Faraday::ClientError, $!
+          raise Faraday::ClientError, $ERROR_INFO
         end
       rescue Errno::ECONNREFUSED, IOError, SocketError
-        raise Faraday::ConnectionFailed, $!
+        raise Faraday::ConnectionFailed, $ERROR_INFO
       rescue => err
         if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
           raise Faraday::SSLError, err
