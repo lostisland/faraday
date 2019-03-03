@@ -79,7 +79,7 @@ module Faraday
     #
     def lookup_middleware(key)
       load_middleware(key) ||
-        raise(Faraday::Error.new("#{key.inspect} is not registered on #{self}"))
+        raise(Faraday::Error, "#{key.inspect} is not registered on #{self}")
     end
 
     def middleware_mutex(&block)

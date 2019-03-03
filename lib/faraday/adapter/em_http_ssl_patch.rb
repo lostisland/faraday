@@ -23,7 +23,7 @@ module EmHttpSslPatch
       end
       true
     else
-      raise OpenSSL::SSL::SSLError.new(%(unable to verify the server certificate for "#{host}"))
+      raise OpenSSL::SSL::SSLError, %(unable to verify the server certificate for "#{host}")
     end
   end
 
@@ -33,7 +33,7 @@ module EmHttpSslPatch
     if OpenSSL::SSL.verify_certificate_identity(@last_seen_cert, host)
       true
     else
-      raise OpenSSL::SSL::SSLError.new(%(host "#{host}" does not match the server certificate))
+      raise OpenSSL::SSL::SSLError, %(host "#{host}" does not match the server certificate)
     end
   end
 

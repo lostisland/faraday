@@ -109,7 +109,7 @@ module Adapters
       def_delegators :create_connection, :get, :head, :put, :post, :patch, :delete, :run_request
 
       def adapter
-        raise NotImplementedError.new('Need to override #adapter')
+        raise NotImplementedError, 'Need to override #adapter'
       end
 
       # extra options to pass when building the adapter

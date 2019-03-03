@@ -24,7 +24,7 @@ module Faraday
     #
     # @return [void]
     def autoload_all(prefix, options)
-      if prefix =~ /^faraday(\/|$)/i
+      if prefix =~ %r{^faraday(/|$)}i
         prefix = File.join(Faraday.root_path, prefix)
       end
       options.each do |const_name, path|

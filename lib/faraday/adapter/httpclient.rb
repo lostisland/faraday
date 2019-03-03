@@ -60,7 +60,7 @@ module Faraday
         end
       rescue Errno::ECONNREFUSED, IOError, SocketError
         raise Faraday::ConnectionFailed, $ERROR_INFO
-      rescue => err
+      rescue StandardError => err
         if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
           raise Faraday::SSLError, err
         else
