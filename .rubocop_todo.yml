@@ -186,13 +186,6 @@ Style/ParallelAssignment:
     - 'test/adapters/integration.rb'
     - 'test/helper.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowSafeAssignment, AllowInMultilineConditions.
-Style/ParenthesesAroundCondition:
-  Exclude:
-    - 'lib/faraday/request/multipart.rb'
-
 # Offense count: 278
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
