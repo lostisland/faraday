@@ -52,12 +52,10 @@ module Faraday
         amend_opts_with_ssl!(opts, env[:ssl]) if needs_ssl_settings?(env)
 
         if (req = env[:request])
-          amend_opts_with_timeout!(opts, req[:timeout]) if req[:timeout]
-
-          opts[:connect_timeout] = req[:open_timeout] if req[:open_timeout]
-
-          opts[:proxy] = proxy_settings_for_opts(req[:proxy]) if req[:proxy]
+          amend_opts_with_timeouts!(opts, req)
+          amend_opts_with_proxy_settings!(opts, req)
         end
+
         opts
       end
 
@@ -90,10 +88,22 @@ module Faraday
         end
       end
 
-      def amend_opts_with_timeout!(opts, timeout)
+      def amend_opts_with_timeouts!(opts, req)
+        timeout = req[:timeout]
+        return unless timeout
+
         opts[:read_timeout] = timeout
         opts[:connect_timeout] = timeout
         opts[:write_timeout] = timeout
+
+        open_timeout = req[:open_timeout]
+        return unless open_timeout
+
+        opts[:connect_timeout] = open_timeout
+      end
+
+      def amend_opts_with_proxy_settings!(opts, req)
+        opts[:proxy] = proxy_settings_for_opts(req[:proxy]) if req[:proxy]
       end
 
       def proxy_settings_for_opts(proxy)
