@@ -9,81 +9,102 @@ module Faraday
       def call(env)
         super
 
-        opts = {}
-        if env[:url].scheme == 'https' && (ssl = env[:ssl])
-          opts[:ssl_verify_peer] = !!ssl.fetch(:verify, true)
-          opts[:ssl_ca_path] = ssl[:ca_path] if ssl[:ca_path]
-          opts[:ssl_ca_file] = ssl[:ca_file] if ssl[:ca_file]
-          opts[:client_cert] = ssl[:client_cert] if ssl[:client_cert]
-          opts[:client_key]  = ssl[:client_key]  if ssl[:client_key]
-          opts[:certificate] = ssl[:certificate] if ssl[:certificate]
-          opts[:private_key] = ssl[:private_key] if ssl[:private_key]
-          opts[:ssl_version] = ssl[:version] if ssl[:version]
-          opts[:ssl_min_version] = ssl[:min_version] if ssl[:min_version]
-          opts[:ssl_max_version] = ssl[:max_version] if ssl[:max_version]
+        conn = create_connection(env)
 
-          # https://github.com/geemus/excon/issues/106
-          # https://github.com/jruby/jruby-ossl/issues/19
-          opts[:nonblock] = false
-        end
-
-        if (req = env[:request])
-          if req[:timeout]
-            opts[:read_timeout]      = req[:timeout]
-            opts[:connect_timeout]   = req[:timeout]
-            opts[:write_timeout]     = req[:timeout]
-          end
-
-          if req[:open_timeout]
-            opts[:connect_timeout]   = req[:open_timeout]
-          end
-
-          if req[:proxy]
-            opts[:proxy] = {
-              host: req[:proxy][:uri].host,
-              hostname: req[:proxy][:uri].hostname,
-              port: req[:proxy][:uri].port,
-              scheme: req[:proxy][:uri].scheme,
-              user: req[:proxy][:user],
-              password: req[:proxy][:password]
-            }
-          end
-        end
-
-        conn = create_connection(env, opts)
-
-        resp = conn.request \
-          method: env[:method].to_s.upcase,
-          headers: env[:request_headers],
-          body: read_body(env)
+        resp = conn.request(method: env[:method].to_s.upcase,
+                            headers: env[:request_headers],
+                            body: read_body(env))
 
         if req.stream_response?
-          warn "Streaming downloads for #{self.class.name} are not yet implemented."
+          warn "Streaming downloads for #{self.class.name} are not yet " \
+               ' implemented.'
           req.on_data.call(resp.body, resp.body.bytesize)
         end
-        save_response(env, resp.status.to_i, resp.body, resp.headers, resp.reason_phrase)
+        save_response(env, resp.status.to_i, resp.body, resp.headers,
+                      resp.reason_phrase)
 
         @app.call env
       rescue ::Excon::Errors::SocketError => err
-        if err.message =~ /\btimeout\b/
-          raise Faraday::TimeoutError, err
-        elsif err.message =~ /\bcertificate\b/
-          raise Faraday::SSLError, err
-        else
-          raise Faraday::ConnectionFailed, err
-        end
+        raise Faraday::TimeoutError, err if err.message =~ /\btimeout\b/
+
+        raise Faraday::SSLError, err if err.message =~ /\bcertificate\b/
+
+        raise Faraday::ConnectionFailed, err
       rescue ::Excon::Errors::Timeout => err
         raise Faraday::TimeoutError, err
       end
 
       # @return [Excon]
-      def create_connection(env, opts)
+      def create_connection(env)
+        opts = opts_from_env(env)
         ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
       end
 
       # TODO: support streaming requests
       def read_body(env)
         env[:body].respond_to?(:read) ? env[:body].read : env[:body]
+      end
+
+      private
+
+      def opts_from_env(env)
+        opts = {}
+        amend_opts_with_ssl!(opts, env[:ssl]) if needs_ssl_settings?(env)
+
+        if (req = env[:request])
+          amend_opts_with_timeout!(opts, req[:timeout]) if req[:timeout]
+
+          opts[:connect_timeout] = req[:open_timeout] if req[:open_timeout]
+
+          opts[:proxy] = proxy_settings_for_opts(req[:proxy]) if req[:proxy]
+        end
+        opts
+      end
+
+      def needs_ssl_settings?(env)
+        env[:url].scheme == 'https' && env[:ssl]
+      end
+
+      OPTS_KEYS = [
+        %i[client_cert client_cert],
+        %i[client_key client_key],
+        %i[certificate certificate],
+        %i[private_key private_key],
+        %i[ssl_ca_path ca_path],
+        %i[ssl_ca_file ca_file],
+        %i[ssl_version version],
+        %i[ssl_min_version min_version],
+        %i[ssl_max_version max_version]
+      ].freeze
+
+      def amend_opts_with_ssl!(opts, ssl)
+        opts[:ssl_verify_peer] = !!ssl.fetch(:verify, true)
+        # https://github.com/geemus/excon/issues/106
+        # https://github.com/jruby/jruby-ossl/issues/19
+        opts[:nonblock] = false
+
+        OPTS_KEYS.each do |(key_in_opts, key_in_ssl)|
+          next unless ssl[key_in_ssl]
+
+          opts[key_in_opts] = ssl[key_in_ssl]
+        end
+      end
+
+      def amend_opts_with_timeout!(opts, timeout)
+        opts[:read_timeout] = timeout
+        opts[:connect_timeout] = timeout
+        opts[:write_timeout] = timeout
+      end
+
+      def proxy_settings_for_opts(proxy)
+        {
+          host: proxy[:uri].host,
+          hostname: proxy[:uri].hostname,
+          port: proxy[:uri].port,
+          scheme: proxy[:uri].scheme,
+          user: proxy[:user],
+          password: proxy[:password]
+        }
       end
     end
   end
