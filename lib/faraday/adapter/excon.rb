@@ -9,7 +9,8 @@ module Faraday
       def call(env)
         super
 
-        conn = create_connection(env)
+        opts = opts_from_env(env)
+        conn = create_connection(env, opts)
 
         resp = conn.request(method: env[:method].to_s.upcase,
                             headers: env[:request_headers],
@@ -36,8 +37,7 @@ module Faraday
       end
 
       # @return [Excon]
-      def create_connection(env)
-        opts = opts_from_env(env)
+      def create_connection(env, opts)
         ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
       end
 
