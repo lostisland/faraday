@@ -47,6 +47,7 @@ module Faraday
 
     def self.decode(query)
       return nil if query.nil?
+
       empty_accumulator = {}
 
       split_query = (query.split('&').map do |pair|
