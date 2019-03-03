@@ -16,7 +16,7 @@ module Faraday
     #
     # @raise [TypeError] if params can not be converted to a Hash
     def self.encode(params)
-      return nil if params == nil
+      return nil if params.nil?
 
       unless params.is_a?(Array)
         unless params.respond_to?(:to_hash)
@@ -79,7 +79,7 @@ module Faraday
     #
     # @raise [TypeError] if the nesting is incorrect
     def self.decode(query)
-      return nil if query == nil
+      return nil if query.nil?
 
       params = {}
       query.split('&').each do |pair|
@@ -133,7 +133,7 @@ module Faraday
         hash[key] = dehash(value, depth + 1) if value.is_a?(Hash)
       end
 
-      if depth > 0 && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
+      if depth.positive? && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
         hash.keys.sort.inject([]) { |all, key| all << hash[key] }
       else
         hash

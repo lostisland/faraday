@@ -87,7 +87,7 @@ module Faraday
           size = 0
           yielded = false
           http_response = perform_request_with_wrapped_block(http, env) do |chunk|
-            if chunk.bytesize > 0 || size > 0
+            if chunk.bytesize.positive? || size.positive?
               yielded = true
               size += chunk.bytesize
               env[:request].on_data.call(chunk, size)

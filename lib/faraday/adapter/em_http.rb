@@ -220,7 +220,7 @@ module Faraday
         end
 
         def run
-          if @num_registered > 0
+          if @num_registered.positive?
             @running = true
             EventMachine.run do
               @registered_procs.each do |proc|

@@ -42,7 +42,7 @@ module Faraday
           result.force_encoding('BINARY') if result.respond_to?(:force_encoding)
           outbuf << result
           length -= result.length if length
-          break if length == 0
+          break if length&.zero?
         end
         advance_io
       end
