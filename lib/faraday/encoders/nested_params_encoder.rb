@@ -106,7 +106,7 @@ module Faraday
           end
 
           if context.is_a?(Array) && !is_array
-            if !context.last.is_a?(Hash) || context.last.has_key?(subkey)
+            if !context.last.is_a?(Hash) || context.last.key?(subkey)
               context << {}
             end
             context = context.last

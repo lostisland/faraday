@@ -199,14 +199,6 @@ Style/PerlBackrefs:
   Exclude:
     - 'faraday.gemspec'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: short, verbose
-Style/PreferredHashMethods:
-  Exclude:
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-
 # Offense count: 278
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
