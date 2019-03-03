@@ -2,11 +2,10 @@
 
 module Faraday
   class Adapter
-    # Examples
-    #
+    # @example
     #   test = Faraday::Connection.new do
     #     use Faraday::Adapter::Test do |stub|
-    #       # simply define matcher to match the request
+    #       # Define matcher to match the request
     #       stub.get '/resource.json' do
     #         # return static content
     #         [200, {'Content-Type' => 'application/json'}, 'hi world']
@@ -17,10 +16,14 @@ module Faraday
     #         [200, {'Content-Type' => 'text/plain'}, env[:method].to_s]
     #       end
     #
-    #       # regular expression can be used as matching filter
+    #       # A regular expression can be used as matching filter
     #       stub.get /\A\/items\/(\d+)\z/ do |env, meta|
-    #         # in case regular expression is used an instance of MatchData can be received
-    #         [200, {'Content-Type' => 'text/plain'}, "showing item: #{meta[:match_data][1]}"]
+    #         # in case regular expression is used, an instance of MatchData
+    #         # can be received
+    #         [200,
+    #          {'Content-Type' => 'text/plain'},
+    #          "showing item: #{meta[:match_data][1]}"
+    #         ]
     #       end
     #     end
     #   end
@@ -36,18 +39,18 @@ module Faraday
     #
     #   resp = test.get '/items/2'
     #   resp.body # => 'showing item: 2'
-    #
-
     class Test < Faraday::Adapter
       attr_accessor :stubs
 
+      # A stack of Stubs
       class Stubs
         class NotFound < StandardError
         end
 
         def initialize
           # { get: [Stub, Stub] }
-          @stack, @consumed = {}, {}
+          @stack = {}
+          @consumed = {}
           yield(self) if block_given?
         end
 
@@ -134,24 +137,29 @@ module Faraday
         end
       end
 
-      # rubocop:disable Style/StructInheritance
-      class Stub < Struct.new(:host, :path, :params, :headers, :body, :block)
-        # rubocop:enable Style/StructInheritance
-
+      # Stub request
+      class Stub < Struct.new(:host, :path, :params, :headers, :body, :block) # rubocop:disable Style/StructInheritance
         def initialize(host, full, headers, body, block)
           path, query = full.respond_to?(:split) ? full.split('?') : full
-          params = query ?
-            Faraday::Utils.parse_nested_query(query) :
-            {}
+          params =
+            if query
+              Faraday::Utils.parse_nested_query(query)
+            else
+              {}
+            end
+
           super(host, path, params, headers, body, block)
         end
 
         def matches?(request_host, request_uri, request_headers, request_body)
           request_path, request_query = request_uri.split('?')
-          request_params = request_query ?
-            Faraday::Utils.parse_nested_query(request_query) :
-            {}
-          # meta is a hash use as carrier
+          request_params =
+            if request_query
+              Faraday::Utils.parse_nested_query(request_query)
+            else
+              {}
+            end
+          # meta is a hash used as carrier
           # that will be yielded to consumer block
           meta = {}
           [(host.nil? || host == request_host) &&
@@ -162,7 +170,7 @@ module Faraday
         end
 
         def path_match?(request_path, meta)
-          if path.is_a? Regexp
+          if path.is_a?(Regexp)
             !!(meta[:match_data] = path.match(request_path))
           else
             path == request_path
@@ -203,17 +211,26 @@ module Faraday
         params_encoder = env.request.params_encoder || Faraday::Utils.default_params_encoder
 
         stub, meta = stubs.match(env[:method], host, normalized_path, env.request_headers, env[:body])
-        if stub
-          env[:params] = (query = env[:url].query) ?
-            params_encoder.decode(query) : {}
-          block_arity = stub.block.arity
-          status, headers, body = block_arity >= 0 ?
-            stub.block.call(*[env, meta].take(block_arity)) :
-            stub.block.call(env, meta)
-          save_response(env, status, body, headers)
-        else
-          raise Stubs::NotFound, "no stubbed request for #{env[:method]} #{normalized_path} #{env[:body]}"
+
+        unless stub
+          raise Stubs::NotFound, "no stubbed request for #{env[:method]} "\
+                                 "#{normalized_path} #{env[:body]}"
         end
+
+        env[:params] = if (query = env[:url].query)
+                         params_encoder.decode(query)
+                       else
+                         {}
+                       end
+        block_arity = stub.block.arity
+        status, headers, body =
+          if block_arity >= 0
+            stub.block.call(*[env, meta].take(block_arity))
+          else
+            stub.block.call(env, meta)
+          end
+        save_response(env, status, body, headers)
+
         @app.call(env)
       end
     end
