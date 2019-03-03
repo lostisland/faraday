@@ -74,7 +74,8 @@ module Faraday
     end
 
     def capture_warnings
-      old, $stderr = $stderr, StringIO.new
+      old = $stderr
+      $stderr = StringIO.new
       begin
         yield
         $stderr.string

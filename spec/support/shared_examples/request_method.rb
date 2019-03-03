@@ -161,7 +161,8 @@ shared_examples 'a request method' do |http_method|
 
   on_feature :parallel do
     it 'handles parallel requests' do
-      resp1, resp2 = nil, nil
+      resp1 = nil
+      resp2 = nil
       payload1 = { a: '1' }
       payload2 = { b: '2' }
       request_stub.with(Hash[query_or_body, payload1])

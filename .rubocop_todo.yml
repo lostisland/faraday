@@ -175,17 +175,6 @@ Style/NumericPredicate:
     - 'lib/faraday/upload_io.rb'
     - 'lib/faraday/utils/headers.rb'
 
-# Offense count: 7
-# Cop supports --auto-correct.
-Style/ParallelAssignment:
-  Exclude:
-    - 'lib/faraday/rack_builder.rb'
-    - 'script/server'
-    - 'spec/support/helper_methods.rb'
-    - 'spec/support/shared_examples/request_method.rb'
-    - 'test/adapters/integration.rb'
-    - 'test/helper.rb'
-
 # Offense count: 278
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

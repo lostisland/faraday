@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-old_verbose, $VERBOSE = $VERBOSE, nil
+old_verbose = $VERBOSE
+$VERBOSE = nil
 begin
   require File.expand_path('../test/live_server', __dir__)
 ensure

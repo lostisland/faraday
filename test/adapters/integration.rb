@@ -44,8 +44,10 @@ module Adapters
 
     module ParallelNonStreaming
       def test_callback_is_called_in_parallel_with_no_streaming_support
-        resp1, resp2 = nil, nil
-        streamed1, streamed2 = nil, nil
+        resp1 = nil
+        resp2 = nil
+        streamed1 = nil
+        streamed2 = nil
 
         connection = create_connection
         err = capture_warnings do
