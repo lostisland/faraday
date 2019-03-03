@@ -161,20 +161,6 @@ Style/NilComparison:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
     - 'lib/faraday/encoders/nested_params_encoder.rb'
 
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, EnforcedStyle, IgnoredMethods.
-# SupportedStyles: predicate, comparison
-Style/NumericPredicate:
-  Exclude:
-    - 'spec/**/*'
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/net_http.rb'
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'lib/faraday/upload_io.rb'
-    - 'lib/faraday/utils/headers.rb'
-
 # Offense count: 278
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

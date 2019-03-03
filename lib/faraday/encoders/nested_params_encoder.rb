@@ -133,7 +133,7 @@ module Faraday
         hash[key] = dehash(value, depth + 1) if value.is_a?(Hash)
       end
 
-      if depth > 0 && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
+      if depth.positive? && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
         hash.keys.sort.inject([]) { |all, key| all << hash[key] }
       else
         hash

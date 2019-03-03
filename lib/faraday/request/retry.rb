@@ -129,7 +129,7 @@ module Faraday
             raise Faraday::RetriableResponse.new(nil, resp) if @options.retry_statuses.include?(resp.status)
           end
         rescue @errmatch => exception
-          if retries > 0 && retry_request?(env, exception)
+          if retries.positive? && retry_request?(env, exception)
             retries -= 1
             rewind_files(request_body)
             @options.retry_block.call(env, @options, retries, exception)

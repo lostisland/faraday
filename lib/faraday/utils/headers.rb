@@ -117,7 +117,7 @@ module Faraday
         last_response = headers.slice(start_index, headers.size)
 
         last_response
-          .tap { |a| a.shift if a.first.index('HTTP/') == 0 } # drop the HTTP status line
+          .tap { |a| a.shift if a.first.start_with?('HTTP/') } # drop the HTTP status line
           .map { |h| h.split(/:\s*/, 2) } # split key and value
           .reject { |p| p[0].nil? } # ignore blank lines
           .each { |key, value| add_parsed(key, value) } # join multiple values with a comma
