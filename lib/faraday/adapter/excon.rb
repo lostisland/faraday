@@ -15,7 +15,8 @@ module Faraday
                             headers: env[:request_headers],
                             body: read_body(env))
 
-        if req.stream_response?
+        req = env[:request]
+        if req && req.stream_response?
           warn "Streaming downloads for #{self.class.name} are not yet " \
                ' implemented.'
           req.on_data.call(resp.body, resp.body.bytesize)
@@ -23,7 +24,7 @@ module Faraday
         save_response(env, resp.status.to_i, resp.body, resp.headers,
                       resp.reason_phrase)
 
-        @app.call env
+        @app.call(env)
       rescue ::Excon::Errors::SocketError => err
         raise Faraday::TimeoutError, err if err.message =~ /\btimeout\b/
 
