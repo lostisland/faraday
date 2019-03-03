@@ -76,15 +76,6 @@ Style/DoubleNegation:
     - 'lib/faraday/options/env.rb'
     - 'lib/faraday/response.rb'
 
-# Offense count: 9
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: annotated, template, unannotated
-Style/FormatStringToken:
-  Exclude:
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'test/adapters/integration.rb'
-    - 'test/live_server.rb'
-
 # Offense count: 2
 # Configuration parameters: AllowedVariables.
 Style/GlobalVars:

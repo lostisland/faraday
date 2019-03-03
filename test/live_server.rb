@@ -48,7 +48,7 @@ module Faraday
 
     post '/file' do
       if params[:uploaded_file].respond_to? :each_key
-        format('file %s %s %d', params[:uploaded_file][:filename], params[:uploaded_file][:type], params[:uploaded_file][:tempfile].size)
+        format("file #{params[:uploaded_file][:filename]} #{params[:uploaded_file][:type]} #{params[:uploaded_file][:tempfile].size}")
       else
         status 400
       end
