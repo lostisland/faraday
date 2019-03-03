@@ -206,7 +206,9 @@ module Faraday
         end
 
         # @return [Boolean]
-        def running?() @running end
+        def running?
+          @running
+        end
 
         def add
           if running?

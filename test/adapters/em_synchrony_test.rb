@@ -4,7 +4,9 @@ require File.expand_path('integration', __dir__)
 
 module Adapters
   class EMSynchronyTest < Faraday::TestCase
-    def adapter() :em_synchrony end
+    def adapter
+      :em_synchrony
+    end
 
     unless jruby?
       Integration.apply(self, :Parallel, :NonStreaming, :ParallelNonStreaming) do

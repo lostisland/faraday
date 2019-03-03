@@ -344,7 +344,7 @@ module Faraday
       @default_parallel_manager ||= begin
         adapter = @builder.adapter.klass if @builder.adapter
 
-        if adapter && adapter.respond_to?(:supports_parallel?) && adapter.supports_parallel?
+        if adapter&.respond_to?(:supports_parallel?) && adapter&.supports_parallel?
           adapter.setup_parallel_manager
         elsif block_given?
           yield
@@ -372,7 +372,7 @@ module Faraday
         nil
       end
       yield
-      @parallel_manager && @parallel_manager.run
+      @parallel_manager&.run
     ensure
       @parallel_manager = nil
     end
@@ -512,7 +512,7 @@ module Faraday
       end
       uri = url ? base + url : base
       uri.query = params.to_query(params_encoder || options.params_encoder) if params
-      uri.query = nil if uri.query && uri.query.empty?
+      uri.query = nil if uri.query&.empty?
       uri
     end
 

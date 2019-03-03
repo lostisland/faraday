@@ -12,7 +12,7 @@ module Faraday
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
         session = ::Patron::Session.new
-        @config_block.call(session) if @config_block
+        @config_block&.call(session)
         configure_ssl(session, env[:ssl]) if (env[:url].scheme == 'https') && env[:ssl]
 
         if (req = env[:request])
@@ -31,7 +31,7 @@ module Faraday
           data = env[:body] ? env[:body].to_s : nil
           session.request(env[:method], env[:url].to_s, env[:request_headers], data: data)
                    rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
-                     raise Faraday::ConnectionFailed, $!
+                     raise Faraday::ConnectionFailed, $ERROR_INFO
         end
 
         if (req = env[:request]).stream_response?

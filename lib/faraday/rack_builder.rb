@@ -36,9 +36,13 @@ module Faraday
         @args, @block = args, block
       end
 
-      def klass() @@constants[@name] end
+      def klass
+        @@constants[@name]
+      end
 
-      def inspect() @name end
+      def inspect
+        @name
+      end
 
       def ==(other)
         if other.is_a? Handler

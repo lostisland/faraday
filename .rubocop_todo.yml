@@ -6,7 +6,7 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 41
+# Offense count: 40
 Metrics/AbcSize:
   Max: 86
 
@@ -21,7 +21,7 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Max: 216
 
-# Offense count: 20
+# Offense count: 19
 Metrics/CyclomaticComplexity:
   Max: 20
 
@@ -35,7 +35,7 @@ Metrics/MethodLength:
 Metrics/ModuleLength:
   Max: 101
 
-# Offense count: 19
+# Offense count: 17
 Metrics/PerceivedComplexity:
   Max: 21
 
@@ -138,14 +138,13 @@ Style/ModuleFunction:
   Exclude:
     - 'lib/faraday/utils.rb'
 
-# Offense count: 6
+# Offense count: 5
 # Cop supports --auto-correct.
 Style/MultilineIfModifier:
   Exclude:
     - 'lib/faraday/adapter/em_http.rb'
     - 'lib/faraday/adapter/em_synchrony.rb'
     - 'lib/faraday/adapter/net_http_persistent.rb'
-    - 'lib/faraday/adapter/rack.rb'
     - 'test/adapters/em_http_test.rb'
     - 'test/helper.rb'
 
@@ -271,50 +270,6 @@ Style/RescueStandardError:
     - 'lib/faraday/adapter/em_http.rb'
     - 'lib/faraday/adapter/em_synchrony.rb'
     - 'lib/faraday/adapter/httpclient.rb'
-
-# Offense count: 10
-# Cop supports --auto-correct.
-# Configuration parameters: ConvertCodeThatCanStartToReturnNil, Whitelist.
-# Whitelist: present?, blank?, presence, try, try!
-Style/SafeNavigation:
-  Exclude:
-    - 'lib/faraday/adapter.rb'
-    - 'lib/faraday/adapter/httpclient.rb'
-    - 'lib/faraday/adapter/net_http.rb'
-    - 'lib/faraday/adapter/patron.rb'
-    - 'lib/faraday/adapter/rack.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/options/proxy_options.rb'
-
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: AllowIfMethodIsEmpty.
-Style/SingleLineMethods:
-  Exclude:
-    - 'lib/faraday/adapter.rb'
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/rack_builder.rb'
-    - 'lib/faraday/utils.rb'
-    - 'spec/support/fake_safe_buffer.rb'
-    - 'test/adapters/em_http_test.rb'
-    - 'test/adapters/em_synchrony_test.rb'
-    - 'test/adapters/rack_test.rb'
-
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: .
-# SupportedStyles: use_perl_names, use_english_names
-Style/SpecialGlobalVars:
-  EnforcedStyle: use_perl_names
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiteralsInInterpolation:
-  Exclude:
-    - 'lib/faraday/options/env.rb'
-    - 'spec/faraday/utils_spec.rb'
 
 # Offense count: 280
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
