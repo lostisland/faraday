@@ -207,16 +207,6 @@ Style/PreferredHashMethods:
   Exclude:
     - 'lib/faraday/encoders/nested_params_encoder.rb'
 
-# Offense count: 11
-# Cop supports --auto-correct.
-Style/Proc:
-  Exclude:
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'spec/faraday/request_spec.rb'
-    - 'spec/support/shared_examples/request_method.rb'
-    - 'test/adapters/integration.rb'
-
 # Offense count: 278
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

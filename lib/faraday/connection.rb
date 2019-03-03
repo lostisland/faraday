@@ -73,7 +73,7 @@ module Faraday
 
       @builder = options.builder || begin
         # pass an empty block to Builder so it doesn't assume default middleware
-        options.new_builder(block_given? ? Proc.new { |b| } : nil)
+        options.new_builder(block_given? ? proc { |b| } : nil)
       end
 
       self.url_prefix = url || 'http:/'

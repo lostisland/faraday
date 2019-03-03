@@ -23,7 +23,7 @@ RSpec.describe Faraday::Request do
   end
 
   context 'when setting the url on setup with a URI' do
-    let(:block) { Proc.new { |req| req.url URI.parse('foo.json?a=1') } }
+    let(:block) { proc { |req| req.url URI.parse('foo.json?a=1') } }
 
     it { expect(subject.path).to eq(URI.parse('foo.json')) }
     it { expect(subject.params).to eq('a' => '1') }
@@ -31,7 +31,7 @@ RSpec.describe Faraday::Request do
   end
 
   context 'when setting the url on setup with a string path and params' do
-    let(:block) { Proc.new { |req| req.url 'foo.json', 'a' => 1 } }
+    let(:block) { proc { |req| req.url 'foo.json', 'a' => 1 } }
 
     it { expect(subject.path).to eq('foo.json') }
     it { expect(subject.params).to eq('a' => 1) }
@@ -39,7 +39,7 @@ RSpec.describe Faraday::Request do
   end
 
   context 'when setting the url on setup with a path including params' do
-    let(:block) { Proc.new { |req| req.url 'foo.json?b=2&a=1#qqq' } }
+    let(:block) { proc { |req| req.url 'foo.json?b=2&a=1#qqq' } }
 
     it { expect(subject.path).to eq('foo.json') }
     it { expect(subject.params).to eq('a' => '1', 'b' => '2') }
@@ -47,7 +47,7 @@ RSpec.describe Faraday::Request do
   end
 
   context 'when setting a header on setup with []= syntax' do
-    let(:block) { Proc.new { |req| req['Server'] = 'Faraday' } }
+    let(:block) { proc { |req| req['Server'] = 'Faraday' } }
     let(:headers) { subject.to_env(conn).request_headers }
 
     it { expect(subject.headers['Server']).to eq('Faraday') }
@@ -56,7 +56,7 @@ RSpec.describe Faraday::Request do
   end
 
   context 'when setting the body on setup' do
-    let(:block) { Proc.new { |req| req.body = 'hi' } }
+    let(:block) { proc { |req| req.body = 'hi' } }
 
     it { expect(subject.body).to eq('hi') }
     it { expect(subject.to_env(conn).body).to eq('hi') }
@@ -79,7 +79,7 @@ RSpec.describe Faraday::Request do
 
     context 'and per-request options set' do
       let(:block) do
-        Proc.new do |req|
+        proc do |req|
           req.options.timeout = 10
           req.options.boundary = 'boo'
           req.options.oauth[:consumer_secret] = 'xyz'

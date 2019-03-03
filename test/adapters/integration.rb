@@ -121,7 +121,7 @@ module Adapters
         builder_block = if adapter == :default
                           nil
                         else
-                          Proc.new do |b|
+                          proc do |b|
                             b.request :multipart
                             b.request :url_encoded
                             b.adapter adapter, *adapter_options, &optional_connection_config_blk

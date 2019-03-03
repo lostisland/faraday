@@ -73,7 +73,7 @@ module Faraday
         end
 
         def retry_block
-          self[:retry_block] ||= Proc.new {}
+          self[:retry_block] ||= proc {}
         end
 
         def retry_statuses
