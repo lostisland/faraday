@@ -13,3 +13,6 @@ Naming/MethodName:
 Metrics/BlockLength:
   Exclude:
     - spec/**/*.rb
+
+Metrics/LineLength:
+  Max: 120
