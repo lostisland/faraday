@@ -193,12 +193,6 @@ Style/ParenthesesAroundCondition:
   Exclude:
     - 'lib/faraday/request/multipart.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/PerlBackrefs:
-  Exclude:
-    - 'faraday.gemspec'
-
 # Offense count: 278
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

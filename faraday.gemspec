@@ -3,7 +3,7 @@
 lib = 'faraday'
 lib_file = File.expand_path("../lib/#{lib}.rb", __FILE__)
 File.read(lib_file) =~ /\bVERSION\s*=\s*["'](.+?)["']/
-version = $1
+version = Regexp.last_match(1)
 
 Gem::Specification.new do |spec|
   spec.name    = lib
