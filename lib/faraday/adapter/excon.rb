@@ -16,7 +16,7 @@ module Faraday
                             body: read_body(env))
 
         req = env[:request]
-        if req && req.stream_response?
+        if req&.stream_response?
           warn "Streaming downloads for #{self.class.name} are not yet " \
                ' implemented.'
           req.on_data.call(resp.body, resp.body.bytesize)
