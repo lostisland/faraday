@@ -152,7 +152,7 @@ module Faraday
       unless custom_members.empty?
         attrs << "@custom=#{custom_members.inspect}"
       end
-      %(#<#{self.class}#{attrs.join(" ")}>)
+      %(#<#{self.class}#{attrs.join(' ')}>)
     end
 
     # @private

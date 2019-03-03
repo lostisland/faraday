@@ -78,7 +78,7 @@ module Faraday
 
         @app.call env
       rescue Errno::ECONNREFUSED
-        raise Faraday::ConnectionFailed, $!
+        raise Faraday::ConnectionFailed, $ERROR_INFO
       rescue EventMachine::Connectify::CONNECTError => err
         if err.message.include?('Proxy Authentication Required')
           raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ")

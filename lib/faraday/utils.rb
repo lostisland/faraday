@@ -23,7 +23,9 @@ module Faraday
       end.tr(' ', '+')
     end
 
-    def unescape(str) CGI.unescape str.to_s end
+    def unescape(str)
+      CGI.unescape str.to_s
+    end
 
     DEFAULT_SEP = /[&;] */n
 

@@ -35,11 +35,11 @@ module Faraday
           'rack.url_scheme' => env[:url].scheme
         }
 
-        env[:request_headers].each do |name, value|
+        env[:request_headers]&.each do |name, value|
           name = name.upcase.tr('-', '_')
           name = "HTTP_#{name}" unless SPECIAL_HEADERS.include? name
           rack_env[name] = value
-        end if env[:request_headers]
+        end
 
         timeout  = env[:request][:timeout] || env[:request][:open_timeout]
         response = if timeout

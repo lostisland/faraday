@@ -24,7 +24,9 @@ module Faraday
     # This module marks an Adapter as supporting parallel requests.
     module Parallelism
       attr_writer :supports_parallel
-      def supports_parallel?() @supports_parallel end
+      def supports_parallel?
+        @supports_parallel
+      end
 
       def inherited(subclass)
         super
@@ -51,7 +53,7 @@ module Faraday
     def save_response(env, status, body, headers = nil, reason_phrase = nil)
       env.status = status
       env.body = body
-      env.reason_phrase = reason_phrase && reason_phrase.to_s.strip
+      env.reason_phrase = reason_phrase&.to_s&.strip
       env.response_headers = Utils::Headers.new.tap do |response_headers|
         response_headers.update headers unless headers.nil?
         yield(response_headers) if block_given?
