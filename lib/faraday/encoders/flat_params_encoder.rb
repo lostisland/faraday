@@ -8,7 +8,7 @@ module Faraday
     end
 
     def self.encode(params)
-      return nil if params == nil
+      return nil if params.nil?
 
       unless params.is_a?(Array)
         unless params.respond_to?(:to_hash)
@@ -30,7 +30,7 @@ module Faraday
       params.each do |key, value|
         encoded_key = escape(key)
         value = value.to_s if value == true || value == false
-        if value == nil
+        if value.nil?
           buffer << "#{encoded_key}&"
         elsif value.is_a?(Array)
           value.each do |sub_value|
@@ -47,7 +47,7 @@ module Faraday
 
     def self.decode(query)
       empty_accumulator = {}
-      return nil if query == nil
+      return nil if query.nil?
 
       split_query = (query.split('&').map do |pair|
         pair.split('=', 2) if pair && !pair.empty?

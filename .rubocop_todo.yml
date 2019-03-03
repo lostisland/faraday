@@ -8,7 +8,7 @@
 
 # Offense count: 40
 Metrics/AbcSize:
-  Max: 86
+  Max: 79
 
 # Offense count: 2
 # Configuration parameters: CountComments, ExcludedMethods.
@@ -21,9 +21,9 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Max: 216
 
-# Offense count: 19
+# Offense count: 18
 Metrics/CyclomaticComplexity:
-  Max: 20
+  Max: 16
 
 # Offense count: 45
 # Configuration parameters: CountComments, ExcludedMethods.
@@ -35,9 +35,9 @@ Metrics/MethodLength:
 Metrics/ModuleLength:
   Max: 101
 
-# Offense count: 17
+# Offense count: 16
 Metrics/PerceivedComplexity:
-  Max: 21
+  Max: 18
 
 # Offense count: 3
 Style/ClassVars:
@@ -82,14 +82,13 @@ Style/GlobalVars:
   Exclude:
     - 'script/generate_certs'
 
-# Offense count: 27
+# Offense count: 26
 # Configuration parameters: MinBodyLength.
 Style/GuardClause:
   Exclude:
     - 'lib/faraday/adapter/em_http.rb'
     - 'lib/faraday/adapter/em_http_ssl_patch.rb'
     - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'lib/faraday/adapter/excon.rb'
     - 'lib/faraday/adapter/httpclient.rb'
     - 'lib/faraday/adapter/net_http.rb'
     - 'lib/faraday/adapter/net_http_persistent.rb'
@@ -99,10 +98,25 @@ Style/GuardClause:
     - 'lib/faraday/request/url_encoded.rb'
     - 'lib/faraday/utils/headers.rb'
 
-# Offense count: 24
+# Offense count: 23
 # Cop supports --auto-correct.
 Style/IfUnlessModifier:
-  Enabled: false
+  Exclude:
+    - 'lib/faraday.rb'
+    - 'lib/faraday/adapter/em_http.rb'
+    - 'lib/faraday/adapter/httpclient.rb'
+    - 'lib/faraday/adapter/net_http_persistent.rb'
+    - 'lib/faraday/autoload.rb'
+    - 'lib/faraday/connection.rb'
+    - 'lib/faraday/encoders/flat_params_encoder.rb'
+    - 'lib/faraday/encoders/nested_params_encoder.rb'
+    - 'lib/faraday/error.rb'
+    - 'lib/faraday/options/env.rb'
+    - 'lib/faraday/rack_builder.rb'
+    - 'lib/faraday/request/authorization.rb'
+    - 'lib/faraday/request/retry.rb'
+    - 'lib/faraday/utils/params_hash.rb'
+    - 'test/live_server.rb'
 
 # Offense count: 1
 Style/MethodMissingSuper:
@@ -152,16 +166,7 @@ Style/MutableConstant:
     - 'lib/faraday/response/raise_error.rb'
     - 'lib/faraday/utils.rb'
 
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: predicate, comparison
-Style/NilComparison:
-  Exclude:
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-
-# Offense count: 278
+# Offense count: 275
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
 Metrics/LineLength:
