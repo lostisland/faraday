@@ -65,17 +65,6 @@ Style/Documentation:
     - 'lib/faraday/response/raise_error.rb'
     - 'lib/faraday/utils.rb'
 
-# Offense count: 9
-Style/DoubleNegation:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/excon.rb'
-    - 'lib/faraday/adapter/net_http.rb'
-    - 'lib/faraday/adapter/test.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/options/env.rb'
-    - 'lib/faraday/response.rb'
-
 # Offense count: 2
 # Configuration parameters: AllowedVariables.
 Style/GlobalVars:
