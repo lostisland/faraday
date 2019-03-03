@@ -137,7 +137,7 @@ shared_examples 'a request method' do |http_method|
       context 'when response is empty' do
         it do
           conn.public_send(http_method, '/') do |req|
-            req.options.on_data = Proc.new { |*args| streamed << args }
+            req.options.on_data = proc { |*args| streamed << args }
           end
 
           expect(streamed).to eq([['', 0]])
@@ -149,7 +149,7 @@ shared_examples 'a request method' do |http_method|
 
         it 'handles streaming' do
           response = conn.public_send(http_method, '/') do |req|
-            req.options.on_data = Proc.new { |*args| streamed << args }
+            req.options.on_data = proc { |*args| streamed << args }
           end
 
           expect(response.body).to eq('')
@@ -161,7 +161,8 @@ shared_examples 'a request method' do |http_method|
 
   on_feature :parallel do
     it 'handles parallel requests' do
-      resp1, resp2 = nil, nil
+      resp1 = nil
+      resp2 = nil
       payload1 = { a: '1' }
       payload2 = { b: '2' }
       request_stub.with(Hash[query_or_body, payload1])

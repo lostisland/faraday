@@ -33,7 +33,8 @@ module Faraday
         if klass.respond_to?(:name)
           @@constants_mutex.synchronize { @@constants[@name] = klass }
         end
-        @args, @block = args, block
+        @args = args
+        @block = block
       end
 
       def klass
