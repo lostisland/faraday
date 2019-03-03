@@ -13,3 +13,7 @@ Naming/MethodName:
 Metrics/BlockLength:
   Exclude:
     - spec/**/*.rb
+
+Style/DoubleNegation:
+  Enabled: false
+
