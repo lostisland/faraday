@@ -39,8 +39,6 @@ module Faraday
     #
     #   resp = test.get '/items/2'
     #   resp.body # => 'showing item: 2'
-    #
-
     class Test < Faraday::Adapter
       attr_accessor :stubs
 
@@ -140,7 +138,7 @@ module Faraday
       end
 
       # Stub request
-      class Stub < Struct.new(:host, :path, :params, :headers, :body, :block) # rubocop:disable Style/StructInheritance, Metrics/LineLength
+      class Stub < Struct.new(:host, :path, :params, :headers, :body, :block) # rubocop:disable Style/StructInheritance
         def initialize(host, full, headers, body, block)
           path, query = full.respond_to?(:split) ? full.split('?') : full
           params =
