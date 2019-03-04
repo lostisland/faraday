@@ -93,32 +93,9 @@ Style/MissingRespondToMissing:
     - 'lib/faraday.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, Autocorrect.
-# SupportedStyles: module_function, extend_self
-Style/ModuleFunction:
-  Exclude:
-    - 'lib/faraday/utils.rb'
-
-# Offense count: 1
 Style/MultipleComparison:
   Exclude:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
-
-# Offense count: 11
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: literals, strict
-Style/MutableConstant:
-  Exclude:
-    - 'lib/faraday.rb'
-    - 'lib/faraday/adapter/net_http.rb'
-    - 'lib/faraday/adapter/rack.rb'
-    - 'lib/faraday/options/env.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'lib/faraday/response/logger.rb'
-    - 'lib/faraday/response/raise_error.rb'
-    - 'lib/faraday/utils.rb'
 
 # Offense count: 287
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.

@@ -20,8 +20,8 @@ require 'faraday/dependency_loader'
 #
 module Faraday
   VERSION = '0.15.3'
-  METHODS_WITH_QUERY = %w[get head delete connect trace]
-  METHODS_WITH_BODY = %w[post put patch]
+  METHODS_WITH_QUERY = %w[get head delete connect trace].freeze
+  METHODS_WITH_BODY = %w[post put patch].freeze
 
   class << self
     # The root path that Faraday is being loaded from.

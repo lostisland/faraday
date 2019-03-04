@@ -19,7 +19,7 @@ module Faraday
       dependency 'rack/test'
 
       # not prefixed with "HTTP_"
-      SPECIAL_HEADERS = %w[CONTENT_LENGTH CONTENT_TYPE]
+      SPECIAL_HEADERS = %w[CONTENT_LENGTH CONTENT_TYPE].freeze
 
       def initialize(faraday_app, rack_app)
         super(faraday_app)
