@@ -44,10 +44,6 @@ module Faraday
     extend LiveServerConfig
     self.live_server = ENV['LIVE']
 
-    def test_default
-      assert true
-    end unless defined? ::MiniTest
-
     def capture_warnings
       old = $stderr
       $stderr = StringIO.new

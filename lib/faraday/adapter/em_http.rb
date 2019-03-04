@@ -257,10 +257,12 @@ module Faraday
   end
 end
 
-begin
-  require 'openssl'
-rescue LoadError
-  warn 'Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support'
-else
-  require 'faraday/adapter/em_http_ssl_patch'
-end if Faraday::Adapter::EMHttp.loaded?
+if Faraday::Adapter::EMHttp.loaded?
+  begin
+    require 'openssl'
+  rescue LoadError
+    warn 'Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support'
+  else
+    require 'faraday/adapter/em_http_ssl_patch'
+  end
+end

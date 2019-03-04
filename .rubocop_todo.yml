@@ -25,7 +25,7 @@ Metrics/ClassLength:
 Metrics/CyclomaticComplexity:
   Max: 16
 
-# Offense count: 45
+# Offense count: 46
 # Configuration parameters: CountComments, ExcludedMethods.
 Metrics/MethodLength:
   Max: 65
@@ -125,16 +125,6 @@ Style/ModuleFunction:
   Exclude:
     - 'lib/faraday/utils.rb'
 
-# Offense count: 5
-# Cop supports --auto-correct.
-Style/MultilineIfModifier:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'lib/faraday/adapter/net_http_persistent.rb'
-    - 'test/adapters/em_http_test.rb'
-    - 'test/helper.rb'
-
 # Offense count: 11
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
@@ -150,7 +140,7 @@ Style/MutableConstant:
     - 'lib/faraday/response/raise_error.rb'
     - 'lib/faraday/utils.rb'
 
-# Offense count: 275
+# Offense count: 276
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
 Metrics/LineLength:

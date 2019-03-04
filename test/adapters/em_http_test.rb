@@ -8,17 +8,19 @@ module Adapters
       :em_http
     end
 
-    Integration.apply(self, :Parallel, :NonStreaming, :ParallelNonStreaming) do
-      # https://github.com/eventmachine/eventmachine/pull/289
-      undef :test_timeout
+    unless jruby? && ssl_mode?
+      Integration.apply(self, :Parallel, :NonStreaming, :ParallelNonStreaming) do
+        # https://github.com/eventmachine/eventmachine/pull/289
+        undef :test_timeout
 
-      def test_binds_local_socket
-        host = '1.2.3.4'
-        conn = create_connection request: { bind: { host: host } }
-        assert_equal host, conn.options[:bind][:host]
+        def test_binds_local_socket
+          host = '1.2.3.4'
+          conn = create_connection request: { bind: { host: host } }
+          assert_equal host, conn.options[:bind][:host]
+        end
       end
-    end unless jruby? && ssl_mode?
-    # https://github.com/eventmachine/eventmachine/issues/180
+      # https://github.com/eventmachine/eventmachine/issues/180
+    end
 
     def test_custom_adapter_config
       url = URI('https://example.com:1234')
