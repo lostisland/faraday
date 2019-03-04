@@ -135,11 +135,6 @@ Style/MultilineIfModifier:
     - 'test/adapters/em_http_test.rb'
     - 'test/helper.rb'
 
-# Offense count: 1
-Style/MultipleComparison:
-  Exclude:
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
-
 # Offense count: 11
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
