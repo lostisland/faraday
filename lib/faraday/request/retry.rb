@@ -179,9 +179,7 @@ module Faraday
         return unless body.is_a?(Hash)
 
         body.each do |_, value|
-          if value.is_a? UploadIO
-            value.rewind
-          end
+          value.rewind if value.is_a? UploadIO
         end
       end
 

@@ -463,9 +463,7 @@ module Faraday
     #
     # @return [Faraday::Response]
     def run_request(method, url, body, headers)
-      unless METHODS.include?(method)
-        raise ArgumentError, "unknown http method: #{method}"
-      end
+      raise ArgumentError, "unknown http method: #{method}" unless METHODS.include?(method)
 
       # Resets temp_proxy
       @temp_proxy = proxy_for_request(url)
@@ -539,9 +537,7 @@ module Faraday
     # @return [void]
     # @api private
     def with_uri_credentials(uri)
-      if uri.user && uri.password
-        yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
-      end
+      yield(Utils.unescape(uri.user), Utils.unescape(uri.password)) if uri.user && uri.password
     end
 
     def set_authorization_header(header_type, *args)

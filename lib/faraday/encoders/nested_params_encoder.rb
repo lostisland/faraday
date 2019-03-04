@@ -98,17 +98,13 @@ module Faraday
 
           if !last_subkey || is_array
             value_type = is_array ? Array : Hash
-            if context[subkey] && !context[subkey].is_a?(value_type)
-              raise TypeError, format("expected #{value_type.name} (got #{context[subkey].class.name}) for param `#{subkey}'")
-            end
+            raise TypeError, format("expected #{value_type.name} (got #{context[subkey].class.name}) for param `#{subkey}'") if context[subkey] && !context[subkey].is_a?(value_type)
 
             context = (context[subkey] ||= value_type.new)
           end
 
           if context.is_a?(Array) && !is_array
-            if !context.last.is_a?(Hash) || context.last.key?(subkey)
-              context << {}
-            end
+            context << {} if !context.last.is_a?(Hash) || context.last.key?(subkey)
             context = context.last
           end
 

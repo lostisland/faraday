@@ -81,6 +81,4 @@ module Faraday
   end
 end
 
-if $PROGRAM_NAME == __FILE__
-  Faraday::LiveServer.run!
-end
+Faraday::LiveServer.run! if $PROGRAM_NAME == __FILE__

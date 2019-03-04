@@ -72,9 +72,7 @@ module Faraday
     # @return [Env] from given value
     def self.from(value)
       env = super(value)
-      if value.respond_to?(:custom_members)
-        env.custom_members.update(value.custom_members)
-      end
+      env.custom_members.update(value.custom_members) if value.respond_to?(:custom_members)
       env
     end
 
@@ -149,9 +147,7 @@ module Faraday
           attrs << "@#{mem}=#{value.inspect}"
         end
       end
-      unless custom_members.empty?
-        attrs << "@custom=#{custom_members.inspect}"
-      end
+      attrs << "@custom=#{custom_members.inspect}" unless custom_members.empty?
       %(#<#{self.class}#{attrs.join(' ')}>)
     end
 
