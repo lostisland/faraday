@@ -8,7 +8,7 @@ RSpec.describe Faraday do
   context 'proxies to default_connection' do
     let(:mock_connection) { double('Connection') }
     before do
-      Faraday.default_connection = mock_conection
+      Faraday.default_connection = mock_connection
     end
 
     it 'proxies methods that exist on the default_connection' do
