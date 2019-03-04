@@ -5,7 +5,7 @@ require 'faraday/utils/params_hash'
 
 module Faraday
   module Utils
-    extend self
+    module_function
 
     def build_query(params)
       FlatParamsEncoder.encode(params)
@@ -99,8 +99,6 @@ module Faraday
     def deep_merge(source, hash)
       deep_merge!(source.dup, hash)
     end
-
-    protected
 
     def sort_query_params(query)
       query.split('&').sort.join('&')

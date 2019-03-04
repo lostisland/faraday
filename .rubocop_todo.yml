@@ -118,14 +118,6 @@ Style/MissingRespondToMissing:
     - 'lib/faraday.rb'
 
 # Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, Autocorrect.
-# SupportedStyles: module_function, extend_self
-Style/ModuleFunction:
-  Exclude:
-    - 'lib/faraday/utils.rb'
-
-# Offense count: 1
 Style/MultipleComparison:
   Exclude:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
