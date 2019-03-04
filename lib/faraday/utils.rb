@@ -15,7 +15,7 @@ module Faraday
       NestedParamsEncoder.encode(params)
     end
 
-    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
+    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/.freeze
 
     def escape(str)
       str.to_s.gsub(ESCAPE_RE) do |match|
@@ -27,7 +27,7 @@ module Faraday
       CGI.unescape str.to_s
     end
 
-    DEFAULT_SEP = /[&;] */n
+    DEFAULT_SEP = /[&;] */n.freeze
 
     # Adapted from Rack
     def parse_query(query)

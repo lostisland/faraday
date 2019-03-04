@@ -3,8 +3,8 @@
 module Faraday
   class Response
     class RaiseError < Middleware
-      ClientErrorStatuses = 400...500 # rubocop:disable Naming/ConstantName
-      ServerErrorStatuses = 500...600 # rubocop:disable Naming/ConstantName
+      ClientErrorStatuses = (400...500).freeze
+      ServerErrorStatuses = (500...600).freeze
 
       def on_complete(env)
         case env[:status]

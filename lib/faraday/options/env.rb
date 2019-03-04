@@ -52,7 +52,7 @@ module Faraday
     # rubocop:disable Naming/ConstantName
     ContentLength = 'Content-Length'
     StatusesWithoutBody = Set.new [204, 304]
-    SuccessfulStatuses = 200..299
+    SuccessfulStatuses = (200..299).freeze
     # rubocop:enable Naming/ConstantName
 
     # A Set of HTTP verbs that typically send a body.  If no body is set for

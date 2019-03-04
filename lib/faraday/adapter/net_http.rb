@@ -12,7 +12,7 @@ module Faraday
   class Adapter
     # Net::HTTP adapter.
     class NetHttp < Faraday::Adapter
-      NET_HTTP_EXCEPTIONS = [
+      exceptions = [
         IOError,
         Errno::ECONNABORTED,
         Errno::ECONNREFUSED,
@@ -28,8 +28,10 @@ module Faraday
         Zlib::GzipFile::Error
       ]
 
-      NET_HTTP_EXCEPTIONS << OpenSSL::SSL::SSLError if defined?(OpenSSL)
-      NET_HTTP_EXCEPTIONS << Net::OpenTimeout if defined?(Net::OpenTimeout)
+      exceptions << OpenSSL::SSL::SSLError if defined?(OpenSSL)
+      exceptions << Net::OpenTimeout if defined?(Net::OpenTimeout)
+
+      NET_HTTP_EXCEPTIONS = exceptions.freeze
 
       def initialize(app = nil, opts = {}, &block)
         @ssl_cert_store = nil

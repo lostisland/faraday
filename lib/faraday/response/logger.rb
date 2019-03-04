@@ -7,7 +7,7 @@ module Faraday
     class Logger < Middleware
       extend Forwardable
 
-      DEFAULT_OPTIONS = { headers: true, bodies: false }
+      DEFAULT_OPTIONS = { headers: true, bodies: false }.freeze
 
       def initialize(app, logger = nil, options = {})
         super(app)
