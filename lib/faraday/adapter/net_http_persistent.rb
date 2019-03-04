@@ -29,10 +29,12 @@ module Faraday
           proxy_uri = proxy[:uri].is_a?(::URI::HTTP) ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
           proxy_uri.user = proxy_uri.password = nil
           # awful patch for net-http-persistent 2.8 not unescaping user/password
-          (class << proxy_uri; self; end).class_eval do
-            define_method(:user) { proxy[:user] }
-            define_method(:password) { proxy[:password] }
-          end if proxy[:user]
+          if proxy[:user]
+            (class << proxy_uri; self; end).class_eval do
+              define_method(:user) { proxy[:user] }
+              define_method(:password) { proxy[:password] }
+            end
+          end
         end
         proxy_uri
       end

@@ -110,10 +110,12 @@ end
 
 require 'faraday/adapter/em_synchrony/parallel_manager'
 
-begin
-  require 'openssl'
-rescue LoadError
-  warn 'Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support'
-else
-  require 'faraday/adapter/em_http_ssl_patch'
-end if Faraday::Adapter::EMSynchrony.loaded?
+if Faraday::Adapter::EMSynchrony.loaded?
+  begin
+    require 'openssl'
+  rescue LoadError
+    warn 'Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support'
+  else
+    require 'faraday/adapter/em_http_ssl_patch'
+  end
+end
