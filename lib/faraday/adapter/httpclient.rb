@@ -79,9 +79,7 @@ module Faraday
       # @param proxy [Hash]
       def configure_proxy(proxy)
         client.proxy = proxy[:uri]
-        if proxy[:user] && proxy[:password]
-          client.set_proxy_auth proxy[:user], proxy[:password]
-        end
+        client.set_proxy_auth(proxy[:user], proxy[:password]) if proxy[:user] && proxy[:password]
       end
 
       # @param ssl [Hash]

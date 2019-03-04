@@ -14,26 +14,21 @@ Metrics/AbcSize:
 # Configuration parameters: CountComments, ExcludedMethods.
 # ExcludedMethods: refine
 Metrics/BlockLength:
-  Max: 31
+  Max: 27
 
 # Offense count: 5
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 216
+  Max: 212
 
 # Offense count: 18
 Metrics/CyclomaticComplexity:
   Max: 16
 
-# Offense count: 46
+# Offense count: 44
 # Configuration parameters: CountComments, ExcludedMethods.
 Metrics/MethodLength:
   Max: 65
-
-# Offense count: 1
-# Configuration parameters: CountComments.
-Metrics/ModuleLength:
-  Max: 101
 
 # Offense count: 16
 Metrics/PerceivedComplexity:
@@ -71,7 +66,7 @@ Style/GlobalVars:
   Exclude:
     - 'script/generate_certs'
 
-# Offense count: 26
+# Offense count: 21
 # Configuration parameters: MinBodyLength.
 Style/GuardClause:
   Exclude:
@@ -86,26 +81,6 @@ Style/GuardClause:
     - 'lib/faraday/request/retry.rb'
     - 'lib/faraday/request/url_encoded.rb'
     - 'lib/faraday/utils/headers.rb'
-
-# Offense count: 23
-# Cop supports --auto-correct.
-Style/IfUnlessModifier:
-  Exclude:
-    - 'lib/faraday.rb'
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/httpclient.rb'
-    - 'lib/faraday/adapter/net_http_persistent.rb'
-    - 'lib/faraday/autoload.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'lib/faraday/error.rb'
-    - 'lib/faraday/options/env.rb'
-    - 'lib/faraday/rack_builder.rb'
-    - 'lib/faraday/request/authorization.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'lib/faraday/utils/params_hash.rb'
-    - 'test/live_server.rb'
 
 # Offense count: 1
 Style/MethodMissingSuper:
@@ -122,7 +97,7 @@ Style/MultipleComparison:
   Exclude:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
 
-# Offense count: 276
+# Offense count: 287
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
 Metrics/LineLength:

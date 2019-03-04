@@ -56,9 +56,7 @@ module Faraday
       split_query.each_with_object(empty_accumulator.dup) do |pair, accu|
         pair[0] = unescape(pair[0])
         pair[1] = true if pair[1].nil?
-        if pair[1].respond_to?(:to_str)
-          pair[1] = unescape(pair[1].to_str.tr('+', ' '))
-        end
+        pair[1] = unescape(pair[1].to_str.tr('+', ' ')) if pair[1].respond_to?(:to_str)
         if accu[pair[0]].is_a?(Array)
           accu[pair[0]] << pair[1]
         elsif accu[pair[0]]

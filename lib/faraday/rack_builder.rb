@@ -30,9 +30,7 @@ module Faraday
 
       def initialize(klass, *args, &block)
         @name = klass.to_s
-        if klass.respond_to?(:name)
-          @@constants_mutex.synchronize { @@constants[@name] = klass }
-        end
+        @@constants_mutex.synchronize { @@constants[@name] = klass } if klass.respond_to?(:name)
         @args = args
         @block = block
       end
@@ -113,9 +111,7 @@ module Faraday
     def adapter(klass = NO_ARGUMENT, *args, &block)
       return @adapter if klass == NO_ARGUMENT
 
-      if klass.is_a?(Symbol)
-        klass = Faraday::Adapter.lookup_middleware(klass)
-      end
+      klass = Faraday::Adapter.lookup_middleware(klass) if klass.is_a?(Symbol)
       @adapter = self.class::Handler.new(klass, *args, &block)
     end
 
