@@ -77,11 +77,6 @@ Style/GuardClause:
     - 'lib/faraday/utils/headers.rb'
 
 # Offense count: 1
-Style/MethodMissingSuper:
-  Exclude:
-    - 'lib/faraday.rb'
-
-# Offense count: 1
 Style/MissingRespondToMissing:
   Exclude:
     - 'lib/faraday.rb'

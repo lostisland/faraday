@@ -111,7 +111,11 @@ module Faraday
     # Internal: Proxies method calls on the Faraday constant to
     # .default_connection.
     def method_missing(name, *args, &block)
-      default_connection.send(name, *args, &block)
+      if default_connection.respond_to?(name)
+        default_connection.send(name, *args, &block)
+      else
+        super
+      end
     end
   end
 
