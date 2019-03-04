@@ -12,7 +12,7 @@ RSpec.describe Faraday do
     end
 
     it 'proxies methods that exist on the default_connection' do
-      expect(mock_conection).to receive(:this_should_be_proxied)
+      expect(mock_connection).to receive(:this_should_be_proxied)
 
       Faraday.this_should_be_proxied
     end
