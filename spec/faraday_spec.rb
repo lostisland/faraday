@@ -17,7 +17,7 @@ RSpec.describe Faraday do
       Faraday.this_should_be_proxied
     end
 
-    it 'uses method_missing on Farady if there is no proxyable method' do
+    it 'uses method_missing on Faraday if there is no proxyable method' do
       expect { Faraday.this_method_does_not_exist }.to raise_error(
         NoMethodError,
         "undefined method `this_method_does_not_exist' for Faraday:Module"
