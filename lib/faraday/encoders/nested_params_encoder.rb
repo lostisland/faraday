@@ -21,10 +21,8 @@ module Faraday
       return nil if params.nil?
 
       unless params.is_a?(Array)
-        unless params.respond_to?(:to_hash)
-          raise TypeError,
-                "Can't convert #{params.class} into Hash."
-        end
+        raise TypeError, "Can't convert #{params.class} into Hash." unless params.respond_to?(:to_hash)
+
         params = params.to_hash
         params = params.map do |key, value|
           key = key.to_s if key.is_a?(Symbol)
@@ -122,26 +120,31 @@ module Faraday
         subkey = $` if is_array
         last_subkey = i == subkeys.length - 1
 
-        if !last_subkey || is_array
-          value_type = is_array ? Array : Hash
-          raise TypeError, format("expected #{value_type.name} (got #{context[subkey].class.name}) for param `#{subkey}'") if context[subkey] && !context[subkey].is_a?(value_type)
-
-          context = (context[subkey] ||= value_type.new)
-        end
-
-        if context.is_a?(Array) && !is_array
-          context << {} if !context.last.is_a?(Hash) || context.last.key?(subkey)
-          context = context.last
-        end
-
-        if last_subkey
-          if is_array
-            context << value
-          else
-            context[subkey] = value
-          end
-        end
+        context = prepare_context(context, subkey, is_array, last_subkey)
+        add_to_context(is_array, context, value, subkey) if last_subkey
       end
+    end
+
+    def prepare_context(context, subkey, is_array, last_subkey)
+      context = new_context(subkey, is_array, context) if !last_subkey || is_array
+      context = match_context(context, subkey) if context.is_a?(Array) && !is_array
+      context
+    end
+
+    def new_context(subkey, is_array, context)
+      value_type = is_array ? Array : Hash
+      raise TypeError, "expected #{value_type.name} (got #{context[subkey].class.name}) for param `#{subkey}'" if context[subkey] && !context[subkey].is_a?(value_type)
+
+      context[subkey] ||= value_type.new
+    end
+
+    def match_context(context, subkey)
+      context << {} if !context.last.is_a?(Hash) || context.last.key?(subkey)
+      context.last
+    end
+
+    def add_to_context(is_array, context, value, subkey)
+      is_array ? context << value : context[subkey] = value
     end
   end
 end
