@@ -74,7 +74,7 @@ module Faraday
       hash.each { |key, value| hash[key] = dehash(value, depth + 1) if value.is_a?(Hash) }
 
       if depth.positive? && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
-        hash.keys.sort.inject([]) { |all, key| all << hash[key] }
+        hash.sort.map(&:last)
       else
         hash
       end
