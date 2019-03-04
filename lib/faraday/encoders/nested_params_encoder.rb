@@ -67,13 +67,13 @@ module Faraday
 
     private
 
+    SUBKEYS_REGEX = /[^\[\]]+(?:\]?\[\])?/.freeze
+
     # Internal: convert a nested hash with purely numeric keys into an array.
     # FIXME: this is not compatible with Rack::Utils.parse_nested_query
     # @!visibility private
     def dehash(hash, depth)
-      hash.each do |key, value|
-        hash[key] = dehash(value, depth + 1) if value.is_a?(Hash)
-      end
+      hash.each { |key, value| hash[key] = dehash(value, depth + 1) if value.is_a?(Hash) }
 
       if depth.positive? && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
         hash.keys.sort.inject([]) { |all, key| all << hash[key] }
@@ -84,24 +84,9 @@ module Faraday
 
     def encode_pair(parent, value)
       if value.is_a?(Hash)
-        value = value.map do |key, val|
-          key = escape(key)
-          [key, val]
-        end
-        value.sort!
-        buffer = +''
-        value.each do |key, val|
-          new_parent = "#{parent}%5B#{key}%5D"
-          buffer << "#{encode_pair(new_parent, val)}&"
-        end
-        buffer.chop
+        encode_hash(parent, value)
       elsif value.is_a?(Array)
-        new_parent = "#{parent}%5B%5D"
-        return new_parent if value.empty?
-
-        buffer = +''
-        value.each { |val| buffer << "#{encode_pair(new_parent, val)}&" }
-        buffer.chop
+        encode_array(parent, value)
       elsif value.nil?
         parent
       else
@@ -110,8 +95,28 @@ module Faraday
       end
     end
 
+    def encode_hash(parent, value)
+      value = value.map { |key, val| [escape(key), val] }.sort
+
+      buffer = +''
+      value.each do |key, val|
+        new_parent = "#{parent}%5B#{key}%5D"
+        buffer << "#{encode_pair(new_parent, val)}&"
+      end
+      buffer.chop
+    end
+
+    def encode_array(parent, value)
+      new_parent = "#{parent}%5B%5D"
+      return new_parent if value.empty?
+
+      buffer = +''
+      value.each { |val| buffer << "#{encode_pair(new_parent, val)}&" }
+      buffer.chop
+    end
+
     def decode_pair(key, value, context)
-      subkeys = key.scan(/[^\[\]]+(?:\]?\[\])?/)
+      subkeys = key.scan(SUBKEYS_REGEX)
       subkeys.each_with_index do |subkey, i|
         is_array = subkey =~ /[\[\]]+\Z/
         subkey = $` if is_array
