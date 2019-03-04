@@ -77,11 +77,6 @@ Style/GuardClause:
     - 'lib/faraday/utils/headers.rb'
 
 # Offense count: 1
-Style/MissingRespondToMissing:
-  Exclude:
-    - 'lib/faraday.rb'
-
-# Offense count: 1
 Style/MultipleComparison:
   Exclude:
     - 'lib/faraday/encoders/flat_params_encoder.rb'

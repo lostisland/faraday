@@ -24,6 +24,12 @@ RSpec.describe Faraday do
       )
     end
 
+    it 'proxied methods can be accessed' do
+      allow(mock_conection).to receive(:this_should_be_proxied)
+
+      expect(Faraday.method(:this_should_be_proxied)).to be_a(Method)
+    end
+
     after do
       Faraday.default_connection = nil
     end

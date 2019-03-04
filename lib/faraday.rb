@@ -102,7 +102,7 @@ module Faraday
       @default_adapter = adapter
     end
 
-    def respond_to?(symbol, include_private = false)
+    def respond_to_missing?(symbol, include_private = false)
       default_connection.respond_to?(symbol, include_private) || super
     end
 
