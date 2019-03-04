@@ -6,23 +6,26 @@ RSpec.describe Faraday do
   end
 
   context 'proxies to default_connection' do
-    it 'proxies methods that exist on the default_connection' do
-      mock_conection = double('Connection')
-      Faraday.default_connection = mock_conection
+    let(:mock_connection) { double('Connection') }
+    before do
+      Faraday.default_connection = mock_connection
+    end
 
-      expect(mock_conection).to receive(:this_should_be_proxied)
+    it 'proxies methods that exist on the default_connection' do
+      expect(mock_connection).to receive(:this_should_be_proxied)
 
       Faraday.this_should_be_proxied
     end
 
-    it 'uses method_missing on Farady if there is no proxyable method' do
-      mock_conection = double('Connection')
-      Faraday.default_connection = mock_conection
-
+    it 'uses method_missing on Faraday if there is no proxyable method' do
       expect { Faraday.this_method_does_not_exist }.to raise_error(
         NoMethodError,
         "undefined method `this_method_does_not_exist' for Faraday:Module"
       )
+    end
+
+    after do
+      Faraday.default_connection = nil
     end
   end
 end
