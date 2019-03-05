@@ -35,33 +35,35 @@ module Faraday
 
         # Reads out proxy settings from env into options
         def configure_proxy(options, env)
-          if (proxy = request_options(env)[:proxy])
-            options[:proxy] = {
-              host: proxy[:uri].host,
-              port: proxy[:uri].port,
-              authorization: [proxy[:user], proxy[:password]]
-            }
-          end
+          proxy = request_options(env)[:proxy]
+          return unless proxy
+
+          options[:proxy] = {
+            host: proxy[:uri].host,
+            port: proxy[:uri].port,
+            authorization: [proxy[:user], proxy[:password]]
+          }
         end
 
         # Reads out host and port settings from env into options
         def configure_socket(options, env)
-          if (bind = request_options(env)[:bind])
-            options[:bind] = {
-              host: bind[:host],
-              port: bind[:port]
-            }
-          end
+          bind = request_options(env)[:bind]
+          return unless bind
+
+          options[:bind] = {
+            host: bind[:host],
+            port: bind[:port]
+          }
         end
 
         # Reads out SSL certificate settings from env into options
         def configure_ssl(options, env)
-          if env[:url].scheme == 'https' && env[:ssl]
-            options[:ssl] = {
-              cert_chain_file: env[:ssl][:ca_file],
-              verify_peer: env[:ssl].fetch(:verify, true)
-            }
-          end
+          return unless env[:url].scheme == 'https' && env[:ssl]
+
+          options[:ssl] = {
+            cert_chain_file: env[:ssl][:ca_file],
+            verify_peer: env[:ssl].fetch(:verify, true)
+          }
         end
 
         # Reads out timeout settings from env into options
@@ -128,17 +130,13 @@ module Faraday
           raise_error(error) if error
         end
       rescue EventMachine::Connectify::CONNECTError => err
-        if err.message.include?('Proxy Authentication Required')
-          raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ")
-        else
-          raise Faraday::ConnectionFailed, err
-        end
+        raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ") if err.message.include?('Proxy Authentication Required')
+
+        raise Faraday::ConnectionFailed, err
       rescue StandardError => err
-        if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
-          raise Faraday::SSLError, err
-        else
-          raise
-        end
+        raise Faraday::SSLError, err if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
+
+        raise
       end
 
       # TODO: reuse the connection to support pipelining

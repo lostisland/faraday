@@ -571,10 +571,10 @@ module Faraday
 
     def find_default_proxy
       uri = ENV['http_proxy']
-      if uri && !uri.empty?
-        uri = 'http://' + uri if uri !~ /^http/i
-        uri
-      end
+      return unless uri && !uri.empty?
+
+      uri = 'http://' + uri if uri !~ /^http/i
+      uri
     end
 
     def proxy_for_request(url)

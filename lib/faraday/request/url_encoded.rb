@@ -26,10 +26,10 @@ module Faraday
       # @param env [Faraday::Env]
       # @yield [request_body] Body of the request
       def match_content_type(env)
-        if process_request?(env)
-          env.request_headers[CONTENT_TYPE] ||= self.class.mime_type
-          yield(env.body) unless env.body.respond_to?(:to_str)
-        end
+        return unless process_request?(env)
+
+        env.request_headers[CONTENT_TYPE] ||= self.class.mime_type
+        yield(env.body) unless env.body.respond_to?(:to_str)
       end
 
       # @param env [Faraday::Env]

@@ -44,23 +44,21 @@ module Faraday
       rescue Errno::ETIMEDOUT => error
         raise Faraday::TimeoutError, error
       rescue Net::HTTP::Persistent::Error => error
-        if error.message.include? 'Timeout'
-          raise Faraday::TimeoutError, error
-        elsif error.message.include? 'connection refused'
-          raise Faraday::ConnectionFailed, error
-        else
-          raise
-        end
+        raise Faraday::TimeoutError, error if error.message.include? 'Timeout'
+
+        raise Faraday::ConnectionFailed, error if error.message.include? 'connection refused'
+
+        raise
       end
 
       def configure_ssl(http, ssl)
         http_set(http, :verify_mode, ssl_verify_mode(ssl))
-        http_set(http, :cert_store,  ssl_cert_store(ssl))
+        http_set(http, :cert_store, ssl_cert_store(ssl))
 
         http_set(http, :certificate, ssl[:client_cert]) if ssl[:client_cert]
-        http_set(http, :private_key, ssl[:client_key])  if ssl[:client_key]
-        http_set(http, :ca_file,     ssl[:ca_file])     if ssl[:ca_file]
-        http_set(http, :ssl_version, ssl[:version])     if ssl[:version]
+        http_set(http, :private_key, ssl[:client_key]) if ssl[:client_key]
+        http_set(http, :ca_file, ssl[:ca_file]) if ssl[:ca_file]
+        http_set(http, :ssl_version, ssl[:version]) if ssl[:version]
       end
 
       def http_set(http, attr, value)
