@@ -22,21 +22,21 @@ require 'uri'
 module Faraday
   module LiveServerConfig
     def live_server=(value)
-      @@live_server = case value
-                      when /^http/
-                        URI(value)
-                      when /./
-                        URI('http://127.0.0.1:4567')
-                      end
+      @live_server = case value
+                     when /^http/
+                       URI(value)
+                     when /./
+                       URI('http://127.0.0.1:4567')
+                     end
     end
 
     def live_server?
-      defined? @@live_server
+      defined? @live_server
     end
 
     # Returns an object that responds to `host` and `port`.
     def live_server
-      live_server? && @@live_server
+      live_server? && @live_server
     end
   end
 
