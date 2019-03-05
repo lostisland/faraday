@@ -25,6 +25,7 @@ SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, Coveralls::SimpleCo
 
 SimpleCov.start do
   add_filter '/spec/'
+  add_filter '/lib/faraday/adapter/em_http_ssl_patch'
   minimum_coverage 90
   minimum_coverage_by_file 70
 end

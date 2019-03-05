@@ -11,11 +11,15 @@ module Faraday
         @features = features
       end
 
-      def on_feature(name, &block)
+      def on_feature(name)
+        yield if block_given? && feature?(name)
+      end
+
+      def feature?(name)
         if @features.nil?
-          superclass.on_feature(name, &block) if superclass.respond_to?(:on_feature)
-        elsif block_given? && @features.include?(name)
-          yield
+          superclass.feature?(name) if superclass.respond_to?(:feature?)
+        elsif @features.include?(name)
+          true
         end
       end
 
@@ -54,11 +58,7 @@ module Faraday
         yield
       ensure
         old_env.each do |key, value|
-          if value == false
-            ENV.delete key
-          else
-            ENV[key] = value
-          end
+          value == false ? ENV.delete(key) : ENV[key] = value
         end
       end
     end
