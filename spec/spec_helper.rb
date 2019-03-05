@@ -29,6 +29,10 @@ SimpleCov.start do
   minimum_coverage_by_file 70
 end
 
+# Ensure all /lib files are loaded
+# so they will be included in the test coverage report.
+Dir['./lib/**/*.rb'].each { |file| require file }
+
 require 'faraday'
 require 'pry'
 
