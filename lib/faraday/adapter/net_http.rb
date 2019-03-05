@@ -47,11 +47,9 @@ module Faraday
           begin
             http_response = perform_request(http, env)
           rescue *NET_HTTP_EXCEPTIONS => err
-            if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
-              raise Faraday::SSLError, err
-            else
-              raise Faraday::ConnectionFailed, err
-            end
+            raise Faraday::SSLError, err if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
+
+            raise Faraday::ConnectionFailed, err
           end
 
           save_response(env, http_response.code.to_i, http_response.body || '', nil, http_response.message) do |response_headers|

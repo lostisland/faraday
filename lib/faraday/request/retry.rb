@@ -139,11 +139,9 @@ module Faraday
             end
           end
 
-          if exception.is_a?(Faraday::RetriableResponse)
-            exception.response
-          else
-            raise
-          end
+          raise unless exception.is_a?(Faraday::RetriableResponse)
+
+          exception.response
         end
       end
 

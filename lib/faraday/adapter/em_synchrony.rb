@@ -80,25 +80,19 @@ module Faraday
       rescue Errno::ECONNREFUSED
         raise Faraday::ConnectionFailed, $ERROR_INFO
       rescue EventMachine::Connectify::CONNECTError => err
-        if err.message.include?('Proxy Authentication Required')
-          raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ")
-        else
-          raise Faraday::ConnectionFailed, err
-        end
+        raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ") if err.message.include?('Proxy Authentication Required')
+
+        raise Faraday::ConnectionFailed, err
       rescue Errno::ETIMEDOUT => err
         raise Faraday::TimeoutError, err
       rescue RuntimeError => err
-        if err.message == 'connection closed by server'
-          raise Faraday::ConnectionFailed, err
-        else
-          raise
-        end
+        raise Faraday::ConnectionFailed, err if err.message == 'connection closed by server'
+
+        raise
       rescue StandardError => err
-        if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
-          raise Faraday::SSLError, err
-        else
-          raise
-        end
+        raise Faraday::SSLError, err if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
+
+        raise
       end
 
       def create_request(env)

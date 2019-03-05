@@ -53,19 +53,15 @@ module Faraday
       rescue ::HTTPClient::TimeoutError, Errno::ETIMEDOUT
         raise Faraday::TimeoutError, $ERROR_INFO
       rescue ::HTTPClient::BadResponseError => err
-        if err.message.include?('status 407')
-          raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ")
-        else
-          raise Faraday::ClientError, $ERROR_INFO
-        end
+        raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ") if err.message.include?('status 407')
+
+        raise Faraday::ClientError, $ERROR_INFO
       rescue Errno::ECONNREFUSED, IOError, SocketError
         raise Faraday::ConnectionFailed, $ERROR_INFO
       rescue StandardError => err
-        if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
-          raise Faraday::SSLError, err
-        else
-          raise
-        end
+        raise Faraday::SSLError, err if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
+
+        raise
       end
 
       # @param bind [Hash]
@@ -97,16 +93,19 @@ module Faraday
 
       # @param req [Hash]
       def configure_timeouts(req)
-        if req[:timeout]
-          client.connect_timeout   = req[:timeout]
-          client.receive_timeout   = req[:timeout]
-          client.send_timeout      = req[:timeout]
-        end
+        configure_timeout(req) if req[:timeout]
+        configure_open_timeout(req) if req[:open_timeout]
+      end
 
-        if req[:open_timeout]
-          client.connect_timeout   = req[:open_timeout]
-          client.send_timeout      = req[:open_timeout]
-        end
+      def configure_timeout(req)
+        client.connect_timeout   = req[:timeout]
+        client.receive_timeout   = req[:timeout]
+        client.send_timeout      = req[:timeout]
+      end
+
+      def configure_open_timeout(req)
+        client.connect_timeout   = req[:open_timeout]
+        client.send_timeout      = req[:open_timeout]
       end
 
       def configure_client

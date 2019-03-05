@@ -70,10 +70,11 @@ module Faraday
 
       def delete(key)
         key = KeyMap[key]
-        if (key = @names[key.downcase])
-          @names.delete key.downcase
-          super(key)
-        end
+        key = @names[key.downcase]
+        return unless key
+
+        @names.delete key.downcase
+        super(key)
       end
 
       def include?(key)

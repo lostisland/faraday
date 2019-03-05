@@ -6,27 +6,27 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 40
+# Offense count: 38
 Metrics/AbcSize:
   Max: 79
 
 # Offense count: 5
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 212
+  Max: 211
 
-# Offense count: 18
+# Offense count: 16
 Metrics/CyclomaticComplexity:
   Max: 16
 
-# Offense count: 44
+# Offense count: 42
 # Configuration parameters: CountComments, ExcludedMethods.
 Metrics/MethodLength:
-  Max: 65
+  Max: 56
 
-# Offense count: 16
+# Offense count: 13
 Metrics/PerceivedComplexity:
-  Max: 18
+  Max: 16
 
 # Offense count: 3
 Style/ClassVars:
@@ -60,28 +60,12 @@ Style/GlobalVars:
   Exclude:
     - 'script/generate_certs'
 
-# Offense count: 21
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Exclude:
-    - 'lib/faraday/adapter/em_http.rb'
-    - 'lib/faraday/adapter/em_http_ssl_patch.rb'
-    - 'lib/faraday/adapter/em_synchrony.rb'
-    - 'lib/faraday/adapter/httpclient.rb'
-    - 'lib/faraday/adapter/net_http.rb'
-    - 'lib/faraday/adapter/net_http_persistent.rb'
-    - 'lib/faraday/adapter/patron.rb'
-    - 'lib/faraday/connection.rb'
-    - 'lib/faraday/request/retry.rb'
-    - 'lib/faraday/request/url_encoded.rb'
-    - 'lib/faraday/utils/headers.rb'
-
 # Offense count: 1
 Style/MultipleComparison:
   Exclude:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
 
-# Offense count: 287
+# Offense count: 297
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
 Metrics/LineLength:
