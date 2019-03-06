@@ -31,7 +31,7 @@ end
 
 # Ensure all /lib files are loaded
 # so they will be included in the test coverage report.
-Dir['./lib/**/*.rb'].each { |file| require file }
+Dir['./lib/**/*.rb'].sort.each { |file| require file }
 
 require 'faraday'
 require 'pry'
