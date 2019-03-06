@@ -6,9 +6,7 @@ require 'rspec/core/rake_task'
 require 'rspec_junit_formatter'
 
 RSpec::Core::RakeTask.new(:spec) do |config|
-  if ENV['CI']
-    config.rspec_opts = '--format progress --format RspecJunitFormatter --out ~/test-results/rspec.xml'
-  end
+  config.rspec_opts = '--format progress --format RspecJunitFormatter --out ~/test-results/rspec.xml' if ENV['CI']
 end
 
 task default: :test
