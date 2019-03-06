@@ -139,6 +139,8 @@ jobs:
   jruby92:
     docker:
       - image: circleci/jruby:9.2
+        environment:
+          JRUBY_OPTS: "--debug"
     steps:
       - attach_workspace:
           at: .
