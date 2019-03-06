@@ -6,7 +6,7 @@ jobs:
       - image: circleci/ruby:2.6
     steps:
       - checkout
-      - run: "mkdir -p ~/test-results"
+      - run: "mkdir -p ~/test-results/rspec && mkdir -p ~/test-results/rubocop"
       - persist_to_workspace:
           root: .
           paths:
@@ -25,7 +25,7 @@ jobs:
             rubocop --require rubocop/formatter/junit_formatter \
                     --format progress \
                     --format RuboCop::Formatter::JUnitFormatter \
-                    --out ~/test-results/rubocop.xml
+                    --out ~/test-results/rubocop/results.xml
           when: always
       - store_test_results:
           path: ~/test-results
@@ -53,6 +53,8 @@ jobs:
           key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
           paths:
             - ./vendor/bundle
+      - store_test_results:
+          - path: ~/test-results
       - persist_to_workspace:
           root: .
           paths:
@@ -79,6 +81,8 @@ jobs:
           key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
           paths:
             - ./vendor/bundle
+      - store_test_results:
+          - path: ~/test-results
       - persist_to_workspace:
           root: .
           paths:
@@ -105,6 +109,8 @@ jobs:
           key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
           paths:
             - ./vendor/bundle
+      - store_test_results:
+          - path: ~/test-results
       - persist_to_workspace:
           root: .
           paths:
@@ -159,6 +165,8 @@ jobs:
           key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
           paths:
             - ./vendor/bundle
+      - store_test_results:
+          - path: ~/test-results
       - persist_to_workspace:
           root: .
           paths:
