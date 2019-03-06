@@ -54,7 +54,7 @@ jobs:
           paths:
             - ./vendor/bundle
       - store_test_results:
-          - path: ~/test-results
+          path: ~/test-results
       - persist_to_workspace:
           root: .
           paths:
@@ -82,7 +82,7 @@ jobs:
           paths:
             - ./vendor/bundle
       - store_test_results:
-          - path: ~/test-results
+          path: ~/test-results
       - persist_to_workspace:
           root: .
           paths:
@@ -110,7 +110,7 @@ jobs:
           paths:
             - ./vendor/bundle
       - store_test_results:
-          - path: ~/test-results
+          path: ~/test-results
       - persist_to_workspace:
           root: .
           paths:
@@ -166,7 +166,7 @@ jobs:
           paths:
             - ./vendor/bundle
       - store_test_results:
-          - path: ~/test-results
+          path: ~/test-results
       - persist_to_workspace:
           root: .
           paths:
