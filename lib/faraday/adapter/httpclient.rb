@@ -56,7 +56,7 @@ module Faraday
         raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ") if err.message.include?('status 407')
 
         raise Faraday::ClientError, $ERROR_INFO
-      rescue Errno::ECONNREFUSED, IOError, SocketError
+      rescue Errno::EADDRNOTAVAIL, Errno::ECONNREFUSED, IOError, SocketError
         raise Faraday::ConnectionFailed, $ERROR_INFO
       rescue StandardError => err
         raise Faraday::SSLError, err if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
