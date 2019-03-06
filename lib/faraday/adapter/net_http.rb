@@ -14,6 +14,7 @@ module Faraday
     class NetHttp < Faraday::Adapter
       exceptions = [
         IOError,
+        Errno::EADDRNOTAVAIL,
         Errno::ECONNABORTED,
         Errno::ECONNREFUSED,
         Errno::ECONNRESET,
