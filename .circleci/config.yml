@@ -136,6 +136,32 @@ jobs:
           paths:
             - ./vendor/bundle
 
+  jruby92:
+    docker:
+      - image: circleci/jruby:9.2
+    steps:
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
+      - run:
+          name: Bundle Install
+          command: bundle install --path vendor/bundle --jobs 7 --retry 15
+      - run:
+          name: Run tests
+          command: bundle exec rake
+      - save_cache:
+          key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+          paths:
+            - ./vendor/bundle
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./vendor/bundle
+
   deploy:
     docker:
       - image: circleci/ruby:2.6
@@ -171,12 +197,16 @@ workflows:
       - ruby23:
           requires:
             - linting
+      - jruby92:
+          requires:
+            - linting
       - deploy:
           requires:
             - ruby23
             - ruby24
             - ruby25
             - ruby26
+            - jruby92
           filters:
             tags:
               only: /.*/
