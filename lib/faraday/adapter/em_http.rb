@@ -166,17 +166,17 @@ module Faraday
       end
 
       def raise_error(msg)
-        errklass = Faraday::ClientError
-        if msg == Errno::ETIMEDOUT
-          errklass = Faraday::TimeoutError
+        error_class = Faraday::ClientError
+        if msg == Errno::ETIMEDOUT || (msg.is_a?(String) && msg.include?('timeout error'))
+          error_class = Faraday::TimeoutError
           msg = 'request timed out'
         elsif msg == Errno::ECONNREFUSED
-          errklass = Faraday::ConnectionFailed
+          error_class = Faraday::ConnectionFailed
           msg = 'connection refused'
         elsif msg == 'connection closed by server'
-          errklass = Faraday::ConnectionFailed
+          error_class = Faraday::ConnectionFailed
         end
-        raise errklass, msg
+        raise error_class, msg
       end
 
       # @return [Boolean]
