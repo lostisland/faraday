@@ -1,0 +1,159 @@
+version: 2.1
+
+jobs:
+  checkout_code:
+    docker:
+      - image: circleci/ruby:2.6
+    steps:
+      - checkout
+      - run: "mkdir -p ~/test-results"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  linting:
+    docker:
+      - image: circleci/ruby:2.6
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: RuboCop
+          command: |
+            gem install rubocop rubocop-junit_formatter  --no-document
+            rubocop --require rubocop/formatter/junit_formatter \
+                    --format progress \
+                    --format RuboCop::Formatter::JUnitFormatter \
+                    --out ~/test-results/rubocop.xml
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results
+
+  ruby26:
+    docker:
+      - image: circleci/ruby:2.6
+    steps:
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
+      - run:
+          name: Bundle Install
+          command: bundle install --path vendor/bundle --jobs 7 --retry 15
+      - run:
+          name: Run tests
+          command: bundle exec rake
+      - save_cache:
+          key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+          paths:
+            - ./vendor/bundle
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./vendor/bundle
+
+  ruby25:
+    docker:
+      - image: circleci/ruby:2.5
+    steps:
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
+      - run:
+          name: Bundle Install
+          command: bundle install --path vendor/bundle --jobs 7 --retry 15
+      - run:
+          name: Run tests
+          command: bundle exec rake
+      - save_cache:
+          key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+          paths:
+            - ./vendor/bundle
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./vendor/bundle
+
+  ruby24:
+    docker:
+      - image: circleci/ruby:2.4
+    steps:
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
+      - run:
+          name: Bundle Install
+          command: bundle install --path vendor/bundle --jobs 7 --retry 15
+      - run:
+          name: Run tests
+          command: bundle exec rake
+      - save_cache:
+          key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+          paths:
+            - ./vendor/bundle
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./vendor/bundle
+
+  ruby23:
+    docker:
+      - image: circleci/ruby:2.3
+    steps:
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
+            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
+      - run:
+          name: Bundle Install
+          command: bundle install --path vendor/bundle --jobs 7 --retry 15
+      - run:
+          name: Run tests
+          command: bundle exec rake
+      - save_cache:
+          key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+          paths:
+            - ./vendor/bundle
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./vendor/bundle
+
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - checkout_code
+      - linting:
+          requires:
+            - checkout_code
+      - ruby26:
+          requires:
+            - linting
+      - ruby25:
+          requires:
+            - linting
+      - ruby24:
+          requires:
+            - linting
+      - ruby23:
+          requires:
+            - linting
