@@ -136,6 +136,20 @@ jobs:
           paths:
             - ./vendor/bundle
 
+  deploy:
+    docker:
+      - image: circleci/ruby:2.6
+    steps:
+      - checkout
+      - run:
+          name: Setup Rubygems
+          command: bash .circleci/setup-rubygems.sh
+
+      - run:
+          name: Publish to Rubygems
+          command: |
+            gem build faraday.gemspec
+            gem push "faraday-$(git describe --tags).gem"
 
 workflows:
   version: 2
@@ -157,3 +171,14 @@ workflows:
       - ruby23:
           requires:
             - linting
+      - deploy:
+          requires:
+            - ruby23
+            - ruby24
+            - ruby25
+            - ruby26
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
