@@ -25,10 +25,13 @@ SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, Coveralls::SimpleCo
 
 SimpleCov.start do
   add_filter '/spec/'
-  add_filter '/lib/faraday/adapter/em_http_ssl_patch'
-  minimum_coverage 90
-  minimum_coverage_by_file 70
+  minimum_coverage 84
+  minimum_coverage_by_file 26
 end
+
+# Ensure all /lib files are loaded
+# so they will be included in the test coverage report.
+Dir['./lib/**/*.rb'].each { |file| require file }
 
 require 'faraday'
 require 'pry'
