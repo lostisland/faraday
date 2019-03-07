@@ -8,7 +8,7 @@
 
 # Offense count: 38
 Metrics/AbcSize:
-  Max: 79
+  Max: 82
 
 # Offense count: 5
 # Configuration parameters: CountComments.
@@ -22,7 +22,7 @@ Metrics/CyclomaticComplexity:
 # Offense count: 42
 # Configuration parameters: CountComments, ExcludedMethods.
 Metrics/MethodLength:
-  Max: 56
+  Max: 57
 
 # Offense count: 13
 Metrics/PerceivedComplexity:
@@ -65,7 +65,7 @@ Style/MultipleComparison:
   Exclude:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
 
-# Offense count: 297
+# Offense count: 303
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
 Metrics/LineLength:
