@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'monitor'
+
 module Faraday
   # Adds the ability for other modules to register and lookup
   # middleware classes.
@@ -83,10 +85,7 @@ module Faraday
     end
 
     def middleware_mutex(&block)
-      @middleware_mutex ||= begin
-        require 'monitor'
-        Monitor.new
-      end
+      @middleware_mutex ||= Monitor.new
       @middleware_mutex.synchronize(&block)
     end
 

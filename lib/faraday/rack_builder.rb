@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'faraday/adapter_registry'
+
 module Faraday
   # A Builder that processes requests into responses by passing through an inner
   # middleware stack (heavily inspired by Rack).
@@ -20,23 +22,19 @@ module Faraday
     # borrowed from ActiveSupport::Dependencies::Reference &
     # ActionDispatch::MiddlewareStack::Middleware
     class Handler
-      @@constants_mutex = Mutex.new
-      @@constants = Hash.new do |h, k|
-        value = k.respond_to?(:constantize) ? k.constantize : Object.const_get(k)
-        @@constants_mutex.synchronize { h[k] = value }
-      end
+      REGISTRY = Faraday::AdapterRegistry.new
 
       attr_reader :name
 
       def initialize(klass, *args, &block)
         @name = klass.to_s
-        @@constants_mutex.synchronize { @@constants[@name] = klass } if klass.respond_to?(:name)
+        REGISTRY.set(klass) if klass.respond_to?(:name)
         @args = args
         @block = block
       end
 
       def klass
-        @@constants[@name]
+        REGISTRY.get(@name)
       end
 
       def inspect
