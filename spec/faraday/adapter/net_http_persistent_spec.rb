@@ -8,7 +8,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
   it 'allows to provide adapter specific configs' do
     url = URI('https://example.com')
 
-    adapter = Faraday::Adapter::NetHttpPersistent.new do |http|
+    adapter = described_class.new do |http|
       http.idle_timeout = 123
     end
 
@@ -21,7 +21,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
   it 'sets max_retries to 0' do
     url = URI('http://example.com')
 
-    adapter = Faraday::Adapter::NetHttpPersistent.new
+    adapter = described_class.new
 
     http = adapter.send(:net_http_connection, url: url, request: {})
     adapter.send(:configure_request, http, {})
@@ -33,7 +33,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
   it 'allows to set pool_size on initialize' do
     url = URI('https://example.com')
 
-    adapter = Faraday::Adapter::NetHttpPersistent.new(nil, pool_size: 5)
+    adapter = described_class.new(nil, pool_size: 5)
 
     http = adapter.send(:net_http_connection, url: url, request: {})
 

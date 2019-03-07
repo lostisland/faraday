@@ -88,6 +88,8 @@ module Faraday
       rescue RuntimeError => err
         raise Faraday::ConnectionFailed, err if err.message == 'connection closed by server'
 
+        raise Faraday::TimeoutError, err if err.message.include?('timeout error')
+
         raise
       rescue StandardError => err
         raise Faraday::SSLError, err if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)

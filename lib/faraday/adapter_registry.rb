@@ -14,7 +14,8 @@ module Faraday
     def get(name)
       klass = @constants[name]
       return klass if klass
-      Object.const_get(name).tap { |klass| set(klass, name) }
+
+      Object.const_get(name).tap { |c| set(c, name) }
     end
 
     def set(klass, name = nil)
