@@ -26,7 +26,7 @@ RSpec.describe Faraday::Adapter::Rack do
 
     def req_headers(env)
       http_headers = env.select { |k, _| k.start_with?('HTTP_') }.map { |k, v| [k[5..-1], v] }.to_h
-      http_headers.merge(env.slice('CONTENT_TYPE', 'CONTENT_LENGTH'))
+      http_headers.merge(env.select { |k, _| Faraday::Adapter::Rack::SPECIAL_HEADERS.include?(k) })
     end
 
     def req_body(env)
