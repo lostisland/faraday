@@ -142,6 +142,7 @@ jobs:
           paths:
             - ./vendor/bundle
 
+  # Currently not in use
   jruby92:
     docker:
       - image: circleci/jruby:9.2
@@ -207,16 +208,12 @@ workflows:
       - ruby23:
           requires:
             - linting
-      - jruby92:
-          requires:
-            - linting
       - deploy:
           requires:
             - ruby23
             - ruby24
             - ruby25
             - ruby26
-            - jruby92
           filters:
             tags:
               only: /.*/
