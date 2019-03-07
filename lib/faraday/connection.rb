@@ -47,11 +47,14 @@ module Faraday
     #           requests (optional).
     # @param options [Hash, Faraday::ConnectionOptions]
     # @option options [URI, String] :url ('http:/') URI or String base URL
-    # @option options [Hash<String => String>] :params URI query unencoded key/value pairs.
-    # @option options [Hash<String => String>] :headers Hash of unencoded HTTP header key/value pairs.
+    # @option options [Hash<String => String>] :params URI query unencoded
+    #                 key/value pairs.
+    # @option options [Hash<String => String>] :headers Hash of unencoded HTTP
+    #                 header key/value pairs.
     # @option options [Hash] :request Hash of request options.
     # @option options [Hash] :ssl Hash of SSL options.
-    # @option options [Hash, URI, String] :proxy proxy options, either as a URL or as a Hash
+    # @option options [Hash, URI, String] :proxy proxy options, either as a URL
+    #                 or as a Hash
     # @option options [URI, String] :proxy[:uri]
     # @option options [String] :proxy[:user]
     # @option options [String] :proxy[:password]
@@ -82,7 +85,12 @@ module Faraday
       @headers.update(options.headers) if options.headers
 
       @manual_proxy = !!options.proxy
-      @proxy = options.proxy ? ProxyOptions.from(options.proxy) : proxy_from_env(url)
+      @proxy =
+        if options.proxy
+          ProxyOptions.from(options.proxy)
+        else
+          proxy_from_env(url)
+        end
       @temp_proxy = @proxy
 
       yield(self) if block_given?
@@ -110,8 +118,8 @@ module Faraday
     # Makes a GET HTTP request without a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
+    # @param url [String] The optional String base URL to use as a prefix for
+    #            all requests.  Can also be the options Hash.
     # @param params [Hash] Hash of URI query unencoded key/value pairs.
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
@@ -132,8 +140,8 @@ module Faraday
     # Makes a HEAD HTTP request without a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
+    # @param url [String] The optional String base URL to use as a prefix for
+    #            all requests.  Can also be the options Hash.
     # @param params [Hash] Hash of URI query unencoded key/value pairs.
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
@@ -147,8 +155,8 @@ module Faraday
     # Makes a DELETE HTTP request without a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
+    # @param url [String] The optional String base URL to use as a prefix for
+    #            all requests.  Can also be the options Hash.
     # @param params [Hash] Hash of URI query unencoded key/value pairs.
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
@@ -162,8 +170,8 @@ module Faraday
     # Makes a CONNECT HTTP request without a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
+    # @param url [String] The optional String base URL to use as a prefix for
+    #            all requests.  Can also be the options Hash.
     # @param params [Hash] Hash of URI query unencoded key/value pairs.
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
@@ -177,8 +185,8 @@ module Faraday
     # Makes a TRACE HTTP request without a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
+    # @param url [String] The optional String base URL to use as a prefix for
+    #            all requests.  Can also be the options Hash.
     # @param params [Hash] Hash of URI query unencoded key/value pairs.
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
@@ -204,8 +212,8 @@ module Faraday
     # Makes an OPTIONS HTTP request without a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
+    # @param url [String] The optional String base URL to use as a prefix for
+    #            all requests.  Can also be the options Hash.
     # @param params [Hash] Hash of URI query unencoded key/value pairs.
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
@@ -228,8 +236,8 @@ module Faraday
     # Makes a POST HTTP request with a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
+    # @param url [String] The optional String base URL to use as a prefix for
+    #            all requests.  Can also be the options Hash.
     # @param body [String] body for the request.
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
@@ -250,8 +258,8 @@ module Faraday
     # Makes a PUT HTTP request with a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash.
+    # @param url [String] The optional String base URL to use as a prefix for
+    #            all requests.  Can also be the options Hash.
     # @param body [String] body for the request.
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
@@ -361,13 +369,15 @@ module Faraday
 
     # Sets up the parallel manager to make a set of requests.
     #
-    # @param manager [Object] The parallel manager that this Connection's Adapter uses.
+    # @param manager [Object] The parallel manager that this Connection's
+    #                Adapter uses.
     #
     # @yield a block to execute multiple requests.
     # @return [void]
     def in_parallel(manager = nil)
       @parallel_manager = manager || default_parallel_manager do
-        warn 'Warning: `in_parallel` called but no parallel-capable adapter on Faraday stack'
+        warn 'Warning: `in_parallel` called but no parallel-capable adapter '+
+          'on Faraday stack'
         warn caller[2, 10].join("\n")
         nil
       end
@@ -448,8 +458,13 @@ module Faraday
       uri = build_exclusive_url(url)
 
       query_values = params.dup.merge_query(uri.query, options.params_encoder)
-      query_values.update extra_params if extra_params
-      uri.query = query_values.empty? ? nil : query_values.to_query(options.params_encoder)
+      query_values.update(extra_params) if extra_params
+      uri.query =
+        if query_values.empty?
+          nil
+        else
+          query_values.to_query(options.params_encoder)
+        end
 
       uri
     end
@@ -458,12 +473,15 @@ module Faraday
     #
     # @param method [Symbol] HTTP method.
     # @param url [String, URI] String or URI to access.
-    # @param body [Object] The request body that will eventually be converted to a string.
+    # @param body [Object] The request body that will eventually be converted to
+    #             a string.
     # @param headers [Hash] unencoded HTTP header key/value pairs.
     #
     # @return [Faraday::Response]
     def run_request(method, url, body, headers)
-      raise ArgumentError, "unknown http method: #{method}" unless METHODS.include?(method)
+      if !METHODS.include?(method)
+        raise ArgumentError, "unknown http method: #{method}"
+      end
 
       # Resets temp_proxy
       @temp_proxy = proxy_for_request(url)
@@ -497,7 +515,8 @@ module Faraday
     # Build an absolute URL based on url_prefix.
     #
     # @param url [String, URI]
-    # @param params [Faraday::Utils::ParamsHash] A Faraday::Utils::ParamsHash to replace the query values
+    # @param params [Faraday::Utils::ParamsHash] A Faraday::Utils::ParamsHash to
+    #               replace the query values
     #          of the resulting url (default: nil).
     #
     # @return [URI]
@@ -509,7 +528,9 @@ module Faraday
         base.path = base.path + '/' # ensure trailing slash
       end
       uri = url ? base + url : base
-      uri.query = params.to_query(params_encoder || options.params_encoder) if params
+      if params
+        uri.query = params.to_query(params_encoder || options.params_encoder)
+      end
       uri.query = nil if uri.query&.empty?
       uri
     end
@@ -537,7 +558,9 @@ module Faraday
     # @return [void]
     # @api private
     def with_uri_credentials(uri)
-      yield(Utils.unescape(uri.user), Utils.unescape(uri.password)) if uri.user && uri.password
+      if uri.user && uri.password
+        yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
+      end
     end
 
     def set_authorization_header(header_type, *args)
