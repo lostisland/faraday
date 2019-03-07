@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Faraday::Adapter::EMHttp do
-  features :request_body_on_query_methods, :reason_phrase_parse, :trace_method, :connect_method,
+RSpec.describe Faraday::Adapter::EMSynchrony do
+  features :request_body_on_query_methods, :reason_phrase_parse,
            :skip_response_body_on_head, :parallel, :local_socket_binding
 
   it_behaves_like 'an adapter'
