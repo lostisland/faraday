@@ -8,29 +8,18 @@ module Faraday
   class AdapterRegistry
     def initialize
       @lock = Monitor.new
-      @constants = nil
+      @constants = {}
     end
 
     def get(name)
-      klass = @constants && @constants[name]
+      klass = @constants[name]
       return klass if klass
-
-      klass =
-        if name.respond_to?(:constantize)
-          name.constantize
-        else
-          Object.const_get(name)
-        end
-
-      set(klass, name)
-
-      klass
+      Object.const_get(name).tap { |klass| set(klass, name) }
     end
 
     def set(klass, name = nil)
       name ||= klass.to_s
       @lock.synchronize do
-        @constants ||= {}
         @constants[name] = klass
       end
     end
