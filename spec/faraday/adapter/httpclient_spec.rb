@@ -6,7 +6,7 @@ RSpec.describe Faraday::Adapter::HTTPClient do
   it_behaves_like 'an adapter'
 
   it 'allows to provide adapter specific configs' do
-    adapter = Faraday::Adapter::HTTPClient.new do |client|
+    adapter = described_class.new do |client|
       client.keep_alive_timeout = 20
       client.ssl_config.timeout = 25
     end

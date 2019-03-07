@@ -7,7 +7,7 @@ RSpec.describe Faraday::Adapter::NetHttp do
 
   context 'checking http' do
     let(:url) { URI('http://example.com') }
-    let(:adapter) { Faraday::Adapter::NetHttp.new }
+    let(:adapter) { described_class.new }
     let(:http) { adapter.send(:net_http_connection, url: url, request: {}) }
 
     it { expect(http.port).to eq(80) }
@@ -36,7 +36,7 @@ RSpec.describe Faraday::Adapter::NetHttp do
 
     context 'with custom adapter config' do
       let(:adapter) do
-        Faraday::Adapter::NetHttp.new do |http|
+        described_class.new do |http|
           http.continue_timeout = 123
         end
       end

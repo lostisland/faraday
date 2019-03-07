@@ -7,7 +7,7 @@ RSpec.describe Faraday::Adapter::EMSynchrony do
 
   it 'allows to provide adapter specific configs' do
     url = URI('https://example.com:1234')
-    adapter = Faraday::Adapter::EMSynchrony.new nil, inactivity_timeout: 20
+    adapter = described_class.new nil, inactivity_timeout: 20
     req = adapter.create_request(url: url, request: {})
 
     expect(req.connopts.inactivity_timeout).to eq(20)
