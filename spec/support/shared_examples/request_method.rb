@@ -37,6 +37,21 @@ shared_examples 'a request method' do |http_method|
     expect { conn.public_send(http_method, 'http://localhost:4') }.to raise_error(Faraday::ConnectionFailed)
   end
 
+  on_feature :local_socket_binding do
+    it 'binds local socket' do
+      stub_request(http_method, 'http://example.com')
+
+      host = '1.2.3.4'
+      port = 1234
+      conn_options[:request] = { bind: { host: host, port: port } }
+
+      conn.public_send(http_method, '/')
+
+      expect(conn.options[:bind][:host]).to eq(host)
+      expect(conn.options[:bind][:port]).to eq(port)
+    end
+  end
+
   # context 'when wrong ssl certificate is provided' do
   #   let(:ca_file_path) { 'tmp/faraday-different-ca-cert.crt' }
   #   before { conn_options.merge!(ssl: { ca_file: ca_file_path }) }
