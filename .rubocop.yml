@@ -9,6 +9,10 @@ Metrics/BlockLength:
   Exclude:
     - spec/**/*.rb
 
+Metrics/LineLength:
+  Exclude:
+    - spec/**/*.rb
+
 Style/DoubleNegation:
   Enabled: false
 
