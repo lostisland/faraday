@@ -29,11 +29,7 @@ module Faraday
 
       def call(env)
         super
-        rack_env = {
-          method: env[:method],
-          input: env[:body].respond_to?(:read) ? env[:body].read : env[:body],
-          'rack.url_scheme' => env[:url].scheme
-        }
+        rack_env = build_rack_env(env)
 
         env[:request_headers]&.each do |name, value|
           name = name.upcase.tr('-', '_')
@@ -43,13 +39,16 @@ module Faraday
 
         timeout  = env[:request][:timeout] || env[:request][:open_timeout]
         response = if timeout
-                     Timer.timeout(timeout, Faraday::TimeoutError) { execute_request(env, rack_env) }
+                     Timer.timeout(timeout, Faraday::TimeoutError) do
+                       execute_request(env, rack_env)
+                     end
                    else
                      execute_request(env, rack_env)
                    end
 
         if (req = env[:request]).stream_response?
-          warn "Streaming downloads for #{self.class.name} are not yet implemented."
+          warn "Streaming downloads for #{self.class.name} " \
+            'are not yet implemented.'
           req.on_data.call(response.body, response.body.bytesize)
         end
 
@@ -57,8 +56,18 @@ module Faraday
         @app.call env
       end
 
+      private
+
       def execute_request(env, rack_env)
         @session.request(env[:url].to_s, rack_env)
+      end
+
+      def build_rack_env(env)
+        {
+          method: env[:method],
+          input: env[:body].respond_to?(:read) ? env[:body].read : env[:body],
+          'rack.url_scheme' => env[:url].scheme
+        }
       end
     end
   end

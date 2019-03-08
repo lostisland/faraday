@@ -16,7 +16,9 @@ module Faraday
         when Hash
           build_hash(type.to_s, token)
         else
-          raise ArgumentError, "Can't build an Authorization #{type} header from #{token.inspect}"
+          raise ArgumentError,
+                "Can't build an Authorization #{type}" \
+                  "header from #{token.inspect}"
         end
       end
 

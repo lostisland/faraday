@@ -13,43 +13,57 @@ module Faraday
 
         session = ::Patron::Session.new
         @config_block&.call(session)
-        configure_ssl(session, env[:ssl]) if (env[:url].scheme == 'https') && env[:ssl]
+        if (env[:url].scheme == 'https') && env[:ssl]
+          configure_ssl(session, env[:ssl])
+        end
 
         if (req = env[:request])
-          session.timeout = session.connect_timeout = req[:timeout] if req[:timeout]
-          session.connect_timeout = req[:open_timeout]              if req[:open_timeout]
+          if req[:timeout]
+            session.timeout = session.connect_timeout = req[:timeout]
+          end
+          session.connect_timeout = req[:open_timeout] if req[:open_timeout]
 
           if (proxy = req[:proxy])
             proxy_uri = proxy[:uri].dup
-            proxy_uri.user = proxy[:user] && Utils.escape(proxy[:user]).gsub('+', '%20')
-            proxy_uri.password = proxy[:password] && Utils.escape(proxy[:password]).gsub('+', '%20')
+            proxy_uri.user = proxy[:user] &&
+                             Utils.escape(proxy[:user]).gsub('+', '%20')
+            proxy_uri.password = proxy[:password] &&
+                                 Utils.escape(proxy[:password]).gsub('+', '%20')
             session.proxy = proxy_uri.to_s
           end
         end
 
         response = begin
           data = env[:body] ? env[:body].to_s : nil
-          session.request(env[:method], env[:url].to_s, env[:request_headers], data: data)
+          session.request(env[:method], env[:url].to_s,
+                          env[:request_headers], data: data)
                    rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
                      raise Faraday::ConnectionFailed, $ERROR_INFO
         end
 
         if (req = env[:request]).stream_response?
-          warn "Streaming downloads for #{self.class.name} are not yet implemented."
+          warn "Streaming downloads for #{self.class.name} " \
+            'are not yet implemented.'
           req.on_data.call(response.body, response.body.bytesize)
         end
         # Remove the "HTTP/1.1 200", leaving just the reason phrase
         reason_phrase = response.status_line.gsub(/^.* \d{3} /, '')
 
-        save_response(env, response.status, response.body, response.headers, reason_phrase)
+        save_response(env, response.status, response.body,
+                      response.headers, reason_phrase)
 
         @app.call env
       rescue ::Patron::TimeoutError => err
-        raise Faraday::ConnectionFailed, err if connection_timed_out_message?(err.message)
+        if connection_timed_out_message?(err.message)
+          raise Faraday::ConnectionFailed, err
+        end
 
         raise Faraday::TimeoutError, err
       rescue ::Patron::Error => err
-        raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ") if err.message.include?('code 407')
+        if err.message.include?('code 407')
+          raise Faraday::ConnectionFailed,
+                %(407 "Proxy Authentication Required ")
+        end
 
         raise Faraday::ConnectionFailed, err
       end
@@ -91,7 +105,9 @@ module Faraday
       ].freeze
 
       def connection_timed_out_message?(message)
-        CURL_TIMEOUT_MESSAGES.any? { |curl_message| message.include?(curl_message) }
+        CURL_TIMEOUT_MESSAGES.any? do |curl_message|
+          message.include?(curl_message)
+        end
       end
     end
   end
