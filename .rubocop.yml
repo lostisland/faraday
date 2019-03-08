@@ -5,11 +5,6 @@ AllCops:
   DisplayStyleGuide: true
   TargetRubyVersion: 2.3
 
-Naming/MethodName:
-  Exclude:
-    - test/adapters/integration.rb
-    - test/adapters/rack_test.rb
-
 Metrics/BlockLength:
   Exclude:
     - spec/**/*.rb
