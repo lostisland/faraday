@@ -48,7 +48,7 @@ jobs:
           command: bundle install --path vendor/bundle --jobs 7 --retry 15
       - run:
           name: Run tests
-          command: bundle exec rake
+          command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
       - save_cache:
           key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
           paths:
@@ -76,7 +76,7 @@ jobs:
           command: bundle install --path vendor/bundle --jobs 7 --retry 15
       - run:
           name: Run tests
-          command: bundle exec rake
+          command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
       - save_cache:
           key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
           paths:
@@ -104,7 +104,7 @@ jobs:
           command: bundle install --path vendor/bundle --jobs 7 --retry 15
       - run:
           name: Run tests
-          command: bundle exec rake
+          command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
       - save_cache:
           key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
           paths:
@@ -132,7 +132,7 @@ jobs:
           command: bundle install --path vendor/bundle --jobs 7 --retry 15
       - run:
           name: Run tests
-          command: bundle exec rake
+          command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
       - save_cache:
           key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
           paths:
@@ -161,7 +161,7 @@ jobs:
           command: bundle install --path vendor/bundle --jobs 7 --retry 15
       - run:
           name: Run tests
-          command: bundle exec rake
+          command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
       - save_cache:
           key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
           paths:
