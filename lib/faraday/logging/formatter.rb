@@ -18,15 +18,27 @@ module Faraday
       def_delegators :@logger, :debug, :info, :warn, :error, :fatal
 
       def request(env)
-        info('request')  { "#{env.method.upcase} #{apply_filters(env.url.to_s)}" }
-        debug('request') { apply_filters(dump_headers(env.request_headers)) } if log_headers?(:request)
-        debug('request') { apply_filters(dump_body(env[:body])) } if env[:body] && log_body?(:request)
+        info('request') do
+          "#{env.method.upcase} #{apply_filters(env.url.to_s)}"
+        end
+        if log_headers?(:request)
+          debug('request') { apply_filters(dump_headers(env.request_headers)) }
+        end
+        return unless env[:body] && log_body?(:request)
+
+        debug('request') { apply_filters(dump_body(env[:body])) }
       end
 
       def response(env)
-        info('response')  { "Status #{env.status}" }
-        debug('response') { apply_filters(dump_headers(env.response_headers)) } if log_headers?(:response)
-        debug('response') { apply_filters(dump_body(env[:body])) } if env[:body] && log_body?(:response)
+        info('response') { "Status #{env.status}" }
+        if log_headers?(:response)
+          debug('response') do
+            apply_filters(dump_headers(env.response_headers))
+          end
+        end
+        return unless env[:body] && log_body?(:response)
+
+        debug('response') { apply_filters(dump_body(env[:body])) }
       end
 
       def filter(filter_word, filter_replacement)
@@ -53,15 +65,19 @@ module Faraday
 
       def log_headers?(type)
         case @options[:headers]
-        when Hash then @options[:headers][type]
-        else @options[:headers]
+        when Hash
+          @options[:headers][type]
+        else
+          @options[:headers]
         end
       end
 
       def log_body?(type)
         case @options[:bodies]
-        when Hash then @options[:bodies][type]
-        else @options[:bodies]
+        when Hash
+          @options[:bodies][type]
+        else
+          @options[:bodies]
         end
       end
 

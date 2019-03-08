@@ -2,8 +2,8 @@
 
 module Faraday
   class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
-                                     :timeout, :open_timeout, :write_timeout, :boundary,
-                                     :oauth, :context, :on_data)
+                                     :timeout, :open_timeout, :write_timeout,
+                                     :boundary, :oauth, :context, :on_data)
 
     def []=(key, value)
       if key && key.to_sym == :proxy

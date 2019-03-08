@@ -44,7 +44,8 @@ module Faraday
                               header: env[:request_headers]
 
         if (req = env[:request]).stream_response?
-          warn "Streaming downloads for #{self.class.name} are not yet implemented."
+          warn "Streaming downloads for #{self.class.name} " \
+            'are not yet implemented.'
           req.on_data.call(resp.body, resp.body.bytesize)
         end
         save_response env, resp.status, resp.body, resp.headers, resp.reason
@@ -53,13 +54,18 @@ module Faraday
       rescue ::HTTPClient::TimeoutError, Errno::ETIMEDOUT
         raise Faraday::TimeoutError, $ERROR_INFO
       rescue ::HTTPClient::BadResponseError => err
-        raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ") if err.message.include?('status 407')
+        if err.message.include?('status 407')
+          raise Faraday::ConnectionFailed,
+                %(407 "Proxy Authentication Required ")
+        end
 
         raise Faraday::ClientError, $ERROR_INFO
       rescue Errno::EADDRNOTAVAIL, Errno::ECONNREFUSED, IOError, SocketError
         raise Faraday::ConnectionFailed, $ERROR_INFO
       rescue StandardError => err
-        raise Faraday::SSLError, err if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
+        if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
+          raise Faraday::SSLError, err
+        end
 
         raise
       end
@@ -75,7 +81,9 @@ module Faraday
       # @param proxy [Hash]
       def configure_proxy(proxy)
         client.proxy = proxy[:uri]
-        client.set_proxy_auth(proxy[:user], proxy[:password]) if proxy[:user] && proxy[:password]
+        return unless proxy[:user] && proxy[:password]
+
+        client.set_proxy_auth(proxy[:user], proxy[:password])
       end
 
       # @param ssl [Hash]
@@ -130,7 +138,8 @@ module Faraday
       def ssl_verify_mode(ssl)
         ssl[:verify_mode] || begin
           if ssl.fetch(:verify, true)
-            OpenSSL::SSL::VERIFY_PEER | OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
+            OpenSSL::SSL::VERIFY_PEER |
+              OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
           else
             OpenSSL::SSL::VERIFY_NONE
           end

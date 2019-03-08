@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'monitor'
+
 module Faraday
   # Adds the ability for other modules to register and lookup
   # middleware classes.
@@ -7,12 +9,17 @@ module Faraday
     # Register middleware class(es) on the current module.
     #
     # @param autoload_path [String] Middleware autoload path
-    # @param mapping [Hash{Symbol => Module, Symbol, Array<Module, Symbol, String>}] Middleware mapping from a lookup symbol to a reference to the middleware. - Classes can be expressed as:
-    #           - a fully qualified constant
-    #           - a Symbol
-    #           - a Proc that will be lazily called to return the former
-    #           - an array is given, its first element is the constant or symbol,
-    #             and its second is a file to `require`.
+    # @param mapping [Hash{
+    #          Symbol => Module,
+    #          Symbol => Array<Module, Symbol, String>,
+    #        }] Middleware mapping from a lookup symbol to a reference to the
+    #        middleware.
+    #        Classes can be expressed as:
+    #          - a fully qualified constant
+    #          - a Symbol
+    #          - a Proc that will be lazily called to return the former
+    #          - an array is given, its first element is the constant or symbol,
+    #            and its second is a file to `require`.
     # @return [void]
     #
     # @example Lookup by a constant
@@ -28,7 +35,8 @@ module Faraday
     #
     #   module Faraday
     #     class Whatever
-    #       # Middleware looked up by :bar returns Faraday::Whatever.const_get(:Bar)
+    #       # Middleware looked up by :bar returns
+    #       # Faraday::Whatever.const_get(:Bar)
     #       register_middleware bar: :Bar
     #     end
     #   end
@@ -37,7 +45,8 @@ module Faraday
     #
     #   module Faraday
     #     class Whatever
-    #       # Middleware looked up by :baz requires 'baz' and returns Faraday::Whatever.const_get(:Baz)
+    #       # Middleware looked up by :baz requires 'baz' and returns
+    #       # Faraday::Whatever.const_get(:Baz)
     #       register_middleware baz: [:Baz, 'baz']
     #     end
     #   end
@@ -83,10 +92,7 @@ module Faraday
     end
 
     def middleware_mutex(&block)
-      @middleware_mutex ||= begin
-        require 'monitor'
-        Monitor.new
-      end
+      @middleware_mutex ||= Monitor.new
       @middleware_mutex.synchronize(&block)
     end
 

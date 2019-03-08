@@ -10,7 +10,7 @@ shared_examples 'an adapter' do |**options|
 
   context 'with SSL disabled' do
     before { ENV['SSL'] = 'no' }
-    include_examples 'adapter examples'
+    include_examples 'adapter examples', options
   end
 end
 

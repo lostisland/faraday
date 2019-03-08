@@ -12,7 +12,10 @@ module EmHttpSslPatch
       return false
     end
 
-    raise OpenSSL::SSL::SSLError, %(unable to verify the server certificate for "#{host}") unless certificate_store.verify(@last_seen_cert)
+    unless certificate_store.verify(@last_seen_cert)
+      raise OpenSSL::SSL::SSLError,
+            %(unable to verify the server certificate for "#{host}")
+    end
 
     begin
       certificate_store.add_cert(@last_seen_cert)
@@ -25,7 +28,10 @@ module EmHttpSslPatch
   def ssl_handshake_completed
     return true unless verify_peer?
 
-    raise OpenSSL::SSL::SSLError, %(host "#{host}" does not match the server certificate) unless verified_cert_identity?
+    unless verified_cert_identity?
+      raise OpenSSL::SSL::SSLError,
+            %(host "#{host}" does not match the server certificate)
+    end
 
     true
   end

@@ -1,17 +1,8 @@
 # frozen_string_literal: true
 
 module Faraday
-  # This is the default encoder for Faraday requests.
-  # Using this encoder, parameters will be encoded respecting their structure,
-  # so you can send objects such as Arrays or Hashes as parameters for your requests.
-  module NestedParamsEncoder
-    class << self
-      extend Forwardable
-      def_delegators :'Faraday::Utils', :escape, :unescape
-    end
-
-    extend self
-
+  # Sub-module for encoding parameters into query-string.
+  module EncodeMethods
     # @param params [nil, Array, #to_hash] parameters to be encoded
     #
     # @return [String] the encoded params
@@ -21,7 +12,9 @@ module Faraday
       return nil if params.nil?
 
       unless params.is_a?(Array)
-        raise TypeError, "Can't convert #{params.class} into Hash." unless params.respond_to?(:to_hash)
+        unless params.respond_to?(:to_hash)
+          raise TypeError, "Can't convert #{params.class} into Hash."
+        end
 
         params = params.to_hash
         params = params.map do |key, value|
@@ -42,43 +35,7 @@ module Faraday
       buffer.chop
     end
 
-    # @param query [nil, String]
-    #
-    # @return [Array<Array, String>] the decoded params
-    #
-    # @raise [TypeError] if the nesting is incorrect
-    def decode(query)
-      return nil if query.nil?
-
-      params = {}
-      query.split('&').each do |pair|
-        next if pair.empty?
-
-        key, value = pair.split('=', 2)
-        key = unescape(key)
-        value = unescape(value.tr('+', ' ')) if value
-        decode_pair(key, value, params)
-      end
-
-      dehash(params, 0)
-    end
-
-    private
-
-    SUBKEYS_REGEX = /[^\[\]]+(?:\]?\[\])?/.freeze
-
-    # Internal: convert a nested hash with purely numeric keys into an array.
-    # FIXME: this is not compatible with Rack::Utils.parse_nested_query
-    # @!visibility private
-    def dehash(hash, depth)
-      hash.each { |key, value| hash[key] = dehash(value, depth + 1) if value.is_a?(Hash) }
-
-      if depth.positive? && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
-        hash.sort.map(&:last)
-      else
-        hash
-      end
-    end
+    protected
 
     def encode_pair(parent, value)
       if value.is_a?(Hash)
@@ -112,6 +69,34 @@ module Faraday
       value.each { |val| buffer << "#{encode_pair(new_parent, val)}&" }
       buffer.chop
     end
+  end
+
+  # Sub-module for decoding query-string into parameters.
+  module DecodeMethods
+    # @param query [nil, String]
+    #
+    # @return [Array<Array, String>] the decoded params
+    #
+    # @raise [TypeError] if the nesting is incorrect
+    def decode(query)
+      return nil if query.nil?
+
+      params = {}
+      query.split('&').each do |pair|
+        next if pair.empty?
+
+        key, value = pair.split('=', 2)
+        key = unescape(key)
+        value = unescape(value.tr('+', ' ')) if value
+        decode_pair(key, value, params)
+      end
+
+      dehash(params, 0)
+    end
+
+    protected
+
+    SUBKEYS_REGEX = /[^\[\]]+(?:\]?\[\])?/.freeze
 
     def decode_pair(key, value, context)
       subkeys = key.scan(SUBKEYS_REGEX)
@@ -126,14 +111,21 @@ module Faraday
     end
 
     def prepare_context(context, subkey, is_array, last_subkey)
-      context = new_context(subkey, is_array, context) if !last_subkey || is_array
-      context = match_context(context, subkey) if context.is_a?(Array) && !is_array
+      if !last_subkey || is_array
+        context = new_context(subkey, is_array, context)
+      end
+      if context.is_a?(Array) && !is_array
+        context = match_context(context, subkey)
+      end
       context
     end
 
     def new_context(subkey, is_array, context)
       value_type = is_array ? Array : Hash
-      raise TypeError, "expected #{value_type.name} (got #{context[subkey].class.name}) for param `#{subkey}'" if context[subkey] && !context[subkey].is_a?(value_type)
+      if context[subkey] && !context[subkey].is_a?(value_type)
+        raise TypeError, "expected #{value_type.name} " \
+          "(got #{context[subkey].class.name}) for param `#{subkey}'"
+      end
 
       context[subkey] ||= value_type.new
     end
@@ -146,5 +138,34 @@ module Faraday
     def add_to_context(is_array, context, value, subkey)
       is_array ? context << value : context[subkey] = value
     end
+
+    # Internal: convert a nested hash with purely numeric keys into an array.
+    # FIXME: this is not compatible with Rack::Utils.parse_nested_query
+    # @!visibility private
+    def dehash(hash, depth)
+      hash.each do |key, value|
+        hash[key] = dehash(value, depth + 1) if value.is_a?(Hash)
+      end
+
+      if depth.positive? && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
+        hash.sort.map(&:last)
+      else
+        hash
+      end
+    end
+  end
+
+  # This is the default encoder for Faraday requests.
+  # Using this encoder, parameters will be encoded respecting their structure,
+  # so you can send objects such as Arrays or Hashes as parameters
+  # for your requests.
+  module NestedParamsEncoder
+    class << self
+      extend Forwardable
+      def_delegators :'Faraday::Utils', :escape, :unescape
+    end
+
+    extend EncodeMethods
+    extend DecodeMethods
   end
 end
