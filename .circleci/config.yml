@@ -1,5 +1,33 @@
 version: 2.1
 
+# Share Steps: glued in using the YAML alias
+# See https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
+shared_ruby_steps: &shared_ruby_steps
+  steps:
+    - attach_workspace:
+        at: .
+    - restore_cache:
+        keys:
+          - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+          - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
+          - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
+    - run:
+        name: Bundle Install
+        command: bundle install --path vendor/bundle --jobs 7 --retry 15
+    - run:
+        name: Run tests
+        command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
+    - save_cache:
+        key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+        paths:
+          - ./vendor/bundle
+    - store_test_results:
+        path: ~/test-results
+    - persist_to_workspace:
+        root: .
+        paths:
+          - ./vendor/bundle
+
 jobs:
   checkout_code:
     docker:
@@ -35,112 +63,22 @@ jobs:
   ruby26:
     docker:
       - image: circleci/ruby:2.6
-    steps:
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          keys:
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
-      - run:
-          name: Bundle Install
-          command: bundle install --path vendor/bundle --jobs 7 --retry 15
-      - run:
-          name: Run tests
-          command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
-      - save_cache:
-          key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-          paths:
-            - ./vendor/bundle
-      - store_test_results:
-          path: ~/test-results
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./vendor/bundle
+    <<: *shared_ruby_steps
 
   ruby25:
     docker:
       - image: circleci/ruby:2.5
-    steps:
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          keys:
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
-      - run:
-          name: Bundle Install
-          command: bundle install --path vendor/bundle --jobs 7 --retry 15
-      - run:
-          name: Run tests
-          command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
-      - save_cache:
-          key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-          paths:
-            - ./vendor/bundle
-      - store_test_results:
-          path: ~/test-results
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./vendor/bundle
+    <<: *shared_ruby_steps
 
   ruby24:
     docker:
       - image: circleci/ruby:2.4
-    steps:
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          keys:
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
-      - run:
-          name: Bundle Install
-          command: bundle install --path vendor/bundle --jobs 7 --retry 15
-      - run:
-          name: Run tests
-          command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
-      - save_cache:
-          key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-          paths:
-            - ./vendor/bundle
-      - store_test_results:
-          path: ~/test-results
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./vendor/bundle
+    <<: *shared_ruby_steps
 
   ruby23:
     docker:
       - image: circleci/ruby:2.3
-    steps:
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          keys:
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
-      - run:
-          name: Bundle Install
-          command: bundle install --path vendor/bundle --jobs 7 --retry 15
-      - run:
-          name: Run tests
-          command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
-      - save_cache:
-          key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-          paths:
-            - ./vendor/bundle
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./vendor/bundle
+    <<: *shared_ruby_steps
 
   # Currently not in use
   jruby92:
@@ -148,30 +86,7 @@ jobs:
       - image: circleci/jruby:9.2
         environment:
           JRUBY_OPTS: "--debug"
-    steps:
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          keys:
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
-            - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
-      - run:
-          name: Bundle Install
-          command: bundle install --path vendor/bundle --jobs 7 --retry 15
-      - run:
-          name: Run tests
-          command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
-      - save_cache:
-          key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-          paths:
-            - ./vendor/bundle
-      - store_test_results:
-          path: ~/test-results
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./vendor/bundle
+    <<: *shared_ruby_steps
 
   deploy:
     docker:
