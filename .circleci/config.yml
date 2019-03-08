@@ -8,9 +8,7 @@ shared_ruby_steps: &shared_ruby_steps
         at: .
     - restore_cache:
         keys:
-          - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
-          - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-"
-          - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-"
+          - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}"
     - run:
         name: Bundle Install
         command: bundle install --path vendor/bundle --jobs 7 --retry 15
@@ -18,7 +16,7 @@ shared_ruby_steps: &shared_ruby_steps
         name: Run tests
         command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
     - save_cache:
-        key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}-{{ checksum \"Gemfile.lock\" }}"
+        key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}"
         paths:
           - ./vendor/bundle
     - store_test_results:
