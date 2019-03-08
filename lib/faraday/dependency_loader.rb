@@ -13,7 +13,7 @@ module Faraday
     end
 
     def new(*)
-      if !loaded?
+      unless loaded?
         raise "missing dependency for #{self}: #{load_error.message}"
       end
 

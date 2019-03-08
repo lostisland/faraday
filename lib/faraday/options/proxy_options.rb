@@ -4,7 +4,7 @@ module Faraday
   class ProxyOptions < Options.new(:uri, :user, :password)
     extend Forwardable
     def_delegators :uri, :scheme, :scheme=, :host, :host=, :port, :port=,
-      :path, :path=
+                   :path, :path=
 
     def self.from(value)
       case value

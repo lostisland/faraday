@@ -213,16 +213,16 @@ module Faraday
 
     private
 
-    LOCK_ERR = "can't modify middleware stack after making a request".freeze
+    LOCK_ERR = "can't modify middleware stack after making a request"
 
     def raise_if_locked
       raise StackLocked, LOCK_ERR if locked?
     end
 
     def raise_if_adapter(klass)
-      if is_adapter?(klass)
-        raise 'Adapter should be set using the `adapter` method, not `use`'
-      end
+      return unless is_adapter?(klass)
+
+      raise 'Adapter should be set using the `adapter` method, not `use`'
     end
 
     def adapter_set?

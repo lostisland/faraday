@@ -118,10 +118,10 @@ module Faraday
         last_response = headers.slice(start_index, headers.size)
 
         last_response
-          .tap { |a| a.shift if a.first.start_with?('HTTP/') } # drop the HTTP status line
+          .tap { |a| a.shift if a.first.start_with?('HTTP/') }
           .map { |h| h.split(/:\s*/, 2) } # split key and value
           .reject { |p| p[0].nil? } # ignore blank lines
-          .each { |key, value| add_parsed(key, value) } # join multiple values with a comma
+          .each { |key, value| add_parsed(key, value) }
       end
 
       protected
@@ -130,6 +130,7 @@ module Faraday
 
       private
 
+      # Join multiple values with a comma.
       def add_parsed(key, value)
         self[key] ? self[key] << ', ' << value : self[key] = value
       end

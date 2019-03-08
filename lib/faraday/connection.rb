@@ -376,8 +376,8 @@ module Faraday
     # @return [void]
     def in_parallel(manager = nil)
       @parallel_manager = manager || default_parallel_manager do
-        warn 'Warning: `in_parallel` called but no parallel-capable adapter '+
-          'on Faraday stack'
+        warn 'Warning: `in_parallel` called but no parallel-capable adapter ' \
+             'on Faraday stack'
         warn caller[2, 10].join("\n")
         nil
       end
@@ -482,7 +482,7 @@ module Faraday
     #
     # @return [Faraday::Response]
     def run_request(method, url, body, headers)
-      if !METHODS.include?(method)
+      unless METHODS.include?(method)
         raise ArgumentError, "unknown http method: #{method}"
       end
 
@@ -561,9 +561,9 @@ module Faraday
     # @return [void]
     # @api private
     def with_uri_credentials(uri)
-      if uri.user && uri.password
-        yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
-      end
+      return unless uri.user && uri.password
+
+      yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
     end
 
     def set_authorization_header(header_type, *args)
