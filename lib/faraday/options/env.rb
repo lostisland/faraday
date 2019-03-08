@@ -46,10 +46,10 @@ module Faraday
   #
   # @!attribute reason_phrase
   #   @return [String]
-  class Env < Options.new(:method, :request_body, :url, :ssl, :parallel_manager,
-                          :request, :request_headers, :params, :status,
-                          :response, :response_headers, :response_body,
-                          :reason_phrase)
+  class Env < Options.new(:method, :request_body, :url, :request,
+                          :request_headers, :ssl, :parallel_manager, :params,
+                          :response, :response_headers, :status,
+                          :reason_phrase, :response_body)
 
     # rubocop:disable Naming/ConstantName
     ContentLength = 'Content-Length'

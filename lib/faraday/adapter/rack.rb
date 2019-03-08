@@ -43,13 +43,16 @@ module Faraday
 
         timeout  = env[:request][:timeout] || env[:request][:open_timeout]
         response = if timeout
-                     Timer.timeout(timeout, Faraday::TimeoutError) { execute_request(env, rack_env) }
+                     Timer.timeout(timeout, Faraday::TimeoutError) do
+                       execute_request(env, rack_env)
+                     end
                    else
                      execute_request(env, rack_env)
                    end
 
         if (req = env[:request]).stream_response?
-          warn "Streaming downloads for #{self.class.name} are not yet implemented."
+          warn "Streaming downloads for #{self.class.name} " \
+            'are not yet implemented.'
           req.on_data.call(response.body, response.body.bytesize)
         end
 

@@ -10,25 +10,35 @@ module Faraday
 
       def net_http_connection(env)
         @cached_connection ||=
-          if Net::HTTP::Persistent.instance_method(:initialize).parameters.first == %i[key name]
+          if Net::HTTP::Persistent.instance_method(:initialize)
+                                  .parameters.first == %i[key name]
             options = { name: 'Faraday' }
-            options[:pool_size] = @connection_options[:pool_size] if @connection_options.key?(:pool_size)
+            if @connection_options.key?(:pool_size)
+              options[:pool_size] = @connection_options[:pool_size]
+            end
             Net::HTTP::Persistent.new(options)
           else
             Net::HTTP::Persistent.new('Faraday')
           end
 
         proxy_uri = proxy_uri(env)
-        @cached_connection.proxy = proxy_uri if @cached_connection.proxy_uri != proxy_uri
+        if @cached_connection.proxy_uri != proxy_uri
+          @cached_connection.proxy = proxy_uri
+        end
         @cached_connection
       end
 
       def proxy_uri(env)
         proxy_uri = nil
         if (proxy = env[:request][:proxy])
-          proxy_uri = proxy[:uri].is_a?(::URI::HTTP) ? proxy[:uri].dup : ::URI.parse(proxy[:uri].to_s)
+          proxy_uri = if proxy[:uri].is_a?(::URI::HTTP)
+                        proxy[:uri].dup
+                      else
+                        ::URI.parse(proxy[:uri].to_s)
+                      end
           proxy_uri.user = proxy_uri.password = nil
-          # awful patch for net-http-persistent 2.8 not unescaping user/password
+          # awful patch for net-http-persistent 2.8
+          # not unescaping user/password
           if proxy[:user]
             (class << proxy_uri; self; end).class_eval do
               define_method(:user) { proxy[:user] }
@@ -46,7 +56,9 @@ module Faraday
       rescue Net::HTTP::Persistent::Error => error
         raise Faraday::TimeoutError, error if error.message.include? 'Timeout'
 
-        raise Faraday::ConnectionFailed, error if error.message.include? 'connection refused'
+        if error.message.include? 'connection refused'
+          raise Faraday::ConnectionFailed, error
+        end
 
         raise
       end
