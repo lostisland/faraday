@@ -84,6 +84,14 @@ module Faraday
       @params.update(options.params)   if options.params
       @headers.update(options.headers) if options.headers
 
+      initialize_proxy(url, options)
+
+      yield(self) if block_given?
+
+      @headers[:user_agent] ||= "Faraday v#{VERSION}"
+    end
+
+    def initialize_proxy(url, options)
       @manual_proxy = !!options.proxy
       @proxy =
         if options.proxy
@@ -92,10 +100,6 @@ module Faraday
           proxy_from_env(url)
         end
       @temp_proxy = @proxy
-
-      yield(self) if block_given?
-
-      @headers[:user_agent] ||= "Faraday v#{VERSION}"
     end
 
     # Sets the Hash of URI query unencoded key/value pairs.

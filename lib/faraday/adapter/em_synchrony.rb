@@ -72,6 +72,8 @@ module Faraday
         )
       end
 
+      private
+
       def execute_parallel_request(env, request, http_method)
         env[:parallel_manager].add(request, http_method,
                                    request_config(env)) do |resp|
@@ -94,19 +96,8 @@ module Faraday
       end
 
       def execute_single_request(env, request, http_method)
-        client = nil
         block = -> { request.send(http_method, request_config(env)) }
-
-        if !EM.reactor_running?
-          EM.run do
-            Fiber.new do
-              client = block.call
-              EM.stop
-            end.resume
-          end
-        else
-          client = block.call
-        end
+        client = call_block(block)
 
         raise client.error if client&.error
 
@@ -125,6 +116,23 @@ module Faraday
             headers[name.to_sym] = value
           end
         end
+      end
+
+      def call_block(block)
+        client = nil
+
+        if !EM.reactor_running?
+          EM.run do
+            Fiber.new do
+              client = block.call
+              EM.stop
+            end.resume
+          end
+        else
+          client = block.call
+        end
+
+        client
       end
     end
   end
