@@ -79,7 +79,7 @@ module Faraday
       @handlers[idx]
     end
 
-    # Locks the middleware stack to ensure no further modifications are possible.
+    # Locks the middleware stack to ensure no further modifications are made.
     def lock!
       @handlers.freeze
     end
@@ -169,11 +169,15 @@ module Faraday
     def to_app
       # last added handler is the deepest and thus closest to the inner app
       # adapter is always the last one
-      @handlers.reverse.inject(@adapter.build) { |app, handler| handler.build(app) }
+      @handlers.reverse.inject(@adapter.build) do |app, handler|
+        handler.build(app)
+      end
     end
 
     def ==(other)
-      other.is_a?(self.class) && @handlers == other.handlers && @adapter == other.adapter
+      other.is_a?(self.class) &&
+        @handlers == other.handlers &&
+        @adapter == other.adapter
     end
 
     def dup
@@ -198,19 +202,26 @@ module Faraday
     # :ssl - Hash of options for configuring SSL requests.
     def build_env(connection, request)
       Env.new(request.method, request.body,
-              connection.build_exclusive_url(request.path, request.params, request.options.params_encoder),
+              connection.build_exclusive_url(
+                request.path, request.params,
+                request.options.params_encoder
+              ),
               request.options, request.headers, connection.ssl,
               connection.parallel_manager)
     end
 
     private
 
+    LOCK_ERR = "can't modify middleware stack after making a request".freeze
+
     def raise_if_locked
-      raise StackLocked, "can't modify middleware stack after making a request" if locked?
+      raise StackLocked, LOCK_ERR if locked?
     end
 
     def raise_if_adapter(klass)
-      raise 'Adapter should be set using the `adapter` method, not `use`' if is_adapter?(klass)
+      if is_adapter?(klass)
+        raise 'Adapter should be set using the `adapter` method, not `use`'
+      end
     end
 
     def adapter_set?

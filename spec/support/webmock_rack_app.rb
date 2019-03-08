@@ -5,14 +5,17 @@
 # the registered response.
 class WebmockRackApp
   def call(env)
-    req_signature = WebMock::RequestSignature.new(req_method(env),
-                                                  req_uri(env),
-                                                  body: req_body(env),
-                                                  headers: req_headers(env))
+    req_signature = WebMock::RequestSignature.new(
+      req_method(env),
+      req_uri(env),
+      body: req_body(env),
+      headers: req_headers(env)
+    )
 
-    WebMock::RequestRegistry.instance
-                            .requested_signatures
-                            .put(req_signature)
+    WebMock::RequestRegistry
+      .instance
+      .requested_signatures
+      .put(req_signature)
 
     process_response(req_signature)
   end
@@ -52,7 +55,9 @@ class WebmockRackApp
   def process_response(req_signature)
     res = WebMock::StubRegistry.instance.response_for_request(req_signature)
 
-    raise Faraday::ConnectionFailed, 'Trying to connect to localhost' if res.nil? && req_signature.uri.host == 'localhost'
+    if res.nil? && req_signature.uri.host == 'localhost'
+      raise Faraday::ConnectionFailed, 'Trying to connect to localhost'
+    end
 
     raise WebMock::NetConnectNotAllowedError, req_signature unless res
 

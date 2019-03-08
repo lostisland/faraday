@@ -15,8 +15,7 @@ end
 group :test do
   gem 'coveralls', require: false
   gem 'em-http-request', '>= 1.1', require: 'em-http'
-  gem 'em-synchrony', '>= 1.0.3', require: [
-    'em-synchrony', 'em-synchrony/em-http']
+  gem 'em-synchrony', '>= 1.0.3', require: %w[em-synchrony em-synchrony/em-http]
   gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
   gem 'minitest', '>= 5.0.5'
@@ -28,7 +27,7 @@ group :test do
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 1.3', git: 'https://github.com/typhoeus/typhoeus.git',
-    require: 'typhoeus'
+                            require: 'typhoeus'
   gem 'webmock', '~> 3.4'
 end
 

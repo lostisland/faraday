@@ -36,8 +36,14 @@ module Faraday
                         multipart: [:Multipart, 'multipart'],
                         retry: [:Retry, 'retry'],
                         authorization: [:Authorization, 'authorization'],
-                        basic_auth: [:BasicAuthentication, 'basic_authentication'],
-                        token_auth: [:TokenAuthentication, 'token_authentication'],
+                        basic_auth: [
+                          :BasicAuthentication,
+                          'basic_authentication'
+                        ],
+                        token_auth: [
+                          :TokenAuthentication,
+                          'token_authentication'
+                        ],
                         instrumentation: [:Instrumentation, 'instrumentation']
 
     # @param request_method [String]

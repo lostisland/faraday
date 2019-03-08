@@ -58,9 +58,3 @@ Style/GlobalVars:
 Style/MultipleComparison:
   Exclude:
     - 'lib/faraday/encoders/flat_params_encoder.rb'
-
-# Offense count: 298
-# Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
-# URISchemes: http, https
-Metrics/LineLength:
-  Max: 213

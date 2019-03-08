@@ -352,7 +352,7 @@ module Faraday
       @default_parallel_manager ||= begin
         adapter = @builder.adapter.klass if @builder.adapter
 
-        if adapter&.respond_to?(:supports_parallel?) && adapter&.supports_parallel?
+        if support_parallel?(adapter)
           adapter.setup_parallel_manager
         elsif block_given?
           yield
@@ -451,8 +451,11 @@ module Faraday
     #   conn.scheme      # => https
     #   conn.path_prefix # => "/api"
     #
-    #   conn.build_url("nigiri?page=2")      # => https://sushi.com/api/nigiri?token=abc&page=2
-    #   conn.build_url("nigiri", page: 2) # => https://sushi.com/api/nigiri?token=abc&page=2
+    #   conn.build_url("nigiri?page=2")
+    #   # => https://sushi.com/api/nigiri?token=abc&page=2
+    #
+    #   conn.build_url("nigiri", page: 2)
+    #   # => https://sushi.com/api/nigiri?token=abc&page=2
     #
     def build_url(url = nil, extra_params = nil)
       uri = build_exclusive_url(url)
@@ -608,6 +611,10 @@ module Faraday
       else
         proxy
       end
+    end
+
+    def support_parallel?(adapter)
+      adapter&.respond_to?(:supports_parallel?) && adapter&.supports_parallel?
     end
   end
 end
