@@ -121,15 +121,15 @@ module Faraday
       def call_block(block)
         client = nil
 
-        if !EM.reactor_running?
+        if EM.reactor_running?
+          client = block.call
+        else
           EM.run do
             Fiber.new do
               client = block.call
               EM.stop
             end.resume
           end
-        else
-          client = block.call
         end
 
         client
