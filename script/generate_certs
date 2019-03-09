@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Usage: generate_certs
+# Usage: generate_certs [options]
+#   options:
+#     -s     Display shell exports that link env variables to filenames
 # Generate test certs for testing Faraday with SSL
 
 require 'openssl'
