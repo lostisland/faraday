@@ -68,14 +68,18 @@ module Faraday
 
         # Reads out timeout settings from env into options
         def configure_timeout(options, env)
-          timeout, open_timeout = request_options(env).values_at(:timeout, :open_timeout)
+          timeout, open_timeout = request_options(env)
+                                  .values_at(:timeout, :open_timeout)
           options[:connect_timeout] = options[:inactivity_timeout] = timeout
           options[:connect_timeout] = open_timeout if open_timeout
         end
 
         # Reads out compression header settings from env into options
         def configure_compression(options, env)
-          options[:head]['accept-encoding'] = 'gzip, compressed' if (env[:method] == :get) && !options[:head].key?('accept-encoding')
+          return unless (env[:method] == :get) &&
+                        !options[:head].key?('accept-encoding')
+
+          options[:head]['accept-encoding'] = 'gzip, compressed'
         end
 
         def request_options(env)
@@ -130,11 +134,16 @@ module Faraday
           raise_error(error) if error
         end
       rescue EventMachine::Connectify::CONNECTError => err
-        raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ") if err.message.include?('Proxy Authentication Required')
+        if err.message.include?('Proxy Authentication Required')
+          raise Faraday::ConnectionFailed,
+                %(407 "Proxy Authentication Required ")
+        end
 
         raise Faraday::ConnectionFailed, err
       rescue StandardError => err
-        raise Faraday::SSLError, err if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
+        if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
+          raise Faraday::SSLError, err
+        end
 
         raise
       end
@@ -142,23 +151,30 @@ module Faraday
       # TODO: reuse the connection to support pipelining
       def perform_single_request(env)
         req = create_request(env)
-        req.setup_request(env[:method], request_config(env)).callback do |client|
+        req = req.setup_request(env[:method], request_config(env))
+        req.callback do |client|
           if env[:request].stream_response?
-            warn "Streaming downloads for #{self.class.name} are not yet implemented."
-            env[:request].on_data.call(client.response, client.response.bytesize)
+            warn "Streaming downloads for #{self.class.name} " \
+              'are not yet implemented.'
+            env[:request].on_data.call(
+              client.response,
+              client.response.bytesize
+            )
           end
           status = client.response_header.status
           reason = client.response_header.http_reason
-          save_response(env, status, client.response, nil, reason) do |resp_headers|
+          save_response(env, status, client.response, nil, reason) do |headers|
             client.response_header.each do |name, value|
-              resp_headers[name.to_sym] = value
+              headers[name.to_sym] = value
             end
           end
         end
       end
 
       def create_request(env)
-        EventMachine::HttpRequest.new(env[:url], connection_config(env).merge(@connection_options))
+        EventMachine::HttpRequest.new(
+          env[:url], connection_config(env).merge(@connection_options)
+        )
       end
 
       def error_message(client)
@@ -167,7 +183,7 @@ module Faraday
 
       def raise_error(msg)
         error_class = Faraday::ClientError
-        if msg == Errno::ETIMEDOUT || (msg.is_a?(String) && msg.include?('timeout error'))
+        if timeout_message?(msg)
           error_class = Faraday::TimeoutError
           msg = 'request timed out'
         elsif msg == Errno::ECONNREFUSED
@@ -177,6 +193,11 @@ module Faraday
           error_class = Faraday::ConnectionFailed
         end
         raise error_class, msg
+      end
+
+      def timeout_message?(msg)
+        msg == Errno::ETIMEDOUT ||
+          (msg.is_a?(String) && msg.include?('timeout error'))
       end
 
       # @return [Boolean]
@@ -223,7 +244,9 @@ module Faraday
                 perform_request(&proc)
               end
             end
-            raise Faraday::ClientError, @errors.first || 'connection failed' unless @errors.empty?
+            unless @errors.empty?
+              raise Faraday::ClientError, @errors.first || 'connection failed'
+            end
           end
         ensure
           reset
@@ -253,7 +276,8 @@ if Faraday::Adapter::EMHttp.loaded?
   begin
     require 'openssl'
   rescue LoadError
-    warn 'Warning: no such file to load -- openssl. Make sure it is installed if you want HTTPS support'
+    warn 'Warning: no such file to load -- openssl. ' \
+      'Make sure it is installed if you want HTTPS support'
   else
     require 'faraday/adapter/em_http_ssl_patch'
   end

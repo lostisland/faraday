@@ -7,7 +7,9 @@ require 'composite_io'
 require 'parts'
 
 module Faraday
-  # Similar to, but not compatible with [::CompositeReadIO](https://github.com/nicksieger/multipart-post/blob/master/lib/composite_io.rb) provided by [multipart-post](https://github.com/nicksieger/multipart-post).
+  # Similar to, but not compatible with CompositeReadIO provided by the
+  # multipart-post gem.
+  # https://github.com/nicksieger/multipart-post/blob/master/lib/composite_io.rb
   class CompositeReadIO
     def initialize(*parts)
       @parts = parts.flatten

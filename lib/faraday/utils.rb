@@ -76,7 +76,8 @@ module Faraday
                             end
     end
 
-    # Receives a String or URI and returns just the path with the query string sorted.
+    # Receives a String or URI and returns just
+    # the path with the query string sorted.
     def normalize_path(url)
       url = URI(url)
       (url.path.start_with?('/') ? url.path : '/' + url.path) +

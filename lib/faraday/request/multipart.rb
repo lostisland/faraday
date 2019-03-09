@@ -8,7 +8,9 @@ module Faraday
     # Middleware for supporting multi-part requests.
     class Multipart < UrlEncoded
       self.mime_type = 'multipart/form-data'
-      DEFAULT_BOUNDARY_PREFIX = '-----------RubyMultipartPost' unless defined? DEFAULT_BOUNDARY_PREFIX
+      unless defined? DEFAULT_BOUNDARY_PREFIX
+        DEFAULT_BOUNDARY_PREFIX = '-----------RubyMultipartPost'
+      end
 
       # Checks for files in the payload, otherwise leaves everything untouched.
       #
@@ -16,7 +18,8 @@ module Faraday
       def call(env)
         match_content_type(env) do |params|
           env.request.boundary ||= unique_boundary
-          env.request_headers[CONTENT_TYPE] += "; boundary=#{env.request.boundary}"
+          env.request_headers[CONTENT_TYPE] +=
+            "; boundary=#{env.request.boundary}"
           env.body = create_multipart(env, params)
         end
         @app.call env

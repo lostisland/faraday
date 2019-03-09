@@ -52,7 +52,11 @@ module Faraday
       other.each do |key, other_value|
         self_value = send(key)
         sub_options = self.class.options_for(key)
-        new_value = self_value && sub_options && other_value ? self_value.merge(other_value) : other_value
+        new_value = if self_value && sub_options && other_value
+                      self_value.merge(other_value)
+                    else
+                      other_value
+                    end
         send("#{key}=", new_value) unless new_value.nil?
       end
       self

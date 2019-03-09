@@ -20,14 +20,19 @@ module Faraday
     #     conn.adapter(:net_http) # NB: Last middleware must be the adapter
     #   end
     #
-    # This example will result in a first interval that is random between 0.05 and 0.075 and a second
-    # interval that is random between 0.1 and 0.15.
+    # This example will result in a first interval that is random between 0.05
+    # and 0.075 and a second interval that is random between 0.1 and 0.15.
     class Retry < Faraday::Middleware
-      DEFAULT_EXCEPTIONS = [Errno::ETIMEDOUT, 'Timeout::Error', Faraday::TimeoutError, Faraday::RetriableResponse].freeze
+      DEFAULT_EXCEPTIONS = [
+        Errno::ETIMEDOUT, 'Timeout::Error',
+        Faraday::TimeoutError, Faraday::RetriableResponse
+      ].freeze
       IDEMPOTENT_METHODS = %i[delete get head options put].freeze
 
-      class Options < Faraday::Options.new(:max, :interval, :max_interval, :interval_randomness,
-                                           :backoff_factor, :exceptions, :methods, :retry_if, :retry_block,
+      class Options < Faraday::Options.new(:max, :interval, :max_interval,
+                                           :interval_randomness,
+                                           :backoff_factor, :exceptions,
+                                           :methods, :retry_if, :retry_block,
                                            :retry_statuses)
 
         DEFAULT_CHECK = ->(_env, _exception) { false }
@@ -85,25 +90,30 @@ module Faraday
       # @param options [Hash]
       # @option options [Integer] :max (2) Maximum number of retries
       # @option options [Integer] :interval (0) Pause in seconds between retries
-      # @option options [Integer] :interval_randomness (0) The maximum random interval amount expressed
-      #                       as a float between 0 and 1 to use in addition to the
-      #                       interval.
-      # @option options [Integer] :max_interval (Float::MAX) An upper limit for the interval
-      # @option options [Integer] :backoff_factor (1) The amount to multiple each successive retry's
-      #                       interval amount by in order to provide backoff
-      # @option options [Array] :exceptions ([Errno::ETIMEDOUT, 'Timeout::Error',
-      #                       Faraday::TimeoutError, Faraday::RetriableResponse]) The list of
-      #                       exceptions to handle. Exceptions can be given as Class, Module, or String.
-      # @option options [Array] :methods (the idempotent HTTP methods in IDEMPOTENT_METHODS) A list of
-      #                       HTTP methods to retry without calling retry_if.  Pass
-      #                       an empty Array to call retry_if for all exceptions.
-      # @option options [Block] :retry_if (false) block that will receive the env object and the exception raised
-      #                       and should decide if the code should retry still the action or
-      #                       not independent of the retry count. This would be useful
-      #                       if the exception produced is non-recoverable or if the
-      #                       the HTTP method called is not idempotent.
-      # @option options [Block] :retry_block block that is executed after every retry. Request environment, middleware options,
-      #                       current number of retries and the exception is passed to the block as parameters.
+      # @option options [Integer] :interval_randomness (0) The maximum random
+      #   interval amount expressed as a float between
+      #   0 and 1 to use in addition to the interval.
+      # @option options [Integer] :max_interval (Float::MAX) An upper limit
+      #   for the interval
+      # @option options [Integer] :backoff_factor (1) The amount to multiply
+      #   each successive retry's interval amount by in order to provide backoff
+      # @option options [Array] :exceptions ([ Errno::ETIMEDOUT,
+      #   'Timeout::Error', Faraday::TimeoutError, Faraday::RetriableResponse])
+      #   The list of exceptions to handle. Exceptions can be given as
+      #   Class, Module, or String.
+      # @option options [Array] :methods (the idempotent HTTP methods
+      #   in IDEMPOTENT_METHODS) A list of HTTP methods to retry without
+      #   calling retry_if. Pass an empty Array to call retry_if
+      #   for all exceptions.
+      # @option options [Block] :retry_if (false) block that will receive
+      #   the env object and the exception raised
+      #   and should decide if the code should retry still the action or
+      #   not independent of the retry count. This would be useful
+      #   if the exception produced is non-recoverable or if the
+      #   the HTTP method called is not idempotent.
+      # @option options [Block] :retry_block block that is executed after
+      #   every retry. Request environment, middleware options, current number
+      #   of retries and the exception is passed to the block as parameters.
       def initialize(app, options = nil)
         super(app)
         @options = Options.from(options)
@@ -111,12 +121,16 @@ module Faraday
       end
 
       def calculate_sleep_amount(retries, env)
-        retry_after     = calculate_retry_after(env)
-        retry_interval  = calculate_retry_interval(retries)
+        retry_after = calculate_retry_after(env)
+        retry_interval = calculate_retry_interval(retries)
 
         return if retry_after && retry_after > @options.max_interval
 
-        retry_after && retry_after >= retry_interval ? retry_after : retry_interval
+        if retry_after && retry_after >= retry_interval
+          retry_after
+        else
+          retry_interval
+        end
       end
 
       # @param env [Faraday::Env]
@@ -124,9 +138,12 @@ module Faraday
         retries = @options.max
         request_body = env[:body]
         begin
-          env[:body] = request_body # after failure env[:body] is set to the response body
+          # after failure env[:body] is set to the response body
+          env[:body] = request_body
           @app.call(env).tap do |resp|
-            raise Faraday::RetriableResponse.new(nil, resp) if @options.retry_statuses.include?(resp.status)
+            if @options.retry_statuses.include?(resp.status)
+              raise Faraday::RetriableResponse.new(nil, resp)
+            end
           end
         rescue @errmatch => exception
           if retries.positive? && retry_request?(env, exception)
@@ -145,15 +162,18 @@ module Faraday
         end
       end
 
-      # An exception matcher for the rescue clause can usually be any object that
-      # responds to `===`, but for Ruby 1.8 it has to be a Class or Module.
+      # An exception matcher for the rescue clause can usually be any object
+      # that responds to `===`, but for Ruby 1.8 it has to be a Class or Module.
       #
       # @param exceptions [Array]
       # @api private
       # @return [Module] an exception matcher
       def build_exception_matcher(exceptions)
         matcher = Module.new
-        (class << matcher; self; end).class_eval do
+        (
+        class << matcher
+          self
+        end).class_eval do
           define_method(:===) do |error|
             exceptions.any? do |ex|
               if ex.is_a? Module
@@ -170,7 +190,8 @@ module Faraday
       private
 
       def retry_request?(env, exception)
-        @options.methods.include?(env[:method]) || @options.retry_if.call(env, exception)
+        @options.methods.include?(env[:method]) ||
+          @options.retry_if.call(env, exception)
       end
 
       def rewind_files(body)
@@ -181,7 +202,8 @@ module Faraday
         end
       end
 
-      # MDN spec for Retry-After header: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
+      # MDN spec for Retry-After header:
+      # https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After
       def calculate_retry_after(env)
         response_headers = env[:response_headers]
         return unless response_headers
@@ -199,9 +221,11 @@ module Faraday
 
       def calculate_retry_interval(retries)
         retry_index = @options.max - retries
-        current_interval = @options.interval * (@options.backoff_factor**retry_index)
+        current_interval = @options.interval *
+                           (@options.backoff_factor**retry_index)
         current_interval = [current_interval, @options.max_interval].min
-        random_interval  = rand * @options.interval_randomness.to_f * @options.interval
+        random_interval = rand * @options.interval_randomness.to_f *
+                          @options.interval
 
         current_interval + random_interval
       end

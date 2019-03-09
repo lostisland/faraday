@@ -122,10 +122,14 @@ module Faraday
             if path.is_a?(Regexp)
               path
             else
-              [Faraday::Utils.normalize_path(path), Faraday::Utils.URI(path).host]
+              [
+                Faraday::Utils.normalize_path(path),
+                Faraday::Utils.URI(path).host
+              ]
             end
 
-          (@stack[request_method] ||= []) << Stub.new(host, normalized_path, headers, body, block)
+          stub = Stub.new(host, normalized_path, headers, body, block)
+          (@stack[request_method] ||= []) << stub
         end
 
         def matches?(stack, host, path, headers, body)
@@ -138,7 +142,9 @@ module Faraday
       end
 
       # Stub request
-      class Stub < Struct.new(:host, :path, :params, :headers, :body, :block) # rubocop:disable Style/StructInheritance
+      # rubocop:disable Style/StructInheritance
+      class Stub < Struct.new(:host, :path, :params, :headers, :body, :block)
+        # rubocop:enable Style/StructInheritance
         def initialize(host, full, headers, body, block)
           path, query = full.respond_to?(:split) ? full.split('?') : full
           params =
@@ -208,9 +214,11 @@ module Faraday
         super
         host = env[:url].host
         normalized_path = Faraday::Utils.normalize_path(env[:url])
-        params_encoder = env.request.params_encoder || Faraday::Utils.default_params_encoder
+        params_encoder = env.request.params_encoder ||
+                         Faraday::Utils.default_params_encoder
 
-        stub, meta = stubs.match(env[:method], host, normalized_path, env.request_headers, env[:body])
+        stub, meta = stubs.match(env[:method], host, normalized_path,
+                                 env.request_headers, env[:body])
 
         unless stub
           raise Stubs::NotFound, "no stubbed request for #{env[:method]} "\
