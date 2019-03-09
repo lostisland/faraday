@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Usage: generate_certs
+# Usage: generate_certs [options]
+#   options:
+#     -s     Display shell exports that link env variables to filenames
 # Generate test certs for testing Faraday with SSL
 
 require 'openssl'
 require 'fileutils'
-
-$shell = ARGV.include? '-s'
 
 # Adapted from WEBrick::Utils. Skips cert extensions so it
 # can be used as a CA bundle
@@ -29,7 +29,7 @@ end
 def write(file, contents, env_var)
   FileUtils.mkdir_p(File.dirname(file))
   File.open(file, 'w') { |f| f.puts(contents) }
-  puts %(export #{env_var}="#{file}") if $shell
+  puts %(export #{env_var}="#{file}") if ARGV.include? '-s'
 end
 
 # One cert / CA for ease of testing when ignoring verification

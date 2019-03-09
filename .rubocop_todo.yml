@@ -48,12 +48,6 @@ Style/Documentation:
     - 'lib/faraday/response/raise_error.rb'
     - 'lib/faraday/utils.rb'
 
-# Offense count: 2
-# Configuration parameters: AllowedVariables.
-Style/GlobalVars:
-  Exclude:
-    - 'script/generate_certs'
-
 # Offense count: 1
 Style/MultipleComparison:
   Exclude:
