@@ -7,8 +7,8 @@ LATEST STABLE RELEASE v0.15 IS IN BRANCH [0.1x](https://github.com/lostisland/fa
 
 [![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
 [![CircleCI](https://circleci.com/gh/lostisland/faraday/tree/master.svg?style=svg)](https://circleci.com/gh/lostisland/faraday/tree/master)
-[![Coverage Status](https://coveralls.io/repos/github/lostisland/faraday/badge.svg?branch=master)](https://coveralls.io/github/lostisland/faraday?branch=master)
-[![Code Climate](https://codeclimate.com/github/lostisland/faraday/badges/gpa.svg)](https://codeclimate.com/github/lostisland/faraday)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f869daab091ceef1da73/test_coverage)](https://codeclimate.com/github/lostisland/faraday/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f869daab091ceef1da73/maintainability)](https://codeclimate.com/github/lostisland/faraday/maintainability)
 [![Gitter](https://badges.gitter.im/lostisland/faraday.svg)](https://gitter.im/lostisland/faraday?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
