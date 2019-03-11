@@ -5,7 +5,8 @@ module Faraday
   #   @return [Symbol] HTTP method (`:get`, `:post`)
   #
   # @!attribute body
-  #   @return [String] The request body that will eventually be converted to a string.
+  #   @return [String] The request body that will eventually be converted to a
+  #   string.
   #
   # @!attribute url
   #   @return [URI] URI instance for the current request.
@@ -45,14 +46,15 @@ module Faraday
   #
   # @!attribute reason_phrase
   #   @return [String]
-  class Env < Options.new(:method, :request_body, :url, :request, :request_headers,
-                          :ssl, :parallel_manager, :params, :response, :response_headers, :status,
+  class Env < Options.new(:method, :request_body, :url, :request,
+                          :request_headers, :ssl, :parallel_manager, :params,
+                          :response, :response_headers, :status,
                           :reason_phrase, :response_body)
 
     # rubocop:disable Naming/ConstantName
     ContentLength = 'Content-Length'
     StatusesWithoutBody = Set.new [204, 304]
-    SuccessfulStatuses = 200..299
+    SuccessfulStatuses = (200..299).freeze
     # rubocop:enable Naming/ConstantName
 
     # A Set of HTTP verbs that typically send a body.  If no body is set for
@@ -121,7 +123,8 @@ module Faraday
       SuccessfulStatuses.include?(status)
     end
 
-    # @return [Boolean] true if there's no body yet, and the method is in the set of {MethodsWithBodies}.
+    # @return [Boolean] true if there's no body yet, and the method is in the
+    # set of {MethodsWithBodies}.
     def needs_body?
       !body && MethodsWithBodies.include?(method)
     end
@@ -132,7 +135,8 @@ module Faraday
       self.body = ''
     end
 
-    # @return [Boolean] true if the status isn't in the set of {StatusesWithoutBody}.
+    # @return [Boolean] true if the status isn't in the set of
+    # {StatusesWithoutBody}.
     def parse_body?
       !StatusesWithoutBody.include?(status)
     end
@@ -149,9 +153,7 @@ module Faraday
           attrs << "@#{mem}=#{value.inspect}"
         end
       end
-      unless custom_members.empty?
-        attrs << "@custom=#{custom_members.inspect}"
-      end
+      attrs << "@custom=#{custom_members.inspect}" unless custom_members.empty?
       %(#<#{self.class}#{attrs.join(' ')}>)
     end
 

@@ -20,5 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
 
-  spec.files = `git ls-files -z lib LICENSE.md README.md`.split("\0")
+  spec.require_paths = %w[lib spec/external_adapters]
+  spec.files = `git ls-files -z lib spec/external_adapters`.split("\0")
+  spec.files += %w[LICENSE.md README.md]
 end

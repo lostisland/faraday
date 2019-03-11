@@ -6,39 +6,42 @@ require 'em-http'
 # EventMachine patch to make SSL work.
 module EmHttpSslPatch
   def ssl_verify_peer(cert_string)
-    cert = nil
     begin
-      cert = OpenSSL::X509::Certificate.new(cert_string)
+      @last_seen_cert = OpenSSL::X509::Certificate.new(cert_string)
     rescue OpenSSL::X509::CertificateError
       return false
     end
 
-    @last_seen_cert = cert
-
-    if certificate_store.verify(@last_seen_cert)
-      begin
-        certificate_store.add_cert(@last_seen_cert)
-      rescue OpenSSL::X509::StoreError => e
-        raise e unless e.message == 'cert already in hash table'
-      end
-      true
-    else
-      raise OpenSSL::SSL::SSLError, %(unable to verify the server certificate for "#{host}")
+    unless certificate_store.verify(@last_seen_cert)
+      raise OpenSSL::SSL::SSLError,
+            %(unable to verify the server certificate for "#{host}")
     end
+
+    begin
+      certificate_store.add_cert(@last_seen_cert)
+    rescue OpenSSL::X509::StoreError => e
+      raise e unless e.message == 'cert already in hash table'
+    end
+    true
   end
 
   def ssl_handshake_completed
     return true unless verify_peer?
 
-    if OpenSSL::SSL.verify_certificate_identity(@last_seen_cert, host)
-      true
-    else
-      raise OpenSSL::SSL::SSLError, %(host "#{host}" does not match the server certificate)
+    unless verified_cert_identity?
+      raise OpenSSL::SSL::SSLError,
+            %(host "#{host}" does not match the server certificate)
     end
+
+    true
   end
 
   def verify_peer?
     parent.connopts.tls[:verify_peer]
+  end
+
+  def verified_cert_identity?
+    OpenSSL::SSL.verify_certificate_identity(@last_seen_cert, host)
   end
 
   def host

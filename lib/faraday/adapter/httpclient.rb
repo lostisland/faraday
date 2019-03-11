@@ -44,7 +44,8 @@ module Faraday
                               header: env[:request_headers]
 
         if (req = env[:request]).stream_response?
-          warn "Streaming downloads for #{self.class.name} are not yet implemented."
+          warn "Streaming downloads for #{self.class.name} " \
+            'are not yet implemented.'
           req.on_data.call(resp.body, resp.body.bytesize)
         end
         save_response env, resp.status, resp.body, resp.headers, resp.reason
@@ -54,18 +55,19 @@ module Faraday
         raise Faraday::TimeoutError, $ERROR_INFO
       rescue ::HTTPClient::BadResponseError => err
         if err.message.include?('status 407')
-          raise Faraday::ConnectionFailed, %(407 "Proxy Authentication Required ")
-        else
-          raise Faraday::ClientError, $ERROR_INFO
+          raise Faraday::ConnectionFailed,
+                %(407 "Proxy Authentication Required ")
         end
-      rescue Errno::ECONNREFUSED, IOError, SocketError
+
+        raise Faraday::ClientError, $ERROR_INFO
+      rescue Errno::EADDRNOTAVAIL, Errno::ECONNREFUSED, IOError, SocketError
         raise Faraday::ConnectionFailed, $ERROR_INFO
       rescue StandardError => err
         if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
           raise Faraday::SSLError, err
-        else
-          raise
         end
+
+        raise
       end
 
       # @param bind [Hash]
@@ -79,9 +81,9 @@ module Faraday
       # @param proxy [Hash]
       def configure_proxy(proxy)
         client.proxy = proxy[:uri]
-        if proxy[:user] && proxy[:password]
-          client.set_proxy_auth proxy[:user], proxy[:password]
-        end
+        return unless proxy[:user] && proxy[:password]
+
+        client.set_proxy_auth(proxy[:user], proxy[:password])
       end
 
       # @param ssl [Hash]
@@ -99,16 +101,19 @@ module Faraday
 
       # @param req [Hash]
       def configure_timeouts(req)
-        if req[:timeout]
-          client.connect_timeout   = req[:timeout]
-          client.receive_timeout   = req[:timeout]
-          client.send_timeout      = req[:timeout]
-        end
+        configure_timeout(req) if req[:timeout]
+        configure_open_timeout(req) if req[:open_timeout]
+      end
 
-        if req[:open_timeout]
-          client.connect_timeout   = req[:open_timeout]
-          client.send_timeout      = req[:open_timeout]
-        end
+      def configure_timeout(req)
+        client.connect_timeout   = req[:timeout]
+        client.receive_timeout   = req[:timeout]
+        client.send_timeout      = req[:timeout]
+      end
+
+      def configure_open_timeout(req)
+        client.connect_timeout   = req[:open_timeout]
+        client.send_timeout      = req[:open_timeout]
       end
 
       def configure_client
@@ -133,7 +138,8 @@ module Faraday
       def ssl_verify_mode(ssl)
         ssl[:verify_mode] || begin
           if ssl.fetch(:verify, true)
-            OpenSSL::SSL::VERIFY_PEER | OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
+            OpenSSL::SSL::VERIFY_PEER |
+              OpenSSL::SSL::VERIFY_FAIL_IF_NO_PEER_CERT
           else
             OpenSSL::SSL::VERIFY_NONE
           end

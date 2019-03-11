@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'faraday/adapter_registry'
+
 module Faraday
   # A Builder that processes requests into responses by passing through an inner
   # middleware stack (heavily inspired by Rack).
@@ -20,25 +22,19 @@ module Faraday
     # borrowed from ActiveSupport::Dependencies::Reference &
     # ActionDispatch::MiddlewareStack::Middleware
     class Handler
-      @@constants_mutex = Mutex.new
-      @@constants = Hash.new do |h, k|
-        value = k.respond_to?(:constantize) ? k.constantize : Object.const_get(k)
-        @@constants_mutex.synchronize { h[k] = value }
-      end
+      REGISTRY = Faraday::AdapterRegistry.new
 
       attr_reader :name
 
       def initialize(klass, *args, &block)
         @name = klass.to_s
-        if klass.respond_to?(:name)
-          @@constants_mutex.synchronize { @@constants[@name] = klass }
-        end
+        REGISTRY.set(klass) if klass.respond_to?(:name)
         @args = args
         @block = block
       end
 
       def klass
-        @@constants[@name]
+        REGISTRY.get(@name)
       end
 
       def inspect
@@ -83,7 +79,7 @@ module Faraday
       @handlers[idx]
     end
 
-    # Locks the middleware stack to ensure no further modifications are possible.
+    # Locks the middleware stack to ensure no further modifications are made.
     def lock!
       @handlers.freeze
     end
@@ -113,9 +109,7 @@ module Faraday
     def adapter(klass = NO_ARGUMENT, *args, &block)
       return @adapter if klass == NO_ARGUMENT
 
-      if klass.is_a?(Symbol)
-        klass = Faraday::Adapter.lookup_middleware(klass)
-      end
+      klass = Faraday::Adapter.lookup_middleware(klass) if klass.is_a?(Symbol)
       @adapter = self.class::Handler.new(klass, *args, &block)
     end
 
@@ -175,11 +169,15 @@ module Faraday
     def to_app
       # last added handler is the deepest and thus closest to the inner app
       # adapter is always the last one
-      @handlers.reverse.inject(@adapter.build) { |app, handler| handler.build(app) }
+      @handlers.reverse.inject(@adapter.build) do |app, handler|
+        handler.build(app)
+      end
     end
 
     def ==(other)
-      other.is_a?(self.class) && @handlers == other.handlers && @adapter == other.adapter
+      other.is_a?(self.class) &&
+        @handlers == other.handlers &&
+        @adapter == other.adapter
     end
 
     def dup
@@ -203,20 +201,28 @@ module Faraday
     #     :password   - Proxy server password
     # :ssl - Hash of options for configuring SSL requests.
     def build_env(connection, request)
-      Env.new(request.method, request.body,
-              connection.build_exclusive_url(request.path, request.params, request.options.params_encoder),
+      exclusive_url = connection.build_exclusive_url(
+        request.path, request.params,
+        request.options.params_encoder
+      )
+
+      Env.new(request.method, request.body, exclusive_url,
               request.options, request.headers, connection.ssl,
               connection.parallel_manager)
     end
 
     private
 
+    LOCK_ERR = "can't modify middleware stack after making a request"
+
     def raise_if_locked
-      raise StackLocked, "can't modify middleware stack after making a request" if locked?
+      raise StackLocked, LOCK_ERR if locked?
     end
 
     def raise_if_adapter(klass)
-      raise 'Adapter should be set using the `adapter` method, not `use`' if is_adapter?(klass)
+      return unless is_adapter?(klass)
+
+      raise 'Adapter should be set using the `adapter` method, not `use`'
     end
 
     def adapter_set?

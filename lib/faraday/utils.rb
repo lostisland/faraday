@@ -5,7 +5,7 @@ require 'faraday/utils/params_hash'
 
 module Faraday
   module Utils
-    extend self
+    module_function
 
     def build_query(params)
       FlatParamsEncoder.encode(params)
@@ -15,7 +15,7 @@ module Faraday
       NestedParamsEncoder.encode(params)
     end
 
-    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
+    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/.freeze
 
     def escape(str)
       str.to_s.gsub(ESCAPE_RE) do |match|
@@ -27,7 +27,7 @@ module Faraday
       CGI.unescape str.to_s
     end
 
-    DEFAULT_SEP = /[&;] */n
+    DEFAULT_SEP = /[&;] */n.freeze
 
     # Adapted from Rack
     def parse_query(query)
@@ -76,7 +76,8 @@ module Faraday
                             end
     end
 
-    # Receives a String or URI and returns just the path with the query string sorted.
+    # Receives a String or URI and returns just
+    # the path with the query string sorted.
     def normalize_path(url)
       url = URI(url)
       (url.path.start_with?('/') ? url.path : '/' + url.path) +
@@ -99,8 +100,6 @@ module Faraday
     def deep_merge(source, hash)
       deep_merge!(source.dup, hash)
     end
-
-    protected
 
     def sort_query_params(query)
       query.split('&').sort.join('&')

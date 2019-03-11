@@ -6,9 +6,9 @@ LATEST STABLE RELEASE v0.15 IS IN BRANCH [0.1x](https://github.com/lostisland/fa
 # Faraday
 
 [![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
-[![Build Status](https://travis-ci.org/lostisland/faraday.svg)](https://travis-ci.org/lostisland/faraday)
-[![Coverage Status](https://coveralls.io/repos/github/lostisland/faraday/badge.svg?branch=master)](https://coveralls.io/github/lostisland/faraday?branch=master)
-[![Code Climate](https://codeclimate.com/github/lostisland/faraday/badges/gpa.svg)](https://codeclimate.com/github/lostisland/faraday)
+[![CircleCI](https://circleci.com/gh/lostisland/faraday/tree/master.svg?style=svg)](https://circleci.com/gh/lostisland/faraday/tree/master)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f869daab091ceef1da73/test_coverage)](https://codeclimate.com/github/lostisland/faraday/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f869daab091ceef1da73/maintainability)](https://codeclimate.com/github/lostisland/faraday/maintainability)
 [![Gitter](https://badges.gitter.im/lostisland/faraday.svg)](https://gitter.im/lostisland/faraday?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
@@ -73,6 +73,23 @@ conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
   end
   faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
 end
+
+# Override the log formatting on demand
+ 
+class MyFormatter < Faraday::Response::Logger::Formatter
+  def request(env)
+    info('Request', env)  
+  end
+  
+  def request(env)
+    info('Response', env)
+  end
+end
+
+conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
+  faraday.response :logger, StructLogger.new(STDOUT), formatter: MyFormatter
+end
+
 ```
 
 Once you have the connection object, use it to make HTTP requests. You can pass parameters to it in a few different ways:

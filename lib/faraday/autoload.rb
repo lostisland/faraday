@@ -8,9 +8,9 @@ module Faraday
   module AutoloadHelper
     # Registers the constants to be auto loaded.
     #
-    # @param prefix [String] The require prefix. If the path is inside Faraday, then
-    #           it will be prefixed with the root path of this loaded Faraday
-    #           version.
+    # @param prefix [String] The require prefix. If the path is inside Faraday,
+    #           then it will be prefixed with the root path of this loaded
+    #           Faraday version.
     # @param options [{ Symbol => String }] library names.
     #
     # @example
@@ -27,6 +27,7 @@ module Faraday
       if prefix =~ %r{^faraday(/|$)}i
         prefix = File.join(Faraday.root_path, prefix)
       end
+
       options.each do |const_name, path|
         autoload const_name, File.join(prefix, path)
       end

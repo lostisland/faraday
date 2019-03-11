@@ -4,10 +4,12 @@ shared_examples 'a request method' do |http_method|
   let(:query_or_body) { method_with_body?(http_method) ? :body : :query }
   let(:response) { conn.public_send(http_method, '/') }
 
-  it 'retrieves the response body' do
-    res_body = 'test'
-    request_stub.to_return(body: res_body)
-    expect(conn.public_send(http_method, '/').body).to eq(res_body)
+  unless http_method == :head && feature?(:skip_response_body_on_head)
+    it 'retrieves the response body' do
+      res_body = 'test'
+      request_stub.to_return(body: res_body)
+      expect(conn.public_send(http_method, '/').body).to eq(res_body)
+    end
   end
 
   it 'handles headers with multiple values' do
@@ -33,6 +35,21 @@ shared_examples 'a request method' do |http_method|
   it 'handles connection error' do
     request_stub.disable
     expect { conn.public_send(http_method, 'http://localhost:4') }.to raise_error(Faraday::ConnectionFailed)
+  end
+
+  on_feature :local_socket_binding do
+    it 'binds local socket' do
+      stub_request(http_method, 'http://example.com')
+
+      host = '1.2.3.4'
+      port = 1234
+      conn_options[:request] = { bind: { host: host, port: port } }
+
+      conn.public_send(http_method, '/')
+
+      expect(conn.options[:bind][:host]).to eq(host)
+      expect(conn.options[:bind][:port]).to eq(port)
+    end
   end
 
   # context 'when wrong ssl certificate is provided' do
@@ -160,28 +177,44 @@ shared_examples 'a request method' do |http_method|
   end
 
   on_feature :parallel do
-    it 'handles parallel requests' do
-      resp1 = nil
-      resp2 = nil
-      payload1 = { a: '1' }
-      payload2 = { b: '2' }
-      request_stub.with(Hash[query_or_body, payload1])
-                  .to_return(body: payload1.to_json)
-      stub_request(http_method, remote).with(Hash[query_or_body, payload2])
-                                       .to_return(body: payload2.to_json)
+    context 'with parallel setup' do
+      before do
+        @resp1 = nil
+        @resp2 = nil
+        @payload1 = { a: '1' }
+        @payload2 = { b: '2' }
 
-      conn.in_parallel do
-        resp1 = conn.public_send(http_method, '/', payload1)
-        resp2 = conn.public_send(http_method, '/', payload2)
+        request_stub
+          .with(Hash[query_or_body, @payload1])
+          .to_return(body: @payload1.to_json)
 
-        expect(conn.in_parallel?).to be_truthy
-        expect(resp1.body).to be_nil
-        expect(resp2.body).to be_nil
+        stub_request(http_method, remote)
+          .with(Hash[query_or_body, @payload2])
+          .to_return(body: @payload2.to_json)
+
+        conn.in_parallel do
+          @resp1 = conn.public_send(http_method, '/', @payload1)
+          @resp2 = conn.public_send(http_method, '/', @payload2)
+
+          expect(conn.in_parallel?).to be_truthy
+          expect(@resp1.body).to be_nil
+          expect(@resp2.body).to be_nil
+        end
+
+        expect(conn.in_parallel?).to be_falsey
       end
 
-      expect(conn.in_parallel?).to be_falsey
-      expect(resp1&.body).to eq(payload1.to_json)
-      expect(resp2&.body).to eq(payload2.to_json)
+      it 'handles parallel requests status' do
+        expect(@resp1&.status).to eq(200)
+        expect(@resp2&.status).to eq(200)
+      end
+
+      unless http_method == :head && feature?(:skip_response_body_on_head)
+        it 'handles parallel requests body' do
+          expect(@resp1&.body).to eq(@payload1.to_json)
+          expect(@resp2&.body).to eq(@payload2.to_json)
+        end
+      end
     end
   end
 

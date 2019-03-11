@@ -20,8 +20,8 @@ require 'faraday/dependency_loader'
 #
 module Faraday
   VERSION = '0.15.3'
-  METHODS_WITH_QUERY = %w[get head delete connect trace]
-  METHODS_WITH_BODY = %w[post put patch]
+  METHODS_WITH_QUERY = %w[get head delete connect trace].freeze
+  METHODS_WITH_BODY = %w[post put patch].freeze
 
   class << self
     # The root path that Faraday is being loaded from.
@@ -47,20 +47,21 @@ module Faraday
     # Documented below, see default_connection
     attr_writer :default_connection
 
-    # Tells Faraday to ignore the environment proxy (http_proxy). Defaults to `false`.
+    # Tells Faraday to ignore the environment proxy (http_proxy).
+    # Defaults to `false`.
     # @return [Boolean]
     attr_accessor :ignore_env_proxy
 
     # Initializes a new {Connection}.
     #
-    # @param url [String,Hash] The optional String base URL to use as a prefix for all
-    #           requests.  Can also be the options Hash. Any of these values
-    #           will be set on every request made, unless overridden for a
-    #           specific request.
+    # @param url [String,Hash] The optional String base URL to use as a prefix
+    #           for all requests.  Can also be the options Hash. Any of these
+    #           values will be set on every request made, unless overridden
+    #           for a specific request.
     # @param options [Hash]
     # @option options [String] :url Base URL
-    # @option options [Hash] :params Hash of URI query unencoded key/value pairs.
-    # @option options [Hash] :headers Hash of unencoded HTTP header key/value pairs.
+    # @option options [Hash] :params Hash of unencoded URI query params.
+    # @option options [Hash] :headers Hash of unencoded HTTP headers.
     # @option options [Hash] :request Hash of request options.
     # @option options [Hash] :ssl Hash of SSL options.
     # @option options [Hash] :proxy Hash of Proxy options.
@@ -78,8 +79,8 @@ module Faraday
     #   Faraday.new url: 'http://faraday.com',
     #               params: { page: 1 }
     #   # => Faraday::Connection to http://faraday.com?page=1
-    def new(url = nil, options = nil, &block)
-      options = options ? default_connection_options.merge(options) : default_connection_options
+    def new(url = nil, options = {}, &block)
+      options = default_connection_options.merge(options)
       Faraday::Connection.new(url, options, &block)
     end
 
@@ -102,7 +103,7 @@ module Faraday
       @default_adapter = adapter
     end
 
-    def respond_to?(symbol, include_private = false)
+    def respond_to_missing?(symbol, include_private = false)
       default_connection.respond_to?(symbol, include_private) || super
     end
 
@@ -111,7 +112,11 @@ module Faraday
     # Internal: Proxies method calls on the Faraday constant to
     # .default_connection.
     def method_missing(name, *args, &block)
-      default_connection.send(name, *args, &block)
+      if default_connection.respond_to?(name)
+        default_connection.send(name, *args, &block)
+      else
+        super
+      end
     end
   end
 
@@ -122,11 +127,13 @@ module Faraday
 
   # @overload default_connection
   #   Gets the default connection used for simple scripts.
-  #   @return [Faraday::Connection] a connection configured with the {.default_adapter}.
+  #   @return [Faraday::Connection] a connection configured with
+  #   the default_adapter.
   # @overload default_connection=(connection)
   #   @param connection [Faraday::Connection]
   #   Sets the default {Faraday::Connection} for simple scripts that
-  #   access the Faraday constant directly, such as <code>Faraday.get "https://faraday.com"</code>.
+  #   access the Faraday constant directly, such as
+  #   <code>Faraday.get "https://faraday.com"</code>.
   def self.default_connection
     @default_connection ||= Connection.new(default_connection_options)
   end
@@ -152,9 +159,8 @@ module Faraday
   end
 
   require_libs 'utils', 'options', 'connection', 'rack_builder', 'parameters',
-               'middleware', 'adapter', 'request', 'response', 'upload_io', 'error'
+               'middleware', 'adapter', 'request', 'response', 'upload_io',
+               'error'
 
-  unless ENV['FARADAY_NO_AUTOLOAD']
-    require_lib 'autoload'
-  end
+  require_lib 'autoload' unless ENV['FARADAY_NO_AUTOLOAD']
 end

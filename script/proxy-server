@@ -27,7 +27,8 @@ webrick_opts = {
   AccessLog: [[log_io, '[%{X-Faraday-Adapter}i] %m  %U  ->  %s %b']],
   ProxyAuthProc: lambda { |req, res|
     if username
-      type, credentials = req.header['proxy-authorization'].first.to_s.split(/\s+/, 2)
+      type, credentials = req.header['proxy-authorization']
+                             .first.to_s.split(/\s+/, 2)
       unless type == 'Basic' && match_credentials.call(credentials)
         res['proxy-authenticate'] = %(Basic realm="testing")
         raise WEBrick::HTTPStatus::ProxyAuthenticationRequired

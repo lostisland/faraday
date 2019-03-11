@@ -42,10 +42,9 @@ module Faraday
       end
 
       def merge_query(query, encoder = nil)
-        if query && !query.empty?
-          update((encoder || Utils.default_params_encoder).decode(query))
-        end
-        self
+        return self unless query && !query.empty?
+
+        update((encoder || Utils.default_params_encoder).decode(query))
       end
 
       def to_query(encoder = nil)
