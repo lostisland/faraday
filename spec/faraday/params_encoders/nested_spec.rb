@@ -84,6 +84,16 @@ RSpec.describe Faraday::NestedParamsEncoder do
     expect(result).to eq(expected)
   end
 
+  it 'encodes boolean values' do
+    params = { a: true, b: false }
+    expect(subject.encode(params)).to eq('a=true&b=false')
+  end
+
+  it 'encodes boolean values in array' do
+    params = { a: [true, false] }
+    expect(subject.encode(params)).to eq('a%5B%5D=true&a%5B%5D=false')
+  end
+
   shared_examples 'a wrong decoding' do
     it do
       expect { subject.decode(query) }.to raise_error(TypeError) do |e|

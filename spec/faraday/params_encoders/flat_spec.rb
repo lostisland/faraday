@@ -16,4 +16,14 @@ RSpec.describe Faraday::FlatParamsEncoder do
     expected = { 'a' => 'true', 'b' => 'false' }
     expect(subject.decode(query)).to eq(expected)
   end
+
+  it 'encodes boolean values' do
+    params = { a: true, b: false }
+    expect(subject.encode(params)).to eq('a=true&b=false')
+  end
+
+  it 'encodes boolean values in array' do
+    params = { a: [true, false] }
+    expect(subject.encode(params)).to eq('a=true&a=false')
+  end
 end
