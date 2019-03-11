@@ -29,7 +29,6 @@ module Faraday
       buffer = +''
       params.each do |key, value|
         encoded_key = escape(key)
-        value = value.to_s if value == true || value == false
         if value.nil?
           buffer << "#{encoded_key}&"
         elsif value.is_a?(Array)

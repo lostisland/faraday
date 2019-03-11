@@ -47,8 +47,3 @@ Style/Documentation:
     - 'lib/faraday/response/logger.rb'
     - 'lib/faraday/response/raise_error.rb'
     - 'lib/faraday/utils.rb'
-
-# Offense count: 1
-Style/MultipleComparison:
-  Exclude:
-    - 'lib/faraday/encoders/flat_params_encoder.rb'
