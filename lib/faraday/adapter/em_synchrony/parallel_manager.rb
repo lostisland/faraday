@@ -22,18 +22,7 @@ module Faraday
         # Run all requests on queue with `EM::Synchrony::Multi`, wrapping
         # it in a reactor and fiber if needed.
         def run
-          result = nil
-          if !EM.reactor_running?
-            EM.run do
-              Fiber.new do
-                result = perform
-                EM.stop
-              end.resume
-            end
-          else
-            result = perform
-          end
-          result
+          EMRunner.call(&method(:perform))
         end
 
         private

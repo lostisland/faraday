@@ -96,8 +96,9 @@ module Faraday
       end
 
       def execute_single_request(env, request, http_method)
-        block = -> { request.send(http_method, request_config(env)) }
-        client = call_block(block)
+        client = EMRunner.call do
+          request.send(http_method, request_config(env))
+        end
 
         raise client.error if client&.error
 
@@ -117,28 +118,12 @@ module Faraday
           end
         end
       end
-
-      def call_block(block)
-        client = nil
-
-        if EM.reactor_running?
-          client = block.call
-        else
-          EM.run do
-            Fiber.new do
-              client = block.call
-              EM.stop
-            end.resume
-          end
-        end
-
-        client
-      end
     end
   end
 end
 
 require 'faraday/adapter/em_synchrony/parallel_manager'
+require 'faraday/adapter/em_synchrony/em_runner'
 
 if Faraday::Adapter::EMSynchrony.loaded?
   begin
