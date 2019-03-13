@@ -13,6 +13,8 @@ module Faraday
   #   # => #<Faraday::Response>
   #
   class Connection
+    extend Forwardable
+
     # A Set of allowed HTTP verbs.
     METHODS = Set.new %i[get post put delete head patch options trace connect]
 
@@ -91,17 +93,6 @@ module Faraday
       @headers[:user_agent] ||= "Faraday v#{VERSION}"
     end
 
-    def initialize_proxy(url, options)
-      @manual_proxy = !!options.proxy
-      @proxy =
-        if options.proxy
-          ProxyOptions.from(options.proxy)
-        else
-          proxy_from_env(url)
-        end
-      @temp_proxy = @proxy
-    end
-
     # Sets the Hash of URI query unencoded key/value pairs.
     # @param hash [Hash]
     def params=(hash)
@@ -114,7 +105,57 @@ module Faraday
       @headers.replace hash
     end
 
-    extend Forwardable
+    # Sets the Hash proxy options.
+    #
+    # @param new_value [Object]
+    def proxy=(new_value)
+      @manual_proxy = true
+      @proxy = new_value ? ProxyOptions.from(new_value) : nil
+    end
+
+    def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
+    def_delegator :url_prefix, :path, :path_prefix
+
+    # Parses the given URL with URI and stores the individual
+    # components in this connection. These components serve as defaults for
+    # requests made by this connection.
+    #
+    # @param url [String, URI]
+    # @param encoder [Object]
+    #
+    # @example
+    #
+    #   conn = Faraday::Connection.new { ... }
+    #   conn.url_prefix = "https://sushi.com/api"
+    #   conn.scheme      # => https
+    #   conn.path_prefix # => "/api"
+    #
+    #   conn.get("nigiri?page=2") # accesses https://sushi.com/api/nigiri
+    def url_prefix=(url, encoder = nil)
+      uri = @url_prefix = Utils.URI(url)
+      self.path_prefix = uri.path
+
+      params.merge_query(uri.query, encoder)
+      uri.query = nil
+
+      with_uri_credentials(uri) do |user, password|
+        basic_auth user, password
+        uri.user = uri.password = nil
+      end
+    end
+
+    # Sets the path prefix and ensures that it always has a leading
+    # slash.
+    #
+    # @param value [String]
+    #
+    # @return [String] the new path prefix
+    def path_prefix=(value)
+      url_prefix.path = if value
+                          value = '/' + value unless value[0, 1] == '/'
+                          value
+                        end
+    end
 
     def_delegators :builder, :build, :use, :request, :response, :adapter, :app
 
@@ -290,258 +331,6 @@ module Faraday
       RUBY
     end
 
-    # Sets up the Authorization header with these credentials, encoded
-    # with base64.
-    #
-    # @param login [String] The authentication login.
-    # @param pass [String] The authentication password.
-    #
-    # @example
-    #
-    #   conn.basic_auth 'Aladdin', 'open sesame'
-    #   conn.headers['Authorization']
-    #   # => "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="
-    #
-    # @return [void]
-    def basic_auth(login, pass)
-      set_authorization_header(:basic_auth, login, pass)
-    end
-
-    # Sets up the Authorization header with the given token.
-    #
-    # @param token [String]
-    # @param options [Hash] extra token options.
-    #
-    # @example
-    #
-    #   conn.token_auth 'abcdef', foo: 'bar'
-    #   conn.headers['Authorization']
-    #   # => "Token token=\"abcdef\",
-    #               foo=\"bar\""
-    #
-    # @return [void]
-    def token_auth(token, options = nil)
-      set_authorization_header(:token_auth, token, options)
-    end
-
-    # Sets up a custom Authorization header.
-    #
-    # @param type [String] authorization type
-    # @param token [String, Hash] token. A String value is taken literally, and
-    #         a Hash is encoded into comma-separated key/value pairs.
-    #
-    # @example
-    #
-    #   conn.authorization :Bearer, 'mF_9.B5f-4.1JqM'
-    #   conn.headers['Authorization']
-    #   # => "Bearer mF_9.B5f-4.1JqM"
-    #
-    #   conn.authorization :Token, token: 'abcdef', foo: 'bar'
-    #   conn.headers['Authorization']
-    #   # => "Token token=\"abcdef\",
-    #               foo=\"bar\""
-    #
-    # @return [void]
-    def authorization(type, token)
-      set_authorization_header(:authorization, type, token)
-    end
-
-    # Check if the adapter is parallel-capable.
-    #
-    # @yield if the adapter isn't parallel-capable, or if no adapter is set yet.
-    #
-    # @return [Object, nil] a parallel manager or nil if yielded
-    # @api private
-    def default_parallel_manager
-      @default_parallel_manager ||= begin
-        adapter = @builder.adapter.klass if @builder.adapter
-
-        if support_parallel?(adapter)
-          adapter.setup_parallel_manager
-        elsif block_given?
-          yield
-        end
-      end
-    end
-
-    # Determine if this Faraday::Connection can make parallel requests.
-    #
-    # @return [Boolean]
-    def in_parallel?
-      !!@parallel_manager
-    end
-
-    # Sets up the parallel manager to make a set of requests.
-    #
-    # @param manager [Object] The parallel manager that this Connection's
-    #                Adapter uses.
-    #
-    # @yield a block to execute multiple requests.
-    # @return [void]
-    def in_parallel(manager = nil)
-      @parallel_manager = manager || default_parallel_manager do
-        warn 'Warning: `in_parallel` called but no parallel-capable adapter ' \
-             'on Faraday stack'
-        warn caller[2, 10].join("\n")
-        nil
-      end
-      yield
-      @parallel_manager&.run
-    ensure
-      @parallel_manager = nil
-    end
-
-    # Sets the Hash proxy options.
-    #
-    # @param new_value [Object]
-    def proxy=(new_value)
-      @manual_proxy = true
-      @proxy = new_value ? ProxyOptions.from(new_value) : nil
-    end
-
-    def_delegators :url_prefix, :scheme, :scheme=, :host, :host=, :port, :port=
-    def_delegator :url_prefix, :path, :path_prefix
-
-    # Parses the given URL with URI and stores the individual
-    # components in this connection. These components serve as defaults for
-    # requests made by this connection.
-    #
-    # @param url [String, URI]
-    # @param encoder [Object]
-    #
-    # @example
-    #
-    #   conn = Faraday::Connection.new { ... }
-    #   conn.url_prefix = "https://sushi.com/api"
-    #   conn.scheme      # => https
-    #   conn.path_prefix # => "/api"
-    #
-    #   conn.get("nigiri?page=2") # accesses https://sushi.com/api/nigiri
-    def url_prefix=(url, encoder = nil)
-      uri = @url_prefix = Utils.URI(url)
-      self.path_prefix = uri.path
-
-      params.merge_query(uri.query, encoder)
-      uri.query = nil
-
-      with_uri_credentials(uri) do |user, password|
-        basic_auth user, password
-        uri.user = uri.password = nil
-      end
-    end
-
-    # Sets the path prefix and ensures that it always has a leading
-    # slash.
-    #
-    # @param value [String]
-    #
-    # @return [String] the new path prefix
-    def path_prefix=(value)
-      url_prefix.path = if value
-                          value = '/' + value unless value[0, 1] == '/'
-                          value
-                        end
-    end
-
-    # Takes a relative url for a request and combines it with the defaults
-    # set on the connection instance.
-    #
-    # @param url [String]
-    # @param extra_params [Hash]
-    #
-    # @example
-    #   conn = Faraday::Connection.new { ... }
-    #   conn.url_prefix = "https://sushi.com/api?token=abc"
-    #   conn.scheme      # => https
-    #   conn.path_prefix # => "/api"
-    #
-    #   conn.build_url("nigiri?page=2")
-    #   # => https://sushi.com/api/nigiri?token=abc&page=2
-    #
-    #   conn.build_url("nigiri", page: 2)
-    #   # => https://sushi.com/api/nigiri?token=abc&page=2
-    #
-    def build_url(url = nil, extra_params = nil)
-      uri = build_exclusive_url(url)
-
-      query_values = params.dup.merge_query(uri.query, options.params_encoder)
-      query_values.update(extra_params) if extra_params
-      uri.query =
-        if query_values.empty?
-          nil
-        else
-          query_values.to_query(options.params_encoder)
-        end
-
-      uri
-    end
-
-    # Builds and runs the Faraday::Request.
-    #
-    # @param method [Symbol] HTTP method.
-    # @param url [String, URI] String or URI to access.
-    # @param body [Object] The request body that will eventually be converted to
-    #             a string.
-    # @param headers [Hash] unencoded HTTP header key/value pairs.
-    #
-    # @return [Faraday::Response]
-    def run_request(method, url, body, headers)
-      unless METHODS.include?(method)
-        raise ArgumentError, "unknown http method: #{method}"
-      end
-
-      # Resets temp_proxy
-      @temp_proxy = proxy_for_request(url)
-
-      request = build_request(method) do |req|
-        req.options = req.options.merge(proxy: @temp_proxy)
-        req.url(url)                if url
-        req.headers.update(headers) if headers
-        req.body = body             if body
-        yield(req) if block_given?
-      end
-
-      builder.build_response(self, request)
-    end
-
-    # Creates and configures the request object.
-    #
-    # @param method [Symbol]
-    #
-    # @yield [Faraday::Request] if block given
-    # @return [Faraday::Request]
-    def build_request(method)
-      Request.create(method) do |req|
-        req.params  = params.dup
-        req.headers = headers.dup
-        req.options = options
-        yield(req) if block_given?
-      end
-    end
-
-    # Build an absolute URL based on url_prefix.
-    #
-    # @param url [String, URI]
-    # @param params [Faraday::Utils::ParamsHash] A Faraday::Utils::ParamsHash to
-    #               replace the query values
-    #          of the resulting url (default: nil).
-    #
-    # @return [URI]
-    def build_exclusive_url(url = nil, params = nil, params_encoder = nil)
-      url = nil if url.respond_to?(:empty?) && url.empty?
-      base = url_prefix
-      if url && base.path && base.path !~ %r{/$}
-        base = base.dup
-        base.path = base.path + '/' # ensure trailing slash
-      end
-      uri = url ? base + url : base
-      if params
-        uri.query = params.to_query(params_encoder || options.params_encoder)
-      end
-      uri.query = nil if uri.query&.empty?
-      uri
-    end
-
     # Creates a duplicate of this Faraday::Connection.
     #
     # @api private
@@ -569,56 +358,10 @@ module Faraday
 
       yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
     end
-
-    def set_authorization_header(header_type, *args)
-      header = Faraday::Request
-               .lookup_middleware(header_type)
-               .header(*args)
-
-      headers[Faraday::Request::Authorization::KEY] = header
-    end
-
-    def proxy_from_env(url)
-      return if Faraday.ignore_env_proxy
-
-      uri = nil
-      if URI.parse('').respond_to?(:find_proxy)
-        case url
-        when String
-          uri = Utils.URI(url)
-          uri = URI.parse("#{uri.scheme}://#{uri.hostname}").find_proxy
-        when URI
-          uri = url.find_proxy
-        when nil
-          uri = find_default_proxy
-        end
-      else
-        warn 'no_proxy is unsupported' if ENV['no_proxy'] || ENV['NO_PROXY']
-        uri = find_default_proxy
-      end
-      ProxyOptions.from(uri) if uri
-    end
-
-    def find_default_proxy
-      uri = ENV['http_proxy']
-      return unless uri && !uri.empty?
-
-      uri = 'http://' + uri if uri !~ /^http/i
-      uri
-    end
-
-    def proxy_for_request(url)
-      return proxy if @manual_proxy
-
-      if url && Utils.URI(url).absolute?
-        proxy_from_env(url)
-      else
-        proxy
-      end
-    end
-
-    def support_parallel?(adapter)
-      adapter&.respond_to?(:supports_parallel?) && adapter&.supports_parallel?
-    end
   end
 end
+
+require 'faraday/connection/authorization_management'
+require 'faraday/connection/parallel_management'
+require 'faraday/connection/proxy_management'
+require 'faraday/connection/request_building'
