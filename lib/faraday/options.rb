@@ -1,20 +1,24 @@
 # frozen_string_literal: true
 
+require 'faraday/options/options_helpers'
+
 module Faraday
-  # Subclasses Struct with some special helpers for converting from a Hash to
-  # a Struct.
+  # Subclasses Struct with some special helpers for converting
+  # from a Hash to a Struct.
   class Options < Struct
+    include Faraday::OptionsHelpers
+
     # Public
     def self.from(value)
       value ? new.update(value) : new
     end
 
-    # Public
-    def each
-      return to_enum(:each) unless block_given?
-
-      members.each do |key|
-        yield(key.to_sym, send(key))
+    def [](key)
+      key = key.to_sym
+      if (method = self.class.memoized_attributes[key])
+        super(key) || (self[key] = instance_eval(&method))
+      else
+        super
       end
     end
 
@@ -87,75 +91,6 @@ module Faraday
       send(key)
     end
 
-    # Public
-    def values_at(*keys)
-      keys.map { |key| send(key) }
-    end
-
-    # Public
-    def keys
-      members.reject { |member| send(member).nil? }
-    end
-
-    # Public
-    def empty?
-      keys.empty?
-    end
-
-    # Public
-    def each_key
-      return to_enum(:each_key) unless block_given?
-
-      keys.each do |key|
-        yield(key)
-      end
-    end
-
-    # Public
-    def key?(key)
-      keys.include?(key)
-    end
-
-    alias has_key? key?
-
-    # Public
-    def each_value
-      return to_enum(:each_value) unless block_given?
-
-      values.each do |value|
-        yield(value)
-      end
-    end
-
-    # Public
-    def value?(value)
-      values.include?(value)
-    end
-
-    alias has_value? value?
-
-    # Public
-    def to_hash
-      hash = {}
-      members.each do |key|
-        value = send(key)
-        hash[key.to_sym] = value unless value.nil?
-      end
-      hash
-    end
-
-    # Internal
-    def inspect
-      values = []
-      members.each do |member|
-        value = send(member)
-        values << "#{member}=#{value.inspect}" if value
-      end
-      values = values.empty? ? ' (empty)' : (' ' << values.join(', '))
-
-      %(#<#{self.class}#{values}>)
-    end
-
     # Internal
     def self.options(mapping)
       attribute_options.update(mapping)
@@ -180,19 +115,6 @@ module Faraday
 
     def self.memoized_attributes
       @memoized_attributes ||= {}
-    end
-
-    def [](key)
-      key = key.to_sym
-      if (method = self.class.memoized_attributes[key])
-        super(key) || (self[key] = instance_eval(&method))
-      else
-        super
-      end
-    end
-
-    def symbolized_key_set
-      @symbolized_key_set ||= Set.new(keys.map(&:to_sym))
     end
 
     def self.inherited(subclass)
