@@ -33,7 +33,7 @@ shared_ruby_steps: &shared_ruby_steps
         steps:
           - run:
               name: Run Code Climate test-reporter
-              command: ./cc-test-reporter after-build --coverage-input-type clover --exit-code $?
+              command: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
     - save_cache:
         key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}"
         paths:
