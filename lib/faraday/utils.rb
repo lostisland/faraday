@@ -4,6 +4,7 @@ require 'faraday/utils/headers'
 require 'faraday/utils/params_hash'
 
 module Faraday
+  # Utils contains various static helper methods.
   module Utils
     module_function
 

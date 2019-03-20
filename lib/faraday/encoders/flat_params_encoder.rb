@@ -1,12 +1,24 @@
 # frozen_string_literal: true
 
 module Faraday
+  # FlatParamsEncoder manages URI params as a flat hash. Any Array values repeat
+  # the parameter multiple times.
   module FlatParamsEncoder
     class << self
       extend Forwardable
       def_delegators :'Faraday::Utils', :escape, :unescape
     end
 
+    # Encode converts the given param into a URI querystring. Keys and values
+    # will converted to strings and appropriately escaped for the URI.
+    #
+    # @example
+    #
+    #   encode({a: %w[one two three], b: true, c: "C"})
+    #   # => 'a=one&a=two&a=three&b=true&c=C'
+    #
+    # @param params [Hash] query arguments to convert.
+    # @return [String] the URI querystring (without the leading '?')
     def self.encode(params)
       return nil if params.nil?
 
@@ -44,6 +56,15 @@ module Faraday
       buffer.chop
     end
 
+    # Decode converts the given URI querystring into a hash.
+    #
+    # @example
+    #
+    #   decode('a=one&a=two&a=three&b=true&c=C')
+    #   # => {"a"=>["one", "two", "three"], "b"=>"true", "c"=>"C"}
+    #
+    # @param query [String] query arguments to parse.
+    # @return [Hash] parsed keys and value strings from the querystring.
     def self.decode(query)
       return nil if query.nil?
 

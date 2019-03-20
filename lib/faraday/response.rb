@@ -3,6 +3,7 @@
 require 'forwardable'
 
 module Faraday
+  # Response represents an HTTP response from making an HTTP request.
   class Response
     # Used for simple response middleware.
     class Middleware < Faraday::Middleware

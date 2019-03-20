@@ -54,6 +54,8 @@ module Faraday
     end
   end
 
+  # Adapter is the base class for all Faraday adapters.
+  # Reopened, see original class in lib/faraday/adapter.rb.
   class Adapter
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
@@ -69,6 +71,8 @@ module Faraday
                  HTTPClient: 'httpclient'
   end
 
+  # Request represents a single HTTP request for a Faraday adapter to make.
+  # Reopened, see original class in lib/faraday/request.rb.
   class Request
     extend AutoloadHelper
     autoload_all 'faraday/request',
@@ -81,6 +85,8 @@ module Faraday
                  Instrumentation: 'instrumentation'
   end
 
+  # Response represents the returned value of a sent Faraday request.
+  # Reopened, see original class in lib/faraday/response.rb.
   class Response
     extend AutoloadHelper
     autoload_all 'faraday/response',

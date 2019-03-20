@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Faraday
+  # RequestOptions contains the configurable properties for a Faraday request.
   class RequestOptions < Options.new(:params_encoder, :proxy, :bind,
                                      :timeout, :open_timeout, :write_timeout,
                                      :boundary, :oauth, :context, :on_data)

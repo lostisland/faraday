@@ -6,6 +6,8 @@ module Faraday
     # requests when in an EM reactor loop, or for making parallel requests in
     # synchronous code.
     class EMHttp < Faraday::Adapter
+      # Options is a module containing helpers to convert the Faraday env object
+      # into options hashes for EMHTTP method calls.
       module Options
         # @return [Hash]
         def connection_config(env)

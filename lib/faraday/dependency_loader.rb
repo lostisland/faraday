@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Faraday
+  # DependencyLoader helps Faraday adapters and middleware load dependencies.
   module DependencyLoader
     attr_reader :load_error
 
