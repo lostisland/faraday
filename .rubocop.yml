@@ -15,8 +15,7 @@ Metrics/LineLength:
 
 Style/DoubleNegation:
   Enabled: false
-  
+
 Style/Documentation:
   Exclude:
     - 'spec/**/*'
-    - 'test/**/*'
