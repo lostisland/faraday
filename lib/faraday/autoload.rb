@@ -21,7 +21,6 @@ module Faraday
     #   # requires faraday/foo/bar to load Faraday::Bar.
     #   Faraday::Bar
     #
-    #
     # @return [void]
     def autoload_all(prefix, options)
       if prefix =~ %r{^faraday(/|$)}i
@@ -55,7 +54,7 @@ module Faraday
   end
 
   # Adapter is the base class for all Faraday adapters.
-  # Reopened, see original class in lib/faraday/adapter.rb.
+  # @see lib/faraday/adapter.rb Original class location
   class Adapter
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
@@ -72,7 +71,7 @@ module Faraday
   end
 
   # Request represents a single HTTP request for a Faraday adapter to make.
-  # Reopened, see original class in lib/faraday/request.rb.
+  # @see lib/faraday/request.rb Original class location
   class Request
     extend AutoloadHelper
     autoload_all 'faraday/request',
@@ -86,7 +85,7 @@ module Faraday
   end
 
   # Response represents the returned value of a sent Faraday request.
-  # Reopened, see original class in lib/faraday/response.rb.
+  # @see lib/faraday/response.rb Original class location
   class Response
     extend AutoloadHelper
     autoload_all 'faraday/response',
