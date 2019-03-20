@@ -6,6 +6,7 @@ module Faraday
   # A Builder that processes requests into responses by passing through an inner
   # middleware stack (heavily inspired by Rack).
   #
+  # @example
   #   Faraday::Connection.new(url: 'http://sushi.com') do |builder|
   #     builder.request  :url_encoded  # Faraday::Request::UrlEncoded
   #     builder.adapter  :net_http     # Faraday::Adapter::NetHttp
@@ -144,10 +145,10 @@ module Faraday
     # Processes a Request into a Response by passing it through this Builder's
     # middleware stack.
     #
-    # connection - Faraday::Connection
-    # request    - Faraday::Request
+    # @param connection [Faraday::Connection]
+    # @param request [Faraday::Request]
     #
-    # Returns a Faraday::Response.
+    # @return [Faraday::Response]
     def build_response(connection, request)
       app.call(build_env(connection, request))
     end
