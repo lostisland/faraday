@@ -26,7 +26,6 @@ group :test do
   gem 'rspec_junit_formatter', '~> 0.4'
   gem 'rubocop', '~> 0.65.0'
   gem 'simplecov'
-  gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 1.3', git: 'https://github.com/typhoeus/typhoeus.git',
                             require: 'typhoeus'
   gem 'webmock', '~> 3.4'
