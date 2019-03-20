@@ -538,7 +538,9 @@ module Faraday
       if params
         uri.query = params.to_query(params_encoder || options.params_encoder)
       end
-      uri.query = nil if uri.query&.empty?
+      # rubocop:disable Style/SafeNavigation
+      uri.query = nil if uri.query && uri.query.empty?
+      # rubocop:enable Style/SafeNavigation
       uri
     end
 
