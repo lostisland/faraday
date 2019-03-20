@@ -11,13 +11,14 @@ module Faraday
 
     # Encode converts the given param into a URI querystring. Keys and values
     # will converted to strings and appropriately escaped for the URI.
+
+    # @param params [Hash] query arguments to convert.
     #
     # @example
     #
     #   encode({a: %w[one two three], b: true, c: "C"})
     #   # => 'a=one&a=two&a=three&b=true&c=C'
     #
-    # @param params [Hash] query arguments to convert.
     # @return [String] the URI querystring (without the leading '?')
     def self.encode(params)
       return nil if params.nil?
@@ -58,12 +59,13 @@ module Faraday
 
     # Decode converts the given URI querystring into a hash.
     #
+    # @param query [String] query arguments to parse.
+    #
     # @example
     #
     #   decode('a=one&a=two&a=three&b=true&c=C')
     #   # => {"a"=>["one", "two", "three"], "b"=>"true", "c"=>"C"}
     #
-    # @param query [String] query arguments to parse.
     # @return [Hash] parsed keys and value strings from the querystring.
     def self.decode(query)
       return nil if query.nil?
