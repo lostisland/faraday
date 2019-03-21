@@ -29,6 +29,7 @@ module Faraday
       ].freeze
       IDEMPOTENT_METHODS = %i[delete get head options put].freeze
 
+      # Options contains the configurable parameters for the Retry middleware.
       class Options < Faraday::Options.new(:max, :interval, :max_interval,
                                            :interval_randomness,
                                            :backoff_factor, :exceptions,

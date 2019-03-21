@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Faraday
+  # ProxyOptions contains the configurable properties for the proxy
+  # configuration used when making an HTTP request.
   class ProxyOptions < Options.new(:uri, :user, :password)
     extend Forwardable
     def_delegators :uri, :scheme, :scheme=, :host, :host=, :port, :port=,

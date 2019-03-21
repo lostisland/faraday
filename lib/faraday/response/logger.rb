@@ -5,6 +5,9 @@ require 'faraday/logging/formatter'
 
 module Faraday
   class Response
+    # Logger is a middleware that logs internal events in the HTTP request
+    # lifecycle to a given Logger object. By default, this logs to STDOUT. See
+    # Faraday::Logging::Formatter to see specifically what is logged.
     class Logger < Middleware
       def initialize(app, logger = nil, options = {})
         super(app)
