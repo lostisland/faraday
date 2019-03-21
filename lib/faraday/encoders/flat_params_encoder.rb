@@ -11,7 +11,7 @@ module Faraday
 
     # Encode converts the given param into a URI querystring. Keys and values
     # will converted to strings and appropriately escaped for the URI.
-
+    #
     # @param params [Hash] query arguments to convert.
     #
     # @example
