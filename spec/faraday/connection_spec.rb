@@ -97,9 +97,11 @@ RSpec.describe Faraday::Connection do
     end
 
     context 'with custom headers' do
-      let(:options) { { headers: { user_agent: 'Faraday' } } }
+      key = Faraday::AGENT_ALIASES.keys[rand(1..20)]
+      user_agent = Faraday::AGENT_ALIASES[key]
+      let(:options) { { headers: { user_agent: user_agent } } }
 
-      it { expect(subject.headers['User-agent']).to eq('Faraday') }
+      it { expect(subject.headers['User-agent']).to eq(user_agent) }
     end
 
     context 'with ssl false' do

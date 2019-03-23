@@ -11,10 +11,12 @@ module Faraday
   #   # GET http://sushi.com/nigiri
   #   conn.get 'nigiri'
   #   # => #<Faraday::Response>
+
   #
   class Connection
+
     # A Set of allowed HTTP verbs.
-    METHODS = Set.new %i[get post put delete head patch options trace connect]
+    METHODS = Set.new %i[get post put delete head patch options trace connect user_agent_alias]
 
     # @return [Hash] URI query unencoded key/value pairs.
     attr_reader :params
@@ -88,7 +90,7 @@ module Faraday
 
       yield(self) if block_given?
 
-      @headers[:user_agent] ||= "Faraday v#{VERSION}"
+      @headers[:user_agent] ||= AGENT_ALIASES['Faraday'].dup
     end
 
     def initialize_proxy(url, options)
@@ -112,6 +114,13 @@ module Faraday
     # @param hash [Hash]
     def headers=(hash)
       @headers.replace hash
+    end
+
+    # Sets the User-Agent used by Faraday to +user_agent+.
+    # @headers string name
+    def user_agent_alias=(name)
+      @headers[:user_agent] = AGENT_ALIASES[name.to_s] ||
+                              raise(ArgumentError, "unknown agent alias #{name.inspect}")
     end
 
     extend Forwardable
