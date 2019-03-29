@@ -77,6 +77,23 @@ jobs:
       - store_artifacts:
           path: ~/test-results
 
+  yard:
+    docker:
+      - image: circleci/ruby:2.6
+    steps:
+      - attach_workspace:
+        at: .
+      - run:
+        name: Yard-Junk
+        command: |
+          gem install yard-junk
+          yard-junk --path lib --text ~/test-results/yard/results.log
+        when: always
+      - store_test_results:
+          path: ~/test-results/yard
+      - store_artifacts:
+          path: ~/test-results/yard
+
   ruby26:
     docker:
       - image: circleci/ruby:2.6
@@ -128,6 +145,9 @@ workflows:
       - linting:
           requires:
             - checkout_code
+      - yard:
+          requires:
+            - checkout_code
       - ruby26:
           requires:
             - linting
@@ -143,6 +163,7 @@ workflows:
             - linting
       - deploy:
           requires:
+            - yard
             - ruby23
             - ruby24
             - ruby25
