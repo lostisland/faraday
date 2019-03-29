@@ -99,9 +99,9 @@ jobs:
             ls -al ~/test-results/yard
           when: always
       - store_test_results:
-          path: ~/test-results/yard
+          path: ~/test-results
       - store_artifacts:
-          path: ~/test-results/yard
+          path: ~/test-results
 
   ruby26:
     docker:
