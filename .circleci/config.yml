@@ -74,7 +74,6 @@ jobs:
           command: |
             gem install rubocop rubocop-junit_formatter  --no-document
             echo `pwd`
-            ls -al ~/test-results
             rubocop --require rubocop/formatter/junit_formatter \
                     --format progress \
                     --format RuboCop::Formatter::JUnitFormatter \
