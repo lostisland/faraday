@@ -82,13 +82,13 @@ jobs:
       - image: circleci/ruby:2.6
     steps:
       - attach_workspace:
-        at: .
+          at: .
       - run:
-        name: Yard-Junk
-        command: |
-          gem install yard-junk
-          yard-junk --path lib --text ~/test-results/yard/results.log
-        when: always
+          name: Yard-Junk
+          command: |
+            gem install yard-junk
+            yard-junk --path lib --text ~/test-results/yard/results.log
+          when: always
       - store_test_results:
           path: ~/test-results/yard
       - store_artifacts:
