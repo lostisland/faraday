@@ -79,7 +79,7 @@ jobs:
           name: Yard-Junk
           command: |
             gem install yard-junk --no-document
-            yard-junk --path lib --text ~/test-results/linting/yard.log
+            yard-junk --path lib
           when: always
       - store_test_results:
           path: ~/test-results
