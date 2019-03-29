@@ -93,6 +93,7 @@ jobs:
           name: Yard-Junk
           command: |
             gem install yard-junk
+            echo `pwd`
             yard-junk --path lib --text ~/test-results/yard/results.log
           when: always
       - store_test_results:
