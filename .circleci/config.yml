@@ -73,10 +73,13 @@ jobs:
           name: RuboCop
           command: |
             gem install rubocop rubocop-junit_formatter  --no-document
+            echo `pwd`
+            ls -al ~/test-results
             rubocop --require rubocop/formatter/junit_formatter \
                     --format progress \
                     --format RuboCop::Formatter::JUnitFormatter \
                     --out ~/test-results/rubocop/results.xml
+            ls -al ~/test-results/rubocop
           when: always
       - store_test_results:
           path: ~/test-results
