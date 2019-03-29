@@ -51,7 +51,13 @@ jobs:
       - image: circleci/ruby:2.6
     steps:
       - checkout
-      - run: "mkdir -p ~/test-results/rspec && mkdir -p ~/test-results/rubocop"
+      - run:
+          name: Create test-results dir
+          command: |
+            mkdir -p ~/test-results/rspec
+            mkdir -p ~/test-results/rubocop
+            mkdir -p ~/test-results/yard
+          when: always
       - persist_to_workspace:
           root: .
           paths:
