@@ -115,6 +115,10 @@ module Faraday
       # @option options [Block] :retry_block block that is executed after
       #   every retry. Request environment, middleware options, current number
       #   of retries and the exception is passed to the block as parameters.
+      # @option options [Array] :retry_statuses Array of Integer HTTP status
+      #   codes or a single Integer value that deterimines whether to raise
+      #   a Faraday::RetriableResponse exception based on the HTTP status code
+      #   of an HTTP response.
       def initialize(app, options = nil)
         super(app)
         @options = Options.from(options)
