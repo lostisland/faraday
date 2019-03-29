@@ -53,10 +53,7 @@ jobs:
       - checkout
       - run:
           name: Create test-results dir
-          command: |
-            mkdir -p ~/test-results/rspec
-            mkdir -p ~/test-results/rubocop
-            mkdir -p ~/test-results/yard
+          command: mkdir -p ~/test-results/rspec
           when: always
       - persist_to_workspace:
           root: .
@@ -73,32 +70,16 @@ jobs:
           name: RuboCop
           command: |
             gem install rubocop rubocop-junit_formatter  --no-document
-            echo `pwd`
             rubocop --require rubocop/formatter/junit_formatter \
                     --format progress \
                     --format RuboCop::Formatter::JUnitFormatter \
-                    --out ~/test-results/rubocop/results.xml
-            ls -al ~/test-results/rubocop
+                    --out ~/test-results/linting/rubocop.xml
           when: always
-      - store_test_results:
-          path: ~/test-results
-      - store_artifacts:
-          path: ~/test-results
-
-  yard:
-    docker:
-      - image: circleci/ruby:2.6
-    steps:
-      - attach_workspace:
-          at: .
       - run:
           name: Yard-Junk
           command: |
-            gem install yard-junk
-            echo `pwd`
-            ls -al ~/test-results
-            yard-junk --path lib --text ~/test-results/yard/results.log
-            ls -al ~/test-results/yard
+            gem install yard-junk --no-document
+            yard-junk --path lib --text ~/test-results/linting/yard.log
           when: always
       - store_test_results:
           path: ~/test-results
@@ -156,9 +137,6 @@ workflows:
       - linting:
           requires:
             - checkout_code
-      - yard:
-          requires:
-            - checkout_code
       - ruby26:
           requires:
             - linting
@@ -174,7 +152,6 @@ workflows:
             - linting
       - deploy:
           requires:
-            - yard
             - ruby23
             - ruby24
             - ruby25
