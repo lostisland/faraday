@@ -253,9 +253,7 @@ RSpec.describe Faraday::Options do
     describe '#memoized' do
       subject(:options_class) { Class.new(ParentOptions) }
       it 'requires block' do
-        expect {
-          options_class.memoized(:a)
-        }.to raise_error(ArgumentError)
+        expect { options_class.memoized(:a) }.to raise_error(ArgumentError)
       end
 
       it 'accepts block' do
