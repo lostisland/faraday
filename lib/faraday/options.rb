@@ -171,11 +171,11 @@ module Faraday
       @attribute_options ||= {}
     end
 
-    def self.memoized(key)
+    def self.memoized(key, &block)
       if !block_given?
         raise ArgumentError, "#memoized must be called with a block"
       end
-      memoized_attributes[key.to_sym] = Proc.new
+      memoized_attributes[key.to_sym] = block
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{key}() self[:#{key}]; end
       RUBY
