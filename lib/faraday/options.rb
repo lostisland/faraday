@@ -172,6 +172,9 @@ module Faraday
     end
 
     def self.memoized(key)
+      if !block_given?
+        raise ArgumentError, "#memoized must be called with a block"
+      end
       memoized_attributes[key.to_sym] = Proc.new
       class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{key}() self[:#{key}]; end
