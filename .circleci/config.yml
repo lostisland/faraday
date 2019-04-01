@@ -25,6 +25,7 @@ shared_ruby_steps: &shared_ruby_steps
                 curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
                 chmod +x ./cc-test-reporter
                 ./cc-test-reporter before-build
+    - run: mkdir -p ~/test-results/rspec
     - run:
         name: Run tests
         command: bundle exec rspec --require rspec_junit_formatter --format progress --format RspecJunitFormatter --out ~/test-results/rspec/results.xml
@@ -39,7 +40,7 @@ shared_ruby_steps: &shared_ruby_steps
         paths:
           - ./vendor/bundle
     - store_test_results:
-        path: ~/test-results
+        path: ~/test-results/rspec
     - persist_to_workspace:
         root: .
         paths:
@@ -51,11 +52,6 @@ jobs:
       - image: circleci/ruby:2.6
     steps:
       - checkout
-      - run:
-          name: Create test-results dir
-          command: |
-            mkdir -p ~/test-results/rspec
-          when: always
       - persist_to_workspace:
           root: .
           paths:
@@ -67,7 +63,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run: mkdir ~/test-results/linting
+      - run: mkdir -p ~/test-results/linting
       - run:
           name: RuboCop
           command: |
