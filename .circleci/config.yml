@@ -55,13 +55,11 @@ jobs:
           name: Create test-results dir
           command: |
             mkdir -p ~/test-results/rspec
-            mkdir -p ~/test-results/linting
           when: always
       - persist_to_workspace:
-          root: ~
+          root: .
           paths:
-            - ./project
-            - ./test-results
+            - .
 
   linting:
     docker:
@@ -69,6 +67,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - run: mkdir ~/test-results/linting
       - run:
           name: RuboCop
           command: |
@@ -91,9 +90,9 @@ jobs:
             yard-junk --path lib
           when: always
       - store_test_results:
-          path: ~/test-results
+          path: ~/test-results/linting
       - store_artifacts:
-          path: ~/test-results
+          path: ~/test-results/linting
 
   ruby26:
     docker:
