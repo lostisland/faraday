@@ -290,18 +290,6 @@ Faraday is intended to be a generic interface between your code and the adapter.
 
 When that happens, you can pass a block when specifying the adapter to customize it. The block parameter will change based on the adapter you're using. See below for some examples.
 
-### NetHttp
-```ruby
-conn = Faraday.new(...) do |f|
-  f.adapter :net_http do |http| # yields Net::HTTP
-    http.idle_timeout = 100
-    http.verify_callback = lambda do | preverify_ok, cert_store |
-      # do something here...
-    end
-  end
-end
-```
-
 ### Patron
 ```ruby
 conn = Faraday.new(...) do |f|

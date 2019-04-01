@@ -1,6 +1,6 @@
-# Net::HTTP::Persistent
+# Net::HTTP::Persistent Adapter
 
-This Adapter uses the [net-http-persistent][gem] gem to make HTTP requests.
+This Adapter uses the [net-http-persistent][rdoc] gem to make HTTP requests.
 
 ```ruby
 conn = Faraday.new(...) do |f|
@@ -14,10 +14,10 @@ end
 
 ## Links
 
-* [Gem][gem]
-* [Gem source code][src]
-* [Adapter rdoc][rdoc]
+* [Gem RDoc][rdoc]
+* [Gem source][src]
+* [Adapter RDoc][adapter_rdoc]
 
-[gem]: https://rubygems.org/gems/net-http-persistent/versions/2.9.4
+[rdoc]: https://www.rubydoc.info/gems/net-http-persistent
 [src]: https://github.com/drbrain/net-http-persistent
-[rdoc]: https://www.rubydoc.info/gems/faraday/Faraday/Adapter/NetHttpPersistent
+[adapter_rdoc]: https://www.rubydoc.info/gems/faraday/Faraday/Adapter/NetHttpPersistent
