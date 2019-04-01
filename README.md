@@ -290,15 +290,6 @@ Faraday is intended to be a generic interface between your code and the adapter.
 
 When that happens, you can pass a block when specifying the adapter to customize it. The block parameter will change based on the adapter you're using. See below for some examples.
 
-### Patron
-```ruby
-conn = Faraday.new(...) do |f|
-  f.adapter :patron do |session| # yields Patron::Session
-    session.max_redirects = 10
-  end
-end
-```
-
 ### HTTPClient
 ```ruby
 conn = Faraday.new(...) do |f|
@@ -379,7 +370,7 @@ See [LICENSE][] for details.
 [persistent]:   ./docs/adapters/net_http_persistent.md
 [travis]:       https://travis-ci.org/lostisland/faraday
 [excon]:        https://github.com/excon/excon#readme
-[patron]:       http://toland.github.io/patron/
+[patron]:       ./docs/adapters/patron.md
 [eventmachine]: https://github.com/igrigorik/em-http-request#readme
 [httpclient]:   https://github.com/nahi/httpclient
 [typhoeus]:     https://github.com/typhoeus/typhoeus/blob/master/lib/typhoeus/adapters/faraday.rb
