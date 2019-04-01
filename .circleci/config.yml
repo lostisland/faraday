@@ -53,7 +53,7 @@ jobs:
       - checkout
       - run:
           name: Create test-results dir
-          command: mkdir -p ~/test-results/rspec
+          command: mkdir -p ~/test-results/rspec && mkdir -p ~/test-results/linting
           when: always
       - persist_to_workspace:
           root: .
@@ -69,11 +69,16 @@ jobs:
       - run:
           name: RuboCop
           command: |
+            echo "starting rubocop..."
+            ls -al ~/test-results
             gem install rubocop rubocop-junit_formatter  --no-document
             rubocop --require rubocop/formatter/junit_formatter \
                     --format progress \
                     --format RuboCop::Formatter::JUnitFormatter \
                     --out ~/test-results/linting/rubocop.xml
+            echo "rubocop finished..."
+            ls -al ~/test-results
+            ls -al ~/test-results/linting
           when: always
       - run:
           name: Yard-Junk
