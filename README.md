@@ -290,16 +290,6 @@ Faraday is intended to be a generic interface between your code and the adapter.
 
 When that happens, you can pass a block when specifying the adapter to customize it. The block parameter will change based on the adapter you're using. See below for some examples.
 
-### HTTPClient
-```ruby
-conn = Faraday.new(...) do |f|
-  f.adapter :httpclient do |client| # yields HTTPClient
-    client.keep_alive_timeout = 20
-    client.ssl_config.timeout = 25
-  end
-end
-```
-
 ## Using Faraday for testing
 
 ```ruby
@@ -372,7 +362,7 @@ See [LICENSE][] for details.
 [excon]:        ./docs/adapters/excon.md
 [patron]:       ./docs/adapters/patron.md
 [eventmachine]: https://github.com/igrigorik/em-http-request#readme
-[httpclient]:   https://github.com/nahi/httpclient
+[httpclient]:   ./docs/adapters/httpclient.md
 [typhoeus]:     https://github.com/typhoeus/typhoeus/blob/master/lib/typhoeus/adapters/faraday.rb
 [jruby]:        http://jruby.org/
 [rubinius]:     http://rubini.us/
