@@ -67,17 +67,11 @@ jobs:
       - run:
           name: RuboCop
           command: |
-            echo "starting rubocop..."
-            ls -al ~
             gem install rubocop rubocop-junit_formatter  --no-document
             rubocop --require rubocop/formatter/junit_formatter \
                     --format progress \
                     --format RuboCop::Formatter::JUnitFormatter \
                     --out ~/test-results/linting/rubocop.xml
-            echo "rubocop finished..."
-            ls -al ~
-            ls -al ~/test-results
-            ls -al ~/test-results/linting
           when: always
       - run:
           name: Yard-Junk
