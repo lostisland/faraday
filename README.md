@@ -302,16 +302,6 @@ conn = Faraday.new(...) do |f|
 end
 ```
 
-### NetHttpPersistent
-```ruby
-conn = Faraday.new(...) do |f|
-  f.adapter :net_http_persistent, pool_size: 5 do |http| # yields Net::HTTP::Persistent
-    http.idle_timeout = 100
-    http.retry_change_requests = true
-  end
-end
-```
-
 ### Patron
 ```ruby
 conn = Faraday.new(...) do |f|
@@ -398,7 +388,7 @@ Copyright (c) 2009-2017 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson
 See [LICENSE][] for details.
 
 [net_http]:     http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
-[persistent]:   https://github.com/drbrain/net-http-persistent
+[persistent]:   ./docs/adapters/net_http_persistent.md
 [travis]:       https://travis-ci.org/lostisland/faraday
 [excon]:        https://github.com/excon/excon#readme
 [patron]:       http://toland.github.io/patron/
