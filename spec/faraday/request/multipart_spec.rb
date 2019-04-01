@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-Faraday::CompositeReadIO.class_eval { attr_reader :ios }
-
 RSpec.describe Faraday::Request::Multipart do
   let(:conn) do
     Faraday.new do |b|
