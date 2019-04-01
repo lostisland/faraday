@@ -375,7 +375,7 @@ But before you start coding, please read our [Contributing Guide](https://github
 Copyright (c) 2009-2017 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
-[net_http]:     http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
+[net_http]:     ./docs/adapters/net_http.md
 [persistent]:   ./docs/adapters/net_http_persistent.md
 [travis]:       https://travis-ci.org/lostisland/faraday
 [excon]:        https://github.com/excon/excon#readme
