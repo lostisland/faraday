@@ -369,7 +369,7 @@ See [LICENSE][] for details.
 [net_http]:     ./docs/adapters/net_http.md
 [persistent]:   ./docs/adapters/net_http_persistent.md
 [travis]:       https://travis-ci.org/lostisland/faraday
-[excon]:        https://github.com/excon/excon#readme
+[excon]:        ./docs/adapters/excon.md
 [patron]:       ./docs/adapters/patron.md
 [eventmachine]: https://github.com/igrigorik/em-http-request#readme
 [httpclient]:   https://github.com/nahi/httpclient
