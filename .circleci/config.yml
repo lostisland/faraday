@@ -53,12 +53,15 @@ jobs:
       - checkout
       - run:
           name: Create test-results dir
-          command: mkdir -p ~/test-results/rspec && mkdir -p ~/test-results/linting
+          command: |
+            mkdir -p ~/test-results/rspec
+            mkdir -p ~/test-results/linting
           when: always
       - persist_to_workspace:
-          root: .
+          root: ~
           paths:
-            - .
+            - ./project
+            - ./test-results
 
   linting:
     docker:
@@ -77,6 +80,7 @@ jobs:
                     --format RuboCop::Formatter::JUnitFormatter \
                     --out ~/test-results/linting/rubocop.xml
             echo "rubocop finished..."
+            ls -al ~
             ls -al ~/test-results
             ls -al ~/test-results/linting
           when: always
