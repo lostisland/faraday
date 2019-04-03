@@ -17,7 +17,7 @@ Faraday supports these adapters out of the box:
 * [Net::HTTP::Persistent][persistent]
 * [Excon][excon]
 * [Patron][patron]
-* [EventMachine][eventmachine]
+* [EM-Synchrony][em-synchrony]
 * [HTTPClient][httpclient]
 
 Adapters are slowly being moved into their own gems, or bundled with HTTP clients.
@@ -361,7 +361,7 @@ See [LICENSE][] for details.
 [travis]:       https://travis-ci.org/lostisland/faraday
 [excon]:        ./docs/adapters/excon.md
 [patron]:       ./docs/adapters/patron.md
-[eventmachine]: https://github.com/igrigorik/em-http-request#readme
+[em-synchrony]: ./docs/adapters/em-synchrony.md
 [httpclient]:   ./docs/adapters/httpclient.md
 [typhoeus]:     https://github.com/typhoeus/typhoeus/blob/master/lib/typhoeus/adapters/faraday.rb
 [jruby]:        http://jruby.org/
