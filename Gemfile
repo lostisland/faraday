@@ -17,6 +17,7 @@ group :test do
   gem 'em-synchrony', '>= 1.0.3', require: %w[em-synchrony em-synchrony/em-http]
   gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
+  gem 'multipart-parser'
   gem 'net-http-persistent'
   gem 'patron', '>= 0.4.2', platforms: :ruby
   gem 'rack-test', '>= 0.6', require: 'rack/test'
