@@ -38,28 +38,28 @@ module Faraday
         @app.call env
       rescue Errno::ECONNREFUSED
         raise Faraday::ConnectionFailed, $ERROR_INFO
-      rescue EventMachine::Connectify::CONNECTError => err
-        if err.message.include?('Proxy Authentication Required')
+      rescue EventMachine::Connectify::CONNECTError => e
+        if e.message.include?('Proxy Authentication Required')
           raise Faraday::ConnectionFailed,
                 %(407 "Proxy Authentication Required")
         end
 
-        raise Faraday::ConnectionFailed, err
-      rescue Errno::ETIMEDOUT => err
-        raise Faraday::TimeoutError, err
-      rescue RuntimeError => err
-        if err.message == 'connection closed by server'
-          raise Faraday::ConnectionFailed, err
+        raise Faraday::ConnectionFailed, e
+      rescue Errno::ETIMEDOUT => e
+        raise Faraday::TimeoutError, e
+      rescue RuntimeError => e
+        if e.message == 'connection closed by server'
+          raise Faraday::ConnectionFailed, e
         end
 
-        if err.message.include?('timeout error')
-          raise Faraday::TimeoutError, err
+        if e.message.include?('timeout error')
+          raise Faraday::TimeoutError, e
         end
 
         raise
-      rescue StandardError => err
-        if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
-          raise Faraday::SSLError, err
+      rescue StandardError => e
+        if defined?(OpenSSL) && e.is_a?(OpenSSL::SSL::SSLError)
+          raise Faraday::SSLError, e
         end
 
         raise

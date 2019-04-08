@@ -26,14 +26,14 @@ module Faraday
                       resp.reason_phrase)
 
         @app.call(env)
-      rescue ::Excon::Errors::SocketError => err
-        raise Faraday::TimeoutError, err if err.message =~ /\btimeout\b/
+      rescue ::Excon::Errors::SocketError => e
+        raise Faraday::TimeoutError, e if e.message =~ /\btimeout\b/
 
-        raise Faraday::SSLError, err if err.message =~ /\bcertificate\b/
+        raise Faraday::SSLError, e if e.message =~ /\bcertificate\b/
 
-        raise Faraday::ConnectionFailed, err
-      rescue ::Excon::Errors::Timeout => err
-        raise Faraday::TimeoutError, err
+        raise Faraday::ConnectionFailed, e
+      rescue ::Excon::Errors::Timeout => e
+        raise Faraday::TimeoutError, e
       end
 
       # @return [Excon]
