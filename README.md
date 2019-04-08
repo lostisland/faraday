@@ -1,8 +1,3 @@
-### THIS IS FARADAY `master` BRANCH, WHICH CONTAINS VERSION 1.0
-VERSION 1.0 IS NOT OFFICIALLY RELEASED YET
-
-LATEST STABLE RELEASE v0.15 IS IN BRANCH [0.1x](https://github.com/lostisland/faraday/tree/0.1x)
-
 # Faraday
 
 [![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
@@ -12,7 +7,7 @@ LATEST STABLE RELEASE v0.15 IS IN BRANCH [0.1x](https://github.com/lostisland/fa
 [![Gitter](https://badges.gitter.im/lostisland/faraday.svg)](https://gitter.im/lostisland/faraday?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
-Faraday is an HTTP client lib that provides a common interface over many
+Faraday is an HTTP client library that provides a common interface over many
 adapters (such as Net::HTTP) and embraces the concept of Rack middleware when
 processing the request/response cycle.
 
@@ -22,7 +17,7 @@ Faraday supports these adapters out of the box:
 * [Net::HTTP::Persistent][persistent]
 * [Excon][excon]
 * [Patron][patron]
-* [EventMachine][eventmachine]
+* [EM-Synchrony][em-synchrony]
 * [HTTPClient][httpclient]
 
 Adapters are slowly being moved into their own gems, or bundled with HTTP clients.
@@ -75,12 +70,12 @@ conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
 end
 
 # Override the log formatting on demand
- 
+
 class MyFormatter < Faraday::Response::Logger::Formatter
   def request(env)
-    info('Request', env)  
+    info('Request', env)
   end
-  
+
   def request(env)
     info('Response', env)
   end
@@ -295,47 +290,6 @@ Faraday is intended to be a generic interface between your code and the adapter.
 
 When that happens, you can pass a block when specifying the adapter to customize it. The block parameter will change based on the adapter you're using. See below for some examples.
 
-### NetHttp
-```ruby
-conn = Faraday.new(...) do |f|
-  f.adapter :net_http do |http| # yields Net::HTTP
-    http.idle_timeout = 100
-    http.verify_callback = lambda do | preverify_ok, cert_store |
-      # do something here...
-    end
-  end
-end
-```
-
-### NetHttpPersistent
-```ruby
-conn = Faraday.new(...) do |f|
-  f.adapter :net_http_persistent, pool_size: 5 do |http| # yields Net::HTTP::Persistent
-    http.idle_timeout = 100
-    http.retry_change_requests = true
-  end
-end
-```
-
-### Patron
-```ruby
-conn = Faraday.new(...) do |f|
-  f.adapter :patron do |session| # yields Patron::Session
-    session.max_redirects = 10
-  end
-end
-```
-
-### HTTPClient
-```ruby
-conn = Faraday.new(...) do |f|
-  f.adapter :httpclient do |client| # yields HTTPClient
-    client.keep_alive_timeout = 20
-    client.ssl_config.timeout = 25
-  end
-end
-```
-
 ## Using Faraday for testing
 
 ```ruby
@@ -402,13 +356,13 @@ But before you start coding, please read our [Contributing Guide](https://github
 Copyright (c) 2009-2017 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
-[net_http]:     http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
-[persistent]:   https://github.com/drbrain/net-http-persistent
+[net_http]:     ./docs/adapters/net_http.md
+[persistent]:   ./docs/adapters/net_http_persistent.md
 [travis]:       https://travis-ci.org/lostisland/faraday
-[excon]:        https://github.com/excon/excon#readme
-[patron]:       http://toland.github.io/patron/
-[eventmachine]: https://github.com/igrigorik/em-http-request#readme
-[httpclient]:   https://github.com/nahi/httpclient
+[excon]:        ./docs/adapters/excon.md
+[patron]:       ./docs/adapters/patron.md
+[em-synchrony]: ./docs/adapters/em-synchrony.md
+[httpclient]:   ./docs/adapters/httpclient.md
 [typhoeus]:     https://github.com/typhoeus/typhoeus/blob/master/lib/typhoeus/adapters/faraday.rb
 [jruby]:        http://jruby.org/
 [rubinius]:     http://rubini.us/
