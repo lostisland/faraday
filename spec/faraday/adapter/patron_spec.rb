@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Faraday::Adapter::Patron do
+RSpec.describe Faraday::Adapter::Patron, unless: defined?(JRUBY_VERSION) do
   features :reason_phrase_parse
 
   it_behaves_like 'an adapter'
