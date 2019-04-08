@@ -52,9 +52,7 @@ module Faraday
           raise Faraday::ConnectionFailed, e
         end
 
-        if e.message.include?('timeout error')
-          raise Faraday::TimeoutError, e
-        end
+        raise Faraday::TimeoutError, e if e.message.include?('timeout error')
 
         raise
       rescue StandardError => e
