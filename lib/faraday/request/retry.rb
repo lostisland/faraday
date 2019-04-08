@@ -150,20 +150,20 @@ module Faraday
               raise Faraday::RetriableResponse.new(nil, resp)
             end
           end
-        rescue @errmatch => exception
-          if retries.positive? && retry_request?(env, exception)
+        rescue @errmatch => e
+          if retries.positive? && retry_request?(env, e)
             retries -= 1
             rewind_files(request_body)
-            @options.retry_block.call(env, @options, retries, exception)
+            @options.retry_block.call(env, @options, retries, e)
             if (sleep_amount = calculate_sleep_amount(retries + 1, env))
               sleep sleep_amount
               retry
             end
           end
 
-          raise unless exception.is_a?(Faraday::RetriableResponse)
+          raise unless e.is_a?(Faraday::RetriableResponse)
 
-          exception.response
+          e.response
         end
       end
 

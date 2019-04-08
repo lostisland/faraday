@@ -53,19 +53,19 @@ module Faraday
                       response.headers, reason_phrase)
 
         @app.call env
-      rescue ::Patron::TimeoutError => err
-        if connection_timed_out_message?(err.message)
-          raise Faraday::ConnectionFailed, err
+      rescue ::Patron::TimeoutError => e
+        if connection_timed_out_message?(e.message)
+          raise Faraday::ConnectionFailed, e
         end
 
-        raise Faraday::TimeoutError, err
-      rescue ::Patron::Error => err
-        if err.message.include?('code 407')
+        raise Faraday::TimeoutError, e
+      rescue ::Patron::Error => e
+        if e.message.include?('code 407')
           raise Faraday::ConnectionFailed,
                 %(407 "Proxy Authentication Required ")
         end
 
-        raise Faraday::ConnectionFailed, err
+        raise Faraday::ConnectionFailed, e
       end
 
       if loaded? && defined?(::Patron::Request::VALID_ACTIONS)

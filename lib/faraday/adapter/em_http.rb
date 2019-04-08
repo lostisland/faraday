@@ -135,16 +135,16 @@ module Faraday
           end
           raise_error(error) if error
         end
-      rescue EventMachine::Connectify::CONNECTError => err
-        if err.message.include?('Proxy Authentication Required')
+      rescue EventMachine::Connectify::CONNECTError => e
+        if e.message.include?('Proxy Authentication Required')
           raise Faraday::ConnectionFailed,
                 %(407 "Proxy Authentication Required ")
         end
 
-        raise Faraday::ConnectionFailed, err
-      rescue StandardError => err
-        if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
-          raise Faraday::SSLError, err
+        raise Faraday::ConnectionFailed, e
+      rescue StandardError => e
+        if defined?(OpenSSL) && e.is_a?(OpenSSL::SSL::SSLError)
+          raise Faraday::SSLError, e
         end
 
         raise

@@ -32,8 +32,8 @@ RSpec.describe Faraday::Request::Instrumentation do
   it 'defaults to ActiveSupport::Notifications' do
     begin
       res = options.instrumenter
-    rescue NameError => err
-      expect(err.to_s).to match('ActiveSupport')
+    rescue NameError => e
+      expect(e.to_s).to match('ActiveSupport')
     else
       expect(res).to eq(ActiveSupport::Notifications)
     end

@@ -51,13 +51,13 @@ module Faraday
 
       def perform_request(http, env)
         http.request env[:url], create_request(env)
-      rescue Errno::ETIMEDOUT => error
-        raise Faraday::TimeoutError, error
-      rescue Net::HTTP::Persistent::Error => error
-        raise Faraday::TimeoutError, error if error.message.include? 'Timeout'
+      rescue Errno::ETIMEDOUT => e
+        raise Faraday::TimeoutError, e
+      rescue Net::HTTP::Persistent::Error => e
+        raise Faraday::TimeoutError, e if e.message.include? 'Timeout'
 
-        if error.message.include? 'connection refused'
-          raise Faraday::ConnectionFailed, error
+        if e.message.include? 'connection refused'
+          raise Faraday::ConnectionFailed, e
         end
 
         raise
