@@ -24,3 +24,36 @@ conn = Faraday.new do |builder|
   end
 end
 ```
+
+You can define the stubbed requests outside of the test adapter block:
+
+```ruby
+stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+  stub.get('/tamago') { |env| [200, {}, 'egg'] }
+end
+```
+
+This Stubs instance can be passed to a new Connection:
+
+```ruby
+conn = Faraday.new do |builder|
+  builder.adapter :test, stubs do |stub|
+    stub.get('/ebi') { |env| [ 200, {}, 'shrimp' ]}
+  end
+end
+```
+
+It's also possible to stub additional requests after the connection has been
+initialized. This is useful for testing.
+
+```ruby
+stubs.get('/uni') { |env| [ 200, {}, 'urchin' ]}
+```
+
+Finally, you can treat your stubs as mocks by verifying that all of the stubbed
+calls were made. NOTE: this feature is still fairly experimental. It will not
+verify the order or count of any stub.
+
+```ruby
+stubs.verify_stubbed_calls
+```
