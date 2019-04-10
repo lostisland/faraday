@@ -45,6 +45,7 @@ shared_ruby_steps: &shared_ruby_steps
         root: .
         paths:
           - ./vendor/bundle
+          - ./Gemfile.lock
 
 jobs:
   checkout_code:
