@@ -41,6 +41,8 @@ shared_ruby_steps: &shared_ruby_steps
           - ./vendor/bundle
     - store_test_results:
         path: ~/test-results/rspec
+    - store_artifacts:
+        path: ./Gemfile.lock
     - persist_to_workspace:
         root: .
         paths:
