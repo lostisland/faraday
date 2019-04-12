@@ -1,6 +1,6 @@
 # Testing
 
-The built-in Faraday Test adapter lets define stubbed HTTP requests. This can
+The built-in Faraday Test adapter lets you define stubbed HTTP requests. This can
 be used to mock out network services in an application's unit tests.
 
 The easiest way to do this is to create the stubbed requests when initializing
