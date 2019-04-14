@@ -40,4 +40,26 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
     # `pool` is only present in net_http_persistent >= 3.0
     expect(http.pool.size).to eq(5) if http.respond_to?(:pool)
   end
+
+  context 'min_version' do
+    let(:conn_options) do
+      {
+        headers: { 'X-Faraday-Adapter' => adapter },
+        ssl: {
+          min_version: '1.0'
+        }
+      }
+    end
+
+    it 'allows to set min_version in SSL settings' do
+      url = URI('https://example.com')
+
+      adapter = described_class.new(nil)
+
+      http = adapter.send(:net_http_connection, url: url, request: {})
+
+      # `min_version` is only present in net_http_persistent >= 3.1 (UNRELEASED)
+      expect(http.min_version).to eq('1.0') if http.respond_to?(:min_version)
+    end
+  end
 end
