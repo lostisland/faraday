@@ -71,6 +71,8 @@ module Faraday
         http_set(http, :private_key, ssl[:client_key]) if ssl[:client_key]
         http_set(http, :ca_file, ssl[:ca_file]) if ssl[:ca_file]
         http_set(http, :ssl_version, ssl[:version]) if ssl[:version]
+        http_set(http, :min_version, ssl[:min_version]) if ssl[:min_version]
+        http_set(http, :max_version, ssl[:max_version]) if ssl[:max_version]
       end
 
       def http_set(http, attr, value)
