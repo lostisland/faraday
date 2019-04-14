@@ -46,7 +46,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
       {
         headers: { 'X-Faraday-Adapter' => adapter },
         ssl: {
-          min_version: '1.0'
+          min_version: :TLS1_2
         }
       }
     end
@@ -59,7 +59,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
       http = adapter.send(:net_http_connection, url: url, request: {})
 
       # `min_version` is only present in net_http_persistent >= 3.1 (UNRELEASED)
-      expect(http.min_version).to eq('1.0') if http.respond_to?(:min_version)
+      expect(http.min_version).to eq(:TLS1_2) if http.respond_to?(:min_version)
     end
   end
 end
