@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 
 ruby RUBY_VERSION
 
-gem 'ffi-ncurses', '~> 0.3', platforms: :jruby
 gem 'jruby-openssl', '~> 0.8.8', platforms: :jruby
 gem 'rake'
 
@@ -18,15 +17,15 @@ group :test do
   gem 'em-synchrony', '>= 1.0.3', require: %w[em-synchrony em-synchrony/em-http]
   gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
-  gem 'minitest', '>= 5.0.5'
+  gem 'multipart-parser'
   gem 'net-http-persistent'
   gem 'patron', '>= 0.4.2', platforms: :ruby
   gem 'rack-test', '>= 0.6', require: 'rack/test'
   gem 'rspec', '~> 3.7'
   gem 'rspec_junit_formatter', '~> 0.4'
-  gem 'rubocop', '~> 0.65.0'
+  gem 'rubocop', '~> 0.67.2'
+  gem 'rubocop-performance', '~> 1.0'
   gem 'simplecov'
-  gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 1.3', git: 'https://github.com/typhoeus/typhoeus.git',
                             require: 'typhoeus'
   gem 'webmock', '~> 3.4'

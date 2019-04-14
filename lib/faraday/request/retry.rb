@@ -29,6 +29,7 @@ module Faraday
       ].freeze
       IDEMPOTENT_METHODS = %i[delete get head options put].freeze
 
+      # Options contains the configurable parameters for the Retry middleware.
       class Options < Faraday::Options.new(:max, :interval, :max_interval,
                                            :interval_randomness,
                                            :backoff_factor, :exceptions,
@@ -114,6 +115,10 @@ module Faraday
       # @option options [Block] :retry_block block that is executed after
       #   every retry. Request environment, middleware options, current number
       #   of retries and the exception is passed to the block as parameters.
+      # @option options [Array] :retry_statuses Array of Integer HTTP status
+      #   codes or a single Integer value that determines whether to raise
+      #   a Faraday::RetriableResponse exception based on the HTTP status code
+      #   of an HTTP response.
       def initialize(app, options = nil)
         super(app)
         @options = Options.from(options)
@@ -145,20 +150,20 @@ module Faraday
               raise Faraday::RetriableResponse.new(nil, resp)
             end
           end
-        rescue @errmatch => exception
-          if retries.positive? && retry_request?(env, exception)
+        rescue @errmatch => e
+          if retries.positive? && retry_request?(env, e)
             retries -= 1
             rewind_files(request_body)
-            @options.retry_block.call(env, @options, retries, exception)
+            @options.retry_block.call(env, @options, retries, e)
             if (sleep_amount = calculate_sleep_amount(retries + 1, env))
               sleep sleep_amount
               retry
             end
           end
 
-          raise unless exception.is_a?(Faraday::RetriableResponse)
+          raise unless e.is_a?(Faraday::RetriableResponse)
 
-          exception.response
+          e.response
         end
       end
 

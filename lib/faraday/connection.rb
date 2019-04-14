@@ -212,14 +212,14 @@ module Faraday
       RUBY
     end
 
-    # @!method options(url = nil, params = nil, headers = nil)
-    # Makes an OPTIONS HTTP request without a body.
-    # @!scope class
+    # @overload options()
+    #   Returns current Connection options.
     #
-    # @param url [String] The optional String base URL to use as a prefix for
-    #            all requests.  Can also be the options Hash.
-    # @param params [Hash] Hash of URI query unencoded key/value pairs.
-    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    # @overload options(url, params = nil, headers = nil)
+    #   Makes an OPTIONS HTTP request to the given URL.
+    #   @param url [String] String base URL to sue as a prefix for all requests.
+    #   @param params [Hash] Hash of URI query unencoded key/value pairs.
+    #   @param headers [Hash] unencoded HTTP header key/value pairs.
     #
     # @example
     #   conn.options '/items/1'
@@ -538,7 +538,9 @@ module Faraday
       if params
         uri.query = params.to_query(params_encoder || options.params_encoder)
       end
-      uri.query = nil if uri.query&.empty?
+      # rubocop:disable Style/SafeNavigation
+      uri.query = nil if uri.query && uri.query.empty?
+      # rubocop:enable Style/SafeNavigation
       uri
     end
 

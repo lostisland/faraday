@@ -2,9 +2,13 @@
 
 module Faraday
   class Response
+    # RaiseError is a Faraday middleware that raises exceptions on common HTTP
+    # client or server error responses.
     class RaiseError < Middleware
+      # rubocop:disable Naming/ConstantName
       ClientErrorStatuses = (400...500).freeze
       ServerErrorStatuses = (500...600).freeze
+      # rubocop:enable Naming/ConstantName
 
       def on_complete(env)
         case env[:status]

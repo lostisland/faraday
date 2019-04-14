@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Faraday
+  # DependencyLoader helps Faraday adapters and middleware load dependencies.
   module DependencyLoader
     attr_reader :load_error
 
@@ -8,8 +9,8 @@ module Faraday
     # libraries
     def dependency(lib = nil)
       lib ? require(lib) : yield
-    rescue LoadError, NameError => error
-      self.load_error = error
+    rescue LoadError, NameError => e
+      self.load_error = e
     end
 
     def new(*)

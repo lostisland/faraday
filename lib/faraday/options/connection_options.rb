@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Faraday
+  # ConnectionOptions contains the configurable properties for a Faraday
+  # connection object.
   class ConnectionOptions < Options.new(:request, :proxy, :ssl, :builder, :url,
                                         :parallel_manager, :params, :headers,
                                         :builder_class)

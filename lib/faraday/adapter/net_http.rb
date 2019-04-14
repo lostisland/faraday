@@ -50,12 +50,12 @@ module Faraday
 
           begin
             http_response = perform_request(http, env)
-          rescue *NET_HTTP_EXCEPTIONS => err
-            if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
-              raise Faraday::SSLError, err
+          rescue *NET_HTTP_EXCEPTIONS => e
+            if defined?(OpenSSL) && e.is_a?(OpenSSL::SSL::SSLError)
+              raise Faraday::SSLError, e
             end
 
-            raise Faraday::ConnectionFailed, err
+            raise Faraday::ConnectionFailed, e
           end
 
           save_response(env, http_response.code.to_i,

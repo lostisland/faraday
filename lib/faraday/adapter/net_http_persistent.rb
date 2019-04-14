@@ -51,13 +51,13 @@ module Faraday
 
       def perform_request(http, env)
         http.request env[:url], create_request(env)
-      rescue Errno::ETIMEDOUT => error
-        raise Faraday::TimeoutError, error
-      rescue Net::HTTP::Persistent::Error => error
-        raise Faraday::TimeoutError, error if error.message.include? 'Timeout'
+      rescue Errno::ETIMEDOUT => e
+        raise Faraday::TimeoutError, e
+      rescue Net::HTTP::Persistent::Error => e
+        raise Faraday::TimeoutError, e if e.message.include? 'Timeout'
 
-        if error.message.include? 'connection refused'
-          raise Faraday::ConnectionFailed, error
+        if e.message.include? 'connection refused'
+          raise Faraday::ConnectionFailed, e
         end
 
         raise
@@ -71,6 +71,8 @@ module Faraday
         http_set(http, :private_key, ssl[:client_key]) if ssl[:client_key]
         http_set(http, :ca_file, ssl[:ca_file]) if ssl[:ca_file]
         http_set(http, :ssl_version, ssl[:version]) if ssl[:version]
+        http_set(http, :min_version, ssl[:min_version]) if ssl[:min_version]
+        http_set(http, :max_version, ssl[:max_version]) if ssl[:max_version]
       end
 
       def http_set(http, attr, value)

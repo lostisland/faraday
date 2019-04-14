@@ -6,6 +6,8 @@ module Faraday
     # requests when in an EM reactor loop, or for making parallel requests in
     # synchronous code.
     class EMHttp < Faraday::Adapter
+      # Options is a module containing helpers to convert the Faraday env object
+      # into options hashes for EMHTTP method calls.
       module Options
         # @return [Hash]
         def connection_config(env)
@@ -133,16 +135,16 @@ module Faraday
           end
           raise_error(error) if error
         end
-      rescue EventMachine::Connectify::CONNECTError => err
-        if err.message.include?('Proxy Authentication Required')
+      rescue EventMachine::Connectify::CONNECTError => e
+        if e.message.include?('Proxy Authentication Required')
           raise Faraday::ConnectionFailed,
                 %(407 "Proxy Authentication Required ")
         end
 
-        raise Faraday::ConnectionFailed, err
-      rescue StandardError => err
-        if defined?(OpenSSL) && err.is_a?(OpenSSL::SSL::SSLError)
-          raise Faraday::SSLError, err
+        raise Faraday::ConnectionFailed, e
+      rescue StandardError => e
+        if defined?(OpenSSL) && e.is_a?(OpenSSL::SSL::SSLError)
+          raise Faraday::SSLError, e
         end
 
         raise
