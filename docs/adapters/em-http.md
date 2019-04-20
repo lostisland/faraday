@@ -1,4 +1,9 @@
-# EM-HTTP Adapter
+---
+layout: page
+title: "EM-HTTP Adapter"
+permalink: /adapters/em-http
+hide: true
+---
 
 This Adapter uses the [em-http-request][rdoc] gem to make HTTP requests.
 

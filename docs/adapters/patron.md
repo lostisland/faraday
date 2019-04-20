@@ -1,4 +1,9 @@
-# Patron Adapter
+---
+layout: page
+title: "Patron Adapter"
+permalink: /adapters/patron
+hide: true
+---
 
 This Adapter uses the [patron][rdoc] gem to make HTTP requests.
 

@@ -1,4 +1,9 @@
-# Net::HTTP::Persistent Adapter
+---
+layout: page
+title: "Net::HTTP::Persistent Adapter"
+permalink: /adapters/net-http-persistent
+hide: true
+---
 
 This Adapter uses the [net-http-persistent][rdoc] gem to make HTTP requests.
 

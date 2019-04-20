@@ -1,4 +1,9 @@
-# EM-Synchrony Adapter
+---
+layout: page
+title: "EM-Synchrony Adapter"
+permalink: /adapters/em-synchrony
+hide: true
+---
 
 This Adapter uses the [em-synchrony][rdoc] gem to make HTTP requests.
 
