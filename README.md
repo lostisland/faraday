@@ -76,7 +76,7 @@ class MyFormatter < Faraday::Response::Logger::Formatter
     info('Request', env)
   end
 
-  def request(env)
+  def response(env)
     info('Response', env)
   end
 end
@@ -84,7 +84,6 @@ end
 conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
   faraday.response :logger, StructLogger.new(STDOUT), formatter: MyFormatter
 end
-
 ```
 
 Once you have the connection object, use it to make HTTP requests. You can pass parameters to it in a few different ways:
