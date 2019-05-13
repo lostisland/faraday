@@ -9,4 +9,7 @@ feature-img: "assets/img/home-banner.jpg"
 hide: true
 ---
 
-test
+Faraday is an HTTP client library that provides a common interface over many adapters (such as Net::HTTP)
+and embraces the concept of Rack middleware when processing the request/response cycle.
+
+[Click me](http://www.google.com){: .btn}

@@ -12,6 +12,7 @@ theme_settings:
 
   # Icons
   github: 'lostisland/faraday'
+  gitter: 'lostisland/faraday'
 
   # Post navigation
   post_navigation: false
