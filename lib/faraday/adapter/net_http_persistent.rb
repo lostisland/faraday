@@ -54,7 +54,9 @@ module Faraday
       rescue Errno::ETIMEDOUT => e
         raise Faraday::TimeoutError, e
       rescue Net::HTTP::Persistent::Error => e
-        raise Faraday::TimeoutError, e if e.message.include? 'Timeout'
+        if e.message.include? 'Timeout' && !e.message.include?("Net::OpenTimeout")
+          raise Faraday::TimeoutError, e
+        end
 
         if e.message.include? 'connection refused'
           raise Faraday::ConnectionFailed, e
