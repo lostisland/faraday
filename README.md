@@ -28,9 +28,12 @@ Here is the list of known external adapters:
 It also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a Test adapter for stubbing requests by hand.
 
-## API documentation
+## Documentation
 
-Available at [rubydoc.info](http://www.rubydoc.info/gems/faraday).
+* [Faraday API RubyDoc](http://www.rubydoc.info/gems/faraday)
+* [Middleware](./docs/middleware)
+  * [Middleware Environment](./docs/middleware/env.md)
+* [Testing](./docs/adapters/testing.md)
 
 ## Usage
 
@@ -289,41 +292,6 @@ later, response. Some keys are:
 Faraday is intended to be a generic interface between your code and the adapter. However, sometimes you need to access a feature specific to one of the adapters that is not covered in Faraday's interface.
 
 When that happens, you can pass a block when specifying the adapter to customize it. The block parameter will change based on the adapter you're using. See below for some examples.
-
-## Using Faraday for testing
-
-```ruby
-# It's possible to define stubbed request outside a test adapter block.
-stubs = Faraday::Adapter::Test::Stubs.new do |stub|
-  stub.get('/tamago') { |env| [200, {}, 'egg'] }
-end
-
-# You can pass stubbed request to the test adapter or define them in a block
-# or a combination of the two.
-test = Faraday.new do |builder|
-  builder.adapter :test, stubs do |stub|
-    stub.get('/ebi') { |env| [ 200, {}, 'shrimp' ]}
-  end
-end
-
-# It's also possible to stub additional requests after the connection has
-# been initialized. This is useful for testing.
-stubs.get('/uni') { |env| [ 200, {}, 'urchin' ]}
-
-resp = test.get '/tamago'
-resp.body # => 'egg'
-resp = test.get '/ebi'
-resp.body # => 'shrimp'
-resp = test.get '/uni'
-resp.body # => 'urchin'
-resp = test.get '/else' #=> raises "no such stub" error
-
-# If you like, you can treat your stubs as mocks by verifying that all of
-# the stubbed calls were made. NOTE that this feature is still fairly
-# experimental: It will not verify the order or count of any stub, only that
-# it was called once during the course of the test.
-stubs.verify_stubbed_calls
-```
 
 ## Supported Ruby versions
 
