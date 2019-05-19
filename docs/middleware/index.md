@@ -1,4 +1,9 @@
-# Middleware Usage
+---
+layout: page
+title: "Middleware Usage"
+permalink: /middleware
+hide: true
+---
 
 A `Faraday::Connection` uses a `Faraday::RackBuilder` to assemble a
 Rack-inspired middleware stack for making HTTP requests. Each middleware runs
@@ -6,6 +11,8 @@ and passes an Env object around to the next one. After the final middleware has
 run, Faraday will return a `Faraday::Response` to the end user.
 
 ## Middleware Types
+
+### Request
 
 **Request middleware** can modify Request details before the Adapter runs. Most
 middleware set Header values or transform the request body based on the
@@ -17,8 +24,17 @@ base64 representation.
 multipart form request.
 * `UrlEncoded` converts a `Faraday::Request#body` hash of key/value pairs into a url-
 encoded request body.
-
-**Adapters** make requests. TBD
-
 * `Retry` automatically retries requests that fail due to intermittent client
 or server errors (such as network hiccups).
+
+
+### Response
+
+**Response middleware** receives the response from the adapter and can modify its details
+before returning it.
+
+* [`Logger`][logger] logs both the request and the response body and headers.
+* `RaiseError` checks the response HTTP code and raises an exception if not in the 2xx range.
+
+
+[logger]:               ./logger

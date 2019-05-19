@@ -1,4 +1,9 @@
-# Testing
+---
+layout: page
+title: "Testing"
+permalink: /testing
+hide: true
+---
 
 The built-in Faraday Test adapter lets you define stubbed HTTP requests. This can
 be used to mock out network services in an application's unit tests.

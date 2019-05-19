@@ -33,7 +33,7 @@ Rack::Test, and a Test adapter for stubbing requests by hand.
 * [Faraday API RubyDoc](http://www.rubydoc.info/gems/faraday)
 * [Middleware](./docs/middleware)
   * [Middleware Environment](./docs/middleware/env.md)
-* [Testing](./docs/adapters/testing.md)
+* [Testing](docs/testing.md)
 
 ## Usage
 
@@ -61,33 +61,6 @@ conn = Faraday.new(:url => 'http://sushi.com') do |faraday|
   faraday.response :logger                  # log requests and responses to $stdout
   faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
 end
-
-# Filter sensitive information from logs with a regex matcher
-
-conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
-  faraday.request  :url_encoded             # form-encode POST params
-  faraday.response :logger do | logger |
-    logger.filter(/(api_key=)(\w+)/,'\1[REMOVED]')
-  end
-  faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
-end
-
-# Override the log formatting on demand
-
-class MyFormatter < Faraday::Response::Logger::Formatter
-  def request(env)
-    info('Request', env)
-  end
-
-  def request(env)
-    info('Response', env)
-  end
-end
-
-conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
-  faraday.response :logger, StructLogger.new(STDOUT), formatter: MyFormatter
-end
-
 ```
 
 Once you have the connection object, use it to make HTTP requests. You can pass parameters to it in a few different ways:
