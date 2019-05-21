@@ -48,8 +48,11 @@ stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.
 A more flexible way to use Faraday is to start with a Connection object. If you want to keep the same defaults, you can use this syntax:
 
 ```ruby
-conn = Faraday.new(:url => 'http://www.example.com')
-response = conn.get '/users'                 # GET http://www.example.com/users'
+conn = Faraday.new(:url => 'http://www.example.com/api')
+response = conn.get 'users'                 # GET http://www.example.com/api/users'
+
+# You can override the path from the connection initializer by using an absolute path
+response = conn.get '/users'                # GET http://www.example.com/users'
 ```
 
 Connections can also take an options hash as a parameter or be configured by using a block. Checkout the section called [Advanced middleware usage](#advanced-middleware-usage) for more details about how to use this block for configurations.
@@ -294,7 +297,7 @@ But before you start coding, please read our [Contributing Guide](https://github
 
 ## Copyright
 
-Copyright (c) 2009-2017 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
+Copyright (c) 2009-2019 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
 [net_http]:     ./docs/adapters/net_http.md

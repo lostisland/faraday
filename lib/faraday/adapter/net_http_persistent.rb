@@ -63,16 +63,22 @@ module Faraday
         raise
       end
 
+      SSL_CONFIGURATIONS = {
+        certificate: :client_cert,
+        private_key: :client_key,
+        ca_file: :ca_file,
+        ssl_version: :version,
+        min_version: :min_version,
+        max_version: :max_version
+      }.freeze
+
       def configure_ssl(http, ssl)
         http_set(http, :verify_mode, ssl_verify_mode(ssl))
         http_set(http, :cert_store, ssl_cert_store(ssl))
 
-        http_set(http, :certificate, ssl[:client_cert]) if ssl[:client_cert]
-        http_set(http, :private_key, ssl[:client_key]) if ssl[:client_key]
-        http_set(http, :ca_file, ssl[:ca_file]) if ssl[:ca_file]
-        http_set(http, :ssl_version, ssl[:version]) if ssl[:version]
-        http_set(http, :min_version, ssl[:min_version]) if ssl[:min_version]
-        http_set(http, :max_version, ssl[:max_version]) if ssl[:max_version]
+        SSL_CONFIGURATIONS
+          .select { |_, key| ssl[key] }
+          .each { |target, key| http_set(http, target, ssl[key]) }
       end
 
       def http_set(http, attr, value)
