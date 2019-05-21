@@ -355,7 +355,7 @@ But before you start coding, please read our [Contributing Guide](https://github
 
 ## Copyright
 
-Copyright (c) 2009-2017 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
+Copyright (c) 2009-2019 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
 [net_http]:     ./docs/adapters/net_http.md
