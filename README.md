@@ -45,7 +45,7 @@ end
 
 ## Supported Ruby versions
 
-This library aims to support and is [tested against][travis] the following Ruby
+This library aims to support and is [tested against][circle_ci] the following Ruby
 implementations:
 
 * Ruby 2.3+
@@ -76,7 +76,7 @@ See [LICENSE][] for details.
 
 [net_http]:     ./docs/adapters/net_http.md
 [persistent]:   ./docs/adapters/net_http_persistent.md
-[travis]:       https://travis-ci.org/lostisland/faraday
+[circle_ci]:       https://circleci.com/gh/lostisland/faraday
 [excon]:        ./docs/adapters/excon.md
 [patron]:       ./docs/adapters/patron.md
 [em-synchrony]: ./docs/adapters/em-synchrony.md
