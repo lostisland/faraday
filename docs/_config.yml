@@ -8,7 +8,7 @@ theme_settings:
   # email: your-email@example.com
   description: >-
     Simple, but flexible HTTP client library, with support for multiple backends
-  footer_text: Footer text for Faraday
+  footer_text: Copyright (c) 2009-2019 Rick Olson, Zack Hobson.
 
   # Icons
   github: 'lostisland/faraday'

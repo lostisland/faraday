@@ -31,6 +31,12 @@ Here is the list of known external adapters:
 Faraday also includes a Rack adapter for hitting loaded Rack applications through
 Rack::Test, and a [Test adapter][testing] for stubbing requests by hand.
 
+## Ad-hoc adapters customization
+
+Faraday is intended to be a generic interface between your code and the adapter.
+However, sometimes you need to access a feature specific to one of the adapters that is not covered in Faraday's interface.
+When that happens, you can pass a block when specifying the adapter to customize it.
+The block parameter will change based on the adapter you're using. See each adapter page for more details.
 
 [net_http]:     ./net-http
 [persistent]:   ./net-http-persistent
