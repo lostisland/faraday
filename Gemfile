@@ -23,7 +23,6 @@ group :test do
   gem 'rack-test', '>= 0.6', require: 'rack/test'
   gem 'rspec', '~> 3.7'
   gem 'rspec_junit_formatter', '~> 0.4'
-  gem 'rubocop', '~> 0.67.2'
   gem 'rubocop-performance', '~> 1.0'
   gem 'simplecov'
   gem 'typhoeus', '~> 1.3', git: 'https://github.com/typhoeus/typhoeus.git',
