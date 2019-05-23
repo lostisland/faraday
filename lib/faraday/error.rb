@@ -61,6 +61,10 @@ module Faraday
   class ProxyAuthError < ClientError
   end
 
+  # Raised by Faraday::Response::RaiseError in case of a 409 response.
+  class ConflictError < ClientError
+  end
+
   # Raised by Faraday::Response::RaiseError in case of a 422 response.
   class UnprocessableEntityError < ClientError
   end

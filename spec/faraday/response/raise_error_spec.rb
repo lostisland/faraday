@@ -11,6 +11,7 @@ RSpec.describe Faraday::Response::RaiseError do
         stub.get('forbidden') { [403, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('not-found') { [404, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('proxy-error') { [407, { 'X-Reason' => 'because' }, 'keep looking'] }
+        stub.get('conflict') { [409, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('unprocessable-entity') { [422, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('4xx') { [499, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('server-error') { [500, { 'X-Error' => 'bailout' }, 'fail'] }
@@ -53,6 +54,13 @@ RSpec.describe Faraday::Response::RaiseError do
   it 'raises Faraday::ProxyAuthError for 407 responses' do
     expect { conn.get('proxy-error') }.to raise_error(Faraday::ProxyAuthError) do |ex|
       expect(ex.message).to eq('407 "Proxy Authentication Required"')
+      expect(ex.response[:headers]['X-Reason']).to eq('because')
+    end
+  end
+
+  it 'raises Faraday::ConflictError for 409 responses' do
+    expect { conn.get('conflict') }.to raise_error(Faraday::ConflictError) do |ex|
+      expect(ex.message).to eq('the server responded with status 409')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
     end
   end
