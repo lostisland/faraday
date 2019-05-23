@@ -11,37 +11,10 @@ Faraday is an HTTP client library that provides a common interface over many
 adapters (such as Net::HTTP) and embraces the concept of Rack middleware when
 processing the request/response cycle.
 
-Faraday supports these adapters out of the box:
+## Getting Started
 
-* [Net::HTTP][net_http] _(default)_
-* [Net::HTTP::Persistent][persistent]
-* [Excon][excon]
-* [Patron][patron]
-* [EM-Synchrony][em-synchrony]
-* [HTTPClient][httpclient]
-
-Adapters are slowly being moved into their own gems, or bundled with HTTP clients.
-Here is the list of known external adapters:
-
-* [Typhoeus][typhoeus]
-
-It also includes a Rack adapter for hitting loaded Rack applications through
-Rack::Test, and a Test adapter for stubbing requests by hand.
-
-## Authentication
-
-Basic and Token authentication are handled by Faraday::Request::BasicAuthentication and Faraday::Request::TokenAuthentication respectively.
-These can be added as middleware manually or through the helper methods.
-
-```ruby
-Faraday.new(...) do |conn|
-  conn.basic_auth('username', 'password')
-end
-
-Faraday.new(...) do |conn|
-  conn.token_auth('authentication-token')
-end
-```
+The best starting point is the [Faraday Website][website], with its introduction and explanation.
+Need more details? See the [Faraday API Documentation][apidoc] to see how it works internally.
 
 ## Supported Ruby versions
 
@@ -74,14 +47,9 @@ But before you start coding, please read our [Contributing Guide](https://github
 Copyright (c) 2009-2019 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
 See [LICENSE][] for details.
 
-[net_http]:     ./docs/adapters/net_http.md
-[persistent]:   ./docs/adapters/net_http_persistent.md
-[circle_ci]:       https://circleci.com/gh/lostisland/faraday
-[excon]:        ./docs/adapters/excon.md
-[patron]:       ./docs/adapters/patron.md
-[em-synchrony]: ./docs/adapters/em-synchrony.md
-[httpclient]:   ./docs/adapters/httpclient.md
-[typhoeus]:     https://github.com/typhoeus/typhoeus/blob/master/lib/typhoeus/adapters/faraday.rb
+[website]:      https://???
+[apidoc]:       http://www.rubydoc.info/gems/faraday
+[circle_ci]:    https://circleci.com/gh/lostisland/faraday
 [jruby]:        http://jruby.org/
 [rubinius]:     http://rubini.us/
 [license]:      LICENSE.md

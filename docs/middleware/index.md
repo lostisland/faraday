@@ -56,8 +56,9 @@ conn.put '/profile', payload
 middleware set Header values or transform the request body based on the
 content type.
 
-* `BasicAuthentication` sets the `Authorization` header to the `user:password`
+* [`BasicAuthentication`][authentication] sets the `Authorization` header to the `user:password`
 base64 representation.
+* [`TokenAuthentication`][authentication] sets the `Authorization` header to the specified token.
 * `Multipart` converts a `Faraday::Request#body` hash of key/value pairs into a
 multipart form request.
 * `UrlEncoded` converts a `Faraday::Request#body` hash of key/value pairs into a url-
@@ -75,4 +76,5 @@ before returning it.
 * `RaiseError` checks the response HTTP code and raises an exception if not in the 2xx range.
 
 
+[authentication]:       ./authentication
 [logger]:               ./logger
