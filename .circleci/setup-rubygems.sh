@@ -1,5 +1,3 @@
-
-#
 # "Publishing RubyGems using Circle CI 2.0" explains how this works:
 #
 # https://medium.com/@pezholio/publishing-rubygems-using-circle-ci-2-0-1dbf06ae9942
