@@ -33,7 +33,6 @@ shared_ruby_steps: &shared_ruby_steps
         condition: << parameters.run-cc-reporter >>
         steps:
           - run:
-              context: faraday-code-climate
               name: Run Code Climate test-reporter
               command: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
     - save_cache:
@@ -140,6 +139,7 @@ workflows:
           requires:
             - checkout_code
       - ruby26:
+          context: faraday-code-climate
           requires:
             - linting
           run-cc-reporter: true
