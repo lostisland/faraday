@@ -23,7 +23,7 @@ RSpec.describe Faraday::Response::RaiseError do
     expect { conn.get('ok') }.not_to raise_error
   end
 
-  it 'raises Faraday::ResourceNotFound for 400 responses' do
+  it 'raises Faraday::BadRequestError for 400 responses' do
     expect { conn.get('bad-request') }.to raise_error(Faraday::BadRequestError) do |ex|
       expect(ex.message).to eq('the server responded with status 400')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
