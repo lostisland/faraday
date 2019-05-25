@@ -45,7 +45,7 @@ stack and default adapter (see [Faraday::RackBuilder#initialize](https://github.
 A more flexible way to use Faraday is to start with a Connection object. If you want to keep the same defaults, you can use this syntax:
 
 ```ruby
-conn = Faraday.new(:url => 'http://www.example.com/api')
+conn = Faraday.new(url: 'http://www.example.com/api')
 response = conn.get 'users'                 # GET http://www.example.com/api/users'
 
 # You can override the path from the connection initializer by using an absolute path
@@ -56,7 +56,7 @@ Connections can also take an options hash as a parameter or be configured by usi
 Since the default middleware stack uses url\_encoded middleware and default adapter, use them on building your own middleware stack.
 
 ```ruby
-conn = Faraday.new(:url => 'http://sushi.com') do |faraday|
+conn = Faraday.new(url: 'http://sushi.com') do |faraday|
   faraday.request  :url_encoded             # form-encode POST params
   faraday.response :logger                  # log requests and responses to $stdout
   faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
@@ -64,10 +64,10 @@ end
 
 # Filter sensitive information from logs with a regex matcher
 
-conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
+conn = Faraday.new(url: 'http://sushi.com/api_key=s3cr3t') do |faraday|
   faraday.request  :url_encoded             # form-encode POST params
   faraday.response :logger do | logger |
-    logger.filter(/(api_key=)(\w+)/,'\1[REMOVED]')
+    logger.filter(/(api_key=)(\w+)/, '\1[REMOVED]')
   end
   faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
 end
@@ -84,7 +84,7 @@ class MyFormatter < Faraday::Response::Logger::Formatter
   end
 end
 
-conn = Faraday.new(:url => 'http://sushi.com/api_key=s3cr3t') do |faraday|
+conn = Faraday.new(url: 'http://sushi.com/api_key=s3cr3t') do |faraday|
   faraday.response :logger, StructLogger.new(STDOUT), formatter: MyFormatter
 end
 ```
@@ -97,16 +97,16 @@ Once you have the connection object, use it to make HTTP requests. You can pass 
 response = conn.get '/nigiri/sake.json'     # GET http://sushi.com/nigiri/sake.json
 response.body
 
-conn.get '/nigiri', { :name => 'Maguro' }   # GET http://sushi.com/nigiri?name=Maguro
+conn.get '/nigiri', { name: 'Maguro' }   # GET http://sushi.com/nigiri?name=Maguro
 
 conn.get do |req|                           # GET http://sushi.com/search?page=2&limit=100
-  req.url '/search', :page => 2
+  req.url '/search', page: 2
   req.params['limit'] = 100
 end
 
 ## POST ##
 
-conn.post '/nigiri', { :name => 'Maguro' }  # POST "name=maguro" to http://sushi.com/nigiri
+conn.post '/nigiri', { name: 'Maguro' }  # POST "name=maguro" to http://sushi.com/nigiri
 ```
 
 Some configuration options can be adjusted per request:
@@ -149,8 +149,8 @@ And you can inject arbitrary data into the request using the `context` option:
 conn.get do |req|
   req.url '/search'
   req.options.context = {
-      foo: 'foo',
-      bar: 'bar'
+    foo: 'foo',
+    bar: 'bar'
   }
 end
 ```
@@ -163,7 +163,7 @@ either per-connection or per-request basis.
 
 ```ruby
 # per-connection setting
-conn = Faraday.new :request => { :params_encoder => Faraday::FlatParamsEncoder }
+conn = Faraday.new request: { params_encoder: Faraday::FlatParamsEncoder }
 
 conn.get do |req|
   # per-request setting:
@@ -208,7 +208,7 @@ Faraday.ignore_env_proxy = true
 You can also specify a custom proxy when initializing the connection
 
 ```ruby
-Faraday.new('http://www.example.com', :proxy => 'http://proxy.com')
+Faraday.new('http://www.example.com', proxy: 'http://proxy.com')
 ```
 
 ## Advanced middleware usage
@@ -304,13 +304,13 @@ end
 # or a combination of the two.
 test = Faraday.new do |builder|
   builder.adapter :test, stubs do |stub|
-    stub.get('/ebi') { |env| [ 200, {}, 'shrimp' ]}
+    stub.get('/ebi') { |env| [200, {}, 'shrimp']}
   end
 end
 
 # It's also possible to stub additional requests after the connection has
 # been initialized. This is useful for testing.
-stubs.get('/uni') { |env| [ 200, {}, 'urchin' ]}
+stubs.get('/uni') { |env| [200, {}, 'urchin']}
 
 resp = test.get '/tamago'
 resp.body # => 'egg'
