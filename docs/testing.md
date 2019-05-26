@@ -19,11 +19,9 @@ conn = Faraday.new do |builder|
   builder.adapter :test do |stub|
     stub.get('/ebi') do |env|
       [
-        200, # status code
-        {
-          'Content-Type': 'text/plain',
-        }, # headers
-        'shrimp' # response body
+        200,
+        { 'Content-Type': 'text/plain', },
+        'shrimp'
       ]
     end
   end
