@@ -54,7 +54,7 @@ You can filter sensitive information from Faraday logs using a regex matcher:
 ```ruby
 conn = Faraday.new(url: 'http://sushi.com') do |faraday|
   faraday.response :logger do | logger |
-    logger.filter(/(api_key=)(\w+)/,'\1[REMOVED]')
+    logger.filter(/(api_key=)(\w+)/, '\1[REMOVED]')
   end
 end
 

@@ -65,6 +65,7 @@ multipart form request.
 encoded request body.
 * `Retry` automatically retries requests that fail due to intermittent client
 or server errors (such as network hiccups).
+* `Instrumentation` allows to instrument requests using different tools.
 
 
 ### Response
@@ -73,8 +74,9 @@ or server errors (such as network hiccups).
 before returning it.
 
 * [`Logger`][logger] logs both the request and the response body and headers.
-* `RaiseError` checks the response HTTP code and raises an exception if not in the 2xx range.
+* [`RaiseError`][raise_error] checks the response HTTP code and raises an exception if it is a 4xx or 5xx code.
 
 
 [authentication]:       ./authentication
 [logger]:               ./logger
+[raise_error]:          ./raise_error
