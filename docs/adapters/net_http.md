@@ -5,7 +5,7 @@ permalink: /adapters/net-http
 hide: true
 ---
 
-This Adapter uses the Net::HTTP client from the ruby standard library to make
+This Adapter uses the [`Net::HTTP`][rdoc] client from the Ruby standard library to make
 HTTP requests.
 
 ```ruby

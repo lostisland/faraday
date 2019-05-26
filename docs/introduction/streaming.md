@@ -6,12 +6,16 @@ hide: true
 ---
 
 Sometimes you might need to receive a streaming response.
-You can easily do this with the `on_data` request option:
+You can do this with the `on_data` request option.
+
+The `on_data` callback is a receives tuples of chunk Strings, and the total
+of received bytes so far.
+
+This example implements such a callback:
 
 ```ruby
-## Streaming responses ##
-
-streamed = []                       # A buffer to store the streamed data
+# A buffer to store the streamed data
+streamed = []
 
 conn.get('/nigiri/sake.json') do |req|
   # Set a callback which will receive tuples of chunk Strings
@@ -22,8 +26,9 @@ conn.get('/nigiri/sake.json') do |req|
   end
 end
 
-streamed.join                       # Joins all response chunks together 
+# Joins all response chunks together 
+streamed.join
 ```
 
-At the moment, this is only supported by the `Net::HTTP` adapter, but support for other adapters
-will be provided in future.
+The `on_data` streaming is currently only supported by the `Net::HTTP` adapter. Other adapters
+will be support this in the future.

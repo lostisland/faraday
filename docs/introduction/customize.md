@@ -5,7 +5,7 @@ permalink: /introduction/customize
 hide: true
 ---
 
-Configuration can be setup with the connection and/or adjusted per request: 
+Configuration can be set up with the connection and/or adjusted per request: 
 
 ```ruby
 ## Connection options ##
@@ -26,8 +26,8 @@ This will be available in the `env` on all middleware.
 conn.get do |req|
   req.url '/search'
   req.options.context = {
-      foo: 'foo',
-      bar: 'bar'
+    foo: 'foo',
+    bar: 'bar'
   }
 end
 ```
@@ -39,31 +39,36 @@ This requires manually setting the parameter encoder and can be done on
 either per-connection or per-request basis.
 
 ```ruby
-# per-connection setting
+# Per-connection setting
 conn = Faraday.new request: { params_encoder: Faraday::FlatParamsEncoder }
 conn.get('', { roll: ['california', 'philadelphia'] })
 
-# per-request setting
+# Per-request setting
 conn.get do |req|
   req.options.params_encoder = Faraday::FlatParamsEncoder
   req.params = { roll: ['california', 'philadelphia'] }
 end
 ```
 
+### Custom serializers
+
+You can build your custom encoder, if you like.
+
 The value of Faraday `params_encoder` can be any object that responds to:
 
-* `encode(hash) #=> String`
-* `decode(string) #=> Hash`
+* `#encode(hash) #=> String`
+* `#decode(string) #=> Hash`
 
-so you can build your custom encoder, if you like.
-The encoder will affect both how query strings are processed and how POST bodies
-get serialized. The default encoder is Faraday::NestedParamsEncoder.
+The encoder will affect both how Faraday processes query strings and how it
+serializes POST bodies.
+
+The default encoder is `Faraday::NestedParamsEncoder`.
 
 ## Proxy
 
-Faraday will try to automatically infer the proxy settings from your system using `URI#find_proxy`.
+Faraday will try to automatically infer the proxy settings from your system using [`URI#find_proxy`][ruby-find-proxy].
 This will retrieve them from environment variables such as http_proxy, ftp_proxy, no_proxy, etc.
-If for any reason you want to disable this behaviour, you can do so by setting the global varibale `ignore_env_proxy`:
+If for any reason you want to disable this behaviour, you can do so by setting the global variable `ignore_env_proxy`:
 
 ```ruby
 Faraday.ignore_env_proxy = true
@@ -74,3 +79,5 @@ You can also specify a custom proxy when initializing the connection:
 ```ruby
 conn = Faraday.new('http://www.example.com', proxy: 'http://proxy.com')
 ```
+
+[ruby-find-proxy]: https://ruby-doc.org/stdlib-2.6.3/libdoc/uri/rdoc/URI/Generic.html#method-i-find_proxy
