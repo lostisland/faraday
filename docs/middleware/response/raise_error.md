@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "Raise Error Middleware"
-permalink: /middleware/raise_error
+permalink: /middleware/raise-error
 hide: true
 ---
 

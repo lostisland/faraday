@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Customizing the Connection"
+title: "Customizing the Request"
 permalink: /introduction/customize
 hide: true
 ---
@@ -37,6 +37,7 @@ end
 Sometimes you need to send the same URL parameter multiple times with different values.
 This requires manually setting the parameter encoder and can be done on
 either per-connection or per-request basis.
+This applies to all HTTP verbs.
 
 ```ruby
 # per-connection setting
@@ -57,7 +58,7 @@ The value of Faraday `params_encoder` can be any object that responds to:
 
 so you can build your custom encoder, if you like.
 The encoder will affect both how query strings are processed and how POST bodies
-get serialized. The default encoder is Faraday::NestedParamsEncoder.
+get serialized. The default encoder is `Faraday::NestedParamsEncoder`.
 
 ## Proxy
 

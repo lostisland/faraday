@@ -59,13 +59,12 @@ content type.
 * [`BasicAuthentication`][authentication] sets the `Authorization` header to the `user:password`
 base64 representation.
 * [`TokenAuthentication`][authentication] sets the `Authorization` header to the specified token.
-* `Multipart` converts a `Faraday::Request#body` hash of key/value pairs into a
+* [`Multipart`][multipart] converts a `Faraday::Request#body` hash of key/value pairs into a
 multipart form request.
-* `UrlEncoded` converts a `Faraday::Request#body` hash of key/value pairs into a url-
-encoded request body.
-* `Retry` automatically retries requests that fail due to intermittent client
+* [`UrlEncoded`][url_encoded] converts a `Faraday::Request#body` hash of key/value pairs into a url-encoded request body.
+* [`Retry`][retry] automatically retries requests that fail due to intermittent client
 or server errors (such as network hiccups).
-* `Instrumentation` allows to instrument requests using different tools.
+* [`Instrumentation`][instrumentation] allows to instrument requests using different tools.
 
 
 ### Response
@@ -78,5 +77,9 @@ before returning it.
 
 
 [authentication]:       ./authentication
+[multipart]:            ./multipart
+[url_encoded]:          ./url-encoded
+[retry]:                ./retry
+[instrumentation]:      ./authentication
 [logger]:               ./logger
-[raise_error]:          ./raise_error
+[raise_error]:          ./raise-error
