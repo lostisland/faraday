@@ -17,7 +17,7 @@ module Faraday
       # @param env [Faraday::Env]
       def call(env)
         match_content_type(env) do |data|
-          params = Faraday::Utils::ParamsHash[data]
+          params = replace_nil_with_blank_str(Faraday::Utils::ParamsHash[data])
           env.body = params.to_query(env.params_encoder)
         end
         @app.call env
@@ -30,6 +30,24 @@ module Faraday
 
         env.request_headers[CONTENT_TYPE] ||= self.class.mime_type
         yield(env.body) unless env.body.respond_to?(:to_str)
+      end
+
+      def replace_nil_with_blank_str(data)
+        if data.nil?
+          ''
+        elsif data.is_a? Array
+          data.map(&method(:replace_nil_with_blank_str))
+        elsif data.is_a? Hash
+          new_data = data.class.new
+
+          data.each do |k, v|
+            new_data[k] = replace_nil_with_blank_str(v)
+          end
+
+          new_data
+        else
+          data
+        end
       end
 
       # @param env [Faraday::Env]

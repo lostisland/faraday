@@ -67,4 +67,11 @@ RSpec.describe Faraday::Request::UrlEncoded do
     response = conn.post('/echo', 'a' => { 'b' => { 'c' => ['d'] } })
     expect(response.body).to eq('a%5Bb%5D%5Bc%5D%5B%5D=d')
   end
+
+  it 'replaces nil values with blank strings' do
+    response = conn.post('/echo', str: nil, fruit: ['apple', nil], user: { name: 'Mislav', web: nil })
+    expect(response.headers['Content-Type']).to eq('application/x-www-form-urlencoded')
+    expected = { 'str' => '', 'fruit' => ['apple', ''], 'user' => { 'name' => 'Mislav', 'web' => '' } }
+    expect(Faraday::Utils.parse_nested_query(response.body)).to eq(expected)
+  end
 end
