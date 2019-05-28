@@ -54,7 +54,6 @@ Table of contents:
   * [Writing Middleware][custom]
 * [Adapters][adapters]
 * [Testing][testing]
-
 * [Faraday API RubyDoc](http://www.rubydoc.info/gems/faraday)
 
 [github]:                   https://github.com/lostisland/faraday
