@@ -80,6 +80,6 @@ before returning it.
 [multipart]:            ./multipart
 [url_encoded]:          ./url-encoded
 [retry]:                ./retry
-[instrumentation]:      ./authentication
+[instrumentation]:      ./instrumentation
 [logger]:               ./logger
 [raise_error]:          ./raise-error
