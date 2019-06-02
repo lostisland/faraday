@@ -1,8 +1,14 @@
 ---
-layout: page
+layout: documentation
 title: "Multipart Middleware"
 permalink: /middleware/multipart
 hide: true
+prev_name: Authentication Middleware
+prev_link: ./authentication
+next_name: UrlEncoded Middleware
+next_link: ./url-encoded
+top_name: Back to Middleware
+top_link: ./
 ---
 
 The `Multipart` middleware converts a `Faraday::Request#body` hash of key/value pairs into a multipart form request.

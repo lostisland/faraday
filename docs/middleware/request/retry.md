@@ -1,8 +1,14 @@
 ---
-layout: page
+layout: documentation
 title: "Retry Middleware"
 permalink: /middleware/retry
 hide: true
+prev_name: UrlEncoded Middleware
+prev_link: ./url-encoded
+next_name: Instrumentation Middleware
+next_link: ./instrumentation
+top_name: Back to Middleware
+top_link: ./
 ---
 
 The `Retry` middleware automatically retries requests that fail due to intermittent client
@@ -101,7 +107,6 @@ retry_options = {
   retry_block: -> (env, options, retries, exc) { response_statuses << env.status }
 }
 ``` 
-
 
 
 [raise_error]:  ../middleware/raise-error

@@ -1,8 +1,14 @@
 ---
-layout: page
+layout: documentation
 title: "Instrumentation Middleware"
 permalink: /middleware/instrumentation
 hide: true
+prev_name: Retry Middleware
+prev_link: ./retry
+next_name: Logger Middleware
+next_link: ./logger
+top_name: Back to Middleware
+top_link: ./
 ---
 
 The `Instrumentation` middleware allows to instrument requests using different tools.
@@ -37,5 +43,3 @@ end
 conn.get('/search', { a: 1, b: 2 })
 #=> [example.com] GET /search?a=1&b=2 (0.529 s)
 ```
-
-[customize]: ../introduction/customize/#changing-how-parameters-are-serialized

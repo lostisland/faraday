@@ -1,8 +1,14 @@
 ---
-layout: page
+layout: documentation
 title: "Logger Middleware"
 permalink: /middleware/logger
 hide: true
+prev_name: Instrumentation Middleware
+prev_link: ./instrumentation
+next_name: RaiseError Middleware
+next_link: ./raise-error
+top_name: Back to Middleware
+top_link: ./
 ---
 
 The `Logger` middleware logs both the request and the response body and headers.

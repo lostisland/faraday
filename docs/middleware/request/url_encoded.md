@@ -1,8 +1,14 @@
 ---
-layout: page
+layout: documentation
 title: "UrlEncoded Middleware"
 permalink: /middleware/url-encoded
 hide: true
+prev_name: Multipart Middleware
+prev_link: ./multipart
+next_name: Retry Middleware
+next_link: ./retry
+top_name: Back to Middleware
+top_link: ./
 ---
 
 The `UrlEncoded` middleware converts a `Faraday::Request#body` hash of key/value pairs into a url-encoded request body.

@@ -1,8 +1,12 @@
 ---
-layout: page
+layout: documentation
 title: "Authentication Middleware"
 permalink: /middleware/authentication
 hide: true
+next_name: Multipart Middleware
+next_link: ./multipart
+top_name: Back to Middleware
+top_link: ./
 ---
 
 Basic and Token authentication are handled by Faraday::Request::BasicAuthentication
