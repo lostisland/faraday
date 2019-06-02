@@ -1,17 +1,17 @@
 <div class="docs-nav">
+  <p class="docs-nav-item">
   {% if page.prev_link %}
-  <p class="docs-nav-item">
     <a href="{{page.prev_link}}">&lt;- {{ page.prev_name }}</a>
-  </p>
   {% endif %}
+  </p>
+  <p class="docs-nav-item">
   {% if page.top_link %}
-  <p class="docs-nav-item">
     <a href="{{ page.top_link }}">{{ page.top_name }}</a>
-  </p>
   {% endif %}
-  {% if page.next_link %}
+  </p>
   <p class="docs-nav-item">
+  {% if page.next_link %}
     <a href="{{ page.next_link }}">{{ page.next_name }} -&gt;</a>
-  </p>
   {% endif %}
+  </p>
 </div>  
