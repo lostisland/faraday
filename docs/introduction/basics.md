@@ -24,7 +24,7 @@ conn = Faraday.new(url: 'http://www.sushi.com')
 
 Connections can also take an options hash as a parameter, or be configured with a block.
 Check out the [Middleware][middleware] page for more details about how to use this block for configurations.
-Since the default middleware stack uses the `url_encoded` middleware and default adapter, use them on building your own middleware stack.
+Since the default middleware stack uses the `url_encoded` middleware and default adapter, use them when building your own middleware stack.
 
 ```ruby
 conn = Faraday.new(url: 'http://sushi.com') do |faraday|

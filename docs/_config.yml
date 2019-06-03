@@ -8,7 +8,7 @@ theme_settings:
   # email: your-email@example.com
   description: >-
     Simple, but flexible HTTP client library, with support for multiple backends
-  footer_text: "&copy; 2009-2019 Rick Olson, Zack Hobson."
+  footer_text: "&copy; 2009 - 2019, the <a class=\"body-link\" href=\"/faraday/team\">Faraday Team</a>."
 
   # Icons
   github: 'lostisland/faraday'

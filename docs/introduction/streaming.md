@@ -30,5 +30,4 @@ end
 streamed.join
 ```
 
-The `on_data` streaming is currently only supported by the `Net::HTTP` adapter. Other adapters
-will be support this in the future.
+The `on_data` streaming is currently only supported by the `Net::HTTP` adapter.
