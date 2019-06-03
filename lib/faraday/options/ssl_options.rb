@@ -13,7 +13,7 @@ module Faraday
   #   @return [String] CA path
   #
   # @!attribute verify_mode
-  #   @return [String] Any `OpenSSL::SSL::` constant (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL.html)
+  #   @return [Integer] Any `OpenSSL::SSL::` constant (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL.html)
   #
   # @!attribute cert_store
   #   @return [OpenSSL::X509::Store] certificate store
