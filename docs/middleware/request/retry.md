@@ -19,9 +19,10 @@ a retry interval, a percentage of randomness to add to the retry interval, and a
 
 ### Example Usage
 
+This example will result in a first interval that is random between 0.05 and 0.075
+and a second interval that is random between 0.1 and 0.15.
+
 ```ruby
-# This example will result in a first interval that is random between 0.05
-# and 0.075 and a second interval that is random between 0.1 and 0.15.
 retry_options = {
   max: 2,
   interval: 0.05,

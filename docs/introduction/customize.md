@@ -5,14 +5,18 @@ permalink: /introduction/customize
 hide: true
 ---
 
-Configuration can be set up with the connection and/or adjusted per request: 
+Configuration can be set up with the connection and/or adjusted per request.
+
+As connection options:
 
 ```ruby
-## Connection options ##
 conn = Faraday.new('http://sushi.com', request: { timeout: 5 }) 
 conn.get('/search')
+```
 
-## Per-request options ##
+Or as per-request options:
+
+```ruby
 conn.get do |req|
   req.url '/search'
   req.options.timeout = 5
@@ -39,12 +43,16 @@ This requires manually setting the parameter encoder and can be done on
 either per-connection or per-request basis.
 This applies to all HTTP verbs.
 
+Per-connection setting:
+
 ```ruby
-# Per-connection setting
 conn = Faraday.new request: { params_encoder: Faraday::FlatParamsEncoder }
 conn.get('', { roll: ['california', 'philadelphia'] })
+```
 
-# Per-request setting
+Per-request setting:
+
+```ruby
 conn.get do |req|
   req.options.params_encoder = Faraday::FlatParamsEncoder
   req.params = { roll: ['california', 'philadelphia'] }

@@ -28,8 +28,11 @@ conn.post('/', { a: 1, b: 2 })
 # POST with
 # Content-Type: application/x-www-form-urlencoded
 # Body: a=1&b=2
+```
 
-# Complex structures can also be passed
+Complex structures can also be passed
+
+```ruby
 conn.post('/', { a: [1, 3], b: { c: 2, d: 4} })
 # POST with
 # Content-Type: application/x-www-form-urlencoded

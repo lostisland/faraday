@@ -37,24 +37,32 @@ conn = Faraday.new(url: 'http://sushi.com') do |faraday|
 end
 ```
 
-Once you have the connection object, use it to make HTTP requests. You can pass parameters to it in a few different ways:
+## Perform requests with parameters
+
+Once you have the connection object, use it to make HTTP requests. You can pass parameters to it in a few different ways.
+
+### GET Requests
 
 ```ruby
 conn = Faraday.new(url: 'http://sushi.com/nigiri')
 
-## GET ##
-
 response = conn.get 'sake.json'
 # => GET http://sushi.com/nigiri/sake.json
 
-# Using an absolute path overrides the path from the connection initializer
+# You can then access the response body
+response.body 
+``` 
+
+Using an absolute path overrides the path from the connection initializer
+
+```ruby
 response = conn.get '/maki/platters.json'
 # => GET http://sushi.com/maki/platters.json
- 
-# You can then access the response body
-response.body
+```
 
-# Path can also be empty. Parameters can be provided as a hash.
+Path can also be empty. Parameters can be provided as a hash.
+
+```ruby
 conn.get '', { name: 'Maguro' }
 # => GET http://sushi.com/nigiri?name=Maguro
 
@@ -63,22 +71,25 @@ conn.get do |req|
   req.params['limit'] = 100
 end
 # => GET http://sushi.com/search?limit=100&page=2
+```
 
-## POST ##
+### POST Requests
 
-# Parameters for POST requests are automatically put in the body as
-# www-form-urlencoded.
+Parameters for POST requests are automatically put in the body as www-form-urlencoded.
+
+```ruby
 conn.post '', { name: 'Maguro' }
 # => POST "name=maguro" to http://sushi.com/nigiri
+```
+To post as JSON instead of www-form-urlencoded, set the request header.
 
-# To post as JSON instead of www-form-urlencoded, set the request header
+```ruby
 conn.post do |req|
   req.url ''
   req.headers['Content-Type'] = 'application/json'
   req.body = '{ "name": "Unagi" }'
 end
 # => POST "{ "name": "Unagi" }" to http://sushi.com/nigiri
-
 ```
 
 [rack_builder]:   https://github.com/lostisland/faraday/blob/master/lib/faraday/rack_builder.rb

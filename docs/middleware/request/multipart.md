@@ -24,8 +24,11 @@ conn = Faraday.new(...) do |f|
   f.request :multipart
   ...
 end
+```
 
-# Payload can be a mix of POST data and UploadIO objects. 
+Payload can be a mix of POST data and UploadIO objects. 
+
+```ruby
 payload = {
   file_name: 'multipart_example.rb',
   file: Faraday::UploadIO.new(__FILE__, 'text/x-ruby')
