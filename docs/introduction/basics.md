@@ -126,4 +126,4 @@ end
 
 A `Faraday::Connection` object can also be used to change the default HTTP
 adapter or add custom middleware that runs during Faraday's request/response
-cycle. See the [Middleware][../middleware] page for more details.
+cycle. See the [Middleware](../middleware) page for more details.
