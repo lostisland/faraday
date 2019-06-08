@@ -10,7 +10,7 @@ next_link: ./custom
 ---
 
 Faraday ships with some useful middleware that you can use to customize your request/response lifecycle.
-Middleware are separated into two macro-categories: Request Middleware and Response Middleware.
+Middleware are separated into two macro-categories: **Request Middleware** and **Response Middleware**.
 The former usually deal with the request, encoding the parameters or setting headers.
 The latter instead activate after the request is completed and a response has been received, like
 parsing the response body, logging useful info or checking the response status.  

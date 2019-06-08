@@ -50,7 +50,7 @@ Table of contents:
   * [Customizing the Request][customize]
   * [Streaming Responses][streaming]
 * [Middleware][middleware]
-  * [Middleware Environment][env]
+  * [Available Middleware][list]
   * [Writing Middleware][custom]
 * [Adapters][adapters]
 * [Testing][testing]
@@ -64,7 +64,7 @@ Table of contents:
 [customize]:                ./introduction/customize
 [streaming]:                ./introduction/streaming
 [middleware]:               ./middleware
-[env]:                      ./middleware/env
+[list]:                     ./middleware/list
 [custom]:                   ./middleware/custom
 [adapters]:                 ./adapters
 [testing]:                  ./testing
