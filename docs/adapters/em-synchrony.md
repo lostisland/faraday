@@ -1,8 +1,14 @@
 ---
-layout: page
+layout: documentation
 title: "EM-Synchrony Adapter"
 permalink: /adapters/em-synchrony
 hide: true
+prev_name: Patron Adapter
+prev_link: ./patron
+top_name: Back to Adapters
+top_link: ./
+next_name: HTTPClient Adapter
+next_link: ./httpclient
 ---
 
 This Adapter uses the [em-synchrony][rdoc] gem to make HTTP requests.
