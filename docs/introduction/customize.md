@@ -1,8 +1,12 @@
 ---
-layout: page
+layout: documentation
 title: "Customizing the Request"
 permalink: /introduction/customize
 hide: true
+prev_name: Introduction
+prev_link: ./
+next_name: Streaming Responses
+next_link: ./streaming
 ---
 
 Configuration can be set up with the connection and/or adjusted per request.

@@ -1,8 +1,10 @@
 ---
-layout: page
+layout: documentation
 title: "Streaming Responses"
 permalink: /introduction/streaming
 hide: true
+prev_name: Customizing the Request
+prev_link: ./customize
 ---
 
 Sometimes you might need to receive a streaming response.

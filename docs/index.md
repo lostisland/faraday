@@ -46,7 +46,6 @@ extension gem to access a collection of useful Faraday middleware.
 Table of contents:
 
 * [Introduction][intro]
-  * [The Basics][basics]
   * [Customizing the Request][customize]
   * [Streaming Responses][streaming]
 * [Middleware][middleware]
