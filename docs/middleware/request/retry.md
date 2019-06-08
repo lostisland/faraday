@@ -8,7 +8,7 @@ prev_link: ./url-encoded
 next_name: Instrumentation Middleware
 next_link: ./instrumentation
 top_name: Back to Middleware
-top_link: ./
+top_link: ./list
 ---
 
 The `Retry` middleware automatically retries requests that fail due to intermittent client

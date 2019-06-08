@@ -1,8 +1,10 @@
 ---
-layout: page
-title: "Middleware Usage"
+layout: documentation
+title: "Middleware Introduction"
 permalink: /middleware
 hide: true
+next_name: Available Middleware
+next_link: ./list
 ---
 
 A `Faraday::Connection` uses a `Faraday::RackBuilder` to assemble a
@@ -10,7 +12,7 @@ Rack-inspired middleware stack for making HTTP requests. Each middleware runs
 and passes an Env object around to the next one. After the final middleware has
 run, Faraday will return a `Faraday::Response` to the end user.
 
-## Advanced middleware usage
+![Middleware](../assets/img/middleware.png)
 
 The order in which middleware is stacked is important. Like with Rack, the
 first middleware on the list wraps all others, while the last middleware is the
@@ -47,39 +49,3 @@ payload[:profile_pic] = Faraday::UploadIO.new('/path/to/avatar.jpg', 'image/jpeg
 # "Multipart" middleware detects files and encodes with "multipart/form-data":
 conn.put '/profile', payload
 ```
-
-## Middleware Types
-
-### Request
-
-**Request middleware** can modify Request details before the Adapter runs. Most
-middleware set Header values or transform the request body based on the
-content type.
-
-* [`BasicAuthentication`][authentication] sets the `Authorization` header to the `user:password`
-base64 representation.
-* [`TokenAuthentication`][authentication] sets the `Authorization` header to the specified token.
-* [`Multipart`][multipart] converts a `Faraday::Request#body` hash of key/value pairs into a
-multipart form request.
-* [`UrlEncoded`][url_encoded] converts a `Faraday::Request#body` hash of key/value pairs into a url-encoded request body.
-* [`Retry`][retry] automatically retries requests that fail due to intermittent client
-or server errors (such as network hiccups).
-* [`Instrumentation`][instrumentation] allows to instrument requests using different tools.
-
-
-### Response
-
-**Response middleware** receives the response from the adapter and can modify its details
-before returning it.
-
-* [`Logger`][logger] logs both the request and the response body and headers.
-* [`RaiseError`][raise_error] checks the response HTTP code and raises an exception if it is a 4xx or 5xx code.
-
-
-[authentication]:       ./authentication
-[multipart]:            ./multipart
-[url_encoded]:          ./url-encoded
-[retry]:                ./retry
-[instrumentation]:      ./instrumentation
-[logger]:               ./logger
-[raise_error]:          ./raise-error

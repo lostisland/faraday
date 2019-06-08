@@ -6,7 +6,7 @@ hide: true
 prev_name: Logger Middleware
 prev_link: ./logger
 top_name: Back to Middleware
-top_link: ./
+top_link: ./list
 ---
 
 The `RaiseError` middleware checks the response HTTP code and raises an exception if it is a 4xx or 5xx code.

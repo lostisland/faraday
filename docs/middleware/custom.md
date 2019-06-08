@@ -1,8 +1,10 @@
 ---
-layout: page
+layout: documentation
 title: "Writing Middleware"
 permalink: /middleware/custom
 hide: true
+prev_name: Available Middleware
+prev_link: ./list
 ---
 
 ## Writing middleware

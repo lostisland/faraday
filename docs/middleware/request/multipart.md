@@ -8,7 +8,7 @@ prev_link: ./authentication
 next_name: UrlEncoded Middleware
 next_link: ./url-encoded
 top_name: Back to Middleware
-top_link: ./
+top_link: ./list
 ---
 
 The `Multipart` middleware converts a `Faraday::Request#body` hash of key/value pairs into a multipart form request.

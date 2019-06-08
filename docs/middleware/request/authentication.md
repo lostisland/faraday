@@ -6,7 +6,7 @@ hide: true
 next_name: Multipart Middleware
 next_link: ./multipart
 top_name: Back to Middleware
-top_link: ./
+top_link: ./list
 ---
 
 Basic and Token authentication are handled by Faraday::Request::BasicAuthentication

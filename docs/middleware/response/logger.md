@@ -8,7 +8,7 @@ prev_link: ./instrumentation
 next_name: RaiseError Middleware
 next_link: ./raise-error
 top_name: Back to Middleware
-top_link: ./
+top_link: ./list
 ---
 
 The `Logger` middleware logs both the request and the response body and headers.

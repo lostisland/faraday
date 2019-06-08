@@ -8,7 +8,7 @@ prev_link: ./multipart
 next_name: Retry Middleware
 next_link: ./retry
 top_name: Back to Middleware
-top_link: ./
+top_link: ./list
 ---
 
 The `UrlEncoded` middleware converts a `Faraday::Request#body` hash of key/value pairs into a url-encoded request body.

@@ -8,7 +8,7 @@ prev_link: ./retry
 next_name: Logger Middleware
 next_link: ./logger
 top_name: Back to Middleware
-top_link: ./
+top_link: ./list
 ---
 
 The `Instrumentation` middleware allows to instrument requests using different tools.
