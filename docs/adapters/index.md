@@ -2,7 +2,6 @@
 layout: page
 title: "Adapters"
 permalink: /adapters
-hide: true
 ---
 
 Adapters are what performs the HTTP Request in the background.

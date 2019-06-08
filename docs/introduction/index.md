@@ -2,7 +2,6 @@
 layout: documentation
 title: "Introduction"
 permalink: /introduction
-hide: true
 next_name: Customizing the Request
 next_link: ./customize
 ---

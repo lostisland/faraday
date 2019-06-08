@@ -43,8 +43,6 @@ extension gem to access a collection of useful Faraday middleware.
 {: .mt-60}
 ## Usage
 
-Table of contents:
-
 * [Introduction][intro]
   * [Customizing the Request][customize]
   * [Streaming Responses][streaming]
@@ -53,13 +51,13 @@ Table of contents:
   * [Writing Middleware][custom]
 * [Adapters][adapters]
 * [Testing][testing]
+* [Team][team]
 * [Faraday API RubyDoc](http://www.rubydoc.info/gems/faraday)
 
 [github]:                   https://github.com/lostisland/faraday
 [gitter]:                   https://gitter.im/lostisland/faraday
 [faraday_middleware]:       https://github.com/lostisland/faraday_middleware
 [intro]:                    ./introduction
-[basics]:                   ./introduction/basics
 [customize]:                ./introduction/customize
 [streaming]:                ./introduction/streaming
 [middleware]:               ./middleware
@@ -67,3 +65,4 @@ Table of contents:
 [custom]:                   ./middleware/custom
 [adapters]:                 ./adapters
 [testing]:                  ./testing
+[team]:                     ./team

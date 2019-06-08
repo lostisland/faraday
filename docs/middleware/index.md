@@ -1,8 +1,7 @@
 ---
 layout: documentation
-title: "Middleware Introduction"
+title: "Middleware"
 permalink: /middleware
-hide: true
 next_name: Available Middleware
 next_link: ./list
 ---
