@@ -48,7 +48,7 @@ resp = Faraday.get(url, {a: 1}, {'Accept' => 'application/json'})
 # => GET http://sushi.com/nigiri/sake.json?a=1
 ```
 
-TODO: Link to query encoding config
+[Learn more about parameters encoding][encoding]
 
 ### Requests with a body
 
@@ -70,8 +70,6 @@ resp = Faraday.post(url, '{"choice": "sake"}',
   "Content-Type" => "application/json")
 ```
 
-TODO: Link to json middleware?
-
 #### Form upload
 
 Faraday can automatically convert hashes to values for form or multipart request
@@ -83,7 +81,7 @@ resp = Faraday.post(url, choice: 'sake')
 # => POST 'choice=sake' to http://sushi.com/fave
 ```
 
-TODO: Link to query encoding config
+[Learn more about uploading files][multipart]
 
 ### Detailed HTTP Requests
 
@@ -129,3 +127,6 @@ end
 A `Faraday::Connection` object can also be used to change the default HTTP
 adapter or add custom middleware that runs during Faraday's request/response
 cycle. See the [Middleware](../middleware) page for more details.
+
+[encoding]:     ../middleware/url-encoded
+[multipart]:    ../middleware/multipart
