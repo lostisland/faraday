@@ -9,7 +9,7 @@ rescue LoadError
 end
 
 begin
-  require "socksify/http"
+  require 'socksify/http'
 rescue LoadError
   # socksify is optional
 end
