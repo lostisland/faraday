@@ -10,8 +10,8 @@ end
 
 begin
   require 'socksify/http'
-rescue LoadError
-  # socksify is optional
+rescue LoadError # rubocop:disable Lint/HandleExceptions
+  # socksify is optional. don't @ me
 end
 
 require 'zlib'
