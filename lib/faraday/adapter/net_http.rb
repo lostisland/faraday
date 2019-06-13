@@ -146,25 +146,28 @@ module Faraday
       end
 
       def net_http_connection(env)
-        klass = if (proxy = env[:request][:proxy])
-                  proxy_class(proxy)
-                else
+        proxy = env[:request][:proxy]
+        klass = if proxy.nil?
                   Net::HTTP
+                elsif proxy.uri.scheme != 'socks'
+                  http_proxy(proxy)
+                else
+                  socks_proxy(proxy)
                 end
         port = env[:url].port || (env[:url].scheme == 'https' ? 443 : 80)
         klass.new(env[:url].hostname, port)
       end
 
-      def proxy_class(proxy)
-        if proxy.uri.scheme != "socks"
-          return Net::HTTP::Proxy(
-            proxy[:uri].host,
-            proxy[:uri].port,
-            proxy[:uri].user,
-            proxy[:uri].password,
-          )
-        end
+      def http_proxy(proxy)
+        Net::HTTP::Proxy(
+          proxy[:uri].host,
+          proxy[:uri].port,
+          proxy[:uri].user,
+          proxy[:uri].password,
+        )
+      end
 
+      def socks_proxy(proxy)
         TCPSocket.socks_username = proxy[:user] if proxy[:user]
         TCPSocket.socks_password = proxy[:password] if proxy[:password]
         Net::HTTP::SOCKSProxy(proxy[:uri].host, proxy[:uri].port)
