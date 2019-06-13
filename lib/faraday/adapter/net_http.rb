@@ -154,7 +154,7 @@ module Faraday
       def proxy_class(proxy)
         return Net::HTTP if proxy.nil?
 
-        return http_proxy(proxy) unless proxy.uri.scheme != 'socks'
+        return http_proxy(proxy) unless proxy.uri.scheme == 'socks'
 
         socks_proxy(proxy)
       end
