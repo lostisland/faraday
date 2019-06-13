@@ -146,16 +146,15 @@ module Faraday
       end
 
       def net_http_connection(env)
-        proxy = env[:request][:proxy]
-        klass = if proxy.nil?
-                  Net::HTTP
-                elsif proxy.uri.scheme != 'socks'
-                  http_proxy(proxy)
-                else
-                  socks_proxy(proxy)
-                end
+        klass = proxy_class(env[:request][:proxy])
         port = env[:url].port || (env[:url].scheme == 'https' ? 443 : 80)
         klass.new(env[:url].hostname, port)
+      end
+
+      def proxy_class(proxy)
+        return Net::HTTP if proxy.nil?
+        return http_proxy(proxy) unless proxy.uri.scheme != 'socks'
+        socks_proxy(proxy)
       end
 
       def http_proxy(proxy)
@@ -168,14 +167,12 @@ module Faraday
       end
 
       def socks_proxy(proxy)
-        TCPSocket.socks_username = proxy[:user] if proxy[:user]
-        TCPSocket.socks_password = proxy[:password] if proxy[:password]
-        Net::HTTP::SOCKSProxy(proxy[:uri].host, proxy[:uri].port)
-      rescue NoMethodError => err
-        if err.to_s =~ /socks/i
+        if !Net::HTTP.respond_to?(:SOCKSProxy)
           raise "SOCKS proxy support requires the socksify gem ~> 1.7.1"
         end
-        raise
+
+        Net::HTTP::SOCKSProxy(proxy[:uri].host, proxy[:uri].port,
+          proxy[:user], proxy[:password])
       end
 
       def configure_ssl(http, ssl)
