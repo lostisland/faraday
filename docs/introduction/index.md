@@ -116,7 +116,7 @@ conn = Faraday.new(
   headers: {'Content-Type' => 'application/json'}
 )
 
-resp = Faraday.get('search') do |req|
+resp = conn.get('search') do |req|
   req.params['limit'] = 100
   req.body = {query: 'salmon'}.to_json
 end
