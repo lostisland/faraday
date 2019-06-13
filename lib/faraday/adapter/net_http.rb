@@ -7,6 +7,13 @@ rescue LoadError
     'Make sure openssl is installed if you want ssl support'
   require 'net/http'
 end
+
+begin
+  require "socksify/http"
+rescue LoadError
+  # socksify is optional
+end
+
 require 'zlib'
 
 module Faraday
@@ -140,13 +147,27 @@ module Faraday
 
       def net_http_connection(env)
         klass = if (proxy = env[:request][:proxy])
-                  Net::HTTP::Proxy(proxy[:uri].hostname, proxy[:uri].port,
-                                   proxy[:user], proxy[:password])
+                  proxy_class(proxy)
                 else
                   Net::HTTP
                 end
         port = env[:url].port || (env[:url].scheme == 'https' ? 443 : 80)
         klass.new(env[:url].hostname, port)
+      end
+
+      def proxy_class(proxy)
+        if proxy.uri.scheme != "socks"
+          return Net::HTTP::Proxy(
+            proxy[:uri].host,
+            proxy[:uri].port,
+            proxy[:uri].user,
+            proxy[:uri].password,
+          )
+        end
+
+        TCPSocket.socks_username = proxy[:user] if proxy[:user]
+        TCPSocket.socks_password = proxy[:password] if proxy[:password]
+        Net::HTTP::SOCKSProxy(proxy[:uri].host, proxy[:uri].port)
       end
 
       def configure_ssl(http, ssl)
