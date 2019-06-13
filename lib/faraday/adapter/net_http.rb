@@ -168,6 +168,11 @@ module Faraday
         TCPSocket.socks_username = proxy[:user] if proxy[:user]
         TCPSocket.socks_password = proxy[:password] if proxy[:password]
         Net::HTTP::SOCKSProxy(proxy[:uri].host, proxy[:uri].port)
+      rescue NoMethodError => err
+        if err.to_s =~ /socks/i
+          raise "SOCKS proxy support requires the socksify gem ~> 1.7.1"
+        end
+        raise
       end
 
       def configure_ssl(http, ssl)
