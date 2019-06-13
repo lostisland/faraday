@@ -98,6 +98,7 @@ resp = Faraday.get('http://sushi.com/search') do |req|
   req.headers['Content-Type'] = 'application/json'
   req.body = {query: 'salmon'}.to_json
 end
+# => GET http://sushi.com/search?limit=100
 ```
 
 ### The Connection Object
@@ -119,8 +120,7 @@ resp = Faraday.get('search') do |req|
   req.params['limit'] = 100
   req.body = {query: 'salmon'}.to_json
 end
-
-# GET http://sushi.com/search?param=1&limit=100
+# => GET http://sushi.com/search?param=1&limit=100
 ```
 
 A `Faraday::Connection` object can also be used to change the default HTTP
