@@ -3,9 +3,8 @@
 # Edit theme's home layout instead if you wanna make some changes
 # See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 layout: page
-title: Faraday
-subtitle: Simple, but flexible HTTP client library, with support for multiple backends.
-feature-img: "assets/img/home-banner.jpg"
+title: <img src="assets/img/home-logo.svg">
+feature-img: "assets/img/featured-bg.svg"
 hide: true
 ---
 
