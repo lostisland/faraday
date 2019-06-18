@@ -47,7 +47,7 @@ resp = Faraday.get(url, {a: 1}, {'Accept' => 'application/json'})
 # => GET http://sushi.com/nigiri/sake.json?a=1
 ```
 
-[Learn more about parameters encoding][encoding]
+[Learn more about parameters encoding][encoding].
 
 ### Requests with a body
 
@@ -80,7 +80,7 @@ resp = Faraday.post(url, choice: 'sake')
 # => POST 'choice=sake' to http://sushi.com/fave
 ```
 
-[Learn more about uploading files][multipart]
+[Learn more about uploading files][multipart].
 
 ### Detailed HTTP Requests
 
@@ -98,6 +98,7 @@ resp = Faraday.get('http://sushi.com/search') do |req|
   req.headers['Content-Type'] = 'application/json'
   req.body = {query: 'salmon'}.to_json
 end
+# => GET http://sushi.com/search?limit=100
 ```
 
 ### The Connection Object
@@ -115,17 +116,18 @@ conn = Faraday.new(
   headers: {'Content-Type' => 'application/json'}
 )
 
-resp = Faraday.get('search') do |req|
+resp = conn.get('search') do |req|
   req.params['limit'] = 100
   req.body = {query: 'salmon'}.to_json
 end
-
-# GET http://sushi.com/search?param=1&limit=100
+# => GET http://sushi.com/search?param=1&limit=100
 ```
 
 A `Faraday::Connection` object can also be used to change the default HTTP
 adapter or add custom middleware that runs during Faraday's request/response
-cycle. See the [Middleware](../middleware) page for more details.
+cycle.
+
+[Learn more about Middleware](../middleware).
 
 [encoding]:     ../middleware/url-encoded
 [multipart]:    ../middleware/multipart

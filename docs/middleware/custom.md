@@ -7,8 +7,6 @@ prev_name: Available Middleware
 prev_link: ./list
 ---
 
-## Writing middleware
-
 Middleware are classes that implement a `call` instance method. They hook into
 the request/response cycle.
 
