@@ -6,8 +6,6 @@ next_name: Customizing the Request
 next_link: ./customize
 ---
 
-## Faraday Introduction
-
 Make a simple `GET` request by requiring the Faraday gem and using `Faraday.get`:
 
 ```ruby
