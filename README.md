@@ -1,4 +1,4 @@
-# ![Faraady](./docs/assets/img/repo-card-slim.png)
+# ![Faraday](./docs/assets/img/repo-card-slim.png)
 
 [![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
 [![CircleCI](https://circleci.com/gh/lostisland/faraday/tree/master.svg?style=svg)](https://circleci.com/gh/lostisland/faraday/tree/master)
