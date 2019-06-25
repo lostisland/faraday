@@ -3,8 +3,8 @@ layout: documentation
 title: "Available Middleware"
 permalink: /middleware/list
 hide: true
-prev_name: Middleware Introduction
-prev_link: ./
+top_name: Middleware
+top_link: ./
 next_name: Writing Middleware
 next_link: ./custom
 ---

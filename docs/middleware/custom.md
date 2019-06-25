@@ -3,6 +3,8 @@ layout: documentation
 title: "Writing Middleware"
 permalink: /middleware/custom
 hide: true
+top_name: Middleware
+top_link: ./
 prev_name: Available Middleware
 prev_link: ./list
 ---
