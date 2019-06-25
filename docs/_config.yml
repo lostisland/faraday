@@ -10,14 +10,14 @@ theme_settings:
   # email: your-email@example.com
   description: >-
     Simple, but flexible HTTP client library, with support for multiple backends
-  footer_text: "&copy; 2009 - 2019, the <a class=\"body-link\" href=\"/faraday/team\">Faraday Team</a>."
+  footer_text: "&copy; 2009 - 2019, the <a class=\"body-link\" href=\"/faraday/team\">Faraday Team</a>. Website and branding design by <a href=\"https://elelopic.design\" target=\"_blank\">Elena Lo Piccolo</a>."
 
   # Icons
   github: 'lostisland/faraday'
   gitter: 'lostisland/faraday'
 
   # Post navigation
-  post_navigation: false
+  post_navigation: true
 
 # BUILD SETTINGS
 markdown: kramdown

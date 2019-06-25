@@ -40,14 +40,14 @@ of a major release, support for that Ruby version may be dropped.
 
 Do you want to contribute to Faraday?
 Open the issues page and check for the `help wanted` label!
-But before you start coding, please read our [Contributing Guide](https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md)
+But before you start coding, please read our [Contributing Guide][contributing]
 
 ## Copyright
-
-Copyright (c) 2009-2019 [Rick Olson](mailto:technoweenie@gmail.com), Zack Hobson.
-See [LICENSE][] for details.
+&copy; 2009 - 2019, the [Faraday Team][faraday_team]. Website and branding design by [Elena Lo Piccolo](https://elelopic.design).
 
 [website]:      https://???
+[faraday_team]: http://???/faraday/team
+[contributing]: https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md
 [apidoc]:       http://www.rubydoc.info/gems/faraday
 [circle_ci]:    https://circleci.com/gh/lostisland/faraday
 [jruby]:        http://jruby.org/
