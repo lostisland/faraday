@@ -3,12 +3,8 @@ layout: documentation
 title: "Net::HTTP::Persistent Adapter"
 permalink: /adapters/net-http-persistent
 hide: true
-prev_name: Net::HTTP Adapter
-prev_link: ./net-http
-top_name: Back to Adapters
+top_name: Adapters
 top_link: ./
-next_name: Excon Adapter
-next_link: ./excon
 ---
 
 This Adapter uses the [net-http-persistent][rdoc] gem to make HTTP requests.

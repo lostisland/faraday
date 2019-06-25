@@ -1,17 +1,18 @@
 ---
-layout: page
+layout: documentation
 title: "Adapters"
 permalink: /adapters
 ---
 
-Adapters are what performs the HTTP Request in the background.
-They receive a `Faraday::Request` and make the actual call, returning a `Faraday::Response`.
-Faraday allows you to change the adapter at any time through the configuration block.
+The Faraday Adapter interface determines how a Faraday request is turned into
+a Faraday response object. Adapters are typically implemented with common Ruby
+HTTP clients, but can have custom implementations. Adapters can be configured
+either globally or per Faraday Connection through the configuration block.
 
 {: .mt-60}
-## Supported adapters
+## Built-in adapters
 
-Faraday supports these adapters out of the box:
+Faraday includes these adapters (but not the HTTP client libraries):
 
 * [Net::HTTP][net_http] _(this is the default adapter)_
 * [Net::HTTP::Persistent][persistent]
@@ -20,15 +21,19 @@ Faraday supports these adapters out of the box:
 * [EM-Synchrony][em-synchrony]
 * [HTTPClient][httpclient]
 
+While most adapters use a common Ruby HTTP client library, adapters can also
+have completely custom impelmentations.
+
+* [Test Adapter][testing]
+* Rack Adapter (link TBD)
+
+## External adapters
+
 Adapters are slowly being moved into their own gems, or bundled with HTTP clients.
 Please refer to their documentation for usage examples.
-Here is the list of known external adapters:
 
 * [Typhoeus][typhoeus]
 * [HTTP.rb][faraday-http]
-
-Faraday also includes a Rack adapter for hitting loaded Rack applications through
-Rack::Test, and a [Test adapter][testing] for stubbing requests by hand.
 
 ## Ad-hoc adapters customization
 
@@ -45,4 +50,4 @@ The block parameter will change based on the adapter you're using. See each adap
 [httpclient]:   ./httpclient
 [typhoeus]:     https://github.com/typhoeus/typhoeus/blob/master/lib/typhoeus/adapters/faraday.rb
 [faraday-http]: https://github.com/lostisland/faraday-http
-[testing]:      ../testing
+[testing]:      ./testing

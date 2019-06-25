@@ -3,9 +3,7 @@ layout: documentation
 title: "HTTPClient Adapter"
 permalink: /adapters/httpclient
 hide: true
-prev_name: EM-Synchrony Adapter
-prev_link: ./em-synchrony
-top_name: Back to Adapters
+top_name: Adapters
 top_link: ./
 ---
 
