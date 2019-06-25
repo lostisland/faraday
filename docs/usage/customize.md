@@ -1,9 +1,9 @@
 ---
 layout: documentation
 title: "Customizing the Request"
-permalink: /introduction/customize
+permalink: /usage/customize
 hide: true
-prev_name: Introduction
+prev_name: Faraday Introduction
 prev_link: ./
 next_name: Streaming Responses
 next_link: ./streaming
@@ -14,7 +14,7 @@ Configuration can be set up with the connection and/or adjusted per request.
 As connection options:
 
 ```ruby
-conn = Faraday.new('http://sushi.com', request: { timeout: 5 }) 
+conn = Faraday.new('http://sushi.com', request: { timeout: 5 })
 conn.get('/search')
 ```
 

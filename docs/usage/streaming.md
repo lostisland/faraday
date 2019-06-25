@@ -1,7 +1,7 @@
 ---
 layout: documentation
 title: "Streaming Responses"
-permalink: /introduction/streaming
+permalink: /usage/streaming
 hide: true
 prev_name: Customizing the Request
 prev_link: ./customize
@@ -28,7 +28,7 @@ conn.get('/nigiri/sake.json') do |req|
   end
 end
 
-# Joins all response chunks together 
+# Joins all response chunks together
 streamed.join
 ```
 

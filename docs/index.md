@@ -40,9 +40,10 @@ You can also install the [`faraday_middleware`][faraday_middleware]
 extension gem to access a collection of useful Faraday middleware.
 
 {: .mt-60}
-## Usage
 
-* [Introduction][intro]
+## SiteMap
+
+* [Usage][usage]
   * [Customizing the Request][customize]
   * [Streaming Responses][streaming]
 * [Middleware][middleware]
@@ -56,9 +57,9 @@ extension gem to access a collection of useful Faraday middleware.
 [github]:                   https://github.com/lostisland/faraday
 [gitter]:                   https://gitter.im/lostisland/faraday
 [faraday_middleware]:       https://github.com/lostisland/faraday_middleware
-[intro]:                    ./introduction
-[customize]:                ./introduction/customize
-[streaming]:                ./introduction/streaming
+[usage]:                    ./usage
+[customize]:                ./usage/customize
+[streaming]:                ./usage/streaming
 [middleware]:               ./middleware
 [list]:                     ./middleware/list
 [custom]:                   ./middleware/custom
