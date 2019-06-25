@@ -3,6 +3,8 @@ layout: documentation
 title: "Streaming Responses"
 permalink: /usage/streaming
 hide: true
+top_name: Usage
+top_link: ./
 prev_name: Customizing the Request
 prev_link: ./customize
 ---

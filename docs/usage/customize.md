@@ -3,8 +3,8 @@ layout: documentation
 title: "Customizing the Request"
 permalink: /usage/customize
 hide: true
-prev_name: Faraday Introduction
-prev_link: ./
+top_name: Usage
+top_link: ./
 next_name: Streaming Responses
 next_link: ./streaming
 ---
