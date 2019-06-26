@@ -3,7 +3,8 @@
 # Edit theme's home layout instead if you wanna make some changes
 # See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 layout: page
-title: <img src="assets/img/home-logo.svg">
+title: Homepage
+feature-title: <img src="assets/img/home-logo.svg">
 feature-img: "assets/img/featured-bg.svg"
 hide: true
 ---
