@@ -3,9 +3,7 @@ layout: documentation
 title: "Net::HTTP Adapter"
 permalink: /adapters/net-http
 hide: true
-next_name: Net::HTTP::Persistent Adapter
-next_link: ./net-http-persistent
-top_name: Back to Adapters
+top_name: Adapters
 top_link: ./
 ---
 

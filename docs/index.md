@@ -41,28 +41,11 @@ You can also install the [`faraday_middleware`][faraday_middleware]
 extension gem to access a collection of useful Faraday middleware.
 
 {: .mt-60}
-## Usage
 
-* [Introduction][intro]
-  * [Customizing the Request][customize]
-  * [Streaming Responses][streaming]
-* [Middleware][middleware]
-  * [Available Middleware][list]
-  * [Writing Middleware][custom]
-* [Adapters][adapters]
-* [Testing][testing]
-* [Team][team]
-* [Faraday API RubyDoc](http://www.rubydoc.info/gems/faraday)
+{: .text-center}
+[<i class="fas fa-fw fa-book-open"> </i> Read the docs][usage]{: .btn}
 
 [github]:                   https://github.com/lostisland/faraday
 [gitter]:                   https://gitter.im/lostisland/faraday
 [faraday_middleware]:       https://github.com/lostisland/faraday_middleware
-[intro]:                    ./introduction
-[customize]:                ./introduction/customize
-[streaming]:                ./introduction/streaming
-[middleware]:               ./middleware
-[list]:                     ./middleware/list
-[custom]:                   ./middleware/custom
-[adapters]:                 ./adapters
-[testing]:                  ./testing
-[team]:                     ./team
+[usage]:                    ./usage

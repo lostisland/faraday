@@ -3,12 +3,8 @@ layout: documentation
 title: "Patron Adapter"
 permalink: /adapters/patron
 hide: true
-prev_name: Excon Adapter
-prev_link: ./excon
-top_name: Back to Adapters
+top_name: Adapters
 top_link: ./
-next_name: EM-Synchrony Adapter
-next_link: ./em-synchrony
 ---
 
 This Adapter uses the [patron][rdoc] gem to make HTTP requests.

@@ -1,8 +1,10 @@
 ---
-layout: page
+layout: documentation
 title: "Testing"
-permalink: /testing
+permalink: /adapters/testing
 hide: true
+top_name: Adapters
+top_link: ./
 ---
 
 The built-in Faraday Test adapter lets you define stubbed HTTP requests. This can

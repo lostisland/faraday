@@ -3,12 +3,8 @@ layout: documentation
 title: "Excon Adapter"
 permalink: /adapters/excon
 hide: true
-prev_name: Net::HTTP::Persistent Adapter
-prev_link: ./net-http-persistent
-top_name: Back to Adapters
+top_name: Adapters
 top_link: ./
-next_name: Patron Adapter
-next_link: ./patron
 ---
 
 This Adapter uses the [excon][rdoc] gem to make HTTP requests.
