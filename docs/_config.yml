@@ -21,7 +21,7 @@ theme_settings:
 
 # BUILD SETTINGS
 markdown: kramdown
-remote_theme: iMacTia/type-theme@feature-title
+remote_theme: rohanchandra/type-theme
 plugins:
   - jekyll-feed
 
