@@ -72,4 +72,4 @@ $ bundle exec jekyll serve
 [semver]:               http://semver.org/
 [changelog]:            https://github.com/lostisland/faraday/releases
 [faraday_middleware]:   https://github.com/lostisland/faraday_middleware
-[website]:              https://???
+[website]:              https://lostisland.github.io/faraday

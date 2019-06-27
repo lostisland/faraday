@@ -45,8 +45,8 @@ But before you start coding, please read our [Contributing Guide][contributing]
 ## Copyright
 &copy; 2009 - 2019, the [Faraday Team][faraday_team]. Website and branding design by [Elena Lo Piccolo](https://elelopic.design).
 
-[website]:      https://???
-[faraday_team]: http://???/faraday/team
+[website]:      https://lostisland.github.io/faraday
+[faraday_team]: https://lostisland.github.io/faraday/team
 [contributing]: https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md
 [apidoc]:       http://www.rubydoc.info/gems/faraday
 [circle_ci]:    https://circleci.com/gh/lostisland/faraday

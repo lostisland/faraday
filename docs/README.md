@@ -16,4 +16,4 @@ $ bundle exec jekyll serve
 # The site will now be reachable at http://127.0.0.1:4000/faraday/
 ```
 
-[website]: https://???
+[website]: https://lostisland.github.io/faraday
