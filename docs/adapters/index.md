@@ -2,6 +2,7 @@
 layout: documentation
 title: "Adapters"
 permalink: /adapters
+order: 2
 ---
 
 The Faraday Adapter interface determines how a Faraday request is turned into

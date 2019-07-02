@@ -4,6 +4,7 @@ title: "Usage"
 permalink: /usage
 next_name: Customizing the Request
 next_link: ./customize
+order: 1
 ---
 
 Make a simple `GET` request by requiring the Faraday gem and using `Faraday.get`:

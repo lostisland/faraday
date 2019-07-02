@@ -18,6 +18,7 @@ theme_settings:
 
   # Post navigation
   post_navigation: true
+  site_navigation_sort: 'order'
 
 # BUILD SETTINGS
 markdown: kramdown

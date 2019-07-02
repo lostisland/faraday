@@ -4,6 +4,7 @@ title: "Middleware"
 permalink: /middleware
 next_name: Available Middleware
 next_link: ./list
+order: 3
 ---
 
 A `Faraday::Connection` uses a `Faraday::RackBuilder` to assemble a
