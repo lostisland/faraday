@@ -105,7 +105,9 @@ For example, you might want to keep track of the response statuses:
 ```ruby
 response_statuses = []
 retry_options = {
-  retry_block: -> (env, options, retries, exc) { response_statuses << env.status }
+  retry_block: -> (env, options, retries, exc) {
+    response_statuses << env.status
+  }
 }
 ``` 
 
