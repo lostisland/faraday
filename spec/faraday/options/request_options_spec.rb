@@ -13,5 +13,7 @@ RSpec.describe Faraday::RequestOptions do
 
     options.proxy = nil
     expect(options.proxy).to be_nil
+    expect(options.inspect).to be_nil
+    expect(options.inspect).to eq('#<Faraday::RequestOptions (empty)>)')
   end
 end

@@ -151,9 +151,9 @@ module Faraday
         value = send(member)
         values << "#{member}=#{value.inspect}" if value
       end
-      values = values.empty? ? ' (empty)' : (' ' << values.join(', '))
+      values = values.empty? ? '(empty)' : values.join(', ')
 
-      %(#<#{self.class}#{values}>)
+      %(#<#{self.class} #{values}>)
     end
 
     # Internal
