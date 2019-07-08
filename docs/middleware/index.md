@@ -1,7 +1,7 @@
 ---
 layout: documentation
 title: "Middleware"
-permalink: /middleware
+permalink: /middleware/
 next_name: Available Middleware
 next_link: ./list
 order: 3
