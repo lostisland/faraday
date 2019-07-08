@@ -11,6 +11,7 @@ Please note `Faraday::ClientError` was previously used for both.
   * Faraday::UnauthorizedError (401)
   * Faraday::ForbiddenError (403)
   * Faraday::ProxyAuthError (407). Please note this raised a `Faraday::ConnectionFailed` before.
+  * Faraday::ConflictError (409)
   * Faraday::UnprocessableEntityError (422)
 
 ### Custom adapters

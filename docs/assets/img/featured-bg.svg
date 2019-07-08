@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1920px" height="1024px" viewBox="0 0 1920 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.1 (78136) - https://sketchapp.com -->
+    <title>Background and Stripes</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="0%" y1="50%" x2="113.817376%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#F59D2A" offset="0%"></stop>
+            <stop stop-color="#F59A2C" offset="1%"></stop>
+            <stop stop-color="#EE6A4B" offset="21%"></stop>
+            <stop stop-color="#EA4D5F" offset="36%"></stop>
+            <stop stop-color="#E94266" offset="45%"></stop>
+            <stop stop-color="#D54F76" offset="54%"></stop>
+            <stop stop-color="#A0719F" offset="74%"></stop>
+            <stop stop-color="#52A3DB" offset="100%"></stop>
+        </linearGradient>
+        <path d="M1497.08184,1023 L1413.76949,1023 L1970,467.082708 L1970,550.348143 L1747.2718,772.950924 L1497.08184,1023 Z M1237.28591,1023 L1153.97357,1023 L1970,207.433075 L1970,290.698512 L1308.46073,951.865267 L1237.28591,1023 Z M977.1947,1023 L893.882349,1023 L1917.45873,-5.68434189e-13 L1970,-2.27373675e-13 L1970,30.7537554 L977.1947,1023 Z M716.514745,1023 L633.202393,1023 L1656.77878,-2.27373675e-13 L1740.09113,-2.01923225e-13 L716.514745,1023 Z M455.834791,1023 L372.522439,1023 L1396.09882,-2.27373675e-13 L1479.41117,-1.73066477e-13 L455.834791,1023 Z M198.100371,1023 L114.787781,1023 L1138.36416,-3.41060513e-13 L1221.67675,-1.44535795e-13 L198.100371,1023 Z" id="path-2"></path>
+        <filter x="-4.5%" y="-4.5%" width="109.0%" height="109.0%" filterUnits="objectBoundingBox" id="filter-4">
+            <feGaussianBlur stdDeviation="0" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+        <filter x="-2.9%" y="-2.9%" width="105.8%" height="105.8%" filterUnits="objectBoundingBox" id="filter-5">
+            <feGaussianBlur stdDeviation="0" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+        <filter x="-2.1%" y="-2.1%" width="104.3%" height="104.3%" filterUnits="objectBoundingBox" id="filter-6">
+            <feGaussianBlur stdDeviation="0" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+        <filter x="-2.1%" y="-2.1%" width="104.0%" height="104.1%" filterUnits="objectBoundingBox" id="filter-7">
+            <feGaussianBlur stdDeviation="0" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+        <filter x="-2.0%" y="-2.1%" width="104.0%" height="104.1%" filterUnits="objectBoundingBox" id="filter-8">
+            <feGaussianBlur stdDeviation="0" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+        <filter x="-2.0%" y="-2.1%" width="104.0%" height="104.1%" filterUnits="objectBoundingBox" id="filter-9">
+            <feGaussianBlur stdDeviation="0" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+    </defs>
+    <g id="Background-and-Stripes" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#EDEBEB" fill-rule="nonzero" x="0" y="0" width="1922" height="1023"></rect>
+        <mask id="mask-3" fill="white">
+            <use xlink:href="#path-2"></use>
+        </mask>
+        <use id="Combined-Shape" fill-opacity="0.5" fill="url(#linearGradient-1)" fill-rule="nonzero" xlink:href="#path-2"></use>
+        <g id="Line" transform="translate(148.000000, 0.000000)" stroke="#FFFFFF" stroke-linecap="square" stroke-width="30">
+            <path d="M1303.02503,1024 L1772,555.025033" filter="url(#filter-4)"></path>
+            <path d="M1045.02503,1024 L1772,297.025033" filter="url(#filter-5)"></path>
+            <path d="M786.025033,1024 L1772,38.0250327" filter="url(#filter-6)"></path>
+            <path d="M522.025037,1024 L1546.02504,0" filter="url(#filter-7)"></path>
+            <path d="M261.55292,1024 L1285.55292,0" filter="url(#filter-8)"></path>
+            <path d="M0.552920204,1024 L1024.55292,0" filter="url(#filter-9)"></path>
+        </g>
+    </g>
+</svg>

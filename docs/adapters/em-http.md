@@ -1,4 +1,11 @@
-# EM-HTTP Adapter
+---
+layout: documentation
+title: "EM-HTTP Adapter"
+permalink: /adapters/em-http
+hide: true
+top_name: Adapters
+top_link: ./
+---
 
 This Adapter uses the [em-http-request][rdoc] gem to make HTTP requests.
 
@@ -14,7 +21,6 @@ end
 * [Gem RDoc][rdoc]
 * [Gem source][src]
 * [Adapter RDoc][adapter_rdoc]
-* [EM-HTTP Adapter](./em-http.md)
 
 [rdoc]: https://www.rubydoc.info/gems/em-http-request
 [src]: https://github.com/igrigorik/em-http-request#readme

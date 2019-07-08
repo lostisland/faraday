@@ -1,4 +1,11 @@
-# HTTPClient Adapter
+---
+layout: documentation
+title: "HTTPClient Adapter"
+permalink: /adapters/httpclient
+hide: true
+top_name: Adapters
+top_link: ./
+---
 
 This Adapter uses the [httpclient][rdoc] gem to make HTTP requests.
 

@@ -1,6 +1,13 @@
-# Net::HTTP Adapter
+---
+layout: documentation
+title: "Net::HTTP Adapter"
+permalink: /adapters/net-http
+hide: true
+top_name: Adapters
+top_link: ./
+---
 
-This Adapter uses the Net::HTTP client from the ruby standard library to make
+This Adapter uses the [`Net::HTTP`][rdoc] client from the Ruby standard library to make
 HTTP requests.
 
 ```ruby

@@ -1,4 +1,11 @@
-# Excon Adapter
+---
+layout: documentation
+title: "Excon Adapter"
+permalink: /adapters/excon
+hide: true
+top_name: Adapters
+top_link: ./
+---
 
 This Adapter uses the [excon][rdoc] gem to make HTTP requests.
 
