@@ -44,8 +44,10 @@ Examples:
 
 ```ruby
 # uploading a file:
-payload[:profile_pic] = Faraday::UploadIO.new('/path/to/avatar.jpg', 'image/jpeg')
+payload[:profile_pic] = Faraday::UploadIO.new('/path/to/avatar.jpg',
+                                              'image/jpeg')
 
-# "Multipart" middleware detects files and encodes with "multipart/form-data":
+# "Multipart" middleware detects files and encodes with
+# "multipart/form-data":
 conn.put '/profile', payload
 ```
