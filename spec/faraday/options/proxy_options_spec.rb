@@ -11,11 +11,13 @@ RSpec.describe Faraday::ProxyOptions do
       expect(options.port).to eq(80)
       expect(options.host).to eq('example.org')
       expect(options.scheme).to eq('http')
+      expect(options.inspect).to match('#<Faraday::ProxyOptions uri=')
     end
 
     it 'works with nil' do
       options = Faraday::ProxyOptions.from nil
       expect(options).to be_a_kind_of(Faraday::ProxyOptions)
+      expect(options.inspect).to eq('#<Faraday::ProxyOptions (empty)>')
     end
 
     it 'works with no auth' do
