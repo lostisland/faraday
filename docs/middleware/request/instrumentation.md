@@ -17,7 +17,8 @@ They default to `request.faraday` and `ActiveSupport::Notifications` respectivel
 
 ```ruby
 conn = Faraday.new(...) do |f|
-  f.request :instrumentation, name: 'custom_name', instrumenter: MyInstrumenter
+  f.request :instrumentation, name: 'custom_name',
+                              instrumenter: MyInstrumenter
   ...
 end
 ```
@@ -33,11 +34,16 @@ conn = Faraday.new('http://example.com') do |f|
   ...
 end
 
-ActiveSupport::Notifications.subscribe('request.faraday') do |name, starts, ends, _, env|
+ActiveSupport::Notifications.subscribe(
+  'request.faraday'
+) do |name, starts, ends, _, env|
   url = env[:url]
   http_method = env[:method].to_s.upcase
   duration = ends - starts
-  $stdout.puts '[%s] %s %s (%.3f s)' % [url.host, http_method, url.request_uri, duration]
+  $stdout.puts '[%s] %s %s (%.3f s)' % [url.host,
+                                        http_method,
+                                        url.request_uri,
+                                        duration]
 end
 
 conn.get('/search', { a: 1, b: 2 })
