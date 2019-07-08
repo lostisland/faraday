@@ -1,7 +1,7 @@
 ---
 layout: documentation
 title: "Usage"
-permalink: /usage
+permalink: /usage/
 next_name: Customizing the Request
 next_link: ./customize
 order: 1

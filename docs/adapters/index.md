@@ -1,7 +1,7 @@
 ---
 layout: documentation
 title: "Adapters"
-permalink: /adapters
+permalink: /adapters/
 order: 2
 ---
 
