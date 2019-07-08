@@ -1,0 +1,122 @@
+// Custom Styles added on top of the theme.
+
+.btn
+  display: inline-block
+  background-color: $link-color
+  padding: 5px 10px
+  box-shadow: 0 4px 10px 5px rgba(238, 66, 102, 0.30)
+  border-radius: 20px
+  width: 200px
+  color: #FFFFFF
+  letter-spacing: -0.41px
+  text-align: center
+  margin: 0 10px
+
+  &:hover
+    background-color: darken($link-color, 10%)
+    color: white
+    text-decoration: none
+
+.text-center
+  text-align: center
+
+.mt-60
+  margin-top: 60px
+
+.hidden
+  display: none
+
+.docs-nav
+  display: flex
+  margin-top: 40px
+
+.docs-nav-item
+  flex: 1 1 0
+  text-align: center
+
+pre.highlight
+  padding: 20px
+  background-color: #F6F6F6
+  border-radius: 4px
+
+  code
+    word-wrap: normal
+    overflow: scroll
+
+code.highlighter-rouge
+  background-color: #EEE
+  padding: 0 5px
+  border-radius: 3px
+
+.site-header .site-nav li
+  margin-right: 1.2em
+
+h1, h2, h3, h4, h5, h6
+  font-weight: bold
+
+.feature-image header
+  @media (max-width: 1000px)
+    padding: 7% 12.5%
+  @media (max-width: 576px)
+    padding: 4% 5% 1% 5%
+
+#team-content
+  h3
+    margin: 30px 0
+
+#contributors-list
+  text-align: justify
+
+.team-tile
+  width: 200px
+  display: inline-block
+  margin: 0 20px
+
+  img
+    width: 100%
+    border-radius: 50%
+
+footer
+  background-color: #f1f3f4
+
+#active-maintainers-list, #historical-team-list
+  text-align: center
+
+#loader
+  margin-top: 20%
+  margin-bottom: 20%
+  text-align: center
+
+.lds-ring
+  display: inline-block
+  position: relative
+  width: 200px
+  height: 200px
+
+.lds-ring div
+  box-sizing: border-box
+  display: block
+  position: absolute
+  width: 187px
+  height: 187px
+  margin: 6px
+  border: 12px solid $link-color
+  border-radius: 50%
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite
+  border-color: $link-color transparent transparent transparent
+
+.lds-ring div:nth-child(1)
+  animation-delay: -0.45s
+
+.lds-ring div:nth-child(2)
+  animation-delay: -0.3s
+
+.lds-ring div:nth-child(3)
+  animation-delay: -0.15s
+
+@keyframes lds-ring
+  0%
+    transform: rotate(0deg)
+
+  100%
+    transform: rotate(360deg)
