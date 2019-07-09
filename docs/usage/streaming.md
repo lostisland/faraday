@@ -7,6 +7,8 @@ top_name: Usage
 top_link: ./
 prev_name: Customizing the Request
 prev_link: ./customize
+next_name: Testing error cases
+next_link: ./testing-error-cases
 ---
 
 Sometimes you might need to receive a streaming response.
