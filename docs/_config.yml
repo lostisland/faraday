@@ -23,8 +23,10 @@ theme_settings:
 # BUILD SETTINGS
 markdown: kramdown
 remote_theme: rohanchandra/type-theme
+
 plugins:
   - jekyll-feed
+  - jekyll-remote-theme
 
 # GitHub settings
 lsi: false
