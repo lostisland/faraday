@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # Requires Ruby with rspec and faraday gems.
 # rspec client_spec.rb
 

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # Requires Ruby with test-unit and faraday gems.
 # ruby client_test.rb
 
