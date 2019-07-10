@@ -33,7 +33,7 @@ class ClientTest < Test::Unit::TestCase
     end
 
     # uncomment to trigger stubs.verify_stubbed_calls failure
-    #stubs.get('/unused') { [404, {}, ''] }
+    # stubs.get('/unused') { [404, {}, ''] }
 
     cli = client(stubs)
     assert_equal 'shrimp', cli.sushi('ebi')

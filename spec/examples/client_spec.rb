@@ -35,7 +35,7 @@ describe Client do
     end
 
     # uncomment to trigger stubs.verify_stubbed_calls failure
-    #stubs.get('/unused') { [404, {}, ''] }
+    # stubs.get('/unused') { [404, {}, ''] }
 
     expect(client.sushi('ebi')).to eq('shrimp')
     stubs.verify_stubbed_calls
