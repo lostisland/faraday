@@ -1,3 +1,6 @@
+# Requires Ruby with test-unit and faraday gems.
+# ruby client_test.rb
+
 require 'faraday'
 require 'json'
 require 'test/unit'
@@ -24,7 +27,7 @@ class ClientTest < Test::Unit::TestCase
         '{"name": "shrimp"}'
       ]
     end
-    
+
     # fails because of stubs.verify_stubbed_calls
     stubs.get('/unused') { [404, {}, ''] }
 
