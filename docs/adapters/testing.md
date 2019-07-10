@@ -62,3 +62,9 @@ verify the order or count of any stub.
 ```ruby
 stubs.verify_stubbed_calls
 ```
+
+## Examples
+
+Working [rspec](/spec/examples/client_spec.rb) and
+[test/unit](/spec/examples/client_test.rb) examples for a fictional JSON API
+client are available.
