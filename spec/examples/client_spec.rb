@@ -25,6 +25,8 @@ describe Client do
 
   it 'parses name' do
     stubs.get('/ebi') do |env|
+      # optional: you can inspect the Faraday::Env
+      expect(env.url.path).to eq('/ebi')
       [
         200,
         { 'Content-Type': 'application/javascript' },
@@ -32,15 +34,15 @@ describe Client do
       ]
     end
 
-    # fails because of stubs.verify_stubbed_calls
-    stubs.get('/unused') { [404, {}, ''] }
+    # uncomment to trigger stubs.verify_stubbed_calls failure
+    #stubs.get('/unused') { [404, {}, ''] }
 
     expect(client.sushi('ebi')).to eq('shrimp')
     stubs.verify_stubbed_calls
   end
 
-  it "handles 404" do
-    stubs.get('/ebi') do |env|
+  it 'handles 404' do
+    stubs.get('/ebi') do
       [
         404,
         { 'Content-Type': 'application/javascript' },

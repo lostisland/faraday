@@ -23,6 +23,8 @@ class ClientTest < Test::Unit::TestCase
   def test_sushi_name
     stubs = Faraday::Adapter::Test::Stubs.new
     stubs.get('/ebi') do |env|
+      # optional: you can inspect the Faraday::Env
+      assert_equal '/ebi', env.url.path
       [
         200,
         { 'Content-Type': 'application/javascript' },
@@ -30,8 +32,8 @@ class ClientTest < Test::Unit::TestCase
       ]
     end
 
-    # fails because of stubs.verify_stubbed_calls
-    stubs.get('/unused') { [404, {}, ''] }
+    # uncomment to trigger stubs.verify_stubbed_calls failure
+    #stubs.get('/unused') { [404, {}, ''] }
 
     cli = client(stubs)
     assert_equal 'shrimp', cli.sushi('ebi')
@@ -40,7 +42,7 @@ class ClientTest < Test::Unit::TestCase
 
   def test_sushi_404
     stubs = Faraday::Adapter::Test::Stubs.new
-    stubs.get('/ebi') do |env|
+    stubs.get('/ebi') do
       [
         404,
         { 'Content-Type': 'application/javascript' },
