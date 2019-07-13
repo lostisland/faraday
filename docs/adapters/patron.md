@@ -18,6 +18,12 @@ conn = Faraday.new(...) do |f|
 end
 ```
 
+## Multithreading
+
+This adapter use a mutex around the patron session to be thread-safe.
+A [connection_pool](https://rubygems.org/gems/connection_pool) can be
+used to share multiple connections between threads.
+
 ## Links
 
 * [Gem RDoc][rdoc]

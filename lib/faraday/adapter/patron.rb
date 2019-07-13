@@ -6,13 +6,25 @@ module Faraday
     class Patron < Faraday::Adapter
       dependency 'patron'
 
+      def initialize(app = nil, opts = {}, &block)
+        @mutex = Mutex.new
+        super(app, opts, &block)
+      end
+
       def call(env)
-        super
+        # Patron::Session is not thread-safe, use a mutex to be safe
+        @mutex.synchronize do
+          super
+          perform_request env
+        end
+      end
+
+      def perform_request(env)
         # TODO: support streaming requests
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
-        session = ::Patron::Session.new
-        @config_block&.call(session)
+        session = @session ||= create_session
+
         if (env[:url].scheme == 'https') && env[:ssl]
           configure_ssl(session, env[:ssl])
         end
@@ -81,6 +93,12 @@ module Faraday
             actions << 'OPTIONS' unless actions.include? 'OPTIONS'
           end
         end
+      end
+
+      def create_session
+        session = ::Patron::Session.new
+        @config_block&.call(session)
+        session
       end
 
       def configure_ssl(session, ssl)
