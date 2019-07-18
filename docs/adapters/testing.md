@@ -65,7 +65,7 @@ stubs.verify_stubbed_calls
 
 ## Examples
 
-Working [rspec] and [test/unit] examples for a fictional JSON API client are
+Working [RSpec] and [test/unit] examples for a fictional JSON API client are
 available.
 
 [RSpec]: https://github.com/lostisland/faraday/blob/master/spec/examples/client_spec.rb
