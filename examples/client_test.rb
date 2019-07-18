@@ -7,6 +7,7 @@ require 'faraday'
 require 'json'
 require 'test/unit'
 
+# Example API client
 class Client
   def initialize(conn)
     @conn = conn
@@ -19,6 +20,7 @@ class Client
   end
 end
 
+# Example API client test
 class ClientTest < Test::Unit::TestCase
   def test_sushi_name
     stubs = Faraday::Adapter::Test::Stubs.new
