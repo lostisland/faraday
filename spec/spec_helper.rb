@@ -18,6 +18,20 @@
 
 require 'simplecov'
 require 'coveralls'
+begin
+  require 'patron'
+rescue # rubocop:disable Style/RescueStandardError
+  puts "#{$ERROR_INFO.class} #{$ERROR_INFO}"
+end
+
+require 'pp'
+if defined?(::Patron)
+  pp ::Patron
+  pp ::Patron::Session
+else
+  puts 'no patron'
+end
+
 require 'webmock/rspec'
 WebMock.disable_net_connect!(allow_localhost: true)
 
