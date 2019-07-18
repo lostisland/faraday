@@ -19,12 +19,21 @@ response body.
 ```ruby
 conn = Faraday.new do |builder|
   builder.adapter :test do |stub|
+    # block returns an array with 3 items:
+    # - Integer response status
+    # - Hash HTTP headers
+    # - String response body
     stub.get('/ebi') do |env|
       [
         200,
         { 'Content-Type': 'text/plain', },
         'shrimp'
       ]
+    end
+
+    # test exceptions too
+    stub.get('/boom') do
+      raise Faraday::ConnectionFailed, nil
     end
   end
 end
