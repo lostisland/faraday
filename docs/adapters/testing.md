@@ -19,12 +19,21 @@ response body.
 ```ruby
 conn = Faraday.new do |builder|
   builder.adapter :test do |stub|
+    # block returns an array with 3 items:
+    # - Integer response status
+    # - Hash HTTP headers
+    # - String response body
     stub.get('/ebi') do |env|
       [
         200,
         { 'Content-Type': 'text/plain', },
         'shrimp'
       ]
+    end
+
+    # test exceptions too
+    stub.get('/boom') do
+      raise Faraday::ConnectionFailed, nil
     end
   end
 end
@@ -62,3 +71,11 @@ verify the order or count of any stub.
 ```ruby
 stubs.verify_stubbed_calls
 ```
+
+## Examples
+
+Working [RSpec] and [test/unit] examples for a fictional JSON API client are
+available.
+
+[RSpec]: https://github.com/lostisland/faraday/blob/master/examples/client_spec.rb
+[test/unit]: https://github.com/lostisland/faraday/blob/master/examples/client_test.rb
