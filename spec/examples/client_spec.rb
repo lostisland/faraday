@@ -18,7 +18,7 @@ class Client
   end
 end
 
-RSpec.describe Client do
+describe Client do
   let(:stubs)  { Faraday::Adapter::Test::Stubs.new }
   let(:conn)   { Faraday.new { |b| b.adapter(:test, stubs) } }
   let(:client) { Client.new(conn) }
@@ -50,6 +50,15 @@ RSpec.describe Client do
       ]
     end
     expect(client.sushi('ebi')).to be_nil
+    stubs.verify_stubbed_calls
+  end
+
+  it 'handles exception' do
+    stubs.get('/ebi') do
+      raise Faraday::ConnectionFailed, nil
+    end
+
+    expect { client.sushi('ebi') }.to raise_error(Faraday::ConnectionFailed)
     stubs.verify_stubbed_calls
   end
 end

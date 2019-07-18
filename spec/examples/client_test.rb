@@ -55,6 +55,19 @@ class ClientTest < Test::Unit::TestCase
     stubs.verify_stubbed_calls
   end
 
+  def test_sushi_exception
+    stubs = Faraday::Adapter::Test::Stubs.new
+    stubs.get('/ebi') do
+      raise Faraday::ConnectionFailed, nil
+    end
+
+    cli = client(stubs)
+    assert_raise Faraday::ConnectionFailed do
+      cli.sushi('ebi')
+    end
+    stubs.verify_stubbed_calls
+  end
+
   def client(stubs)
     conn = Faraday.new do |builder|
       builder.adapter :test, stubs
