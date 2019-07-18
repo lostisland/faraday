@@ -21,6 +21,16 @@ RSpec.describe Faraday::Adapter::NetHttp do
 
       expect(http.write_timeout).to eq(10) if http.respond_to?(:write_timeout=)
     end
+    it 'supports open_timeout' do
+      adapter.send(:configure_request, http, open_timeout: 10)
+
+      expect(http.open_timeout).to eq(10)
+    end
+    it 'supports read_timeout' do
+      adapter.send(:configure_request, http, read_timeout: 10)
+
+      expect(http.read_timeout).to eq(10)
+    end
 
     context 'with https url' do
       let(:url) { URI('https://example.com') }
