@@ -11,10 +11,12 @@ AllCops:
 Metrics/BlockLength:
   Exclude:
     - spec/**/*.rb
+    - examples/**/*.rb
 
 Metrics/LineLength:
   Exclude:
     - spec/**/*.rb
+    - examples/**/*.rb
 
 Style/DoubleNegation:
   Enabled: false
@@ -22,3 +24,4 @@ Style/DoubleNegation:
 Style/Documentation:
   Exclude:
     - 'spec/**/*'
+    - 'examples/**/*'
