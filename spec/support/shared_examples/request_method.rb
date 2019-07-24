@@ -239,11 +239,10 @@ shared_examples 'a request method' do |http_method|
         pool ||= m.call(*args)
       end
 
-      request_stub.to_return do |req|
-        nested = (req.headers['Nested'] || 1).to_i
-        return if nested >= pool.size
-        expect(pool.available).to eq(pool.size - nested)
-        conn.public_send(http_method, '/', nil, nested: nested + 1)
+      # Injects expectation on request execution
+      request_stub.to_return do |_|
+        expect(pool.available).to eq(pool.size - 1)
+        { body: '' }
       end
 
       conn.public_send(http_method, '/')
