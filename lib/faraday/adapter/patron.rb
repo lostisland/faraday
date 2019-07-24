@@ -6,39 +6,19 @@ module Faraday
     class Patron < Faraday::Adapter
       dependency 'patron'
 
+      self.supports_pooling = true
+      def connection
+        ::Patron::Session.new
+      end
+
       def call(env)
         super
         # TODO: support streaming requests
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
-        session = ::Patron::Session.new
-        @config_block&.call(session)
-        if (env[:url].scheme == 'https') && env[:ssl]
-          configure_ssl(session, env[:ssl])
-        end
-
-        if (req = env[:request])
-          if req[:timeout]
-            session.timeout = session.connect_timeout = req[:timeout]
-          end
-          session.connect_timeout = req[:open_timeout] if req[:open_timeout]
-
-          if (proxy = req[:proxy])
-            proxy_uri = proxy[:uri].dup
-            proxy_uri.user = proxy[:user] &&
-                             Utils.escape(proxy[:user]).gsub('+', '%20')
-            proxy_uri.password = proxy[:password] &&
-                                 Utils.escape(proxy[:password]).gsub('+', '%20')
-            session.proxy = proxy_uri.to_s
-          end
-        end
-
-        response = begin
-          data = env[:body] ? env[:body].to_s : nil
-          session.request(env[:method], env[:url].to_s,
-                          env[:request_headers], data: data)
-                   rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
-                     raise Faraday::ConnectionFailed, $ERROR_INFO
+        response = pool.with do |session|
+          @config_block&.call(session)
+          perform_request(session, env)
         end
 
         if (req = env[:request]).stream_response?
@@ -80,6 +60,37 @@ module Faraday
             actions << 'PATCH' unless actions.include? 'PATCH'
             actions << 'OPTIONS' unless actions.include? 'OPTIONS'
           end
+        end
+      end
+
+      def perform_request(session, env)
+        if (env[:url].scheme == 'https') && env[:ssl]
+          configure_ssl(session, env[:ssl])
+        end
+
+        if (req = env[:request])
+          if req[:timeout]
+            session.timeout = session.connect_timeout = req[:timeout]
+          end
+          session.connect_timeout = req[:open_timeout] if req[:open_timeout]
+
+          if (proxy = req[:proxy])
+            proxy_uri = proxy[:uri].dup
+            proxy_uri.user = proxy[:user] &&
+                             Utils.escape(proxy[:user]).gsub('+', '%20')
+            proxy_uri.password = proxy[:password] &&
+                                 Utils.escape(proxy[:password]).gsub('+', '%20')
+            session.proxy = proxy_uri.to_s
+          end
+        end
+
+        begin
+          data = env[:body] ? env[:body].to_s : nil
+          puts "start request... #{pool.available}"
+          session.request(env[:method], env[:url].to_s,
+                          env[:request_headers], data: data)
+        rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
+          raise Faraday::ConnectionFailed, $ERROR_INFO
         end
       end
 

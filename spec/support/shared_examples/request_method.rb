@@ -231,4 +231,23 @@ shared_examples 'a request method' do |http_method|
 
     expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::ProxyAuthError)
   end
+
+  on_feature :pooling do
+    it 'uses a connection_pool internally' do
+      pool = nil
+      allow_any_instance_of(described_class).to receive(:pool).and_wrap_original do |m, *args|
+        pool ||= m.call(*args)
+      end
+
+      request_stub.to_return do |req|
+        nested = (req.headers['Nested'] || 1).to_i
+        return if nested >= pool.size
+        expect(pool.available).to eq(pool.size - nested)
+        conn.public_send(http_method, '/', nil, nested: nested + 1)
+      end
+
+      conn.public_send(http_method, '/')
+      request_stub.disable
+    end
+  end
 end
