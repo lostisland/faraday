@@ -248,5 +248,17 @@ shared_examples 'a request method' do |http_method|
       conn.public_send(http_method, '/')
       request_stub.disable
     end
+
+    it 'passes pool options to the connection pool' do
+      adapter_options << { pool: { size: 3 } }
+      pool = nil
+      allow_any_instance_of(described_class).to receive(:pool).and_wrap_original do |m, *args|
+        pool ||= m.call(*args)
+      end
+
+      conn.public_send(http_method, '/')
+      expect(pool.size).to eq(3)
+      request_stub.disable
+    end
   end
 end
