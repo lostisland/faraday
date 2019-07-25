@@ -2,7 +2,7 @@
 
 RSpec.describe Faraday::Adapter::HTTPClient do
   features :request_body_on_query_methods, :reason_phrase_parse, :compression,
-           :trace_method, :connect_method, :local_socket_binding
+           :trace_method, :connect_method, :local_socket_binding, :pooling
 
   it_behaves_like 'an adapter'
 
@@ -12,10 +12,11 @@ RSpec.describe Faraday::Adapter::HTTPClient do
       client.ssl_config.timeout = 25
     end
 
-    client = adapter.client
-    adapter.configure_client
+    adapter.pool.with do |client|
+      adapter.configure_client(client)
 
-    expect(client.keep_alive_timeout).to eq(20)
-    expect(client.ssl_config.timeout).to eq(25)
+      expect(client.keep_alive_timeout).to eq(20)
+      expect(client.ssl_config.timeout).to eq(25)
+    end
   end
 end
