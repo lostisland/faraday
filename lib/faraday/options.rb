@@ -72,7 +72,7 @@ module Faraday
         if args.size > 0
           send(key_setter, args.first)
         elsif block_given?
-          send(key_setter, Proc.new.call(key))
+          send(key_setter, yield(key))
         else
           raise self.class.fetch_error_class, "key not found: #{key.inspect}"
         end
