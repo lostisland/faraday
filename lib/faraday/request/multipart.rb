@@ -52,13 +52,28 @@ module Faraday
       def create_multipart(env, params)
         boundary = env.request.boundary
         parts = process_params(params) do |key, value|
-          Faraday::Parts::Part.new(boundary, key, value)
+          part(boundary, key, value)
         end
         parts << Faraday::Parts::EpiloguePart.new(boundary)
 
         body = Faraday::CompositeReadIO.new(parts)
         env.request_headers[Faraday::Env::ContentLength] = body.length.to_s
         body
+      end
+
+      def part(boundary, key, value)
+        if json?(value)
+          header = { 'Content-Type' => 'application/json' }
+          Faraday::Parts::Part.new(boundary, key, value, header)
+        else
+          Faraday::Parts::Part.new(boundary, key, value)
+        end
+      end
+
+      def json?(value)
+        JSON.parse(value)
+      rescue StandardError
+        false
       end
 
       # @return [String]
