@@ -59,34 +59,6 @@ jobs:
           paths:
             - .
 
-  linting:
-    docker:
-      - image: circleci/ruby:2.6
-    steps:
-      - attach_workspace:
-          at: .
-      - run: mkdir -p ~/test-results/linting
-      - run:
-          name: RuboCop
-          command: |
-            gem install rubocop rubocop-junit_formatter rubocop-performance --no-document
-            rubocop --require rubocop/formatter/junit_formatter \
-                    --require rubocop-performance \
-                    --format progress \
-                    --format RuboCop::Formatter::JUnitFormatter \
-                    --out ~/test-results/linting/rubocop.xml
-          when: always
-      - run:
-          name: Yard-Junk
-          command: |
-            gem install yard-junk --no-document
-            yard-junk --path lib
-          when: always
-      - store_test_results:
-          path: ~/test-results/linting
-      - store_artifacts:
-          path: ~/test-results/linting
-
   ruby26:
     docker:
       - image: circleci/ruby:2.6
@@ -135,22 +107,19 @@ workflows:
   test:
     jobs:
       - checkout_code
-      - linting:
-          requires:
-            - checkout_code
       - ruby26:
           requires:
-            - linting
+            - checkout_code
           run-cc-reporter: true
       - ruby25:
           requires:
-            - linting
+            - checkout_code
       - ruby24:
           requires:
-            - linting
+            - checkout_code
       - ruby23:
           requires:
-            - linting
+            - checkout_code
       - deploy:
           requires:
             - ruby23
