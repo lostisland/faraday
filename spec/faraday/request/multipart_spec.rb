@@ -68,6 +68,45 @@ RSpec.describe Faraday::Request::Multipart do
     end
   end
 
+  context 'when providing json and IO content in the same payload' do
+    let(:io) { StringIO.new('io-content') }
+    let(:json) do
+      {
+        b: 1,
+        c: 2
+      }.to_json
+    end
+
+    let(:payload) do
+      {
+        json: Faraday::ParamPart.new(json, 'application/json'),
+        io: Faraday::UploadIO.new(io, 'application/pdf')
+      }
+    end
+
+    it_behaves_like 'a multipart request'
+
+    it 'forms a multipart request' do
+      response = conn.post('/echo', payload)
+
+      boundary = parse_multipart_boundary(response.headers['Content-Type'])
+      result = parse_multipart(boundary, response.body)
+      expect(result[:errors]).to be_empty
+
+      part_json, body_json = result.part('json')
+      expect(part_json).to_not be_nil
+      expect(part_json.mime).to eq('application/json')
+      expect(part_json.filename).to be_nil
+      expect(body_json).to eq(json)
+
+      part_io, body_io = result.part('io')
+      expect(part_io).to_not be_nil
+      expect(part_io.mime).to eq('application/pdf')
+      expect(part_io.filename).to eq('local.path')
+      expect(body_io).to eq(io.string)
+    end
+  end
+
   context 'when multipart objects in array param' do
     let(:payload) do
       {
