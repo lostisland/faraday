@@ -13,20 +13,20 @@ module Faraday
   #   payload = { file: Faraday::FilePart.new("file_name.ext", "content/type") }
   #   http.post("/upload", payload)
   #
-  #
+
   # @!method initialize(filename_or_io, content_type, filename = nil, opts = {})
   #
-  # @param filename_or_io [String, IO] Either a String filename to a local file
-  #   or an open IO object.
-  # @param content_type [String] String content type of the file data.
-  # @param filename [String] Optional String filename, usually to add context to
-  #   a given IO object.
-  # @param opts [Hash] Optional Hash of String key/value pairs to describe this
-  #   uploaded file. Expected Header keys include:
-  #   * Content-Transfer-Encoding - Defaults to "binary"
-  #   * Content-Disposition - Defaults to "form-data"
-  #   * Content-Type - Defaults to the content_type argument.
-  #   * Content-ID - Optional.
+  #   @param filename_or_io [String, IO] Either a String filename to a local
+  #     file or an open IO object.
+  #   @param content_type [String] String content type of the file data.
+  #   @param filename [String] Optional String filename, usually to add context
+  #     to a given IO object.
+  #   @param opts [Hash] Optional Hash of String key/value pairs to describethis
+  #     this uploaded file. Expected Header keys include:
+  #     * Content-Transfer-Encoding - Defaults to "binary"
+  #     * Content-Disposition - Defaults to "form-data"
+  #     * Content-Type - Defaults to the content_type argument.
+  #     * Content-ID - Optional.
   #
   # @return [Faraday::FilePart]
   #
