@@ -15,7 +15,6 @@ module Faraday
   #
   #
   # @!method initialize(filename_or_io, content_type, filename = nil, opts = {})
-  # @!scope class
   #
   # @param filename_or_io [String, IO] Either a String filename to a local file
   #   or an open IO object.
