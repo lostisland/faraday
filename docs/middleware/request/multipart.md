@@ -14,16 +14,19 @@ top_link: ./list
 The `Multipart` middleware converts a `Faraday::Request#body` Hash of key/value
 pairs into a multipart form request, but only under these conditions:
 
-* The Content-Type is "multipart/form-data"
+* The request's Content-Type is "multipart/form-data"
 * Content-Type is unspecified, AND one of the values in the Body responds to
 `#content_type`.
 
 Faraday contains a couple helper classes for multipart values:
 
-* `Faraday::UploadIO` wraps file data with a Content-Type. The file data can be
-specified with a String path to a local file, or an IO object.
-* `Faraday::ParamsPart` wraps a String value with a Content-Type, and optionally
+* `Faraday::FilePart` wraps binary file data with a Content-Type. The file data
+can be specified with a String path to a local file, or an IO object.
+* `Faraday::ParamPart` wraps a String value with a Content-Type, and optionally
 a Content-ID.
+
+Note: `Faraday::ParamPart` was added in Faraday v0.16.0. Before that, 
+`Faraday::FilePart` was called `Faraday::UploadIO`.
 
 ### Example Usage
 
@@ -39,16 +42,17 @@ Payload can be a mix of POST data and multipart values.
 ```ruby
 payload = {
   string: "value",
-  file: Faraday::UploadIO.new(__FILE__, "text/x-ruby"),
+  file: Faraday::FilePart.new(__FILE__, "text/x-ruby"),
 
-  file_with_name: Faraday::UploadIO.new(__FILE__, "text/x-ruby", "copy.rb"),
+  file_with_name: Faraday::FilePart.new(__FILE__, "text/x-ruby", "copy.rb"),
 
-  file_with_header: Faraday::UploadIO.new(__FILE__, "text/x-ruby", nil,
+  file_with_header: Faraday::FilePart.new(File.open(__FILE__), "text/x-ruby",
+                      File.basename(__FILE__),
                       'Content-Disposition' => 'form-data; foo=1'),
 
-  raw_data: Faraday::ParamsPart.new({a: 1}.to_json, "application/json")
+  raw_data: Faraday::ParamPart.new({a: 1}.to_json, "application/json")
 
-  raw_with_id: Faraday::ParamsPart.new({a: 1}.to_json, "application/json",
+  raw_with_id: Faraday::ParamPart.new({a: 1}.to_json, "application/json",
                  "foo-123")
 }
 
