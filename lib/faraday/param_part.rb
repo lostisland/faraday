@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 module Faraday
+  # Multipart value used to POST data with a content type.
   class ParamPart
-    # Multipart value used to POST data with a content type.
-    #
     # @param value [String] Uploaded content as a String.
     # @param content_type [String] String content type of the value.
     # @param content_id [String] Optional String of this value's Content-ID.
