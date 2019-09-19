@@ -43,7 +43,7 @@ RSpec.describe Faraday::Adapter::Excon do
       options = adapter.send(:opts_from_env, env)
       expect(options[:read_timeout]).to eq(nil)
       expect(options[:write_timeout]).to eq(nil)
-      expect(options[:connect_timeout]).to eq(nil)
+      expect(options[:connect_timeout]).to eq(3)
     end
   end
 end
