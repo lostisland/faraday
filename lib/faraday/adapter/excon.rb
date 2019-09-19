@@ -90,15 +90,15 @@ module Faraday
       end
 
       def amend_opts_with_timeouts!(opts, req)
-        if (sec = req.fetch_timeout(:read))
+        if (sec = request_timeout(:read, req))
           opts[:read_timeout] = sec
         end
 
-        if (sec = req.fetch_timeout(:write))
+        if (sec = request_timeout(:write, req))
           opts[:write_timeout] = sec
         end
 
-        return unless (sec = req.fetch_timeout(:open))
+        return unless (sec = request_timeout(:open, req))
 
         opts[:connect_timeout] = sec
       end

@@ -71,8 +71,8 @@ module Faraday
         # Reads out timeout settings from env into options
         def configure_timeout(options, env)
           req = request_options(env)
-          options[:inactivity_timeout] = req.fetch_timeout(:read)
-          options[:connect_timeout] = req.fetch_timeout(:open)
+          options[:inactivity_timeout] = request_timeout(:read, req)
+          options[:connect_timeout] = request_timeout(:open, req)
         end
 
         # Reads out compression header settings from env into options

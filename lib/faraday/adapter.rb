@@ -65,5 +65,27 @@ module Faraday
       env.response.finish(env) unless env.parallel?
       env.response
     end
+
+    # Fetches either a read, write, or open timeout setting. Defaults to the
+    # :timeout value if a more specific one is not given.
+    #
+    # @param type [Symbol] Describes which timeout setting to get: :read,
+    #                      :write, or :open.
+    # @param options [Hash] Hash containing Symbol keys like :timeout,
+    #                       :read_timeout, :write_timeout, :open_timeout, or
+    #                       :timeout
+    #
+    # @return [Integer, nil] Timeout duration in seconds, or nil if no timeout
+    #                        has been set.
+    def request_timeout(type, options)
+      unless TIMEOUT_TYPES.include?(type)
+        msg = "Expected :read, :write, :open. Got #{type.inspect} :("
+        raise ArgumentError, msg
+      end
+
+      options["#{type}_timeout".to_sym] || options[:timeout]
+    end
+
+    TIMEOUT_TYPES = Set.new(%i[read write open])
   end
 end
