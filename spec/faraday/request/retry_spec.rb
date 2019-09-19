@@ -153,7 +153,21 @@ RSpec.describe Faraday::Request::Retry do
       expect(times_called).to eq(1)
     end
 
-    it 'should rewind files on retry' do
+    it 'FilePart: should rewind files on retry' do
+      io = StringIO.new('Test data')
+      filepart = Faraday::FilePart.new(io, 'application/octet/stream')
+
+      rewound = 0
+      rewind = -> { rewound += 1 }
+
+      @check = ->(_, _) { true }
+      allow(filepart).to receive(:rewind, &rewind)
+      expect { conn.post('/unstable', file: filepart) }.to raise_error(Errno::ETIMEDOUT)
+      expect(times_called).to eq(3)
+      expect(rewound).to eq(2)
+    end
+
+    it 'UploadIO: should rewind files on retry' do
       io = StringIO.new('Test data')
       upload_io = Faraday::UploadIO.new(io, 'application/octet/stream')
 

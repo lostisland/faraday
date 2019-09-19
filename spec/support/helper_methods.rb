@@ -87,7 +87,7 @@ module Faraday
     end
 
     def multipart_file
-      Faraday::UploadIO.new(__FILE__, 'text/x-ruby')
+      Faraday::FilePart.new(__FILE__, 'text/x-ruby')
     end
 
     # parse boundary out of a Content-Type header like:
