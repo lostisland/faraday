@@ -15,8 +15,28 @@ module Faraday
       end
     end
 
+    # Fetches either a read, write, or open timeout setting. Defaults to the
+    # :timeout value if a more specific one is not given.
+    #
+    # @param type [Symbol] Describes which timeout setting to get: :read,
+    #                      :write, or :open.
+    #
+    # @return [Integer, nil] Timeout duration in seconds, or nil if no timeout
+    #                        has been set.
+    def fetch_timeout(type)
+      unless TIMEOUT_TYPES.include?(type)
+        raise ArgumentError, "Expected :read, :write, :open. Got #{type.inspect} :("
+      end
+
+      self["#{type}_timeout".to_sym] || self[:timeout]
+    end
+
     def stream_response?
       on_data.is_a?(Proc)
     end
+
+    private
+
+    TIMEOUT_TYPES = Set.new([:read, :write, :open])
   end
 end
