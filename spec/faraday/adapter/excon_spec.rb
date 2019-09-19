@@ -15,13 +15,13 @@ RSpec.describe Faraday::Adapter::Excon do
     expect(conn.data[:debug_request]).to be_truthy
   end
 
-  context "config" do
+  context 'config' do
     let(:adapter) { Faraday::Adapter::Excon.new }
     let(:request) { Faraday::RequestOptions.new }
     let(:uri) { URI.parse('https://example.com') }
     let(:env) { { request: request, url: uri } }
 
-    it "sets timeout" do
+    it 'sets timeout' do
       request.timeout = 5
       options = adapter.send(:opts_from_env, env)
       expect(options[:read_timeout]).to eq(5)
@@ -29,7 +29,7 @@ RSpec.describe Faraday::Adapter::Excon do
       expect(options[:connect_timeout]).to eq(5)
     end
 
-    it "sets timeout and open_timeout" do
+    it 'sets timeout and open_timeout' do
       request.timeout = 5
       request.open_timeout = 3
       options = adapter.send(:opts_from_env, env)
@@ -38,7 +38,7 @@ RSpec.describe Faraday::Adapter::Excon do
       expect(options[:connect_timeout]).to eq(3)
     end
 
-    it "sets open_timeout" do
+    it 'sets open_timeout' do
       request.open_timeout = 3
       options = adapter.send(:opts_from_env, env)
       expect(options[:read_timeout]).to eq(nil)

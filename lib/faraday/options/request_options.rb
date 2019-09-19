@@ -25,7 +25,8 @@ module Faraday
     #                        has been set.
     def fetch_timeout(type)
       unless TIMEOUT_TYPES.include?(type)
-        raise ArgumentError, "Expected :read, :write, :open. Got #{type.inspect} :("
+        msg = "Expected :read, :write, :open. Got #{type.inspect} :("
+        raise ArgumentError, msg
       end
 
       self["#{type}_timeout".to_sym] || self[:timeout]
@@ -35,8 +36,6 @@ module Faraday
       on_data.is_a?(Proc)
     end
 
-    private
-
-    TIMEOUT_TYPES = Set.new([:read, :write, :open])
+    TIMEOUT_TYPES = Set.new(%i[read write open])
   end
 end

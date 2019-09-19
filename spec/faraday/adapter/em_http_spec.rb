@@ -19,14 +19,8 @@ RSpec.describe Faraday::Adapter::EMHttp do
   context 'Options' do
     let(:request) { Faraday::RequestOptions.new }
     let(:env) { { request: request } }
-    let(:adapter) {
-      Object.new.tap do |o|
-        class << o
-          include Faraday::Adapter::EMHttp::Options
-        end
-      end
-    }
     let(:options) { {} }
+    let(:adapter) { Faraday::Adapter::EMHttp.new }
 
     it 'configures timeout' do
       request.timeout = 5

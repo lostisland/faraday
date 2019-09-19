@@ -165,13 +165,14 @@ module Faraday
       end
 
       def configure_request(http, req)
-        if sec = req.fetch_timeout(:read)
+        if (sec = req.fetch_timeout(:read))
           http.read_timeout = sec
         end
-        if sec = http.respond_to?(:write_timeout=) && req.fetch_timeout(:write)
+        if (sec = http.respond_to?(:write_timeout=) &&
+                  req.fetch_timeout(:write))
           http.write_timeout = sec
         end
-        if sec = req.fetch_timeout(:open)
+        if (sec = req.fetch_timeout(:open))
           http.open_timeout = sec
         end
 
