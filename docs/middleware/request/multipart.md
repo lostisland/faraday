@@ -61,8 +61,8 @@ payload[:file_with_header] = Faraday::FilePart.new(__FILE__,
 payload[:raw_data] = Faraday::ParamPart.new({a: 1}.to_json, 'application/json')
 
 # optionally sets Content-ID too
-payload[:raw_with_id] = Faraday::ParamPart.new({a: 1}.to_json, "application/json",
-                          "foo-123")
+payload[:raw_with_id] = Faraday::ParamPart.new({a: 1}.to_json, 'application/json',
+                          'foo-123')
 
 conn.post('/', payload)
 ```
