@@ -6,10 +6,12 @@ RSpec.describe Faraday::Adapter::EMHttp do
 
   it_behaves_like 'an adapter'
 
+  let(:request) { Faraday::RequestOptions.new }
+
   it 'allows to provide adapter specific configs' do
     url = URI('https://example.com:1234')
     adapter = described_class.new nil, inactivity_timeout: 20
-    req = adapter.create_request(url: url, request: {})
+    req = adapter.create_request(url: url, request: request)
 
     expect(req.connopts.inactivity_timeout).to eq(20)
   end
@@ -38,6 +40,15 @@ RSpec.describe Faraday::Adapter::EMHttp do
       request.open_timeout = 1
       adapter.configure_timeout(options, env)
       expect(options[:inactivity_timeout]).to eq(5)
+      expect(options[:connect_timeout]).to eq(1)
+    end
+
+    it 'configures all timeout settings' do
+      request.timeout = 5
+      request.read_timeout = 3
+      request.open_timeout = 1
+      adapter.configure_timeout(options, env)
+      expect(options[:inactivity_timeout]).to eq(3)
       expect(options[:connect_timeout]).to eq(1)
     end
   end
