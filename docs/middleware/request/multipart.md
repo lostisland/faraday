@@ -40,21 +40,29 @@ end
 Payload can be a mix of POST data and multipart values.
 
 ```ruby
-payload = {
-  string: "value",
-  file: Faraday::FilePart.new(__FILE__, "text/x-ruby"),
+# regular POST form value
+payload = { string: 'value' }
 
-  file_with_name: Faraday::FilePart.new(__FILE__, "text/x-ruby", "copy.rb"),
+# filename for this value is File.basename(__FILE__)
+payload[:file] = Faraday::FilePart.new(__FILE__, 'text/x-ruby')
 
-  file_with_header: Faraday::FilePart.new(File.open(__FILE__), "text/x-ruby",
-                      File.basename(__FILE__),
-                      'Content-Disposition' => 'form-data; foo=1'),
+# specify filename because IO object doesn't know it
+payload[:file_with_name] = Faraday::FilePart.new(File.open(__FILE__), 
+                             'text/x-ruby', 
+                             File.basename(__FILE__))
 
-  raw_data: Faraday::ParamPart.new({a: 1}.to_json, "application/json")
+# Sets a custom Content-Disposition:
+# nil filename still defaults to File.basename(__FILE__)
+payload[:file_with_header] = Faraday::FilePart.new(__FILE__, 
+                               'text/x-ruby', nil,
+                               'Content-Disposition' => 'form-data; foo=1')
 
-  raw_with_id: Faraday::ParamPart.new({a: 1}.to_json, "application/json",
-                 "foo-123")
-}
+# Upload raw json with content type
+payload[:raw_data] = Faraday::ParamPart.new({a: 1}.to_json, 'application/json')
+
+# optionally sets Content-ID too
+payload[:raw_with_id] = Faraday::ParamPart.new({a: 1}.to_json, "application/json",
+                          "foo-123")
 
 conn.post('/', payload)
 ```
