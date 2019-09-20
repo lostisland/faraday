@@ -41,6 +41,16 @@ module Faraday
       end
 
       def build_connection(env)
+        net_http_connection(env).tap do |http|
+          if http.respond_to?(:use_ssl=)
+            http.use_ssl = env[:url].scheme == 'https'
+          end
+          configure_ssl(http, env[:ssl])
+          configure_request(http, env[:request])
+        end
+      end
+
+      def net_http_connection(env)
         klass = if (proxy = env[:request][:proxy])
                   Net::HTTP::Proxy(proxy[:uri].hostname, proxy[:uri].port,
                                    proxy[:user], proxy[:password])
@@ -48,11 +58,7 @@ module Faraday
                   Net::HTTP
                 end
         port = env[:url].port || (env[:url].scheme == 'https' ? 443 : 80)
-        klass.new(env[:url].hostname, port).tap do |http|
-          configure_ssl(http, env[:ssl])
-          configure_request(http, env[:request])
-          http.use_ssl = env[:url].scheme == 'https'
-        end
+        klass.new(env[:url].hostname, port)
       end
 
       def call(env)

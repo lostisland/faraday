@@ -8,7 +8,7 @@ module Faraday
 
       private
 
-      def build_connection(env)
+      def net_http_connection(env)
         @cached_connection ||=
           if Net::HTTP::Persistent.instance_method(:initialize)
                                   .parameters.first == %i[key name]
@@ -73,6 +73,8 @@ module Faraday
       }.freeze
 
       def configure_ssl(http, ssl)
+        return unless ssl
+
         http_set(http, :verify_mode, ssl_verify_mode(ssl))
         http_set(http, :cert_store, ssl_cert_store(ssl))
 
