@@ -6,11 +6,7 @@ module Faraday
     class Patron < Faraday::Adapter
       dependency 'patron'
 
-      def call(env)
-        super
-        # TODO: support streaming requests
-        env[:body] = env[:body].read if env[:body].respond_to? :read
-
+      def build_connection(env)
         session = ::Patron::Session.new
         @config_block&.call(session)
         if (env[:url].scheme == 'https') && env[:ssl]
@@ -33,7 +29,15 @@ module Faraday
           end
         end
 
-        response = begin
+        session
+      end
+
+      def call(env)
+        super
+        # TODO: support streaming requests
+        env[:body] = env[:body].read if env[:body].respond_to? :read
+
+        response = connection(env) do |session|
           data = env[:body] ? env[:body].to_s : nil
           session.request(env[:method], env[:url].to_s,
                           env[:request_headers], data: data)
