@@ -11,11 +11,22 @@ top_name: Back to Middleware
 top_link: ./list
 ---
 
-The `Multipart` middleware converts a `Faraday::Request#body` hash of key/value pairs into a multipart form request.
-This only happens if the middleware finds an object in the request body that responds to `content_type`.
-The middleware also automatically adds the boundary to the request body.
-You can use `Faraday::UploadIO` or `Faraday::CompositeReadIO` to wrap your multipart parameters,
-which are in turn wrappers of the equivalent classes from the [`multipart-post`][multipart_post] gem.
+The `Multipart` middleware converts a `Faraday::Request#body` Hash of key/value
+pairs into a multipart form request, but only under these conditions:
+
+* The request's Content-Type is "multipart/form-data"
+* Content-Type is unspecified, AND one of the values in the Body responds to
+`#content_type`.
+
+Faraday contains a couple helper classes for multipart values:
+
+* `Faraday::FilePart` wraps binary file data with a Content-Type. The file data
+can be specified with a String path to a local file, or an IO object.
+* `Faraday::ParamPart` wraps a String value with a Content-Type, and optionally
+a Content-ID.
+
+Note: `Faraday::ParamPart` was added in Faraday v0.16.0. Before that, 
+`Faraday::FilePart` was called `Faraday::UploadIO`.
 
 ### Example Usage
 
@@ -26,18 +37,32 @@ conn = Faraday.new(...) do |f|
 end
 ```
 
-Payload can be a mix of POST data and UploadIO objects. 
+Payload can be a mix of POST data and multipart values.
 
 ```ruby
-payload = {
-  file_name: 'multipart_example.rb',
-  file: Faraday::UploadIO.new(__FILE__, 'text/x-ruby')
-}
+# regular POST form value
+payload = { string: 'value' }
+
+# filename for this value is File.basename(__FILE__)
+payload[:file] = Faraday::FilePart.new(__FILE__, 'text/x-ruby')
+
+# specify filename because IO object doesn't know it
+payload[:file_with_name] = Faraday::FilePart.new(File.open(__FILE__), 
+                             'text/x-ruby', 
+                             File.basename(__FILE__))
+
+# Sets a custom Content-Disposition:
+# nil filename still defaults to File.basename(__FILE__)
+payload[:file_with_header] = Faraday::FilePart.new(__FILE__, 
+                               'text/x-ruby', nil,
+                               'Content-Disposition' => 'form-data; foo=1')
+
+# Upload raw json with content type
+payload[:raw_data] = Faraday::ParamPart.new({a: 1}.to_json, 'application/json')
+
+# optionally sets Content-ID too
+payload[:raw_with_id] = Faraday::ParamPart.new({a: 1}.to_json, 'application/json',
+                          'foo-123')
 
 conn.post('/', payload)
-# POST with
-# Content-Type: "multipart/form-data; boundary=-----------RubyMultipartPost-b7f5d9a9b5f201e7af7d7af730ac4bf4"
-# Body: #<Faraday::CompositeReadIO>
 ```
-
-[multipart_post]:   https://github.com/socketry/multipart-post
