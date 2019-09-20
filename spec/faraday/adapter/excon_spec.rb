@@ -10,7 +10,7 @@ RSpec.describe Faraday::Adapter::Excon do
 
     adapter = described_class.new(nil, debug_request: true)
 
-    conn = adapter.create_connection({ url: url }, {})
+    conn = adapter.build_connection(url: url)
 
     expect(conn.data[:debug_request]).to be_truthy
   end
