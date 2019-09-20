@@ -12,9 +12,7 @@ RSpec.describe Faraday::Adapter::HTTPClient do
       client.ssl_config.timeout = 25
     end
 
-    client = adapter.client
-    adapter.configure_client
-
+    client = adapter.build_connection(url: URI.parse('https://example.com'))
     expect(client.keep_alive_timeout).to eq(20)
     expect(client.ssl_config.timeout).to eq(25)
   end
