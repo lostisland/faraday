@@ -12,7 +12,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
       http.idle_timeout = 123
     end
 
-    http = adapter.send(:net_http_connection, url: url, request: {})
+    http = adapter.send(:connection, url: url, request: {})
     adapter.send(:configure_request, http, {})
 
     expect(http.idle_timeout).to eq(123)
@@ -23,7 +23,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
 
     adapter = described_class.new
 
-    http = adapter.send(:net_http_connection, url: url, request: {})
+    http = adapter.send(:connection, url: url, request: {})
     adapter.send(:configure_request, http, {})
 
     # `max_retries=` is only present in Ruby 2.5
@@ -35,7 +35,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
 
     adapter = described_class.new(nil, pool_size: 5)
 
-    http = adapter.send(:net_http_connection, url: url, request: {})
+    http = adapter.send(:connection, url: url, request: {})
 
     # `pool` is only present in net_http_persistent >= 3.0
     expect(http.pool.size).to eq(5) if http.respond_to?(:pool)
@@ -47,7 +47,7 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
 
       adapter = described_class.new(nil)
 
-      http = adapter.send(:net_http_connection, url: url, request: {})
+      http = adapter.send(:connection, url: url, request: {})
       adapter.send(:configure_ssl, http, min_version: :TLS1_2)
 
       # `min_version` is only present in net_http_persistent >= 3.1 (UNRELEASED)

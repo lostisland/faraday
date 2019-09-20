@@ -8,7 +8,7 @@ module Faraday
 
       private
 
-      def net_http_connection(env)
+      def build_connection(env)
         @cached_connection ||=
           if Net::HTTP::Persistent.instance_method(:initialize)
                                   .parameters.first == %i[key name]

@@ -8,14 +8,16 @@ RSpec.describe Faraday::Adapter::NetHttp do
   context 'checking http' do
     let(:url) { URI('http://example.com') }
     let(:adapter) { described_class.new }
-    let(:http) { adapter.send(:net_http_connection, url: url, request: {}) }
+    let(:http) { adapter.send(:connection, url: url, request: {}) }
 
     it { expect(http.port).to eq(80) }
+
     it 'sets max_retries to 0' do
       adapter.send(:configure_request, http, {})
 
       expect(http.max_retries).to eq(0) if http.respond_to?(:max_retries=)
     end
+
     it 'supports write_timeout' do
       adapter.send(:configure_request, http, write_timeout: 10)
 

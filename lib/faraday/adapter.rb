@@ -46,6 +46,19 @@ module Faraday
       @config_block = block
     end
 
+    # Yields an adapter's configured connection. Depends on #build_connection
+    # being defined on this adapter.
+    #
+    # @param env [Faraday::Env, Hash] The env object for a faraday request.
+    #
+    # @return An HTTP client connection for this adapter.
+    def connection(env)
+      conn = build_connection(env)
+      return conn unless block_given?
+
+      yield conn
+    end
+
     def call(env)
       env.clear_body if env.needs_body?
       env.response = Response.new

@@ -40,16 +40,26 @@ module Faraday
         super(app, opts, &block)
       end
 
+      def build_connection(env)
+        klass = if (proxy = env[:request][:proxy])
+                  Net::HTTP::Proxy(proxy[:uri].hostname, proxy[:uri].port,
+                                   proxy[:user], proxy[:password])
+                else
+                  Net::HTTP
+                end
+        port = env[:url].port || (env[:url].scheme == 'https' ? 443 : 80)
+        klass.new(env[:url].hostname, port).tap do |http|
+          configure_ssl(http, env[:ssl])
+          configure_request(http, env[:request])
+          http.use_ssl = env[:url].scheme == 'https'
+        end
+      end
+
       def call(env)
         super
-        with_net_http_connection(env) do |http|
-          if (env[:url].scheme == 'https') && env[:ssl]
-            configure_ssl(http, env[:ssl])
-          end
-          configure_request(http, env[:request])
-
+        http_response = connection(env) do |http|
           begin
-            http_response = perform_request(http, env)
+            perform_request(http, env)
           rescue *NET_HTTP_EXCEPTIONS => e
             if defined?(OpenSSL) && e.is_a?(OpenSSL::SSL::SSLError)
               raise Faraday::SSLError, e
@@ -57,13 +67,13 @@ module Faraday
 
             raise Faraday::ConnectionFailed, e
           end
+        end
 
-          save_response(env, http_response.code.to_i,
-                        http_response.body || '', nil,
-                        http_response.message) do |response_headers|
-            http_response.each_header do |key, value|
-              response_headers[key] = value
-            end
+        save_response(env, http_response.code.to_i,
+                      http_response.body || '', nil,
+                      http_response.message) do |response_headers|
+          http_response.each_header do |key, value|
+            response_headers[key] = value
           end
         end
 
@@ -134,23 +144,9 @@ module Faraday
         end
       end
 
-      def with_net_http_connection(env)
-        yield net_http_connection(env)
-      end
-
-      def net_http_connection(env)
-        klass = if (proxy = env[:request][:proxy])
-                  Net::HTTP::Proxy(proxy[:uri].hostname, proxy[:uri].port,
-                                   proxy[:user], proxy[:password])
-                else
-                  Net::HTTP
-                end
-        port = env[:url].port || (env[:url].scheme == 'https' ? 443 : 80)
-        klass.new(env[:url].hostname, port)
-      end
-
       def configure_ssl(http, ssl)
-        http.use_ssl = true
+        return unless ssl
+
         http.verify_mode = ssl_verify_mode(ssl)
         http.cert_store = ssl_cert_store(ssl)
 
