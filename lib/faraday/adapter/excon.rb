@@ -20,8 +20,9 @@ module Faraday
 
         req = env[:request]
         if req&.stream_response?
-          req_opts[:response_block] = lambda do |chunk, _remain, total|
-            req.on_data.call(chunk, total)
+          total = 0
+          req_opts[:response_block] = lambda do |chunk|
+            req.on_data.call(chunk, total += chunk.size)
           end
         end
 
