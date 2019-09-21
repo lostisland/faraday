@@ -15,20 +15,18 @@ module Faraday
         req_opts = {
           method: env[:method].to_s.upcase,
           headers: env[:request_headers],
-          body: read_body(env),
+          body: read_body(env)
         }
 
         req = env[:request]
-        is_streaming = req&.stream_response?
-        if is_streaming
+        if req&.stream_response?
           req_opts[:response_block] = lambda do |chunk, _remain, total|
             req.on_data.call(chunk, total)
           end
         end
 
         resp = conn.request(req_opts)
-        body = is_streaming ? nil : resp.body
-        save_response(env, resp.status.to_i, body, resp.headers,
+        save_response(env, resp.status.to_i, resp.body, resp.headers,
                       resp.reason_phrase)
 
         @app.call(env)
