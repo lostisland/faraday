@@ -13,6 +13,7 @@ shared_ruby_steps: &shared_ruby_steps
     - restore_cache:
         keys:
           - "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}"
+    - run: sudo apt-get update && sudo apt-get install -y lsof
     - run:
         name: Bundle Install
         command: bundle install --path vendor/bundle --jobs 7 --retry 15
