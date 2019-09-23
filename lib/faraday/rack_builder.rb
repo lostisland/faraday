@@ -49,10 +49,10 @@ module Faraday
       end
     end
 
-    def initialize(handlers = [])
+    def initialize(handlers = [], &block)
       @handlers = handlers
       if block_given?
-        build(&Proc.new)
+        build(&block)
       elsif @handlers.empty?
         # default stack, if nothing else is configured
         self.request :url_encoded
