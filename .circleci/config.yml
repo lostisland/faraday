@@ -20,7 +20,7 @@ shared_ruby_steps: &shared_ruby_steps
     - run: mkdir -p ~/test-results/rspec
     - run:
         name: Run tests
-        command: bundle exec rake test
+        command: script/test
     - save_cache:
         key: "{{ .Environment.CACHE_KEY_PREFIX }}-v1-bundler-deps-{{ .Branch }}"
         paths:

@@ -138,8 +138,8 @@ if [ -n "$(filter_matching "adapters" "${test_files[@]}")" ]; then
     kill "$proxy_pid"
   }
   trap cleanup INT EXIT
-  export LIVE="${scheme}://localhost:${port}"
-  export LIVE_PROXY="http://faraday%40test.local:there%20is%20cake@localhost:${proxy_port}"
+  export LIVE="${scheme}://0.0.0.0:${port}"
+  export LIVE_PROXY="http://faraday%40test.local:there%20is%20cake@0.0.0.0:${proxy_port}"
 fi
 
 warnings="${TMPDIR:-/tmp}/faraday-warnings.$$"
