@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'faraday/deprecated_constant'
+
 module Faraday
   # Faraday error base class.
   class Error < StandardError
@@ -100,6 +102,9 @@ module Faraday
 
   %i[ClientError ConnectionFailed ResourceNotFound
      ParsingError TimeoutError SSLError RetriableResponse].each do |const|
-    Error.const_set(const, Faraday.const_get(const))
+    Error.const_set(
+      const,
+      Faraday::DeprecatedConstant.new("Faraday::Error::#{const}", Faraday.const_get(const))
+    )
   end
 end

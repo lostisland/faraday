@@ -43,9 +43,24 @@ RSpec.describe Faraday::ClientError do
     end
 
     context 'maintains backward-compatibility until 1.0' do
-      it 'does not raise an error for nested error classes' do
-        expect { Faraday::Error::ClientError }.not_to raise_error
+      it 'does not raise an error for nested error classes but prints an error message' do
+        error_message, error = with_warn_squelching { Faraday::Error::ClientError.new('foo') }
+
+        expect(error).to be_a Faraday::ClientError
+        expect(error_message).to eq(
+          "DEPRECATION WARNING: Faraday::Error::ClientError is deprecated! Use Faraday::ClientError instead.\n"
+        )
       end
+    end
+
+    def with_warn_squelching
+      stdout_catcher = StringIO.new
+      original_stdout = $stdout
+      $stdout = stdout_catcher
+      result = yield if block_given?
+      [stdout_catcher.tap(&:rewind).string, result]
+    ensure
+      $stdout = original_stdout
     end
   end
 end
