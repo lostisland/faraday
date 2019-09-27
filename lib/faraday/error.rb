@@ -2,6 +2,7 @@
 
 require 'faraday/deprecated_constant'
 
+# Faraday namespace.
 module Faraday
   # Faraday error base class.
   class Error < StandardError
