@@ -17,8 +17,9 @@ module Faraday
       @new_const = new_const
     end
 
+    # TODO: use match? once Faraday drops Ruby 2.3 support
     instance_methods.each do |method_name|
-      undef_method method_name unless /^__|^object_id$/.match?(method_name)
+      undef_method method_name if /^__|^object_id$/.match(method_name).nil?
     end
 
     def inspect
