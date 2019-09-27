@@ -97,4 +97,9 @@ module Faraday
   # @see Faraday::Request::Retry
   class RetriableResponse < Error
   end
+
+  %i[ClientError ConnectionFailed ResourceNotFound
+     ParsingError TimeoutError SSLError RetriableResponse].each do |const|
+    Error.const_set(const, Faraday.const_get(const))
+  end
 end

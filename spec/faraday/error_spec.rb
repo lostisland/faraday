@@ -41,5 +41,11 @@ RSpec.describe Faraday::ClientError do
       it { expect(subject.message).to eq('["error1", "error2"]') }
       it { expect(subject.inspect).to eq('#<Faraday::ClientError #<Faraday::ClientError: ["error1", "error2"]>>') }
     end
+
+    context 'maintains backward-compatibility until 1.0' do
+      it 'does not raise an error for nested error classes' do
+        expect { Faraday::Error::ClientError }.not_to raise_error
+      end
+    end
   end
 end
