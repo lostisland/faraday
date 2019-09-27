@@ -104,7 +104,10 @@ module Faraday
      ParsingError TimeoutError SSLError RetriableResponse].each do |const|
     Error.const_set(
       const,
-      Faraday::DeprecatedConstant.new("Faraday::Error::#{const}", Faraday.const_get(const))
+      Faraday::DeprecatedConstant.new(
+        "Faraday::Error::#{const}",
+        Faraday.const_get(const)
+      )
     )
   end
 end
