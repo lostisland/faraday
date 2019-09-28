@@ -19,7 +19,7 @@ require 'faraday/dependency_loader'
 #   conn.get '/'
 #
 module Faraday
-  VERSION = '0.16.1'
+  VERSION = '0.16.2'
   METHODS_WITH_QUERY = %w[get head delete connect trace].freeze
   METHODS_WITH_BODY = %w[post put patch].freeze
 
