@@ -51,6 +51,10 @@ RSpec.describe Faraday::ClientError do
           "DEPRECATION WARNING: Faraday::Error::ClientError is deprecated! Use Faraday::ClientError instead.\n"
         )
       end
+
+      it 'allows backward-compatible class to be subclassed' do
+        expect { class CustomError < Faraday::Error::ClientError; end }.not_to raise_error
+      end
     end
 
     def with_warn_squelching
