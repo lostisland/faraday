@@ -5,7 +5,7 @@ module Faraday
   #
   # @return [Class] A modified version of new_klass that warns on
   #   usage about deprecation.
-  # @see {Faraday::Deprecate}
+  # @see Faraday::Deprecate
   module DeprecatedClass
     def self.proxy_class(new_klass)
       Class.new(new_klass).tap do |k|
