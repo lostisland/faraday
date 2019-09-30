@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'faraday/deprecated_class'
+require 'faraday/deprecate'
 
 # Faraday namespace.
 module Faraday
@@ -105,10 +105,7 @@ module Faraday
      ParsingError TimeoutError SSLError RetriableResponse].each do |const|
     Error.const_set(
       const,
-      Faraday::DeprecatedClass.proxy_class(
-        "Faraday::Error::#{const}",
-        Faraday.const_get(const)
-      )
+      DeprecatedClass.proxy_class(Faraday.const_get(const))
     )
   end
 end

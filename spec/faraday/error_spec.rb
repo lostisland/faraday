@@ -43,12 +43,26 @@ RSpec.describe Faraday::ClientError do
     end
 
     context 'maintains backward-compatibility until 1.0' do
-      it 'does not raise an error for nested error classes but prints an error message' do
+      it 'does not raise an error for error-namespaced classes but prints an error message' do
         error_message, error = with_warn_squelching { Faraday::Error::ClientError.new('foo') }
 
         expect(error).to be_a Faraday::ClientError
-        expect(error_message).to eq(
-          "DEPRECATION WARNING: Faraday::Error::ClientError is deprecated! Use Faraday::ClientError instead.\n"
+        expect(error_message).to match(
+          Regexp.new(
+            'NOTE: Faraday::Error::ClientError.new is deprecated; '\
+            'use Faraday::ClientError.new instead. It will be removed in or after version 1.0'
+          )
+        )
+      end
+
+      it 'does not raise an error for inherited error-namespaced classes but prints an error message' do
+        error_message, = with_warn_squelching { class E < Faraday::Error::ClientError; end }
+
+        expect(error_message).to match(
+          Regexp.new(
+            'NOTE: Inheriting Faraday::Error::ClientError is deprecated; '\
+            'use Faraday::ClientError instead. It will be removed in or after version 1.0'
+          )
         )
       end
 
@@ -58,13 +72,13 @@ RSpec.describe Faraday::ClientError do
     end
 
     def with_warn_squelching
-      stdout_catcher = StringIO.new
-      original_stdout = $stdout
-      $stdout = stdout_catcher
+      stderr_catcher = StringIO.new
+      original_stderr = $stderr
+      $stderr = stderr_catcher
       result = yield if block_given?
-      [stdout_catcher.tap(&:rewind).string, result]
+      [stderr_catcher.tap(&:rewind).string, result]
     ensure
-      $stdout = original_stdout
+      $stderr = original_stderr
     end
   end
 end
