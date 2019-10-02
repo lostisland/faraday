@@ -16,6 +16,19 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/lostisland/faraday'
   spec.licenses = ['MIT']
 
+  spec.metadata = {
+    'bug_tracker_uri' =>
+      'https://github.com/lostisland/faraday/issues',
+    'changelog_uri' =>
+      "https://github.com/lostisland/faraday/releases/tag/v#{spec.version}",
+    'documentation_uri' =>
+      "https://www.rubydoc.info/gems/faraday/#{spec.version}",
+    'source_code_uri' =>
+      "https://github.com/lostisland/faraday/tree/v#{spec.version}",
+    'wiki_uri' =>
+      'https://github.com/lostisland/faraday/wiki'
+  }
+
   spec.required_ruby_version = '>= 2.3'
 
   spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
