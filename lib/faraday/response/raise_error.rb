@@ -29,7 +29,7 @@ module Faraday
         when 422
           raise Faraday::UnprocessableEntityError, response_values(env)
         when nil
-          raise Faraday::NilStatusError, response_values(env)
+          raise Faraday::NilStatusError, response: response_values(env)
         when ClientErrorStatuses
           raise Faraday::ClientError, response_values(env)
         when ServerErrorStatuses

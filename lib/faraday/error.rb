@@ -82,7 +82,7 @@ module Faraday
 
   # Raised by Faraday::Response::RaiseError in case of a nil status in response.
   class NilStatusError < ServerError
-    def initialize(response = nil)
+    def initialize(_exc, response: nil)
       message = 'http status could not be derived from the server response'
       super(message, response)
     end
