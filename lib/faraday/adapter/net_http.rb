@@ -7,6 +7,13 @@ rescue LoadError
     'Make sure openssl is installed if you want ssl support'
   require 'net/http'
 end
+
+begin
+  require 'socksify/http'
+rescue LoadError # rubocop:disable Lint/HandleExceptions
+  # socksify is optional. don't @ me
+end
+
 require 'zlib'
 
 module Faraday
@@ -139,14 +146,35 @@ module Faraday
       end
 
       def net_http_connection(env)
-        klass = if (proxy = env[:request][:proxy])
-                  Net::HTTP::Proxy(proxy[:uri].hostname, proxy[:uri].port,
-                                   proxy[:user], proxy[:password])
-                else
-                  Net::HTTP
-                end
+        klass = proxy_class(env[:request][:proxy])
         port = env[:url].port || (env[:url].scheme == 'https' ? 443 : 80)
         klass.new(env[:url].hostname, port)
+      end
+
+      def proxy_class(proxy)
+        return Net::HTTP if proxy.nil?
+
+        return http_proxy(proxy) unless proxy.uri.scheme == 'socks'
+
+        socks_proxy(proxy)
+      end
+
+      def http_proxy(proxy)
+        Net::HTTP::Proxy(
+          proxy[:uri].host,
+          proxy[:uri].port,
+          proxy[:uri].user,
+          proxy[:uri].password
+        )
+      end
+
+      def socks_proxy(proxy)
+        unless Net::HTTP.respond_to?(:SOCKSProxy)
+          raise 'SOCKS proxy support requires the socksify gem ~> 1.7.1'
+        end
+
+        Net::HTTP::SOCKSProxy(proxy[:uri].host, proxy[:uri].port,
+                              proxy[:user], proxy[:password])
       end
 
       def configure_ssl(http, ssl)
