@@ -14,18 +14,24 @@ module Faraday
       def call(env)
         super
 
-        resp = connection(env) do |http|
-          http.request(method: env[:method].to_s.upcase,
-                       headers: env[:request_headers],
-                       body: read_body(env))
-        end
+        opts = opts_from_env(env)
+        conn = create_connection(env, opts)
+
+        req_opts = {
+          method: env[:method].to_s.upcase,
+          headers: env[:request_headers],
+          body: read_body(env)
+        }
 
         req = env[:request]
         if req&.stream_response?
-          warn "Streaming downloads for #{self.class.name} are not yet " \
-               ' implemented.'
-          req.on_data.call(resp.body, resp.body.bytesize)
+          total = 0
+          req_opts[:response_block] = lambda do |chunk, _remain, _total|
+            req.on_data.call(chunk, total += chunk.size)
+          end
         end
+
+        resp = conn.request(req_opts)
         save_response(env, resp.status.to_i, resp.body, resp.headers,
                       resp.reason_phrase)
 
