@@ -1,0 +1,41 @@
+name: Ruby
+
+on: [push]
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
+    - name: Rubocop
+      run: |
+        gem install rubocop rubocop-junit_formatter rubocop-performance --no-document
+        rubocop --require rubocop/formatter/junit_formatter \
+                    --require rubocop-performance \
+                    --format progress \
+                    --format RuboCop::Formatter::JUnitFormatter \
+                    --out ~/test-results/linting/rubocop.xml
+    - name: Yard-Junk
+      run: |
+        gem install yard-junk --no-document
+        yard-junk --path lib
+  build:
+    needs: [linting]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: [2.3.x, 2.4.x, 2.5.x, 2.6.x]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+    - name: Build and test with Rake
+      run: |
+        gem install bundler
+        bundle install --jobs 4 --retry 3
+        bundle exec rake
