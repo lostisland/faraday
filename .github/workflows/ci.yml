@@ -1,4 +1,4 @@
-name: Ruby
+name: CI
 
 on: [push]
 jobs:
@@ -30,6 +30,9 @@ jobs:
         ruby: [2.3.x, 2.4.x, 2.5.x, 2.6.x]
     steps:
     - uses: actions/checkout@v1
+    - name: Install dependencies
+      run: |
+        apt-get install libcurl-dev
     - name: Set up Ruby
       uses: actions/setup-ruby@v1
       with:
