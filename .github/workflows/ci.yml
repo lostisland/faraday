@@ -15,7 +15,6 @@ jobs:
         gem install rubocop rubocop-performance --no-document
         rubocop --require rubocop-performance \
                 --format progress \
-                --out ~/test-results/linting/rubocop.xml
     - name: Yard-Junk
       run: |
         gem install yard-junk --no-document
