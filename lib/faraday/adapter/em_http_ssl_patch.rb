@@ -59,4 +59,4 @@ module EmHttpSslPatch
   end
 end
 
-EventMachine::HttpStubConnection.send(:include, EmHttpSslPatch)
+EventMachine::HttpStubConnection.include(EmHttpSslPatch)
