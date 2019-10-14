@@ -12,12 +12,10 @@ jobs:
         ruby-version: 2.6.x
     - name: Rubocop
       run: |
-        gem install rubocop rubocop-junit_formatter rubocop-performance --no-document
-        rubocop --require rubocop/formatter/junit_formatter \
-                    --require rubocop-performance \
-                    --format progress \
-                    --format RuboCop::Formatter::JUnitFormatter \
-                    --out ~/test-results/linting/rubocop.xml
+        gem install rubocop rubocop-performance --no-document
+        rubocop --require rubocop-performance \
+                --format progress \
+                --out ~/test-results/linting/rubocop.xml
     - name: Yard-Junk
       run: |
         gem install yard-junk --no-document
@@ -32,7 +30,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Install dependencies
       run: |
-        apt-get install libcurl-dev
+        sudo apt-get install libcurl-dev
     - name: Set up Ruby
       uses: actions/setup-ruby@v1
       with:
