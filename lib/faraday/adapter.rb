@@ -89,7 +89,7 @@ module Faraday
     TIMEOUT_KEYS = {
       read: :read_timeout,
       open: :open_timeout,
-      write: :write_timeout,
-    }
+      write: :write_timeout
+    }.freeze
   end
 end

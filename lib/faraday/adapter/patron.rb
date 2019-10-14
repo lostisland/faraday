@@ -18,22 +18,8 @@ module Faraday
         end
 
         if (req = env[:request])
-          if (sec = request_timeout(:read, req))
-            session.timeout = sec
-          end
-
-          if (sec = request_timeout(:open, req))
-            session.connect_timeout = sec
-          end
-
-          if (proxy = req[:proxy])
-            proxy_uri = proxy[:uri].dup
-            proxy_uri.user = proxy[:user] &&
-                             Utils.escape(proxy[:user]).gsub('+', '%20')
-            proxy_uri.password = proxy[:password] &&
-                                 Utils.escape(proxy[:password]).gsub('+', '%20')
-            session.proxy = proxy_uri.to_s
-          end
+          configure_timeouts(session, req)
+          configure_proxy(session, req[:proxy])
         end
 
         response = begin
@@ -92,6 +78,29 @@ module Faraday
         else
           session.insecure = true
         end
+      end
+
+      def configure_timeouts(session, req)
+        return unless req
+
+        if (sec = request_timeout(:read, req))
+          session.timeout = sec
+        end
+
+        return unless (sec = request_timeout(:open, req))
+
+        session.connect_timeout = sec
+      end
+
+      def configure_proxy(session, proxy)
+        return unless proxy
+
+        proxy_uri = proxy[:uri].dup
+        proxy_uri.user = proxy[:user] &&
+                         Utils.escape(proxy[:user]).gsub('+', '%20')
+        proxy_uri.password = proxy[:password] &&
+                             Utils.escape(proxy[:password]).gsub('+', '%20')
+        session.proxy = proxy_uri.to_s
       end
 
       private

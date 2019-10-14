@@ -109,9 +109,9 @@ module Faraday
           client.send_timeout = sec
         end
 
-        if (sec = request_timeout(:read, req))
-          client.receive_timeout = sec
-        end
+        return unless (sec = request_timeout(:read, req))
+
+        client.receive_timeout = sec
       end
 
       def configure_client
