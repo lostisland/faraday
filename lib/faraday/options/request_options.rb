@@ -18,7 +18,5 @@ module Faraday
     def stream_response?
       on_data.is_a?(Proc)
     end
-
-    TIMEOUT_TYPES = Set.new(%i[read write open])
   end
 end
