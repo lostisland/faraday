@@ -14,9 +14,6 @@ module Faraday
       def call(env)
         super
 
-        opts = opts_from_env(env)
-        conn = create_connection(env, opts)
-
         req_opts = {
           method: env[:method].to_s.upcase,
           headers: env[:request_headers],
@@ -31,7 +28,7 @@ module Faraday
           end
         end
 
-        resp = conn.request(req_opts)
+        resp = connection(env) { |http| http.request(req_opts) }
         save_response(env, resp.status.to_i, resp.body, resp.headers,
                       resp.reason_phrase)
 
