@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe Faraday::Adapter::HTTPClient do
+  # ruby gem defaults for testing purposes
+  HTTPCLIENT_OPEN = 60
+  HTTPCLIENT_READ = 60
+  HTTPCLIENT_WRITE = 120
+
   features :request_body_on_query_methods, :reason_phrase_parse, :compression,
            :trace_method, :connect_method, :local_socket_binding
 
@@ -17,5 +22,53 @@ RSpec.describe Faraday::Adapter::HTTPClient do
 
     expect(client.keep_alive_timeout).to eq(20)
     expect(client.ssl_config.timeout).to eq(25)
+  end
+
+  context 'Options' do
+    let(:request) { Faraday::RequestOptions.new }
+    let(:env) { { request: request } }
+    let(:options) { {} }
+    let(:adapter) { Faraday::Adapter::HTTPClient.new }
+    let(:client) { adapter.client }
+
+    it 'configures timeout' do
+      assert_default_timeouts!
+
+      request.timeout = 5
+      adapter.configure_timeouts(request)
+
+      expect(client.connect_timeout).to eq(5)
+      expect(client.send_timeout).to eq(5)
+      expect(client.receive_timeout).to eq(5)
+    end
+
+    it 'configures open timeout' do
+      assert_default_timeouts!
+
+      request.open_timeout = 1
+      adapter.configure_timeouts(request)
+
+      expect(client.connect_timeout).to eq(1)
+      expect(client.send_timeout).to eq(1)
+      expect(client.receive_timeout).to eq(HTTPCLIENT_READ)
+    end
+
+    it 'configures multiple timeouts' do
+      assert_default_timeouts!
+
+      request.open_timeout = 1
+      request.timeout = 5
+      adapter.configure_timeouts(request)
+
+      expect(client.connect_timeout).to eq(1)
+      expect(client.send_timeout).to eq(1)
+      expect(client.receive_timeout).to eq(5)
+    end
+
+    def assert_default_timeouts!
+      expect(client.connect_timeout).to eq(HTTPCLIENT_OPEN)
+      expect(client.send_timeout).to eq(HTTPCLIENT_WRITE)
+      expect(client.receive_timeout).to eq(HTTPCLIENT_READ)
+    end
   end
 end
