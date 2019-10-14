@@ -13,8 +13,7 @@ jobs:
     - name: Rubocop
       run: |
         gem install rubocop rubocop-performance --no-document
-        rubocop --require rubocop-performance \
-                --format progress \
+        rubocop --require rubocop-performance --format progress
     - name: Yard-Junk
       run: |
         gem install yard-junk --no-document
