@@ -78,14 +78,18 @@ module Faraday
     # @return [Integer, nil] Timeout duration in seconds, or nil if no timeout
     #                        has been set.
     def request_timeout(type, options)
-      unless TIMEOUT_TYPES.include?(type)
+      key = TIMEOUT_KEYS[type]
+      if key.nil?
         msg = "Expected :read, :write, :open. Got #{type.inspect} :("
         raise ArgumentError, msg
       end
-
-      options["#{type}_timeout".to_sym] || options[:timeout]
+      options[key] || options[:timeout]
     end
 
-    TIMEOUT_TYPES = Set.new(%i[read write open])
+    TIMEOUT_KEYS = {
+      read: :read_timeout,
+      open: :open_timeout,
+      write: :write_timeout,
+    }
   end
 end

@@ -49,7 +49,7 @@ RSpec.describe Faraday::Adapter::HTTPClient do
       adapter.configure_timeouts(request)
 
       expect(client.connect_timeout).to eq(1)
-      expect(client.send_timeout).to eq(1)
+      expect(client.send_timeout).to eq(HTTPCLIENT_WRITE)
       expect(client.receive_timeout).to eq(HTTPCLIENT_READ)
     end
 
@@ -57,11 +57,12 @@ RSpec.describe Faraday::Adapter::HTTPClient do
       assert_default_timeouts!
 
       request.open_timeout = 1
-      request.timeout = 5
+      request.write_timeout = 10
+      request.read_timeout = 5
       adapter.configure_timeouts(request)
 
       expect(client.connect_timeout).to eq(1)
-      expect(client.send_timeout).to eq(1)
+      expect(client.send_timeout).to eq(10)
       expect(client.receive_timeout).to eq(5)
     end
 
