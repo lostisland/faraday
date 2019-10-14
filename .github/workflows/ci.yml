@@ -30,7 +30,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Install dependencies
       run: |
-        sudo apt-get install libcurl-dev
+        sudo apt-get install libcurl4-openssl-dev
     - name: Set up Ruby
       uses: actions/setup-ruby@v1
       with:
