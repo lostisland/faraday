@@ -173,6 +173,7 @@ module Faraday
                   request_timeout(:write, req))
           http.write_timeout = sec
         end
+
         if (sec = request_timeout(:open, req))
           http.open_timeout = sec
         end
