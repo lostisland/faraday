@@ -168,6 +168,7 @@ module Faraday
         if (sec = request_timeout(:read, req))
           http.read_timeout = sec
         end
+
         if (sec = http.respond_to?(:write_timeout=) &&
                   request_timeout(:write, req))
           http.write_timeout = sec
