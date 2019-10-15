@@ -13,7 +13,7 @@ note that so we can add it to the [Changelog][].
 ### Required Checks
 
 Before pushing your code and opening a PR, we recommend you run the following checks to avoid
-our CircleCI Workflow to block your contribution.
+our GitHub Actions Workflow to block your contribution.
 
 ```bash
 # Run unit tests and check code coverage

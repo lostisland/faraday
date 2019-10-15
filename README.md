@@ -18,7 +18,7 @@ Need more details? See the [Faraday API Documentation][apidoc] to see how it wor
 
 ## Supported Ruby versions
 
-This library aims to support and is [tested against][circle_ci] the following Ruby
+This library aims to support and is [tested against][actions] the following Ruby
 implementations:
 
 * Ruby 2.3+
@@ -49,7 +49,7 @@ But before you start coding, please read our [Contributing Guide][contributing]
 [faraday_team]: https://lostisland.github.io/faraday/team
 [contributing]: https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md
 [apidoc]:       http://www.rubydoc.info/gems/faraday
-[circle_ci]:    https://circleci.com/gh/lostisland/faraday
+[actions]:      https://github.com/lostisland/faraday/actions
 [jruby]:        http://jruby.org/
 [rubinius]:     http://rubini.us/
 [license]:      LICENSE.md
