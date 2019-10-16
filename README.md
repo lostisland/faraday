@@ -1,7 +1,7 @@
 # ![Faraday](./docs/assets/img/repo-card-slim.png)
 
 [![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
-[![CircleCI](https://circleci.com/gh/lostisland/faraday/tree/master.svg?style=svg)](https://circleci.com/gh/lostisland/faraday/tree/master)
+![GitHub Actions CI](https://github.com/lostisland/faraday/workflows/CI/badge.svg)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/f869daab091ceef1da73/test_coverage)](https://codeclimate.com/github/lostisland/faraday/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/f869daab091ceef1da73/maintainability)](https://codeclimate.com/github/lostisland/faraday/maintainability)
 [![Gitter](https://badges.gitter.im/lostisland/faraday.svg)](https://gitter.im/lostisland/faraday?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -18,7 +18,7 @@ Need more details? See the [Faraday API Documentation][apidoc] to see how it wor
 
 ## Supported Ruby versions
 
-This library aims to support and is [tested against][circle_ci] the following Ruby
+This library aims to support and is [tested against][actions] the following Ruby
 implementations:
 
 * Ruby 2.3+
@@ -49,7 +49,7 @@ But before you start coding, please read our [Contributing Guide][contributing]
 [faraday_team]: https://lostisland.github.io/faraday/team
 [contributing]: https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md
 [apidoc]:       http://www.rubydoc.info/gems/faraday
-[circle_ci]:    https://circleci.com/gh/lostisland/faraday
+[actions]:      https://github.com/lostisland/faraday/actions
 [jruby]:        http://jruby.org/
 [rubinius]:     http://rubini.us/
 [license]:      LICENSE.md
