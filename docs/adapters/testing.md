@@ -72,6 +72,14 @@ verify the order or count of any stub.
 stubs.verify_stubbed_calls
 ```
 
+After the test case is completed (possibly in an `after` hook), you should clear
+the default connection to prevent it from being cached between different tests.
+This allows for each test to have its own set of stubs
+
+```ruby
+Faraday.default_connection = nil
+```
+
 ## Examples
 
 Working [RSpec] and [test/unit] examples for a fictional JSON API client are
