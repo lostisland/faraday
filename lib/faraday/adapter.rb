@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'faraday/adapter/concerns/connection_pooling'
+
 module Faraday
   # Base class for all Faraday adapters. Adapters are
   # responsible for fulfilling a Faraday request.
@@ -40,10 +42,14 @@ module Faraday
     extend Parallelism
     self.supports_parallel = false
 
+    include ConnectionPooling
+    self.supports_pooling = false
+
     def initialize(_app = nil, opts = {}, &block)
       @app = ->(env) { env.response }
       @connection_options = opts
       @config_block = block
+      initialize_pool(opts[:pool] || {}) if self.class.supports_pooling
     end
 
     def call(env)

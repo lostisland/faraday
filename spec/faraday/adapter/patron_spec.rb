@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Faraday::Adapter::Patron do
-  features :reason_phrase_parse
+  features :reason_phrase_parse, :pooling
 
   it_behaves_like 'an adapter'
 

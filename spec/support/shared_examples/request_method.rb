@@ -227,8 +227,39 @@ shared_examples 'a request method' do |http_method|
 
   it 'handles proxy failures' do
     conn_options[:proxy] = 'http://google.co.uk'
+
     request_stub.to_return(status: 407)
 
     expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::ProxyAuthError)
+  end
+
+  on_feature :pooling do
+    context 'accessing the pool' do
+      before do
+        @pool = nil
+        allow_any_instance_of(described_class).to receive(:pool).and_wrap_original do |m, *args|
+          @pool ||= m.call(*args)
+        end
+
+        request_stub.disable
+      end
+
+      it 'uses a connection_pool internally' do
+        # Injects expectation on request execution
+        request_stub.to_return do |_|
+          expect(@pool.available).to eq(@pool.size - 1)
+          { body: '' }
+        end
+
+        conn.public_send(http_method, '/')
+      end
+
+      it 'passes pool options to the connection pool' do
+        adapter_options << { pool: { size: 3 } }
+
+        conn.public_send(http_method, '/')
+        expect(@pool.size).to eq(3)
+      end
+    end
   end
 end
