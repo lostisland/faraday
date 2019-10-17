@@ -1,6 +1,6 @@
 module Faraday
   class Response::RaiseError < Response::Middleware
-    ClientErrorStatuses = (400...600).freeze
+    ClientErrorStatuses = (400...500).freeze
     ServerErrorStatuses = (500...600).freeze
 
     def on_complete(env)
@@ -25,6 +25,8 @@ module Faraday
         raise Faraday::ClientError, response_values(env)
       when ServerErrorStatuses
         raise Faraday::ServerError, response_values(env)
+      when nil
+        raise Faraday::NilStatusError, response: response_values(env) 
       end
     end
 

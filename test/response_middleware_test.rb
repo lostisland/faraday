@@ -31,7 +31,7 @@ class ResponseMiddlewareTest < Faraday::TestCase
   end
 
   def test_raises_error
-    error = assert_raises Faraday::ClientError do
+    error = assert_raises Faraday::ServerError do
       @conn.get('error')
     end
     assert_equal 'the server responded with status 500', error.message
