@@ -11,7 +11,6 @@ RSpec.describe Faraday::Adapter::HTTPClient do
 
   it_behaves_like 'an adapter'
 
-
   it 'allows to provide adapter specific configs' do
     adapter = described_class.new do |client|
       client.keep_alive_timeout = 20
@@ -28,7 +27,7 @@ RSpec.describe Faraday::Adapter::HTTPClient do
     let(:env) { { request: request } }
     let(:options) { {} }
     let(:adapter) { Faraday::Adapter::HTTPClient.new }
-    let(:client) { adapter.connection({url: URI.parse('https://example.com')}) }
+    let(:client) { adapter.connection(url: URI.parse('https://example.com')) }
 
     it 'configures timeout' do
       assert_default_timeouts!
