@@ -15,6 +15,10 @@ module Faraday
           klass_name = superclass.to_s[/^#<Class:(\w{1}[\w:]*)>$/, 1]
           deprecate :new, "#{klass_name}.new", '1.0'
           deprecate :inherited, klass_name, '1.0'
+
+          def ===(other)
+            superclass === other || super
+          end
         end
       end
     end

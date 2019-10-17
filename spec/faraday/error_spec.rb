@@ -56,7 +56,7 @@ RSpec.describe Faraday::ClientError do
       end
 
       it 'does not raise an error for inherited error-namespaced classes but prints an error message' do
-        error_message, = with_warn_squelching { class E < Faraday::Error::ClientError; end }
+        error_message, = with_warn_squelching { Class.new(Faraday::Error::ClientError) }
 
         expect(error_message).to match(
           Regexp.new(
@@ -67,7 +67,43 @@ RSpec.describe Faraday::ClientError do
       end
 
       it 'allows backward-compatible class to be subclassed' do
-        expect { class CustomError < Faraday::Error::ClientError; end }.not_to raise_error
+        expect { Class.new(Faraday::Error::ClientError) }.not_to raise_error
+      end
+
+      it 'allows rescuing of a current error with a deprecated error' do
+        begin
+          raise Faraday::ClientError, nil
+        rescue Faraday::Error::ClientError
+        rescue Faraday::Error => exc
+          fail "rescued #{exc.class.name} instead"
+        end
+      end
+
+      it 'allows rescuing of a current error with a current error' do
+        begin
+          raise Faraday::ClientError, nil
+        rescue Faraday::ClientError
+        rescue Faraday::Error => exc
+          fail "rescued #{exc.class.name} instead"
+        end
+      end
+
+      it 'allows rescuing of a deprecated error with a deprecated error' do
+        begin
+          raise Faraday::Error::ClientError, nil
+        rescue Faraday::Error::ClientError
+        rescue Faraday::Error => exc
+          fail "rescued #{exc.class.name} instead"
+        end
+      end
+
+      it 'allows rescuing of a deprecated error with a current error' do
+        begin
+          raise Faraday::Error::ClientError, nil
+        rescue Faraday::ClientError
+        rescue Faraday::Error => exc
+          fail "rescued #{exc.class.name} instead"
+        end
       end
     end
 
