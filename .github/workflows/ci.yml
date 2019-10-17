@@ -13,7 +13,6 @@ env:
 
 jobs:
   build:
-    needs: [linting]
     runs-on: ubuntu-latest
     strategy:
       matrix:
