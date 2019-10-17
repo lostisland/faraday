@@ -27,6 +27,8 @@ group :test do
   gem 'patron', '>= 0.4.2', :platforms => :ruby
   gem 'rack-test', '>= 0.6', :require => 'rack/test'
   gem 'rest-client', '~> 1.6.0', :platforms => [:jruby, :ruby_18]
+  gem 'rspec', '~> 3.7'
+  gem 'rspec_junit_formatter', '~> 0.4'
   gem 'simplecov'
   gem 'sinatra', '~> 1.3'
   gem 'typhoeus', '~> 1.3', :require => 'typhoeus'
