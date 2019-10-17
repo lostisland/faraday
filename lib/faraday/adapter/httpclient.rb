@@ -104,19 +104,17 @@ module Faraday
 
       # @param req [Hash]
       def configure_timeouts(client, req)
-        configure_timeout(client, req) if req[:timeout]
-        configure_open_timeout(client, req) if req[:open_timeout]
-      end
+        if (sec = request_timeout(:open, req))
+          client.connect_timeout = sec
+        end
 
-      def configure_timeout(client, req)
-        client.connect_timeout   = req[:timeout]
-        client.receive_timeout   = req[:timeout]
-        client.send_timeout      = req[:timeout]
-      end
+        if (sec = request_timeout(:write, req))
+          client.send_timeout = sec
+        end
 
-      def configure_open_timeout(client, req)
-        client.connect_timeout   = req[:open_timeout]
-        client.send_timeout      = req[:open_timeout]
+        return unless (sec = request_timeout(:read, req))
+
+        client.receive_timeout = sec
       end
 
       def configure_client(client)

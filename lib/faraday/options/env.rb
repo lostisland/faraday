@@ -132,7 +132,7 @@ module Faraday
     # Sets content length to zero and the body to the empty string.
     def clear_body
       request_headers[ContentLength] = '0'
-      self.body = ''
+      self.body = +''
     end
 
     # @return [Boolean] true if the status isn't in the set of

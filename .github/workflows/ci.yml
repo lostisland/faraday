@@ -1,6 +1,10 @@
 name: CI
 
-on: [push]
+on:
+  pull_request:
+
+  push:
+    branches: [master]
 
 env:
   GIT_COMMIT_SHA: ${{ github.sha }}
@@ -66,3 +70,4 @@ jobs:
     - name: Run Code Climate Test Reporter
       if: success() && matrix.ruby == '2.6.x'
       run: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
+      continue-on-error: true
