@@ -67,7 +67,9 @@ RSpec.describe Faraday::ClientError do
       end
 
       it 'allows backward-compatible class to be subclassed' do
-        expect { Class.new(Faraday::Error::ClientError) }.not_to raise_error
+        expect {
+          with_warn_squelching { Class.new(Faraday::Error::ClientError) }
+        }.not_to raise_error
       end
 
       it 'allows rescuing of a current error with a deprecated error' do
