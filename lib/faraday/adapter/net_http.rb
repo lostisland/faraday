@@ -59,7 +59,7 @@ module Faraday
           end
 
           save_response(env, http_response.code.to_i,
-                        http_response.body || '', nil,
+                        http_response.body || +'', nil,
                         http_response.message) do |response_headers|
             http_response.each_header do |key, value|
               response_headers[key] = value
@@ -101,7 +101,7 @@ module Faraday
               env[:request].on_data.call(chunk, size)
             end
           end
-          env[:request].on_data.call('', 0) unless yielded
+          env[:request].on_data.call(+'', 0) unless yielded
           # Net::HTTP returns something,
           # but it's not meaningful according to the docs.
           http_response.body = nil
