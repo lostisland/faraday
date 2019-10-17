@@ -78,8 +78,7 @@ module Faraday
     # @return [Integer, nil] Timeout duration in seconds, or nil if no timeout
     #                        has been set.
     def request_timeout(type, options)
-      key = TIMEOUT_KEYS[type]
-      if key.nil?
+      key = TIMEOUT_KEYS.fetch(type) do
         msg = "Expected :read, :write, :open. Got #{type.inspect} :("
         raise ArgumentError, msg
       end

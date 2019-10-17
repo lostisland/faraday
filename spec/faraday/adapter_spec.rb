@@ -44,6 +44,10 @@ RSpec.describe Faraday::Adapter do
       expect(timeout(:write)).to eq(2)
     end
 
+    it 'attempts unknown timeout type' do
+      expect { timeout(:unknown) }.to raise_error(ArgumentError)
+    end
+
     def timeout(type)
       adapter.send(:request_timeout, type, request)
     end
