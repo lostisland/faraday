@@ -6,51 +6,54 @@ module Faraday
     class HTTPClient < Faraday::Adapter
       dependency 'httpclient'
 
-      # @return [HTTPClient]
-      def client
-        @client ||= ::HTTPClient.new
+      def build_connection(env)
+        @client ||= ::HTTPClient.new.tap do |cli|
+          # enable compression
+          cli.transparent_gzip_decompression = true
+        end
+
+        if (req = env[:request])
+          if (proxy = req[:proxy])
+            configure_proxy @client, proxy
+          end
+
+          if (bind = req[:bind])
+            configure_socket @client, bind
+          end
+
+          configure_timeouts @client, req
+        end
+
+        if env[:url].scheme == 'https' && (ssl = env[:ssl])
+          configure_ssl @client, ssl
+        end
+
+        configure_client @client
+
+        @client
       end
 
       def call(env)
         super
 
-        # enable compression
-        client.transparent_gzip_decompression = true
-
-        if (req = env[:request])
-          if (proxy = req[:proxy])
-            configure_proxy proxy
-          end
-
-          if (bind = req[:bind])
-            configure_socket bind
-          end
-
-          configure_timeouts req
-        end
-
-        if env[:url].scheme == 'https' && (ssl = env[:ssl])
-          configure_ssl ssl
-        end
-
-        configure_client
-
         # TODO: Don't stream yet.
         # https://github.com/nahi/httpclient/pull/90
         env[:body] = env[:body].read if env[:body].respond_to? :read
 
-        resp = client.request env[:method], env[:url],
+        connection(env) do |http|
+          resp = http.request env[:method], env[:url],
                               body: env[:body],
                               header: env[:request_headers]
 
-        if (req = env[:request]).stream_response?
-          warn "Streaming downloads for #{self.class.name} " \
-            'are not yet implemented.'
-          req.on_data.call(resp.body, resp.body.bytesize)
-        end
-        save_response env, resp.status, resp.body, resp.headers, resp.reason
+          if (req = env[:request]).stream_response?
+            warn "Streaming downloads for #{self.class.name} " \
+              'are not yet implemented.'
+            req.on_data.call(resp.body, resp.body.bytesize)
+          end
+          save_response env, resp.status, resp.body, resp.headers, resp.reason
 
-        @app.call env
+          @app.call env
+        end
       rescue ::HTTPClient::TimeoutError, Errno::ETIMEDOUT
         raise Faraday::TimeoutError, $ERROR_INFO
       rescue ::HTTPClient::BadResponseError => e
@@ -71,7 +74,7 @@ module Faraday
       end
 
       # @param bind [Hash]
-      def configure_socket(bind)
+      def configure_socket(client, bind)
         client.socket_local.host = bind[:host]
         client.socket_local.port = bind[:port]
       end
@@ -79,7 +82,7 @@ module Faraday
       # Configure proxy URI and any user credentials.
       #
       # @param proxy [Hash]
-      def configure_proxy(proxy)
+      def configure_proxy(client, proxy)
         client.proxy = proxy[:uri]
         return unless proxy[:user] && proxy[:password]
 
@@ -87,7 +90,7 @@ module Faraday
       end
 
       # @param ssl [Hash]
-      def configure_ssl(ssl)
+      def configure_ssl(client, ssl)
         ssl_config = client.ssl_config
         ssl_config.verify_mode = ssl_verify_mode(ssl)
         ssl_config.cert_store = ssl_cert_store(ssl)
@@ -100,7 +103,7 @@ module Faraday
       end
 
       # @param req [Hash]
-      def configure_timeouts(req)
+      def configure_timeouts(client, req)
         if (sec = request_timeout(:open, req))
           client.connect_timeout = sec
         end
@@ -114,7 +117,7 @@ module Faraday
         client.receive_timeout = sec
       end
 
-      def configure_client
+      def configure_client(client)
         @config_block&.call(client)
       end
 

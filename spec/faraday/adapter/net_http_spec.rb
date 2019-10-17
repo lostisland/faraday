@@ -8,7 +8,7 @@ RSpec.describe Faraday::Adapter::NetHttp do
   context 'checking http' do
     let(:url) { URI('http://example.com') }
     let(:adapter) { described_class.new }
-    let(:http) { adapter.send(:net_http_connection, url: url, request: {}) }
+    let(:http) { adapter.send(:connection, url: url, request: {}) }
 
     it { expect(http.port).to eq(80) }
 

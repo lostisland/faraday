@@ -6,11 +6,7 @@ module Faraday
     class Patron < Faraday::Adapter
       dependency 'patron'
 
-      def call(env)
-        super
-        # TODO: support streaming requests
-        env[:body] = env[:body].read if env[:body].respond_to? :read
-
+      def build_connection(env)
         session = ::Patron::Session.new
         @config_block&.call(session)
         if (env[:url].scheme == 'https') && env[:ssl]
@@ -22,12 +18,22 @@ module Faraday
           configure_proxy(session, req[:proxy])
         end
 
-        response = begin
-          data = env[:body] ? env[:body].to_s : nil
-          session.request(env[:method], env[:url].to_s,
-                          env[:request_headers], data: data)
-                   rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
-                     raise Faraday::ConnectionFailed, $ERROR_INFO
+        session
+      end
+
+      def call(env)
+        super
+        # TODO: support streaming requests
+        env[:body] = env[:body].read if env[:body].respond_to? :read
+
+        response = connection(env) do |session|
+          begin
+            data = env[:body] ? env[:body].to_s : nil
+            session.request(env[:method], env[:url].to_s,
+                            env[:request_headers], data: data)
+          rescue Errno::ECONNREFUSED, ::Patron::ConnectionFailed
+            raise Faraday::ConnectionFailed, $ERROR_INFO
+          end
         end
 
         if (req = env[:request]).stream_response?
