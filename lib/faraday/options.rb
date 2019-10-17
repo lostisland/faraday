@@ -323,7 +323,7 @@ module Faraday
     # Public
     def clear_body
       request_headers[ContentLength] = '0'
-      self.body = ''
+      self.body = +''
     end
 
     # Public
