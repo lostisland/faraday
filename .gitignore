@@ -1,7 +1,6 @@
 ## PROJECT::GENERAL
 coverage
 rdoc
-doc
 log
 pkg/*
 tmp
@@ -20,3 +19,6 @@ vendor/bundle
 
 ## IDEs
 .idea/
+
+# master branch only!
+docs
