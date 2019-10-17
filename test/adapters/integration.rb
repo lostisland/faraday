@@ -180,13 +180,13 @@ module Adapters
 
       def test_timeout
         conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
-        assert_raises Faraday::Error::TimeoutError do
+        assert_raises Faraday::TimeoutError do
           conn.get '/slow'
         end
       end
 
       def test_connection_error
-        assert_raises Faraday::Error::ConnectionFailed do
+        assert_raises Faraday::ConnectionFailed do
           get 'http://localhost:4'
         end
       end
@@ -209,7 +209,7 @@ module Adapters
         proxy_uri.password = 'WRONG'
         conn = create_connection(:proxy => proxy_uri)
 
-        err = assert_raises Faraday::Error::ConnectionFailed do
+        err = assert_raises Faraday::ProxyAuthError do
           conn.get '/echo'
         end
 
@@ -217,7 +217,7 @@ module Adapters
             adapter == :em_http || adapter == :em_synchrony)
           # JRuby raises "End of file reached" which cannot be distinguished from a 407
           # EM raises "connection closed by server" due to https://github.com/igrigorik/em-socksify/pull/19
-          assert_equal %{407 "Proxy Authentication Required "}, err.message
+          assert_equal %{407 "Proxy Authentication Required"}, err.message
         end
       end
 

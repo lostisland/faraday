@@ -22,7 +22,7 @@ module Faraday
   #
   class Request::Retry < Faraday::Middleware
 
-    DEFAULT_EXCEPTIONS = [Errno::ETIMEDOUT, 'Timeout::Error', Error::TimeoutError, Faraday::Error::RetriableResponse].freeze
+    DEFAULT_EXCEPTIONS = [Errno::ETIMEDOUT, 'Timeout::Error', Faraday::TimeoutError, Faraday::RetriableResponse].freeze
     IDEMPOTENT_METHODS = [:delete, :get, :head, :options, :put]
 
     class Options < Faraday::Options.new(:max, :interval, :max_interval, :interval_randomness,
@@ -95,7 +95,7 @@ module Faraday
     # exceptions          - The list of exceptions to handle. Exceptions can be
     #                       given as Class, Module, or String. (default:
     #                       [Errno::ETIMEDOUT, 'Timeout::Error',
-    #                       Error::TimeoutError, Faraday::Error::RetriableResponse])
+    #                       Faraday::TimeoutError, Faraday::RetriableResponse])
     # methods             - A list of HTTP methods to retry without calling retry_if.  Pass
     #                       an empty Array to call retry_if for all exceptions.
     #                       (defaults to the idempotent HTTP methods in IDEMPOTENT_METHODS)
@@ -128,7 +128,7 @@ module Faraday
       begin
         env[:body] = request_body # after failure env[:body] is set to the response body
         @app.call(env).tap do |resp|
-          raise Faraday::Error::RetriableResponse.new(nil, resp) if @options.retry_statuses.include?(resp.status)
+          raise Faraday::RetriableResponse.new(nil, resp) if @options.retry_statuses.include?(resp.status)
         end
       rescue @errmatch => exception
         if retries > 0 && retry_request?(env, exception)
@@ -141,7 +141,7 @@ module Faraday
           end
         end
 
-        if exception.is_a?(Faraday::Error::RetriableResponse)
+        if exception.is_a?(Faraday::RetriableResponse)
           exception.response
         else
           raise
