@@ -26,7 +26,7 @@ module Adapters
       conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
       begin
         conn.get '/slow'
-      rescue Faraday::Error::ClientError
+      rescue Faraday::Error::TimeoutError
       end
     end
 
