@@ -4,7 +4,7 @@ on:
   pull_request:
 
   push:
-    branches: [master]
+    branches: [master, 0.1x]
 
 env:
   GIT_COMMIT_SHA: ${{ github.sha }}
@@ -12,27 +12,6 @@ env:
   CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
 
 jobs:
-  linting:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v1
-
-    - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
-      with:
-        ruby-version: 2.6.x
-
-    - name: Rubocop
-      run: |
-        gem install rubocop rubocop-performance --no-document
-        rubocop --require rubocop-performance --format progress
-
-    - name: Yard-Junk
-      run: |
-        gem install yard-junk --no-document
-        yard-junk --path lib
-
   build:
     needs: [linting]
     runs-on: ubuntu-latest
@@ -57,17 +36,5 @@ jobs:
         gem install bundler
         bundle install --jobs 4 --retry 3
 
-    - name: Setup Code Climate
-      if: matrix.ruby == '2.6.x'
-      run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
-        ./cc-test-reporter before-build
-
     - name: Test
       run: bundle exec rake
-
-    - name: Run Code Climate Test Reporter
-      if: success() && matrix.ruby == '2.6.x'
-      run: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
-      continue-on-error: true
