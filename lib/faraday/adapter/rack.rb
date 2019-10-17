@@ -37,7 +37,8 @@ module Faraday
           rack_env[name] = value
         end
 
-        timeout  = env[:request][:timeout] || env[:request][:open_timeout]
+        timeout = request_timeout(:open, env[:request])
+        timeout ||= request_timeout(:read, env[:request])
         response = if timeout
                      Timer.timeout(timeout, Faraday::TimeoutError) do
                        execute_request(env, rack_env)

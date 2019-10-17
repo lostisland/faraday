@@ -11,15 +11,29 @@ RSpec.describe Faraday::Adapter::NetHttp do
     let(:http) { adapter.send(:net_http_connection, url: url, request: {}) }
 
     it { expect(http.port).to eq(80) }
+
     it 'sets max_retries to 0' do
       adapter.send(:configure_request, http, {})
 
       expect(http.max_retries).to eq(0) if http.respond_to?(:max_retries=)
     end
+
     it 'supports write_timeout' do
       adapter.send(:configure_request, http, write_timeout: 10)
 
       expect(http.write_timeout).to eq(10) if http.respond_to?(:write_timeout=)
+    end
+
+    it 'supports open_timeout' do
+      adapter.send(:configure_request, http, open_timeout: 10)
+
+      expect(http.open_timeout).to eq(10)
+    end
+
+    it 'supports read_timeout' do
+      adapter.send(:configure_request, http, read_timeout: 10)
+
+      expect(http.read_timeout).to eq(10)
     end
 
     context 'with https url' do

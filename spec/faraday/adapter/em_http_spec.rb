@@ -13,4 +13,35 @@ RSpec.describe Faraday::Adapter::EMHttp do
 
     expect(req.connopts.inactivity_timeout).to eq(20)
   end
+
+  context 'Options' do
+    let(:request) { Faraday::RequestOptions.new }
+    let(:env) { { request: request } }
+    let(:options) { {} }
+    let(:adapter) { Faraday::Adapter::EMHttp.new }
+
+    it 'configures timeout' do
+      request.timeout = 5
+      adapter.configure_timeout(options, env)
+      expect(options[:inactivity_timeout]).to eq(5)
+      expect(options[:connect_timeout]).to eq(5)
+    end
+
+    it 'configures timeout and open_timeout' do
+      request.timeout = 5
+      request.open_timeout = 1
+      adapter.configure_timeout(options, env)
+      expect(options[:inactivity_timeout]).to eq(5)
+      expect(options[:connect_timeout]).to eq(1)
+    end
+
+    it 'configures all timeout settings' do
+      request.timeout = 5
+      request.read_timeout = 3
+      request.open_timeout = 1
+      adapter.configure_timeout(options, env)
+      expect(options[:inactivity_timeout]).to eq(3)
+      expect(options[:connect_timeout]).to eq(1)
+    end
+  end
 end
