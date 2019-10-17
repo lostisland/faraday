@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  pull_request:
+
+  push:
+    branches: [master, 0.1x]
+
+env:
+  GIT_COMMIT_SHA: ${{ github.sha }}
+  GIT_BRANCH: ${{ github.ref }}
+  CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: [2.3.x, 2.4.x, 2.5.x, 2.6.x]
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libcurl4-openssl-dev
+
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
+    - name: Build
+      run: |
+        gem install bundler
+        bundle install --jobs 4 --retry 3
+
+    - name: Test
+      run: bundle exec rake
