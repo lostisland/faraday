@@ -1,6 +1,6 @@
 name: CI
 
-on: [push]
+on: [push, pull_request]
 
 env:
   GIT_COMMIT_SHA: ${{ github.sha }}
