@@ -32,6 +32,8 @@ module Faraday
           raise Faraday::ClientError, response_values(env)
         when ServerErrorStatuses
           raise Faraday::ServerError, response_values(env)
+        when nil
+          raise Faraday::NilStatusError, response: response_values(env)
         end
       end
 
