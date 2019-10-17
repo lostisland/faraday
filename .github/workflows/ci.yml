@@ -27,13 +27,11 @@ jobs:
       run: |
         gem install rubocop rubocop-performance --no-document
         rubocop --require rubocop-performance --format progress
-      if: github.ref != '0.1x' && github.base_ref != '0.1x'
 
     - name: Yard-Junk
       run: |
         gem install yard-junk --no-document
         yard-junk --path lib
-      if: github.ref != '0.1x' && github.base_ref != '0.1x'
 
   build:
     needs: [linting]
@@ -60,7 +58,7 @@ jobs:
         bundle install --jobs 4 --retry 3
 
     - name: Setup Code Climate
-      if: matrix.ruby == '2.6.x' && github.ref != '0.1x' && github.base_ref != '0.1x'
+      if: matrix.ruby == '2.6.x'
       run: |
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         chmod +x ./cc-test-reporter
@@ -70,6 +68,6 @@ jobs:
       run: bundle exec rake
 
     - name: Run Code Climate Test Reporter
-      if: success() && matrix.ruby == '2.6.x' && github.ref != '0.1x' && github.base_ref != '0.1x'
+      if: success() && matrix.ruby == '2.6.x'
       run: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
       continue-on-error: true
