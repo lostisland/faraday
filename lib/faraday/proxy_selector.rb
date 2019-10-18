@@ -131,9 +131,14 @@ module Faraday
     # Note: Logic for parsing proxy env vars heavily inspired by
     # http://golang.org/x/net/http/httpproxy
     class Environment < ProxySelector
+      attr_reader :http_proxy
+      attr_reader :https_proxy
+
       def initialize(env = nil)
-        @env = env || ENV
-        # parse http_proxy, https_proxy, no_proxy
+        env ||= ENV
+        @http_proxy = parse_proxy(env, HTTP_PROXY_KEYS)
+        @https_proxy = parse_proxy(env, HTTPS_PROXY_KEYS)
+        # parse no_proxy
       end
 
       # Gets the proxy for the given uri
@@ -175,6 +180,18 @@ module Faraday
       def use_for_url?(url)
         use_for?(Utils.URI(url))
       end
+
+      private
+
+      def parse_proxy(env, keys)
+        value = nil
+        keys.detect { |k| value = env[k] }
+        value ? ProxyOptions.from(value) : nil
+      end
+
+      HTTP_PROXY_KEYS = [:http_proxy, 'http_proxy', 'HTTP_PROXY'].freeze
+      HTTPS_PROXY_KEYS = [:https_proxy, 'https_proxy', 'HTTPS_PROXY'].freeze
+      NO_PROXY_KEYS = [:no_proxy, 'no_proxy', 'NO_PROXY'].freeze
     end
 
     # Nil is a ProxySelector implementation that always returns no proxy. Used

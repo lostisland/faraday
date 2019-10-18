@@ -74,6 +74,45 @@ RSpec.describe Faraday::ProxySelector do
     Faraday.ignore_env_proxy = @ignore_env_proxy
   end
 
+  context '#with_env with explicit hash' do
+    let(:proxy_url) { '://example.com' }
+
+    before { Faraday.ignore_env_proxy = true }
+
+    http_keys = Faraday::ProxySelector::Environment::HTTP_PROXY_KEYS
+    https_keys = Faraday::ProxySelector::Environment::HTTPS_PROXY_KEYS
+    http_keys.each do |http|
+      it "parses #{http}" do
+        selector = Faraday.proxy_with_env(
+          http => 'http'+proxy_url
+        )
+        expect(selector.http_proxy.scheme).to eq('http')
+        expect(selector.http_proxy.host).to eq('example.com')
+      end
+
+      https_keys.each do |https|
+        it "parses #{https}" do
+          selector = Faraday.proxy_with_env(
+            https => 'https'+proxy_url
+          )
+          expect(selector.https_proxy.scheme).to eq('https')
+          expect(selector.https_proxy.host).to eq('example.com')
+        end
+
+        it "parses #{http} & #{https}" do
+          selector = Faraday.proxy_with_env(
+            http => 'http'+proxy_url,
+            https => 'https'+proxy_url
+          )
+          expect(selector.http_proxy.scheme).to eq('http')
+          expect(selector.http_proxy.host).to eq('example.com')
+          expect(selector.https_proxy.scheme).to eq('https')
+          expect(selector.https_proxy.host).to eq('example.com')
+        end
+      end
+    end
+  end
+
   context '#with_env with env disabled' do
     Faraday.ignore_env_proxy = true
     proxy = Faraday.proxy_with_env(nil)
