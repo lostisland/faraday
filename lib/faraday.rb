@@ -5,6 +5,7 @@ require 'set'
 require 'forwardable'
 require 'faraday/middleware_registry'
 require 'faraday/dependency_loader'
+require 'faraday/proxy_selector'
 
 # This is the main namespace for Faraday.
 #
