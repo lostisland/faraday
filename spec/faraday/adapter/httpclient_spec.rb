@@ -31,7 +31,7 @@ RSpec.describe Faraday::Adapter::HTTPClient do
         url: URI.parse('https://example.com')
       )
     end
-    let(:adapter) { Faraday::Adapter::HTTPClient.new }
+    let(:adapter) { described_class.new }
     let(:client) { adapter.connection(env) }
 
     it 'caches connection' do

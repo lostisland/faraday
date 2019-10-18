@@ -17,7 +17,7 @@ RSpec.describe Faraday::Adapter::Patron do
   end
 
   context 'config' do
-    let(:adapter) { Faraday::Adapter::Patron.new }
+    let(:adapter) { described_class.new }
     let(:request) { Faraday::RequestOptions.new }
     let(:uri) { URI.parse('https://example.com') }
     let(:env) do
