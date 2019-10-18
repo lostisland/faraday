@@ -37,6 +37,24 @@ module Faraday
       end
     end
 
+    # This module marks an Adapter as supporting a cached HTTP connection.
+    module CacheConnection
+      def connection(env)
+        recfg = reconfigure_connection?(env)
+        conn = !recfg && @connection
+        conn ||= build_connection(env)
+        @connection = conn unless recfg
+
+        return conn unless block_given?
+
+        yield conn
+      end
+
+      def cache_connection?
+        true
+      end
+    end
+
     extend Parallelism
     self.supports_parallel = false
 
@@ -58,6 +76,10 @@ module Faraday
       return conn unless block_given?
 
       yield conn
+    end
+
+    def cache_connection?
+      false
     end
 
     def call(env)
@@ -104,5 +126,14 @@ module Faraday
       open: :open_timeout,
       write: :write_timeout
     }.freeze
+
+    def reconfigure_connection?(env)
+      return unless (req = env && env[:request])
+
+      CONNECTION_OPTIONS.any? { |k| req.key?(k) }
+    end
+
+    CONNECTION_OPTIONS = %i[proxy bind timeout open_timeout read_timeout
+                            write_timeout].freeze
   end
 end
