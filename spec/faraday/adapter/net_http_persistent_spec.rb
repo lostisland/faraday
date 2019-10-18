@@ -5,6 +5,42 @@ RSpec.describe Faraday::Adapter::NetHttpPersistent do
 
   it_behaves_like 'an adapter'
 
+  context 'config' do
+    let(:adapter) { described_class.new }
+    let(:request) { Faraday::RequestOptions.new }
+    let(:uri) { URI.parse('https://example.com') }
+    let(:env) do
+      Faraday::Env.from(
+        request: request,
+        ssl: Faraday::SSLOptions.new,
+        url: uri
+      )
+    end
+
+    it 'caches connection' do
+      # before client is created
+      env.ssl.client_cert = 'client-cert'
+      request.boundary = 'doesnt-matter'
+
+      client = adapter.connection(env)
+      expect(client.certificate).to eq('client-cert')
+      expect(client.read_timeout).to be_nil
+
+      # client2 is cached because no important request options are set
+      client2 = adapter.connection(env)
+      expect(client2.certificate).to eq('client-cert')
+      expect(client2.read_timeout).to be_nil
+      expect(client2.object_id).to eq(client.object_id)
+
+      # important request setting, so client3 is new
+      env.request.timeout = 5
+      client3 = adapter.connection(env)
+      expect(client3.certificate).to eq('client-cert')
+      expect(client3.read_timeout).to eq(5)
+      expect(client3.object_id).not_to eq(client2.object_id)
+    end
+  end
+
   it 'allows to provide adapter specific configs' do
     url = URI('https://example.com')
 
