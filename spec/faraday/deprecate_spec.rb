@@ -41,39 +41,19 @@ RSpec.describe Faraday::DeprecatedClass do
   end
 
   it 'allows rescuing of a current error with a deprecated error' do
-    begin
-      raise SampleClass, nil
-    rescue SampleDeprecatedClass
-    rescue StandardError => exc
-      fail "rescued #{exc.class.name} instead"
-    end
+    expect { raise SampleClass, nil }.to raise_error(SampleDeprecatedClass)
   end
 
   it 'allows rescuing of a current error with a current error' do
-    begin
-      raise SampleClass, nil
-    rescue SampleClass
-    rescue StandardError => exc
-      fail "rescued #{exc.class.name} instead"
-    end
+    expect { raise SampleClass, nil }.to raise_error(SampleClass)
   end
 
   it 'allows rescuing of a deprecated error with a deprecated error' do
-    begin
-      raise SampleDeprecatedClass, nil
-    rescue SampleDeprecatedClass
-    rescue StandardError => exc
-      fail "rescued #{exc.class.name} instead"
-    end
+    expect { raise SampleDeprecatedClass, nil }.to raise_error(SampleDeprecatedClass)
   end
 
   it 'allows rescuing of a deprecated error with a current error' do
-    begin
-      raise SampleDeprecatedClass, nil
-    rescue SampleClass
-    rescue StandardError => exc
-      fail "rescued #{exc.class.name} instead"
-    end
+    expect { raise SampleDeprecatedClass, nil }.to raise_error(SampleClass)
   end
 
 

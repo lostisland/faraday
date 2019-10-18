@@ -73,39 +73,19 @@ RSpec.describe Faraday::ClientError do
       end
 
       it 'allows rescuing of a current error with a deprecated error' do
-        begin
-          raise Faraday::ClientError, nil
-        rescue Faraday::Error::ClientError
-        rescue Faraday::Error => exc
-          fail "rescued #{exc.class.name} instead"
-        end
+        expect { raise Faraday::ClientError, nil }.to raise_error(Faraday::Error::ClientError)
       end
 
       it 'allows rescuing of a current error with a current error' do
-        begin
-          raise Faraday::ClientError, nil
-        rescue Faraday::ClientError
-        rescue Faraday::Error => exc
-          fail "rescued #{exc.class.name} instead"
-        end
+        expect { raise Faraday::ClientError, nil }.to raise_error(Faraday::ClientError)
       end
 
       it 'allows rescuing of a deprecated error with a deprecated error' do
-        begin
-          raise Faraday::Error::ClientError, nil
-        rescue Faraday::Error::ClientError
-        rescue Faraday::Error => exc
-          fail "rescued #{exc.class.name} instead"
-        end
+        expect { raise Faraday::Error::ClientError, nil }.to raise_error(Faraday::Error::ClientError)
       end
 
       it 'allows rescuing of a deprecated error with a current error' do
-        begin
-          raise Faraday::Error::ClientError, nil
-        rescue Faraday::ClientError
-        rescue Faraday::Error => exc
-          fail "rescued #{exc.class.name} instead"
-        end
+        expect { raise Faraday::Error::ClientError, nil }.to raise_error(Faraday::ClientError)
       end
     end
 
