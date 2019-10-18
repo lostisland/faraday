@@ -8,8 +8,8 @@ module Faraday
   # @see Faraday::Deprecate
   module DeprecatedClass
     def self.proxy_class(new_klass)
-      Class.new(new_klass).tap do |k|
-        class << k
+      Class.new(new_klass) do
+        class << self
           extend Faraday::Deprecate
           # Make this more human readable than #<Class:Faraday::ClientError>
           klass_name = superclass.to_s[/^#<Class:([\w:]+)>$/, 1]
