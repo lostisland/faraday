@@ -12,6 +12,7 @@ module Faraday
         session = ::Patron::Session.new
         @config_block&.call(session)
         configure_ssl(session, env[:ssl]) if env[:ssl]
+        configure_for_request(session, env[:connection])
         configure_for_request(session, env[:request])
         session
       end

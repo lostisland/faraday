@@ -24,25 +24,30 @@ RSpec.describe Faraday::Adapter::Patron do
       Faraday::Env.from(
         request: request,
         ssl: Faraday::SSLOptions.new,
-        url: uri
+        url: uri,
+        connection: Faraday::ConnectionOptions.new
       )
     end
 
     it 'caches connection' do
       # before client is created
+      env.connection.timeout = 4
+      env.connection.open_timeout = 1
       env.ssl.ca_file = 'ca-file'
       request.boundary = 'doesnt-matter'
 
       client = adapter.connection(env)
       expect(!!client.insecure).to eq(false)
       expect(client.cacert).to eq('ca-file')
-      expect(client.timeout).to eq(5)
+      expect(client.timeout).to eq(4)
+      expect(client.connect_timeout).to eq(1)
 
       # client2 is cached because no important request options are set
       client2 = adapter.connection(env)
       expect(!!client2.insecure).to eq(false)
       expect(client2.cacert).to eq('ca-file')
-      expect(client2.timeout).to eq(5)
+      expect(client2.timeout).to eq(4)
+      expect(client2.connect_timeout).to eq(1)
       expect(client2.object_id).to eq(client.object_id)
 
       # important request setting, so client3 is new
@@ -51,6 +56,7 @@ RSpec.describe Faraday::Adapter::Patron do
       expect(!!client3.insecure).to eq(false)
       expect(client3.cacert).to eq('ca-file')
       expect(client3.timeout).to eq(3)
+      expect(client3.connect_timeout).to eq(3)
       expect(client3.object_id).not_to eq(client2.object_id)
     end
   end

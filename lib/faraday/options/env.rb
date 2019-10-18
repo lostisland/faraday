@@ -46,10 +46,14 @@ module Faraday
   #
   # @!attribute reason_phrase
   #   @return [String]
+  #
+  # @!attribute connection
+  #   @return [Faraday::ConnectionOptions] The connection options for the
+  #   current adapter.
   class Env < Options.new(:method, :request_body, :url, :request,
                           :request_headers, :ssl, :parallel_manager, :params,
                           :response, :response_headers, :status,
-                          :reason_phrase, :response_body)
+                          :reason_phrase, :response_body, :connection)
 
     # rubocop:disable Naming/ConstantName
     ContentLength = 'Content-Length'
@@ -61,7 +65,7 @@ module Faraday
     # these requests, the Content-Length header is set to 0.
     MethodsWithBodies = Set.new(Faraday::METHODS_WITH_BODY.map(&:to_sym))
 
-    options request: RequestOptions,
+    options request: RequestOptions, connection: ConnectionOptions,
             request_headers: Utils::Headers, response_headers: Utils::Headers
 
     extend Forwardable

@@ -141,8 +141,10 @@ module Faraday
     def to_env(connection)
       exc_url = connection.build_exclusive_url(path, params,
                                                options.params_encoder)
-      Env.new(method, body, exc_url, options, headers, connection.ssl,
-              connection.parallel_manager)
+      env = Env.new(method, body, exc_url, options, headers, connection.ssl,
+                    connection.parallel_manager)
+      env.connection = connection
+      env
     end
   end
 end
