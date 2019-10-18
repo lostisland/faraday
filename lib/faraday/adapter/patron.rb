@@ -6,18 +6,13 @@ module Faraday
     class Patron < Faraday::Adapter
       dependency 'patron'
 
+      include CacheConnection
+
       def build_connection(env)
         session = ::Patron::Session.new
         @config_block&.call(session)
-        if (env[:url].scheme == 'https') && env[:ssl]
-          configure_ssl(session, env[:ssl])
-        end
-
-        if (req = env[:request])
-          configure_timeouts(session, req)
-          configure_proxy(session, req[:proxy])
-        end
-
+        configure_ssl(session, env[:ssl]) if env[:ssl]
+        configure_for_request(session, env[:request])
         session
       end
 
@@ -86,9 +81,14 @@ module Faraday
         end
       end
 
-      def configure_timeouts(session, req)
+      def configure_for_request(session, req)
         return unless req
 
+        configure_timeouts(session, req)
+        configure_proxy(session, req[:proxy])
+      end
+
+      def configure_timeouts(session, req)
         if (sec = request_timeout(:read, req))
           session.timeout = sec
         end
