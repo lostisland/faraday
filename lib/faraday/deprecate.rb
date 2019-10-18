@@ -12,7 +12,7 @@ module Faraday
         class << k
           extend Faraday::Deprecate
           # Make this more human readable than #<Class:Faraday::ClientError>
-          klass_name = superclass.to_s[/^#<Class:(\w{1}[\w:]*)>$/, 1]
+          klass_name = superclass.to_s[/^#<Class:([\w:]+)>$/, 1]
           deprecate :new, "#{klass_name}.new", '1.0'
           deprecate :inherited, klass_name, '1.0'
 
