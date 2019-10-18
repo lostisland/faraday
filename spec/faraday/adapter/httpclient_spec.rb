@@ -44,9 +44,9 @@ RSpec.describe Faraday::Adapter::HTTPClient do
 
       # client2 is cached because no important request options are set
       client2 = adapter.connection(env)
-      expect(client2.object_id).to eq(client.object_id)
       expect(client2.ssl_config.client_cert).to eq('client-cert')
       expect(client2.connect_timeout).to eq(60)
+      expect(client2.object_id).to eq(client.object_id)
 
       # important request setting, so client3 is new
       env.request.timeout = 5

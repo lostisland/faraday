@@ -19,7 +19,39 @@ RSpec.describe Faraday::Adapter::Excon do
     let(:adapter) { Faraday::Adapter::Excon.new }
     let(:request) { Faraday::RequestOptions.new }
     let(:uri) { URI.parse('https://example.com') }
-    let(:env) { { request: request, url: uri } }
+    let(:env) do
+      Faraday::Env.from(
+        request: request,
+        ssl: Faraday::SSLOptions.new,
+        url: uri
+      )
+    end
+
+    it 'caches connection' do
+      # before client is created
+      env.ssl.client_cert = 'client-cert'
+      request.boundary = 'doesnt-matter'
+
+      client = adapter.connection(env)
+      expect(client.data[:ssl_verify_peer]).to eq(true)
+      expect(client.data[:client_cert]).to eq('client-cert')
+      expect(client.data[:connect_timeout]).to eq(60)
+
+      # client2 is cached because no important request options are set
+      client2 = adapter.connection(env)
+      expect(client2.data[:ssl_verify_peer]).to eq(true)
+      expect(client2.data[:client_cert]).to eq('client-cert')
+      expect(client2.data[:connect_timeout]).to eq(60)
+      expect(client2.object_id).to eq(client.object_id)
+
+      # important request setting, so client3 is new
+      env.request.timeout = 5
+      client3 = adapter.connection(env)
+      expect(client3.data[:ssl_verify_peer]).to eq(true)
+      expect(client3.data[:client_cert]).to eq('client-cert')
+      expect(client3.data[:connect_timeout]).to eq(5)
+      expect(client3.object_id).not_to eq(client.object_id)
+    end
 
     it 'sets timeout' do
       request.timeout = 5
