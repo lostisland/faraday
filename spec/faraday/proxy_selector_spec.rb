@@ -84,7 +84,7 @@ RSpec.describe Faraday::ProxySelector do
     http_keys.each do |http|
       it "parses #{http}" do
         selector = Faraday.proxy_with_env(
-          http => 'http'+proxy_url
+          http => 'http' + proxy_url
         )
         expect(selector.http_proxy.scheme).to eq('http')
         expect(selector.http_proxy.host).to eq('example.com')
@@ -93,7 +93,7 @@ RSpec.describe Faraday::ProxySelector do
       https_keys.each do |https|
         it "parses #{https}" do
           selector = Faraday.proxy_with_env(
-            https => 'https'+proxy_url
+            https => 'https' + proxy_url
           )
           expect(selector.https_proxy.scheme).to eq('https')
           expect(selector.https_proxy.host).to eq('example.com')
@@ -101,8 +101,8 @@ RSpec.describe Faraday::ProxySelector do
 
         it "parses #{http} & #{https}" do
           selector = Faraday.proxy_with_env(
-            http => 'http'+proxy_url,
-            https => 'https'+proxy_url
+            http => 'http' + proxy_url,
+            https => 'https' + proxy_url
           )
           expect(selector.http_proxy.scheme).to eq('http')
           expect(selector.http_proxy.host).to eq('example.com')
@@ -137,5 +137,73 @@ RSpec.describe Faraday::ProxySelector do
     proxy = Faraday.proxy_to_url('http://proxy.com',
                                  user: 'u:1', password: 'p:2')
     include_examples 'ProxySelector::Single', proxy, 'u:1', 'p:2'
+  end
+end
+
+# https://github.com/golang/net/blob/da9a3fd4c5820e74b24a6cb7fb438dc9b0dd377c/http/httpproxy/proxy_test.go#L261
+context Faraday::ProxySelector::Environment do
+  context '#use_for_url?' do
+    no_proxy_tests = [
+      # Never proxy localhost:
+      ['localhost', false],
+      ['127.0.0.1', false],
+      ['127.0.0.2', false],
+      ['[::1]', false],
+      ['[::2]', true], # not a loopback address
+
+      ['192.168.1.1', false],                # matches exact IPv4
+      ['192.168.1.2', true],                 # ports do not match
+      ['192.168.1.3', false],                # matches exact IPv4:port
+      ['192.168.1.4', true],                 # no match
+      ['10.0.0.2', false],                   # matches IPv4/CIDR
+      ['[2001:db8::52:0:1]', false],         # matches exact IPv6
+      ['[2001:db8::52:0:2]', true],          # no match
+      ['[2001:db8::52:0:2]:443', false],     # matches explicit [IPv6]:port
+      ['[2001:db8::52:0:3]', false],         # matches exact [IPv6]:port
+      ['[2002:db8:a::123]', false],          # matches IPv6/CIDR
+      ['[fe80::424b:c8be:1643:a1b6]', true], # no match
+
+      ['barbaz.net', true],          # does not match as .barbaz.net
+      ['www.barbaz.net', false],     # does match as .barbaz.net
+      ['foobar.com', false],         # does match as foobar.com
+      ['www.foobar.com', false],     # match because NO_PROXY includes 'foobar.com'
+      ['foofoobar.com', true],       # not match as a part of foobar.com
+      ['baz.com', true],             # not match as a part of barbaz.com
+      ['localhost.net', true],       # not match as suffix of address
+      ['local.localhost', true],     # not match as prefix as address
+      ['barbarbaz.net', true],       # not match, wrong domain
+      ['wildcard.io', true],         # does not match as *.wildcard.io
+      ['nested.wildcard.io', false], # match as *.wildcard.io
+      ['awildcard.io', true]         # not a match because of '*'
+    ]
+
+    context '(full no_proxy example)' do
+      proxy = Faraday.proxy_with_env(
+        no_proxy: 'foobar.com, .barbaz.net, *.wildcard.io, 192.168.1.1, 192.168.1.2:81, 192.168.1.3:80, 10.0.0.0/30, 2001:db8::52:0:1, [2001:db8::52:0:2]:443, [2001:db8::52:0:3]:80, 2002:db8:a::45/64'
+      )
+
+      no_proxy_tests.each do |(host, matches)|
+        it "#{matches ? :allows : :forbids} proxy for #{host}" do
+          expect(proxy.use_for_url?("http://#{host}/test")).to eq(matches)
+        end
+      end
+    end
+
+    context '(invalid no_proxy)' do
+      it 'forbids proxy' do
+        proxy = Faraday.proxy_with_env(no_proxy: ':1')
+        expect(proxy.use_for_url?('http://example.com')).to eq(true)
+      end
+    end
+
+    context '(no_proxy=*)' do
+      proxy = Faraday.proxy_with_env(no_proxy: 'baz.com, *')
+
+      no_proxy_tests.each do |(host, _)|
+        it "forbids proxy for #{host}" do
+          expect(proxy.use_for_url?("http://#{host}/test")).to eq(false)
+        end
+      end
+    end
   end
 end
