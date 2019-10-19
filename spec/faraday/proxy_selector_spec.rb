@@ -66,18 +66,8 @@ RSpec.describe Faraday::ProxySelector do
   let(:http_request_uri) { Faraday::Utils.URI(http_request_url) }
   let(:https_request_uri) { Faraday::Utils.URI(https_request_url) }
 
-  before do
-    @ignore_env_proxy = Faraday.ignore_env_proxy
-  end
-
-  after do
-    Faraday.ignore_env_proxy = @ignore_env_proxy
-  end
-
-  context '#with_env with explicit hash' do
+  context '#proxy_with_env with explicit hash' do
     let(:proxy_url) { '://example.com' }
-
-    before { Faraday.ignore_env_proxy = true }
 
     http_keys = Faraday::ProxySelector::Environment::HTTP_PROXY_KEYS
     https_keys = Faraday::ProxySelector::Environment::HTTPS_PROXY_KEYS
@@ -113,27 +103,52 @@ RSpec.describe Faraday::ProxySelector do
     end
   end
 
-  context '#with_env with env disabled' do
+  context '#proxy_with_env with env disabled' do
+    after { Faraday.ignore_env_proxy = @ignore_env_proxy }
+
+    @ignore_env_proxy = Faraday.ignore_env_proxy
     Faraday.ignore_env_proxy = true
     proxy = Faraday.proxy_with_env(nil)
     include_examples 'ProxySelector::Nil', proxy
   end
 
-  context '#none' do
-    include_examples 'ProxySelector::Nil', Faraday::ProxySelector::Nil.new
+  context '#proxy_to_url with invalid scheme' do
+    proxy_sel = Faraday.proxy_to_url('file://proxy.com')
+
+    it 'is the right type' do
+      expect(proxy_sel).to be_a(Faraday::ProxySelector::Single)
+    end
+
+    it 'has invalid proxy' do
+      proxy = proxy_sel.proxy_for(http_request_uri)
+      expect(proxy).not_to be_nil
+      expect(proxy.host).to eq('file')
+    end
   end
 
-  context '#to_url without user auth' do
+  context '#proxy_to with invalid scheme' do
+    it 'raises' do
+      expect { Faraday.proxy_to(Faraday::Utils.URI('file://proxy.com')) }
+        .to raise_error(ArgumentError)
+    end
+  end
+
+  context '#proxy_to_url without user auth' do
     proxy = Faraday.proxy_to_url('http://proxy.com')
     include_examples 'ProxySelector::Single', proxy, nil, nil
   end
 
-  context '#to_url with user auth in proxy url' do
+  context '#proxy_to_url without scheme' do
+    proxy = Faraday.proxy_to_url('proxy.com')
+    include_examples 'ProxySelector::Single', proxy, nil, nil
+  end
+
+  context '#proxy_to_url with user auth in proxy url' do
     proxy = Faraday.proxy_to_url('http://u%3A1:p%3A2@proxy.com')
     include_examples 'ProxySelector::Single', proxy, 'u:1', 'p:2'
   end
 
-  context '#to_url with explicit user auth' do
+  context '#proxy_to_url with explicit user auth' do
     proxy = Faraday.proxy_to_url('http://proxy.com',
                                  user: 'u:1', password: 'p:2')
     include_examples 'ProxySelector::Single', proxy, 'u:1', 'p:2'

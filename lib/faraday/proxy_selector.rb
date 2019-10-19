@@ -33,6 +33,11 @@ module Faraday
   #
   # @return [Faraday::ProxySelector::Single]
   def self.proxy_to(uri, user: nil, password: nil)
+    unless ProxySelector::VALID_PROXY_SCHEMES.include?(uri.scheme)
+      raise ArgumentError, "invalid proxy url #{uri.to_s.inspect}. " \
+                           'Must start with http://, https://, or socks://'
+    end
+
     ProxySelector::Single.new(uri, user: user, password: password)
   end
 
@@ -44,7 +49,8 @@ module Faraday
   #
   # @return [Faraday::ProxySelector::Single]
   def self.proxy_to_url(url, user: nil, password: nil)
-    proxy_to(Utils.URI(url), user: user, password: password)
+    curl = ProxySelector.canonical_proxy_url(url)
+    proxy_to(Utils.URI(curl), user: user, password: password)
   end
 
   # Proxy is a generic class that knows the Proxy for any given URL. You can
@@ -72,6 +78,13 @@ module Faraday
   #   proxy.proxy_for(uri)
   #   # => Faraday::ProxyOptions instance or nil
   class ProxySelector
+    def self.canonical_proxy_url(url)
+      url_dc = url.to_s.downcase
+      return url if VALID_PROXY_PREFIXES.any? { |s| url_dc.start_with?(s) }
+
+      VALID_PROXY_PREFIXES[0] + url
+    end
+
     # Single is a ProxySelector implementation that always returns the given
     # proxy uri.
     class Single < ProxySelector
@@ -125,7 +138,8 @@ module Faraday
 
     # Environment is a ProxySelector implementation that picks a proxy based on
     # how the given request url matches with the http_proxy, https_proxy, and
-    # no_proxy settings.
+    # no_proxy settings. Invalid URL values in http_proxy or https_proxy will
+    # be ignored if reading from ENV.
     #
     # The no_proxy is a string containing comma-separated values specifying
     # HTTP request hosts that should be excluded from proxying. Hosts can be
@@ -143,8 +157,7 @@ module Faraday
       attr_reader :host_matchers
 
       def initialize(env = nil)
-        env ||= ENV
-        @http_proxy = parse_proxy(env, HTTP_PROXY_KEYS)
+        @http_proxy = parse_proxy(env ||= ENV, HTTP_PROXY_KEYS)
         @https_proxy = parse_proxy(env, HTTPS_PROXY_KEYS)
         parse_no_proxy(env)
       end
@@ -204,7 +217,9 @@ module Faraday
       def parse_proxy(env, keys)
         value = nil
         keys.detect { |k| value = env[k] }
-        value ? ProxyOptions.from(value) : nil
+        return nil unless value && !value.empty?
+
+        ProxyOptions.from(self.class.canonical_proxy_url(value))
       end
 
       def parse_no_proxy(env)
@@ -263,6 +278,9 @@ module Faraday
       HTTPS_PROXY_KEYS = [:https_proxy, 'https_proxy', 'HTTPS_PROXY'].freeze
       NO_PROXY_KEYS = [:no_proxy, 'no_proxy', 'NO_PROXY'].freeze
     end
+
+    VALID_PROXY_SCHEMES = Set.new(%w[http https socks5]).freeze
+    VALID_PROXY_PREFIXES = %w[http:// https:// socks5://].freeze
 
     # IPMatcher parses an IP related entry in the no_proxy env variable.
     class IPMatcher
