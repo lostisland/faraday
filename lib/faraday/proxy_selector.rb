@@ -33,24 +33,8 @@ module Faraday
   #
   # @return [Faraday::ProxySelector::Single]
   def self.proxy_to(uri, user: nil, password: nil)
-    unless ProxySelector::VALID_PROXY_SCHEMES.include?(uri.scheme)
-      raise ArgumentError, "invalid proxy url #{uri.to_s.inspect}. " \
-                           'Must start with http://, https://, or socks://'
-    end
-
-    ProxySelector::Single.new(uri, user: user, password: password)
-  end
-
-  # Builds a ProxySelector that returns the given uri.
-  #
-  # @param url [String] The proxy raw url.
-  # @param user [String, nil] Optional user info for proxy.
-  # @param password [String, nil] Optional password info for proxy.
-  #
-  # @return [Faraday::ProxySelector::Single]
-  def self.proxy_to_url(url, user: nil, password: nil)
-    curl = ProxySelector.canonical_proxy_url(url)
-    proxy_to(Utils.URI(curl), user: user, password: password)
+    curi = ProxySelector.canonical_proxy_uri(uri)
+    ProxySelector::Single.new(curi, user: user, password: password)
   end
 
   # Proxy is a generic class that knows the Proxy for any given URL. You can
@@ -63,21 +47,36 @@ module Faraday
   #   proxy = Faraday.proxy_with_env(http_proxy: "http://proxy.example.com")
   #
   #   # Set with string URL
-  #   proxy = Faraday.proxy_to_url("http://proxy.example.com")
+  #   proxy = Faraday.proxy_to("http://proxy.example.com")
   #
   #   # Set with URI
   #   uri = Faraday::Utils::URI("http://proxy.example.com")
-  #   proxy = Faraday.proxy_to(uri) # shortcut
+  #   proxy = Faraday.proxy_to(uri)
   #
   # Once you have an instance, you can get the proxy for a request url:
   #
-  #   proxy.proxy_for_url("http://example.com")
+  #   proxy.proxy_for("http://example.com")
   #   # => Faraday::ProxyOptions instance or nil
+  #   proxy.use_for?("http://example.com")
+  #   # => true or false
   #
   #   uri = Faraday::Utils::URI("http://example.com")
   #   proxy.proxy_for(uri)
   #   # => Faraday::ProxyOptions instance or nil
+  #   proxy.use_for?(uri)
+  #   # => true or false
   class ProxySelector
+    def self.canonical_proxy_uri(url)
+      if url.respond_to?(:scheme)
+        return url if VALID_PROXY_SCHEMES.include?(url.scheme)
+
+        raise ArgumentError, "invalid proxy url #{url.to_s.inspect}. " \
+                             'Must start with http://, https://, or socks://'
+      end
+
+      Utils.URI(canonical_proxy_url(url))
+    end
+
     def self.canonical_proxy_url(url)
       url_dc = url.to_s.downcase
       return url if VALID_PROXY_PREFIXES.any? { |s| url_dc.start_with?(s) }
@@ -94,39 +93,22 @@ module Faraday
 
       # Gets the configured proxy, regardless of the uri.
       #
-      # @param _ [URI] Unused.
+      # @param _ [URI, String] Unused.
       #
       # @return [Faraday::ProxyOptions]
       def proxy_for(_)
         @options
       end
 
-      # @!method proxy_for_url(_)
-      # Gets the configured proxy, regardless of the url.
-      #
-      # @param _ [String] Unused.
-      #
-      # @return [Faraday::ProxyOptions]
-      alias proxy_for_url proxy_for
-
       # Checks if the given uri has a configured proxy. Returns true, because
       # every request uri should use the configured proxy.
       #
-      # @param _ [URI] Unused.
+      # @param _ [URI, String] Unused.
       #
       # @return true
       def use_for?(_)
         !@options.nil?
       end
-
-      # @!method use_for_url?(_)
-      # Checks if the given url has a configured proxy. Returns true, because
-      # every request url should use the configured proxy.
-      #
-      # @param _ [String] Unused.
-      #
-      # @return true
-      alias use_for_url? use_for?
     end
 
     # Nil is a ProxySelector implementation that always returns no proxy. Used
@@ -173,42 +155,26 @@ module Faraday
 
       # Gets the proxy for the given uri
       #
-      # @param uri [URI] URI being requested.
+      # @param uri [URI, String] URI being requested.
       #
       # @return [Faraday::ProxyOptions, nil]
       def proxy_for(uri)
-        proxy = (uri.scheme == 'https' && @https_proxy) || @http_proxy
-        proxy = nil if proxy && !use_for?(uri)
+        curi = self.class.canonical_proxy_uri(uri)
+        proxy = (curi.scheme == 'https' && @https_proxy) || @http_proxy
+        proxy = nil if proxy && !use_for?(curi)
         proxy
-      end
-
-      # Gets the proxy for the given url
-      #
-      # @param url [String] URL being requested.
-      #
-      # @return [Faraday::ProxyOptions, nil]
-      def proxy_for_url(url)
-        proxy_for(Utils.URI(url))
       end
 
       # Checks if the given uri is allowed by the no_proxy setting.
       #
-      # @param uri [URI] URI being requested.
+      # @param uri [URI, String] URI being requested.
       #
       # @return [Bool]
       def use_for?(uri)
-        return false if uri.host == 'localhost'
+        curi = self.class.canonical_proxy_uri(uri)
+        return false if curi.host == 'localhost'
 
-        host_port_use_proxy?(uri.host, uri.port)
-      end
-
-      # Checks if the given url is allowed by the no_proxy setting.
-      #
-      # @param url [String] URL being requested.
-      #
-      # @return [Bool]
-      def use_for_url?(url)
-        use_for?(Utils.URI(url))
+        host_port_use_proxy?(curi.host, curi.port)
       end
 
       private

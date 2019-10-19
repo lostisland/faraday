@@ -6,22 +6,18 @@ RSpec.shared_examples 'ProxySelector::Nil' do |proxy_sel|
   end
 
   it 'returns no proxy for http url' do
-    expect(proxy_sel.proxy_for_url(http_request_url)).to be_nil
     expect(proxy_sel.proxy_for(http_request_uri)).to be_nil
   end
 
   it 'returns no proxy for https url' do
-    expect(proxy_sel.proxy_for_url(https_request_url)).to be_nil
     expect(proxy_sel.proxy_for(https_request_uri)).to be_nil
   end
 
   it 'doesnt use proxy for http url' do
-    expect(proxy_sel.use_for_url?(http_request_url)).to eq(false)
     expect(proxy_sel.use_for?(http_request_uri)).to eq(false)
   end
 
   it 'doesnt use proxy for https url' do
-    expect(proxy_sel.use_for_url?(https_request_url)).to eq(false)
     expect(proxy_sel.use_for?(https_request_uri)).to eq(false)
   end
 end
@@ -33,7 +29,7 @@ RSpec.shared_examples 'ProxySelector::Single' do |proxy_sel, expected_user, expe
 
   it 'fetches proxy for http url' do
     proxy = proxy_sel.proxy_for(http_request_uri)
-    expect(proxy_sel.proxy_for_url(http_request_url)).to eq(proxy)
+    expect(proxy_sel.proxy_for(http_request_url)).to eq(proxy)
     expect(proxy).not_to be_nil
     expect(proxy.host).to eq('proxy.com')
     expect(proxy.user).to eq(expected_user)
@@ -42,7 +38,7 @@ RSpec.shared_examples 'ProxySelector::Single' do |proxy_sel, expected_user, expe
 
   it 'fetches proxy for https url' do
     proxy = proxy_sel.proxy_for(https_request_uri)
-    expect(proxy_sel.proxy_for_url(https_request_url)).to eq(proxy)
+    expect(proxy_sel.proxy_for(https_request_url)).to eq(proxy)
     expect(proxy).not_to be_nil
     expect(proxy.host).to eq('proxy.com')
     expect(proxy.user).to eq(expected_user)
@@ -50,12 +46,10 @@ RSpec.shared_examples 'ProxySelector::Single' do |proxy_sel, expected_user, expe
   end
 
   it 'uses proxy for http url' do
-    expect(proxy_sel.use_for_url?(http_request_url)).to eq(true)
     expect(proxy_sel.use_for?(http_request_uri)).to eq(true)
   end
 
   it 'uses proxy for https url' do
-    expect(proxy_sel.use_for_url?(https_request_url)).to eq(true)
     expect(proxy_sel.use_for?(https_request_uri)).to eq(true)
   end
 end
@@ -111,8 +105,8 @@ RSpec.describe Faraday::ProxySelector do
     include_examples 'ProxySelector::Nil', proxy
   end
 
-  context '#proxy_to_url with invalid scheme' do
-    proxy_sel = Faraday.proxy_to_url('file://proxy.com')
+  context '#proxy_to with invalid url scheme' do
+    proxy_sel = Faraday.proxy_to('file://proxy.com')
 
     it 'is the right type' do
       expect(proxy_sel).to be_a(Faraday::ProxySelector::Single)
@@ -125,38 +119,38 @@ RSpec.describe Faraday::ProxySelector do
     end
   end
 
-  context '#proxy_to with invalid scheme' do
+  context '#proxy_to with invalid uri scheme' do
     it 'raises' do
       expect { Faraday.proxy_to(Faraday::Utils.URI('file://proxy.com')) }
         .to raise_error(ArgumentError)
     end
   end
 
-  context '#proxy_to_url without user auth' do
-    proxy = Faraday.proxy_to_url('http://proxy.com')
+  context '#proxy_to without user auth' do
+    proxy = Faraday.proxy_to('http://proxy.com')
     include_examples 'ProxySelector::Single', proxy, nil, nil
   end
 
-  context '#proxy_to_url without scheme' do
-    proxy = Faraday.proxy_to_url('proxy.com')
+  context '#proxy_to without scheme' do
+    proxy = Faraday.proxy_to('proxy.com')
     include_examples 'ProxySelector::Single', proxy, nil, nil
   end
 
-  context '#proxy_to_url with user auth in proxy url' do
-    proxy = Faraday.proxy_to_url('http://u%3A1:p%3A2@proxy.com')
+  context '#proxy_to with user auth in proxy url' do
+    proxy = Faraday.proxy_to('http://u%3A1:p%3A2@proxy.com')
     include_examples 'ProxySelector::Single', proxy, 'u:1', 'p:2'
   end
 
-  context '#proxy_to_url with explicit user auth' do
-    proxy = Faraday.proxy_to_url('http://proxy.com',
-                                 user: 'u:1', password: 'p:2')
+  context '#proxy_to with explicit user auth' do
+    proxy = Faraday.proxy_to('http://proxy.com',
+                             user: 'u:1', password: 'p:2')
     include_examples 'ProxySelector::Single', proxy, 'u:1', 'p:2'
   end
 end
 
 context Faraday::ProxySelector::Environment do
   # https://github.com/golang/net/blob/da9a3fd4c5820e74b24a6cb7fb438dc9b0dd377c/http/httpproxy/proxy_test.go#L22
-  context '#proxy_for_url' do
+  context '#proxy_for' do
     # [ env, req_url, expected_proxy ]
     [
       [{ http_proxy: '127.0.0.1:8080' }, nil,
@@ -203,7 +197,7 @@ context Faraday::ProxySelector::Environment do
     ].each do |(env, req_url, expected_proxy)|
       it "expects#{" req url #{req_url} to have" if req_url} proxy #{expected_proxy.inspect} for #{env.inspect}" do
         selector = Faraday.proxy_with_env(env)
-        proxy = selector.proxy_for_url(req_url || 'http://example.com')
+        proxy = selector.proxy_for(req_url || 'http://example.com')
         if expected_proxy
           expect(proxy.uri.to_s).to eq(expected_proxy)
         else
@@ -214,7 +208,7 @@ context Faraday::ProxySelector::Environment do
   end
 
   # https://github.com/golang/net/blob/da9a3fd4c5820e74b24a6cb7fb438dc9b0dd377c/http/httpproxy/proxy_test.go#L261
-  context '#use_for_url?' do
+  context '#use_for?' do
     no_proxy_tests = [
       # Never proxy localhost:
       ['localhost', false],
@@ -256,7 +250,7 @@ context Faraday::ProxySelector::Environment do
 
       no_proxy_tests.each do |(host, matches)|
         it "#{matches ? :allows : :forbids} proxy for #{host}" do
-          expect(proxy.use_for_url?("http://#{host}/test")).to eq(matches)
+          expect(proxy.use_for?("http://#{host}/test")).to eq(matches)
         end
       end
     end
@@ -264,7 +258,7 @@ context Faraday::ProxySelector::Environment do
     context '(invalid no_proxy)' do
       it 'forbids proxy' do
         proxy = Faraday.proxy_with_env(no_proxy: ':1')
-        expect(proxy.use_for_url?('http://example.com')).to eq(true)
+        expect(proxy.use_for?('http://example.com')).to eq(true)
       end
     end
 
@@ -273,7 +267,7 @@ context Faraday::ProxySelector::Environment do
 
       no_proxy_tests.each do |(host, _)|
         it "forbids proxy for #{host}" do
-          expect(proxy.use_for_url?("http://#{host}/test")).to eq(false)
+          expect(proxy.use_for?("http://#{host}/test")).to eq(false)
         end
       end
     end
