@@ -31,7 +31,7 @@ module Adapters
 
       def test_connection_timeout
         conn = create_connection(:request => {:timeout => 10, :open_timeout => 1})
-        assert_raises Faraday::Error::ConnectionFailed do
+        assert_raises Faraday::ConnectionFailed do
           conn.get 'http://8.8.8.8:88'
         end
       end

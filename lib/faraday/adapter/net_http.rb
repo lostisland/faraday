@@ -45,7 +45,7 @@ module Faraday
             if defined?(OpenSSL) && OpenSSL::SSL::SSLError === err
               raise Faraday::SSLError, err
             else
-              raise Error::ConnectionFailed, err
+              raise Faraday::ConnectionFailed, err
             end
           end
 
@@ -58,7 +58,7 @@ module Faraday
 
         @app.call env
       rescue Timeout::Error, Errno::ETIMEDOUT => err
-        raise Faraday::Error::TimeoutError, err
+        raise Faraday::TimeoutError, err
       end
 
       private
