@@ -104,9 +104,8 @@ RSpec.describe Faraday::ProxySelector do
   end
 
   context '#proxy_with_env with env disabled' do
-    after { Faraday.ignore_env_proxy = @ignore_env_proxy }
-
     @ignore_env_proxy = Faraday.ignore_env_proxy
+    after { Faraday.ignore_env_proxy = @ignore_env_proxy }
     Faraday.ignore_env_proxy = true
     proxy = Faraday.proxy_with_env(nil)
     include_examples 'ProxySelector::Nil', proxy
@@ -155,8 +154,54 @@ RSpec.describe Faraday::ProxySelector do
   end
 end
 
-# https://github.com/golang/net/blob/da9a3fd4c5820e74b24a6cb7fb438dc9b0dd377c/http/httpproxy/proxy_test.go#L261
 context Faraday::ProxySelector::Environment do
+  # https://github.com/golang/net/blob/da9a3fd4c5820e74b24a6cb7fb438dc9b0dd377c/http/httpproxy/proxy_test.go#L22
+  context '#proxy_for_url' do
+    # [ env, req_url, expected_proxy ]
+    [
+      [{ http_proxy: '127.0.0.1:8080' }, nil,
+       'http://127.0.0.1:8080'],
+      [{ http_proxy: 'cache.corp.example.com:1234' }, nil,
+       'http://cache.corp.example.com:1234'],
+      [{ http_proxy: 'cache.corp.example.com' }, nil,
+       'http://cache.corp.example.com'],
+      [{ http_proxy: 'https://cache.corp.example.com' }, nil,
+       'https://cache.corp.example.com'],
+      [{ http_proxy: 'http://127.0.0.1:8080' }, nil,
+       'http://127.0.0.1:8080'],
+      [{ http_proxy: 'https://127.0.0.1:8080' }, nil,
+       'https://127.0.0.1:8080'],
+      [{ http_proxy: 'socks5://127.0.0.1' }, nil,
+       'socks5://127.0.0.1'],
+      # Don't use secure for http
+      [{ http_proxy: 'http.proxy.tld', https_proxy: 'secure.proxy.tld' },
+       'http://insecure.tld/', 'http://http.proxy.tld'],
+      # Use secure for https.
+      [{ http_proxy: 'http.proxy.tld', https_proxy: 'secure.proxy.tld' },
+       'https://secure.tld/', 'http://secure.proxy.tld'],
+      [{ http_proxy: 'http.proxy.tld', https_proxy: 'https://secure.proxy.tld' },
+       'https://secure.tld/', 'https://secure.proxy.tld'],
+      [{ no_proxy: 'example.com', http_proxy: 'proxy' }, nil, nil],
+      [{ no_proxy: '.example.com', http_proxy: 'proxy' }, nil,
+       'http://proxy'],
+      [{ no_proxy: 'ample.com', http_proxy: 'proxy' }, nil, 'http://proxy'],
+      [{ no_proxy: 'example.com', http_proxy: 'proxy' },
+       'http://foo.example.com/', nil],
+      [{ no_proxy: '.foo.com', http_proxy: 'proxy' }, nil, 'http://proxy']
+    ].each do |(env, req_url, expected_proxy)|
+      it "expects#{" req url #{req_url} to have" if req_url} proxy #{expected_proxy.inspect} for #{env.inspect}" do
+        selector = Faraday.proxy_with_env(env)
+        proxy = selector.proxy_for_url(req_url || 'http://example.com')
+        if expected_proxy
+          expect(proxy.uri.to_s).to eq(expected_proxy)
+        else
+          expect(proxy).to be_nil
+        end
+      end
+    end
+  end
+
+  # https://github.com/golang/net/blob/da9a3fd4c5820e74b24a6cb7fb438dc9b0dd377c/http/httpproxy/proxy_test.go#L261
   context '#use_for_url?' do
     no_proxy_tests = [
       # Never proxy localhost:

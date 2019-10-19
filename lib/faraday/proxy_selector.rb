@@ -168,9 +168,9 @@ module Faraday
       #
       # @return [Faraday::ProxyOptions, nil]
       def proxy_for(uri)
-        # check for proxy based on uri scheme
-        # check no_proxy
-        raise NotImplementedError, "given: #{uri.inspect}"
+        proxy = (uri.scheme == 'https' && @https_proxy) || @http_proxy
+        proxy = nil if proxy && !use_for?(uri)
+        proxy
       end
 
       # Gets the proxy for the given url
