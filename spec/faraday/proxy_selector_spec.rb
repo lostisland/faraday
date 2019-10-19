@@ -179,6 +179,18 @@ context Faraday::ProxySelector::Environment do
       # Use secure for https.
       [{ http_proxy: 'http.proxy.tld', https_proxy: 'secure.proxy.tld' },
        'https://secure.tld/', 'http://secure.proxy.tld'],
+      # don't use HTTP_PROXY in a CGI environment, where HTTP_PROXY can be
+      # attacker-controlled.
+      [{ 'HTTP_PROXY' => 'http://10.1.2.3:8080', 'REQUEST_METHOD' => '1' }, nil,
+       nil],
+      # :http_proxy and "http_proxy" still work
+      [{ http_proxy: 'http://10.1.2.3:8080', 'REQUEST_METHOD' => '1' }, nil,
+       'http://10.1.2.3:8080'],
+      [{ 'http_proxy' => 'http://10.1.2.3:8080', 'REQUEST_METHOD' => '1' }, nil,
+       'http://10.1.2.3:8080'],
+      # HTTPS proxy is still used even in CGI environment.
+      [{ https_proxy: 'https://secure.proxy.tld', 'REQUEST_METHOD' => '1' }, nil,
+       nil],
       [{ http_proxy: 'http.proxy.tld', https_proxy: 'https://secure.proxy.tld' },
        'https://secure.tld/', 'https://secure.proxy.tld'],
       [{ no_proxy: 'example.com', http_proxy: 'proxy' }, nil, nil],

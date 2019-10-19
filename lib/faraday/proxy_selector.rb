@@ -157,7 +157,16 @@ module Faraday
       attr_reader :host_matchers
 
       def initialize(env = nil)
-        @http_proxy = parse_proxy(env ||= ENV, HTTP_PROXY_KEYS)
+        env ||= ENV
+
+        # don't parse HTTP_PROXY if this looks like a CGI request
+        is_cgi = env['REQUEST_METHOD']
+        @http_proxy = if is_cgi.nil? || is_cgi.empty?
+                        parse_proxy(env, HTTP_PROXY_KEYS)
+                      else
+                        parse_proxy(env, HTTP_PROXY_KEYS[0...-1])
+                      end
+
         @https_proxy = parse_proxy(env, HTTPS_PROXY_KEYS)
         parse_no_proxy(env)
       end
