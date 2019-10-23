@@ -180,13 +180,13 @@ module Adapters
 
       def test_timeout
         conn = create_connection(:request => {:timeout => 1, :open_timeout => 1})
-        assert_raises Faraday::Error::TimeoutError do
+        assert_raises Faraday::TimeoutError do
           conn.get '/slow'
         end
       end
 
       def test_connection_error
-        assert_raises Faraday::Error::ConnectionFailed do
+        assert_raises Faraday::ConnectionFailed do
           get 'http://localhost:4'
         end
       end
@@ -209,7 +209,7 @@ module Adapters
         proxy_uri.password = 'WRONG'
         conn = create_connection(:proxy => proxy_uri)
 
-        err = assert_raises Faraday::Error::ConnectionFailed do
+        err = assert_raises Faraday::ConnectionFailed do
           conn.get '/echo'
         end
 

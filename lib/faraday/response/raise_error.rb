@@ -5,12 +5,16 @@ module Faraday
     def on_complete(env)
       case env[:status]
       when 404
-        raise Faraday::Error::ResourceNotFound, response_values(env)
+        raise Faraday::ResourceNotFound, response_values(env)
       when 407
         # mimic the behavior that we get with proxy requests with HTTPS
-        raise Faraday::Error::ConnectionFailed, %{407 "Proxy Authentication Required "}
+        raise Faraday::ConnectionFailed.new(
+                %{407 "Proxy Authentication Required "},
+                response_values(env))
       when ClientErrorStatuses
-        raise Faraday::Error::ClientError, response_values(env)
+        raise Faraday::ClientError, response_values(env)
+      when nil
+        raise Faraday::NilStatusError, response: response_values(env)
       end
     end
 
