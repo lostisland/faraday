@@ -99,7 +99,6 @@ module Faraday
         else
           proxy_from_env(url)
         end
-      @temp_proxy = @proxy
     end
 
     # Sets the Hash of URI query unencoded key/value pairs.
@@ -490,11 +489,8 @@ module Faraday
         raise ArgumentError, "unknown http method: #{method}"
       end
 
-      # Resets temp_proxy
-      @temp_proxy = proxy_for_request(url)
-
       request = build_request(method) do |req|
-        req.options = req.options.merge(proxy: @temp_proxy)
+        req.options.proxy = proxy_for_request(url)
         req.url(url)                if url
         req.headers.update(headers) if headers
         req.body = body             if body
@@ -514,7 +510,7 @@ module Faraday
       Request.create(method) do |req|
         req.params  = params.dup
         req.headers = headers.dup
-        req.options = options
+        req.options = options.dup
         yield(req) if block_given?
       end
     end
