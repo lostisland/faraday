@@ -19,10 +19,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
 
   spec.files = `git ls-files -z CHANGELOG.md LICENSE.md README.md Rakefile lib test spec`.split("\0")
-  s.metadata    = {
+  spec.metadata = {
     "homepage_uri" => "https://lostisland.github.io/faraday",
     "changelog_uri" => "https://github.com/lostisland/faraday/blob/master/CHANGELOG.md",
     "source_code_uri" => "https://github.com/lostisland/faraday/",
-    "bug_tracker_uri" => "https://github.com/lostisland/faraday/issues",
+    "bug_tracker_uri" => "https://github.com/lostisland/faraday/issues"
   }
 end
