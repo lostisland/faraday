@@ -9,5 +9,9 @@ module Faraday
     def initialize(app = nil)
       @app = app
     end
+
+    def close
+      @app&.close
+    end
   end
 end
