@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
 
-  files = %w(CHANGELOG.md LICENSE.md README.md Rakefile examples lib spec)
+  files = %w[CHANGELOG.md LICENSE.md README.md Rakefile examples lib spec]
   spec.files = `git ls-files -z #{files.join(' ')}`.split("\0")
   spec.metadata = {
     'homepage_uri' => 'https://lostisland.github.io/faraday',
