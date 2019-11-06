@@ -9,14 +9,20 @@ Gem::Specification.new do |spec|
 
   spec.summary = "HTTP/REST API client library."
 
-  spec.authors  = ["Rick Olson"]
+  spec.authors  = ["@technoweenie", "@iMacTia", "@olleolleolle"]
   spec.email    = 'technoweenie@gmail.com'
-  spec.homepage = 'https://github.com/lostisland/faraday'
+  spec.homepage = 'https://lostisland.github.io/faraday'
   spec.licenses = ['MIT']
 
   spec.required_ruby_version = '>= 1.9'
 
   spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
 
-  spec.files = `git ls-files -z lib LICENSE.md README.md`.split("\0")
+  spec.files = `git ls-files -z CHANGELOG.md LICENSE.md README.md Rakefile lib test spec`.split("\0")
+  spec.metadata = {
+    "homepage_uri" => "https://lostisland.github.io/faraday",
+    "changelog_uri" => "https://github.com/lostisland/faraday/blob/master/CHANGELOG.md",
+    "source_code_uri" => "https://github.com/lostisland/faraday/",
+    "bug_tracker_uri" => "https://github.com/lostisland/faraday/issues"
+  }
 end
