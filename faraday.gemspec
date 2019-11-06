@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = "HTTP/REST API client library."
 
-  spec.authors  = ["Rick Olson"]
+  spec.authors  = ["@technoweenie", "@iMacTia", "@olleolleolle"]
   spec.email    = 'technoweenie@gmail.com'
   spec.homepage = 'https://lostisland.github.io/faraday'
   spec.licenses = ['MIT']
