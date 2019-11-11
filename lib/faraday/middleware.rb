@@ -11,7 +11,11 @@ module Faraday
     end
 
     def close
-      @app&.close
+      if @app.respond_to?(:close)
+        @app.close
+      else
+        warn "#{@app} does not implement \#close!"
+      end
     end
   end
 end
