@@ -117,6 +117,13 @@ module Faraday
 
     def_delegators :builder, :build, :use, :request, :response, :adapter, :app
 
+    # Closes the underlying resources and/or connections. In the case of
+    # persistent connections, this closes all currently open connections
+    # but does not prevent new connections from being made.
+    def close
+      app.close
+    end
+
     # @!method get(url = nil, params = nil, headers = nil)
     # Makes a GET HTTP request without a body.
     # @!scope class
