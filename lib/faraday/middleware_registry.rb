@@ -13,7 +13,8 @@ module Faraday
       @klass = klass
       @autoload_path = autoload_path.to_s.freeze
       @monitor = Monitor.new
-      @registered_middleware = {}
+      @mutex = @monitor.method(:synchronize)
+      @registered = {}
       register(mapping) if mapping
     end
 
@@ -52,14 +53,14 @@ module Faraday
     #   )
     #
     def register(mapping)
-      @monitor.synchronize { @registered_middleware.update(mapping) }
+      @mutex.call { @registered.update(mapping) }
     end
 
     # Unregister a previously registered middleware class.
     #
     # @param key [Symbol] key for the registered middleware.
     def unregister(key)
-      @registered_middleware.delete(key)
+      @mutex.call { @registered.delete(key) }
     end
 
     # Lookup middleware class with a registered Symbol shortcut.
@@ -84,27 +85,37 @@ module Faraday
 
     private
 
+    # Expands the registered value for key until it comes back as a Module,
+    # Class, or nil.
     def load_class(key)
-      case value = @registered_middleware[key]
+      @mutex.call do
+        loop do
+          klass, register = expand_entry(key)
+          return klass unless register
+          @registered.update(key => klass)
+        end
+      end
+    end
+
+    def expand_entry(key)
+      case value = @registered[key]
       when Module, NilClass
-        return value
+        value
       when Symbol, String
-        register(key => @klass.const_get(value))
+        [@klass.const_get(value), true]
       when Proc
-        register(key => value.call)
+        [value.call, true]
       when Array
         const, path = value
         if (root = @autoload_path) && !root.empty?
           path = "#{root}/#{path}"
         end
         require(path)
-        register(key => const)
+        [const, true]
       else
         msg = "unexpected #{@klass} value for #{key.inspect}: #{value.inspect}"
         raise ArgumentError, msg
       end
-
-      load_class(key)
     end
   end
 
