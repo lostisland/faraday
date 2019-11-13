@@ -92,6 +92,7 @@ module Faraday
         loop do
           klass, register = expand_entry(key)
           return klass unless register
+
           @registered.update(key => klass)
         end
       end
@@ -168,24 +169,10 @@ module Faraday
     #
     def register_middleware(autoload_path = nil, mapping = nil)
       if class_registry.nil?
-        if autoload_path.nil?
-          raise ArgumentError, 'needs autoload_path to initialize ClassRegistry'
-        end
-
-        self.class_registry = ClassRegistry.new(self, autoload_path, mapping)
-        return
+        return initialize_class_registry(autoload_path, mapping)
       end
 
-      if mapping.nil?
-        mapping = autoload_path
-        autoload_path = nil
-      end
-
-      unless autoload_path.nil? || autoload_path.to_s == @autoload_path
-        warn "Cannot change autoload_path of existing #{self}.class_registry"
-      end
-
-      class_registry.register(mapping)
+      update_class_registry(autoload_path, mapping)
     end
 
     # Unregister a previously registered middleware class.
@@ -230,6 +217,29 @@ module Faraday
 
     def fetch_middleware(_)
       warn "Deprecated, see #{self}.class_registry"
+    end
+
+    private
+
+    def initialize_class_registry(autoload_path = nil, mapping = nil)
+      if autoload_path.nil?
+        raise ArgumentError, 'needs autoload_path to initialize ClassRegistry'
+      end
+
+      self.class_registry = ClassRegistry.new(self, autoload_path, mapping)
+    end
+
+    def update_class_registry(autoload_path = nil, mapping = nil)
+      if mapping.nil?
+        mapping = autoload_path
+        autoload_path = nil
+      end
+
+      unless autoload_path.nil? || autoload_path.to_s == @autoload_path
+        warn "Cannot change autoload_path of existing #{self}.class_registry"
+      end
+
+      class_registry.register(mapping)
     end
   end
 end
