@@ -5,7 +5,7 @@ require 'base64'
 module Faraday
   class Request
     # Authorization middleware for Basic Authentication.
-    class BasicAuthentication < load_middleware(:authorization)
+    class BasicAuthentication < lookup_middleware(:authorization)
       # @param login [String]
       # @param pass [String]
       #

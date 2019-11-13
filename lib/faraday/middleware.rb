@@ -6,6 +6,8 @@ module Faraday
     extend MiddlewareRegistry
     extend DependencyLoader
 
+    register_middleware('')
+
     def initialize(app = nil)
       @app = app
     end

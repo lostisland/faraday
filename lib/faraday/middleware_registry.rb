@@ -111,6 +111,13 @@ module Faraday
   # Adds the ability for other modules to register and lookup
   # middleware classes.
   module MiddlewareRegistry
+    def self.extended(klass)
+      class << klass
+        attr_accessor :class_registry
+      end
+      super
+    end
+
     # Register middleware class(es) on the current module.
     #
     # @param autoload_path [String] Middleware autoload path
@@ -127,51 +134,54 @@ module Faraday
     #            and its second is a file to `require`.
     # @return [void]
     #
-    # @example Lookup by a constant
+    # @example
     #
     #   module Faraday
-    #     class Whatever
-    #       # Middleware looked up by :foo returns Faraday::Whatever::Foo.
-    #       register_middleware foo: Foo
-    #     end
-    #   end
+    #     class Adapter
+    #       extend MiddlewareRegistry
     #
-    # @example Lookup by a symbol
+    #       register_middleware 'path/to/adapters',
+    #         # Lookup constant
+    #         some_adapter: SomeAdapter,
     #
-    #   module Faraday
-    #     class Whatever
-    #       # Middleware looked up by :bar returns
-    #       # Faraday::Whatever.const_get(:Bar)
-    #       register_middleware bar: :Bar
-    #     end
-    #   end
+    #         # Lookup symbol constant name
+    #         # Same as Faraday::Adapter.const_get(:SomeAdapter2)
+    #         some_adapter_2: :SomeAdapter2,
     #
-    # @example Lookup by a symbol and string in an array
-    #
-    #   module Faraday
-    #     class Whatever
-    #       # Middleware looked up by :baz requires 'baz' and returns
-    #       # Faraday::Whatever.const_get(:Baz)
-    #       register_middleware baz: [:Baz, 'baz']
+    #         # Require lib and then lookup class
+    #         # require('some-adapter-3')
+    #         # Returns Faraday::Adapter::SomeAdapter3
+    #         some_adapter_3: [:SomeAdapter3, 'some-adapter-3']
     #     end
     #   end
     #
     def register_middleware(autoload_path = nil, mapping = nil)
+      if class_registry.nil?
+        if autoload_path.nil?
+          raise ArgumentError, 'needs autoload_path to initialize ClassRegistry'
+        end
+
+        self.class_registry = ClassRegistry.new(self, autoload_path, mapping)
+        return
+      end
+
       if mapping.nil?
         mapping = autoload_path
         autoload_path = nil
       end
-      middleware_mutex do
-        @middleware_autoload_path = autoload_path if autoload_path
-        (@registered_middleware ||= {}).update(mapping)
+
+      unless autoload_path.nil?
+        warn "Cannot change autoload_path of existing #{self}.class_registry"
       end
+
+      class_registry.register(mapping)
     end
 
     # Unregister a previously registered middleware class.
     #
     # @param key [Symbol] key for the registered middleware.
     def unregister_middleware(key)
-      @registered_middleware.delete(key)
+      class_registry.unregister(key)
     end
 
     # Lookup middleware class with a registered Symbol shortcut.
@@ -183,52 +193,32 @@ module Faraday
     # @example
     #
     #   module Faraday
-    #     class Whatever
-    #       register_middleware foo: Foo
+    #     extend MiddlewareRegistry
+    #     class Adapter
+    #       register_middleware('path/to/adapters',
+    #         some_adapter: SomeAdapter,
+    #       )
     #     end
     #   end
     #
-    #   Faraday::Whatever.lookup_middleware(:foo)
-    #   # => Faraday::Whatever::Foo
+    #   Faraday::Adapter.lookup_middleware(:some_adapter)
+    #   # => SomeAdapter
     #
     def lookup_middleware(key)
-      load_middleware(key) ||
-        raise(Faraday::Error, "#{key.inspect} is not registered on #{self}")
-    end
-
-    def middleware_mutex(&block)
-      @middleware_mutex ||= Monitor.new
-      @middleware_mutex.synchronize(&block)
-    end
-
-    def fetch_middleware(key)
-      defined?(@registered_middleware) && @registered_middleware[key]
+      class_registry.lookup(key)
     end
 
     def load_middleware(key)
-      value = fetch_middleware(key)
-      case value
-      when Module
-        value
-      when Symbol, String
-        middleware_mutex do
-          @registered_middleware[key] = const_get(value)
-        end
-      when Proc
-        middleware_mutex do
-          @registered_middleware[key] = value.call
-        end
-      when Array
-        middleware_mutex do
-          const, path = value
-          if (root = @middleware_autoload_path)
-            path = "#{root}/#{path}"
-          end
-          require(path)
-          @registered_middleware[key] = const
-        end
-        load_middleware(key)
-      end
+      warn "Deprecated, use #{self}.lookup_middleware"
+      lookup_middleware(key)
+    end
+
+    def middleware_mutex
+      warn "Deprecated, see #{self}.class_registry"
+    end
+
+    def fetch_middleware(_)
+      warn "Deprecated, see #{self}.class_registry"
     end
   end
 end
