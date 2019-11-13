@@ -170,7 +170,7 @@ module Faraday
         autoload_path = nil
       end
 
-      unless autoload_path.nil?
+      unless autoload_path.nil? || autoload_path.to_s == @autoload_path
         warn "Cannot change autoload_path of existing #{self}.class_registry"
       end
 
