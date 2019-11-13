@@ -7,20 +7,23 @@ module Faraday
   #   usage about deprecation.
   # @see Faraday::Deprecate
   module DeprecatedClass
-    def self.proxy_class(new_klass)
-      Class.new(new_klass) do
-        class << self
+    def self.proxy_class(origclass, ver = '1.0')
+      metaclass = nil
+      proxyclass = Class.new(origclass) do
+        metaclass = class << self
           extend Faraday::Deprecate
-          # Make this more human readable than #<Class:Faraday::ClientError>
-          klass_name = superclass.to_s[/^#<Class:([\w:]+)>$/, 1]
-          deprecate :new, "#{klass_name}.new", '1.0'
-          deprecate :inherited, klass_name, '1.0'
 
           def ===(other)
             other.is_a?(superclass) || super
           end
+
+          self
         end
       end
+
+      metaclass.send(:deprecate, :new, "#{origclass}.new", ver)
+      metaclass.send(:deprecate, :inherited, origclass.name, ver)
+      proxyclass
     end
   end
 
@@ -73,6 +76,7 @@ module Faraday
     # @param ver [String] the semver the method will be removed.
     def deprecate(name, repl, ver)
       class_eval do
+        gem_ver = Gem::Version.new(ver)
         old = "_deprecated_#{name}"
         alias_method old, name
         define_method name do |*args, &block|
@@ -87,7 +91,7 @@ module Faraday
           msg = [
             "NOTE: #{target_message} is deprecated",
             repl == :none ? ' with no replacement' : "; use #{repl} instead. ",
-            "It will be removed in or after version #{Gem::Version.new(ver)}",
+            "It will be removed in or after version #{gem_ver}",
             "\n#{target}#{name} called from #{Gem.location_of_caller.join(':')}"
           ]
           warn "#{msg.join}." unless Faraday::Deprecate.skip
