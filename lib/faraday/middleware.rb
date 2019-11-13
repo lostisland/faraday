@@ -9,5 +9,13 @@ module Faraday
     def initialize(app = nil)
       @app = app
     end
+
+    def close
+      if @app.respond_to?(:close)
+        @app.close
+      else
+        warn "#{@app} does not implement \#close!"
+      end
+    end
   end
 end

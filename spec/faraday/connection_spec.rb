@@ -127,6 +127,13 @@ RSpec.describe Faraday::Connection do
     end
   end
 
+  describe '#close' do
+    it 'can close underlying app' do
+      expect(conn.app).to receive(:close)
+      conn.close
+    end
+  end
+
   describe 'basic_auth' do
     subject { conn }
 
