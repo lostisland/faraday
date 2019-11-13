@@ -6,6 +6,11 @@ module Faraday
   # Adds the ability for other modules to register and lookup
   # middleware classes.
   module MiddlewareRegistry
+    def self.extended(klass)
+      super
+      klass.middleware_mutex
+    end
+
     # Register middleware class(es) on the current module.
     #
     # @param autoload_path [String] Middleware autoload path
@@ -92,8 +97,9 @@ module Faraday
     end
 
     def middleware_mutex(&block)
+      puts "#{self}: middleware_mutex" if @middleware_mutex.nil?
       @middleware_mutex ||= Monitor.new
-      @middleware_mutex.synchronize(&block)
+      @middleware_mutex.synchronize(&block) if block
     end
 
     def fetch_middleware(key)
