@@ -17,7 +17,7 @@ module Faraday
           deprecate :inherited, klass_name, '1.0'
 
           def ===(other)
-            superclass === other || super
+            other.is_a?(superclass) || super
           end
         end
       end
