@@ -8,22 +8,18 @@ module Faraday
   # @see Faraday::Deprecate
   module DeprecatedClass
     def self.proxy_class(origclass, ver = '1.0')
-      metaclass = nil
-      proxyclass = Class.new(origclass) do
-        metaclass = class << self
+      proxy = Class.new(origclass) do
+        class << self
           extend Faraday::Deprecate
 
           def ===(other)
             other.is_a?(superclass) || super
           end
-
-          self
         end
       end
-
-      metaclass.send(:deprecate, :new, "#{origclass}.new", ver)
-      metaclass.send(:deprecate, :inherited, origclass.name, ver)
-      proxyclass
+      proxy.singleton_class.send(:deprecate, :new, "#{origclass}.new", ver)
+      proxy.singleton_class.send(:deprecate, :inherited, origclass.name, ver)
+      proxy
     end
   end
 
