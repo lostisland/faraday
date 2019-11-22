@@ -71,6 +71,17 @@ conn.get('/', api_key: 'secret')
 # => DEBUG -- response: date: "Sun, 19 May 2019 16:12:36 GMT"
 ```
 
+### Change log level
+
+By default, the `logger` middleware logs on the `info` log level. It is possible to configure
+the severity by providing the `log_level` option:
+
+```ruby
+conn = Faraday.new(url: 'http://sushi.com') do |faraday|
+  faraday.response :logger, nil, { bodies: true, log_level: :debug }
+end
+```
+
 ### Customize the formatter
 
 You can also provide a custom formatter to control how requests and responses are logged.
