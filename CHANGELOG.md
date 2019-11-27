@@ -1,5 +1,22 @@
 # Faraday Changelog
 
+## v0.17.1
+
+Final release before Faraday v1.0, with important fixes for Ruby 2.7.
+
+Fixes:
+
+* RaiseError response middleware raises exception if HTTP client returns a nil
+  status. (#1042)
+
+Misc:
+
+* Fix Ruby 2.7 warnings (#1009)
+* Add `Faraday::Deprecate` to warn about upcoming v1.0 changes. (#1054, #1059,
+    #1076, #1077)
+* Add release notes up to current in CHANGELOG.md (#1066)
+* Port minimal rspec suite from main branch to run backported tests. (#1058)
+
 ## v0.17.0
 
 This release is the same as v0.15.4. It was pushed to cover up releases
