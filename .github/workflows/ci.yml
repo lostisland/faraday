@@ -27,7 +27,6 @@ jobs:
         
     - name: Set up Ruby
       run: |
-        source $HOME/.rvm/scripts/rvm
         rvm install ${{ matrix.ruby }} --binary
         rvm --default use ${{ matrix.ruby }}
 
