@@ -23,7 +23,7 @@ Faraday includes these adapters (but not the HTTP client libraries):
 * [HTTPClient][httpclient]
 
 While most adapters use a common Ruby HTTP client library, adapters can also
-have completely custom impelmentations.
+have completely custom implementations.
 
 * [Test Adapter][testing]
 * Rack Adapter (link TBD)
