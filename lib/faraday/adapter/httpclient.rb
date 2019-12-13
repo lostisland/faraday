@@ -6,31 +6,15 @@ module Faraday
     class HTTPClient < Faraday::Adapter
       dependency 'httpclient'
 
+      include CacheConnection
+
       def build_connection(env)
-        @client ||= ::HTTPClient.new.tap do |cli|
-          # enable compression
-          cli.transparent_gzip_decompression = true
-        end
-
-        if (req = env[:request])
-          if (proxy = req[:proxy])
-            configure_proxy @client, proxy
-          end
-
-          if (bind = req[:bind])
-            configure_socket @client, bind
-          end
-
-          configure_timeouts @client, req
-        end
-
-        if env[:url].scheme == 'https' && (ssl = env[:ssl])
-          configure_ssl @client, ssl
-        end
-
-        configure_client @client
-
-        @client
+        conn = ::HTTPClient.new
+        conn.transparent_gzip_decompression = true
+        configure_client(conn)
+        configure_for_request(conn, env[:request])
+        configure_ssl(conn, env[:ssl])
+        conn
       end
 
       def call(env)
@@ -91,6 +75,8 @@ module Faraday
 
       # @param ssl [Hash]
       def configure_ssl(client, ssl)
+        return unless ssl
+
         ssl_config = client.ssl_config
         ssl_config.verify_mode = ssl_verify_mode(ssl)
         ssl_config.cert_store = ssl_cert_store(ssl)
@@ -115,6 +101,20 @@ module Faraday
         return unless (sec = request_timeout(:read, req))
 
         client.receive_timeout = sec
+      end
+
+      def configure_for_request(client, options)
+        return unless options
+
+        if (proxy = options[:proxy])
+          configure_proxy(client, proxy)
+        end
+
+        if (bind = options[:bind])
+          configure_socket(client, bind)
+        end
+
+        configure_timeouts(client, options)
       end
 
       def configure_client(client)

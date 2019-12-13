@@ -6,10 +6,12 @@ module Faraday
     class NetHttpPersistent < NetHttp
       dependency 'net/http/persistent'
 
+      include CacheConnection
+
       private
 
       def net_http_connection(env)
-        @cached_connection ||=
+        conn =
           if Net::HTTP::Persistent.instance_method(:initialize)
                                   .parameters.first == %i[key name]
             options = { name: 'Faraday' }
@@ -22,10 +24,8 @@ module Faraday
           end
 
         proxy_uri = proxy_uri(env)
-        if @cached_connection.proxy_uri != proxy_uri
-          @cached_connection.proxy = proxy_uri
-        end
-        @cached_connection
+        conn.proxy = proxy_uri if conn.proxy_uri != proxy_uri
+        conn
       end
 
       def proxy_uri(env)

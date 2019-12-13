@@ -5,7 +5,8 @@ module Faraday
   # connection object.
   class ConnectionOptions < Options.new(:request, :proxy, :ssl, :builder, :url,
                                         :parallel_manager, :params, :headers,
-                                        :builder_class)
+                                        :builder_class, :bind, :read_timeout,
+                                        :timeout, :open_timeout, :write_timeout)
 
     options request: RequestOptions, ssl: SSLOptions
 

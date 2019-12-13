@@ -6,6 +6,8 @@ module Faraday
     class Excon < Faraday::Adapter
       dependency 'excon'
 
+      include CacheConnection
+
       def build_connection(env)
         opts = opts_from_env(env)
         ::Excon.new(env[:url].to_s, opts.merge(@connection_options))
@@ -52,18 +54,9 @@ module Faraday
 
       def opts_from_env(env)
         opts = {}
-        amend_opts_with_ssl!(opts, env[:ssl]) if needs_ssl_settings?(env)
-
-        if (req = env[:request])
-          amend_opts_with_timeouts!(opts, req)
-          amend_opts_with_proxy_settings!(opts, req)
-        end
-
+        amend_opts_with_ssl!(opts, env[:ssl])
+        amend_opts_for_request!(opts, env[:request])
         opts
-      end
-
-      def needs_ssl_settings?(env)
-        env[:url].scheme == 'https' && env[:ssl]
       end
 
       OPTS_KEYS = [
@@ -79,6 +72,8 @@ module Faraday
       ].freeze
 
       def amend_opts_with_ssl!(opts, ssl)
+        return unless ssl
+
         opts[:ssl_verify_peer] = !!ssl.fetch(:verify, true)
         # https://github.com/geemus/excon/issues/106
         # https://github.com/jruby/jruby-ossl/issues/19
@@ -89,6 +84,13 @@ module Faraday
 
           opts[key_in_opts] = ssl[key_in_ssl]
         end
+      end
+
+      def amend_opts_for_request!(opts, req)
+        return unless req
+
+        amend_opts_with_timeouts!(opts, req)
+        amend_opts_with_proxy_settings!(opts, req)
       end
 
       def amend_opts_with_timeouts!(opts, req)

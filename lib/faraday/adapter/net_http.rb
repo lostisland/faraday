@@ -45,6 +45,12 @@ module Faraday
           if http.respond_to?(:use_ssl=)
             http.use_ssl = env[:url].scheme == 'https'
           end
+
+          # Only set if Net::Http supports it, since Ruby 2.5.
+          http.max_retries = 0 if http.respond_to?(:max_retries=)
+
+          @config_block&.call(http)
+
           configure_ssl(http, env[:ssl])
           configure_request(http, env[:request])
         end
@@ -167,6 +173,8 @@ module Faraday
       end
 
       def configure_request(http, req)
+        return unless req
+
         if (sec = request_timeout(:read, req))
           http.read_timeout = sec
         end
@@ -176,14 +184,9 @@ module Faraday
           http.write_timeout = sec
         end
 
-        if (sec = request_timeout(:open, req))
-          http.open_timeout = sec
-        end
+        return unless (sec = request_timeout(:open, req))
 
-        # Only set if Net::Http supports it, since Ruby 2.5.
-        http.max_retries = 0 if http.respond_to?(:max_retries=)
-
-        @config_block&.call(http)
+        http.open_timeout = sec
       end
 
       def ssl_cert_store(ssl)

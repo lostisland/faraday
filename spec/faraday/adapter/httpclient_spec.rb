@@ -24,10 +24,38 @@ RSpec.describe Faraday::Adapter::HTTPClient do
 
   context 'Options' do
     let(:request) { Faraday::RequestOptions.new }
-    let(:env) { { request: request } }
-    let(:options) { {} }
-    let(:adapter) { Faraday::Adapter::HTTPClient.new }
-    let(:client) { adapter.connection(url: URI.parse('https://example.com')) }
+    let(:env) do
+      Faraday::Env.from(
+        request: request,
+        ssl: Faraday::SSLOptions.new,
+        url: URI.parse('https://example.com')
+      )
+    end
+    let(:adapter) { described_class.new }
+    let(:client) { adapter.connection(env) }
+
+    it 'caches connection' do
+      # before client is created
+      env.ssl.client_cert = 'client-cert'
+      request.boundary = 'doesnt-matter'
+
+      expect(client.ssl_config.client_cert).to eq('client-cert')
+      expect(client.connect_timeout).to eq(60)
+
+      # client2 is cached because no important request options are set
+      client2 = adapter.connection(env)
+      expect(client2.ssl_config.client_cert).to eq('client-cert')
+      expect(client2.connect_timeout).to eq(60)
+      expect(client2.object_id).to eq(client.object_id)
+
+      # important request setting, so client3 is new
+      env.request.timeout = 5
+      client3 = adapter.connection(env)
+      expect(client3.object_id).not_to eq(client2.object_id)
+      expect(client3.ssl_config.client_cert).to eq('client-cert')
+
+      expect(client3.connect_timeout).to eq(5)
+    end
 
     it 'configures timeout' do
       assert_default_timeouts!
