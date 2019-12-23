@@ -60,6 +60,11 @@ module Faraday
       yield conn
     end
 
+    # Close any persistent connections. The adapter should still be usable
+    # after calling close.
+    def close
+    end
+
     def call(env)
       env.clear_body if env.needs_body?
       env.response = Response.new
