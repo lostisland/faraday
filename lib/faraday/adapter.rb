@@ -63,6 +63,8 @@ module Faraday
     # Close any persistent connections. The adapter should still be usable
     # after calling close.
     def close
+      # Possible implementation:
+      # @app.close if @app.respond_to?(:close)
     end
 
     def call(env)
