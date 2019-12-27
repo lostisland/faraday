@@ -55,7 +55,7 @@ module Faraday
       return [nil, "the server responded with status #{exc[:status]}", exc] \
         if exc.respond_to?(:each_key)
 
-      [nil, exc.to_s, response || {}]
+      [nil, exc.to_s, response]
     end
   end
 
