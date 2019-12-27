@@ -21,9 +21,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get install libcurl4-openssl-dev
+#     - name: Install dependencies
+#       run: |
+#         sudo apt-get install libcurl4-openssl-dev
     
     - name: Set up RVM
       run: |
@@ -38,6 +38,7 @@ jobs:
     - name: Build
       run: |
         source $HOME/.rvm/scripts/rvm
+        sudo apt-get install libcurl4-openssl-dev
         gem install bundler -v '<2'
         bundle install --jobs 4 --retry 3
 
