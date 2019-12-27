@@ -77,7 +77,7 @@ module Faraday
   end
 
   # A unified client error for timeouts.
-  class TimeoutError < ServerError
+  class TimeoutError < ClientError
     def initialize(exc = 'timeout', response = nil)
       super(exc, response)
     end
@@ -92,21 +92,21 @@ module Faraday
   end
 
   # A unified error for failed connections.
-  class ConnectionFailed < Error
+  class ConnectionFailed < ClientError
   end
 
   # A unified client error for SSL errors.
-  class SSLError < Error
+  class SSLError < ClientError
   end
 
   # Raised by FaradayMiddleware::ResponseMiddleware
-  class ParsingError < Error
+  class ParsingError < ClientError
   end
 
   # Exception used to control the Retry middleware.
   #
   # @see Faraday::Request::Retry
-  class RetriableResponse < Error
+  class RetriableResponse < ClientError
   end
 
   %i[ClientError ConnectionFailed ResourceNotFound
