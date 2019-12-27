@@ -9,8 +9,8 @@ module Faraday
     attr_reader :response, :wrapped_exception
 
     def initialize(exc, response = nil)
-      @wrapped_exception = nil unless @wrapped_exception
-      @response = nil unless @response
+      @wrapped_exception = nil unless defined?(@wrapped_exception)
+      @response = nil unless defined?(@response)
       super(exc_msg_and_response!(exc, response))
     end
 
