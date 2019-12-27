@@ -57,7 +57,7 @@ module Faraday
       return [nil, "the server responded with status #{exc[:status]}", exc] \
         if exc.respond_to?(:each_key)
 
-      [nil, exc.to_s, response || {}]
+      [nil, exc.to_s, response]
     end
   end
 
@@ -117,7 +117,7 @@ module Faraday
     extend Faraday::Deprecate
 
     def unwrap_resp(resp)
-      if inner = resp.keys.size == 1 && resp[:response]
+      if inner = (resp.keys.size == 1 && resp[:response])
         return unwrap_resp(inner)
       end
 
@@ -146,8 +146,8 @@ module Faraday
   class RetriableResponse < ClientError
   end
 
-  %i[ClientError ConnectionFailed ResourceNotFound
-     ParsingError TimeoutError SSLError RetriableResponse].each do |const|
+  [:ClientError, :ConnectionFailed, :ResourceNotFound,
+    :ParsingError, :TimeoutError, :SSLError, :RetriableResponse].each do |const|
     Error.const_set(
       const,
       DeprecatedClass.proxy_class(Faraday.const_get(const))
