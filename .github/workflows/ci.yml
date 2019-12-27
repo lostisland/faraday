@@ -38,8 +38,10 @@ jobs:
     - name: Build
       run: |
         source $HOME/.rvm/scripts/rvm
-        gem install bundler
+        gem install bundler -v '<2'
         bundle install --jobs 4 --retry 3
 
     - name: Test
-      run: bundle exec rake
+      run: |
+        source $HOME/.rvm/scripts/rvm
+        bundle exec rake
