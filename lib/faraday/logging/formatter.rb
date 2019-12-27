@@ -7,7 +7,8 @@ module Faraday
     class Formatter
       extend Forwardable
 
-      DEFAULT_OPTIONS = { headers: true, bodies: false }.freeze
+      DEFAULT_OPTIONS = { headers: true, bodies: false,
+                          log_level: :info }.freeze
 
       def initialize(logger:, options:)
         @logger = logger
@@ -18,27 +19,21 @@ module Faraday
       def_delegators :@logger, :debug, :info, :warn, :error, :fatal
 
       def request(env)
-        info('request') do
+        request_log = proc do
           "#{env.method.upcase} #{apply_filters(env.url.to_s)}"
         end
-        if log_headers?(:request)
-          debug('request') { apply_filters(dump_headers(env.request_headers)) }
-        end
-        return unless env[:body] && log_body?(:request)
+        public_send(log_level, 'request', &request_log)
 
-        debug('request') { apply_filters(dump_body(env[:body])) }
+        log_headers('request', env.request_headers) if log_headers?(:request)
+        log_body('request', env[:body]) if env[:body] && log_body?(:request)
       end
 
       def response(env)
-        info('response') { "Status #{env.status}" }
-        if log_headers?(:response)
-          debug('response') do
-            apply_filters(dump_headers(env.response_headers))
-          end
-        end
-        return unless env[:body] && log_body?(:response)
+        status = proc { "Status #{env.status}" }
+        public_send(log_level, 'response', &status)
 
-        debug('response') { apply_filters(dump_body(env[:body])) }
+        log_headers('response', env.response_headers) if log_headers?(:response)
+        log_body('response', env[:body]) if env[:body] && log_body?(:response)
       end
 
       def filter(filter_word, filter_replacement)
@@ -86,6 +81,24 @@ module Faraday
           output = output.to_s.gsub(pattern, replacement)
         end
         output
+      end
+
+      def log_level
+        unless %i[debug info warn error fatal].include?(@options[:log_level])
+          return :info
+        end
+
+        @options[:log_level]
+      end
+
+      def log_headers(type, headers)
+        headers_log = proc { apply_filters(dump_headers(headers)) }
+        public_send(log_level, type, &headers_log)
+      end
+
+      def log_body(type, body)
+        body_log = proc { apply_filters(dump_body(body)) }
+        public_send(log_level, type, &body_log)
       end
     end
   end
