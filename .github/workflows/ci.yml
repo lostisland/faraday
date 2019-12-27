@@ -16,14 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ['1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6']
+        ruby: ['2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6']
 
     steps:
     - uses: actions/checkout@v1
-
-#     - name: Install dependencies
-#       run: |
-#         sudo apt-get install libcurl4-openssl-dev
     
     - name: Set up RVM
       run: |
