@@ -13,6 +13,12 @@ Please note `Faraday::ClientError` was previously used for both.
   * Faraday::ProxyAuthError (407). Please note this raised a `Faraday::ConnectionFailed` before.
   * Faraday::ConflictError (409)
   * Faraday::UnprocessableEntityError (422)
+* The following error classes have changed the hierarchy to better mirror their real-world usage and semantic meaning:
+  * TimeoutError < ServerError (was < ClientError)
+  * ConnectionFailed < Error (was < ClientError)
+  * SSLError < Error (was < ClientError)
+  * ParsingError < Error (was < ClientError)
+  * RetriableResponse < Error (was < ClientError)
 
 ### Custom adapters
 If you have written a custom adapter, please be aware that `env.body` is now an alias to the two new properties `request_body` and `response_body`.

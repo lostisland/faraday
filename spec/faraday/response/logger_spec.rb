@@ -144,7 +144,7 @@ RSpec.describe Faraday::Response::Logger do
   context 'when not logging response headers' do
     let(:logger_options) { { headers: { response: false } } }
 
-    it 'does log response headers if option is false' do
+    it 'does not log response headers if option is false' do
       conn.get '/hello', nil, accept: 'text/html'
       expect(string_io.string).not_to match(%(Content-Type: "text/html))
     end
@@ -189,6 +189,36 @@ RSpec.describe Faraday::Response::Logger do
       expect(string_io.string).to match(%(soylent green is))
       expect(string_io.string).to match(%(tasty))
       expect(string_io.string).not_to match(%(people))
+    end
+  end
+
+  context 'when using log_level' do
+    let(:logger_options) { { bodies: true, log_level: :debug } }
+
+    it 'logs request/request body on the specified level (debug)' do
+      logger.level = Logger::DEBUG
+      conn.post '/ohyes', 'name=Ebi', accept: 'text/html'
+      expect(string_io.string).to match(%(name=Ebi))
+      expect(string_io.string).to match(%(pebbles))
+    end
+
+    it 'logs headers on the debug level' do
+      logger.level = Logger::DEBUG
+      conn.get '/hello', nil, accept: 'text/html'
+      expect(string_io.string).to match(%(Content-Type: "text/html))
+    end
+
+    it 'does not log request/response body on the info level' do
+      logger.level = Logger::INFO
+      conn.post '/ohyes', 'name=Ebi', accept: 'text/html'
+      expect(string_io.string).not_to match(%(name=Ebi))
+      expect(string_io.string).not_to match(%(pebbles))
+    end
+
+    it 'does not log headers on the info level' do
+      logger.level = Logger::INFO
+      conn.get '/hello', nil, accept: 'text/html'
+      expect(string_io.string).not_to match(%(Content-Type: "text/html))
     end
   end
 end
