@@ -108,11 +108,13 @@ module Faraday
   class NilStatusError < ServerError
     def initialize(exc, response = nil)
       exc_msg_and_response!(exc, response)
-      @response = unwrap_resp(@response)
+      @response = unwrap_resp!(@response)
       super('http status could not be derived from the server response')
     end
 
     private
+
+    extend Faraday::Deprecate
 
     def unwrap_resp(resp)
       if inner = resp.keys.size == 1 && resp[:response]
@@ -121,6 +123,9 @@ module Faraday
 
       resp
     end
+
+    alias_method :unwrap_resp!, :unwrap_resp
+    deprecate('unwrap_resp', nil, '1.0')
   end
 
   # A unified error for failed connections.
