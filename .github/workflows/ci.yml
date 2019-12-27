@@ -16,24 +16,29 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: [2.4.x, 2.5.x, 2.6.x]
+        ruby: ['2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6']
 
     steps:
     - uses: actions/checkout@v1
-
-    - name: Install dependencies
+    
+    - name: Set up RVM
       run: |
-        sudo apt-get install libcurl4-openssl-dev
-
+        curl -sSL https://get.rvm.io | bash
+        
     - name: Set up Ruby
-      uses: actions/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
+      run: |
+        source $HOME/.rvm/scripts/rvm
+        rvm install ${{ matrix.ruby }} --disable-binary
+        rvm --default use ${{ matrix.ruby }}
 
     - name: Build
       run: |
-        gem install bundler
+        source $HOME/.rvm/scripts/rvm
+        sudo apt-get install libcurl4-openssl-dev
+        gem install bundler -v '<2'
         bundle install --jobs 4 --retry 3
 
     - name: Test
-      run: bundle exec rake
+      run: |
+        source $HOME/.rvm/scripts/rvm
+        bundle exec rake
