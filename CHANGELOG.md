@@ -21,7 +21,7 @@ Final release before Faraday v1.0, with important fixes for Ruby 2.7.
 Fixes:
 
 * RaiseError response middleware raises exception if HTTP client returns a nil
-  status. (#1042)
+  status. #1042 (@jonnyom, @BobbyMcWho)
 
 Misc:
 
