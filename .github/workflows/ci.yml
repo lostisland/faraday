@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: [2.4.x, 2.5.x, 2.6.x, '2.7']
+        ruby: ['2.4', '2.5', '2.6', '2.7']
 
     steps:
     - uses: actions/checkout@v1
@@ -47,18 +47,25 @@ jobs:
       run: |
         sudo apt-get install libcurl4-openssl-dev
 
+    - name: Set up RVM
+      run: |
+        curl -sSL https://get.rvm.io | bash
+        
     - name: Set up Ruby
-      uses: actions/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
+      run: |
+        source $HOME/.rvm/scripts/rvm
+        rvm install ${{ matrix.ruby }} --disable-binary
+        rvm --default use ${{ matrix.ruby }}
 
     - name: Build
       run: |
-        gem install bundler
+        source $HOME/.rvm/scripts/rvm
+        sudo apt-get install libcurl4-openssl-dev
+        gem install bundler -v '<2'
         bundle install --jobs 4 --retry 3
 
     - name: Setup Code Climate
-      if: matrix.ruby == '2.6.x'
+      if: matrix.ruby == '2.6'
       run: |
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         chmod +x ./cc-test-reporter
@@ -68,6 +75,6 @@ jobs:
       run: bundle exec rake
 
     - name: Run Code Climate Test Reporter
-      if: success() && matrix.ruby == '2.6.x'
+      if: success() && matrix.ruby == '2.6'
       run: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
       continue-on-error: true
