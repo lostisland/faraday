@@ -1,5 +1,19 @@
 # Faraday Changelog
 
+## v0.17.2
+
+Fixes:
+
+* Reverts changes in error classes hierarchy. #1092 (@iMacTia)
+* Fix Ruby 1.9 syntax errors and improve Error class testing #1094 (@BanzaiMan,
+  @mrexox, @technoweenie)
+
+Misc:
+
+* Stops using `&Proc.new` for block forwarding. #1083 (@olleolleolle)
+* Update CI to test against ruby 2.0-2.7 #1087, #1099 (@iMacTia, @olleolleolle,
+  @technoweenie)
+
 ## v0.17.1
 
 Final release before Faraday v1.0, with important fixes for Ruby 2.7.
