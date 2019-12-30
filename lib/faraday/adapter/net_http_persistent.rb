@@ -16,7 +16,7 @@ module Faraday
             if @connection_options.key?(:pool_size)
               options[:pool_size] = @connection_options[:pool_size]
             end
-            Net::HTTP::Persistent.new(options)
+            Net::HTTP::Persistent.new(**options)
           else
             Net::HTTP::Persistent.new('Faraday')
           end
