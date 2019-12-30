@@ -45,9 +45,13 @@ module Faraday
         if value.nil?
           buffer << "#{encoded_key}&"
         elsif value.is_a?(Array)
-          value.each do |sub_value|
-            encoded_value = escape(sub_value)
-            buffer << "#{encoded_key}=#{encoded_value}&"
+          if value.empty?
+            buffer << "#{encoded_key}=&"
+          else
+            value.each do |sub_value|
+              encoded_value = escape(sub_value)
+              buffer << "#{encoded_key}=#{encoded_value}&"
+            end
           end
         else
           encoded_value = escape(value)
