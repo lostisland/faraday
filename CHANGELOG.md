@@ -13,6 +13,8 @@ Misc:
 * Stops using `&Proc.new` for block forwarding. #1083 (@olleolleolle)
 * Update CI to test against ruby 2.0-2.7 #1087, #1099 (@iMacTia, @olleolleolle,
   @technoweenie)
+* require FARADAY_DEPRECATE=warn to show Faraday v1.0 deprecation warnings
+  #1098 (@technoweenie)
 
 ## v0.17.1
 
