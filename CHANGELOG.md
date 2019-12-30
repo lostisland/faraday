@@ -1,6 +1,6 @@
 # Faraday Changelog
 
-## v1.0-rc1
+## v1.0
 
 Features:
 
@@ -25,6 +25,7 @@ Misc:
 * Major effort to update code to RuboCop standards. #854 (@olleolleolle, @iMacTia, @technoweenie, @htwroclau, @jherdman, @Drenmi, @Insti)
 * Documentation tweaks (@adsteel, @Hubro, @iMacTia, @olleolleolle, @technoweenie)
 * Update license year #981 (@Kevin-Kawai)
+* Configure Jekyll plugin jekyll-remote-theme to support Docker usage #999 (@Lewiscowles1986)
 
 ## v0.17.0
 
