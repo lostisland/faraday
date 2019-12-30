@@ -46,11 +46,17 @@ module Faraday
   #     end
   module Deprecate
     def self.skip # :nodoc:
-      @skip ||= false
+      @skip ||= begin
+        case ENV['FARADAY_DEPRECATE'].to_s.downcase
+        when '1', 'warn' then :warn
+        else :skip
+        end
+      end
+      @skip == :skip
     end
 
     def self.skip=(value) # :nodoc:
-      @skip = value
+      @skip = value ? :skip : :warn
     end
 
     # Temporarily turn off warnings. Intended for tests only.
