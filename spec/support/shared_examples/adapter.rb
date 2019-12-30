@@ -52,14 +52,6 @@ shared_examples 'adapter examples' do |**options|
     expect(request_stub).to have_been_requested unless request_stub.disabled?
   end
 
-  on_feature :connect_method do
-    describe '#connect' do
-      let(:http_method) { :connect }
-
-      it_behaves_like 'a request method', :connect
-    end
-  end
-
   describe '#delete' do
     let(:http_method) { :delete }
 
