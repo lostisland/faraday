@@ -64,7 +64,7 @@ module Faraday
     # after calling close.
     def close
       # Possible implementation:
-      # @app.close if @app.respond_to?(:close)
+      #   @app.close if @app.respond_to?(:close)
     end
 
     def call(env)
