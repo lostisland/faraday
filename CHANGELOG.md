@@ -44,7 +44,7 @@ Misc:
 * Describe clearing cached stubs #1045 (@viraptor)
 * Add project metadata to the gemspec #1046 (@orien)
 
-## v0.17.2
+## v0.17.3
 
 Fixes:
 
