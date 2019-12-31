@@ -20,7 +20,7 @@ require 'faraday/dependency_loader'
 #
 module Faraday
   VERSION = '1.0.0'
-  METHODS_WITH_QUERY = %w[get head delete connect trace].freeze
+  METHODS_WITH_QUERY = %w[get head delete trace].freeze
   METHODS_WITH_BODY = %w[post put patch].freeze
 
   class << self
