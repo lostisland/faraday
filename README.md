@@ -31,6 +31,17 @@ Rack::Test, and a Test adapter for stubbing requests by hand.
 
 Available at [rubydoc.info](http://www.rubydoc.info/gems/faraday).
 
+## Faraday 1.0
+
+Faraday 1.0 will ship soon! Faraday 0.17 will be the last 0.x release, except for serious bugs or security issues.
+Faraday 1.0 is a major release, but it will be mostly backwards-compatible with 0.x, so we strongly encourage you
+to use it on your next projects and/or consider to upgrade your existing ones.
+Upgrading is simple:
+
+* Checkout the new code from [`master`](https://github.com/lostisland/faraday) and the new [Documentation Website](https://lostisland.github.io/faraday/).
+* If you're upgrading an existing project, check the [UPGRADING](https://github.com/lostisland/faraday/blob/master/UPGRADING.md) file.
+* You can also enable warnings that will point out behaviours in your code that need upgrading, you can do so by setting `FARADAY_DEPRECATE=warn` or `FARADAY_DEPRECATE=1` in ENV.
+
 ## Usage
 
 ### Basic Use
