@@ -26,4 +26,9 @@ RSpec.describe Faraday::FlatParamsEncoder do
     params = { a: [true, false] }
     expect(subject.encode(params)).to eq('a=true&a=false')
   end
+
+  it 'encodes empty array in hash' do
+    params = { a: [] }
+    expect(subject.encode(params)).to eq('a=')
+  end
 end

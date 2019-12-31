@@ -7,7 +7,7 @@ RSpec.describe Faraday::Adapter::HTTPClient do
   HTTPCLIENT_WRITE = 120
 
   features :request_body_on_query_methods, :reason_phrase_parse, :compression,
-           :trace_method, :connect_method, :local_socket_binding
+           :trace_method, :local_socket_binding
 
   it_behaves_like 'an adapter'
 
