@@ -1,5 +1,21 @@
 # Faraday Changelog
 
+## v0.17.2
+
+Fixes:
+
+* Reverts changes in error classes hierarchy. #1092 (@iMacTia)
+* Fix Ruby 1.9 syntax errors and improve Error class testing #1094 (@BanzaiMan,
+  @mrexox, @technoweenie)
+
+Misc:
+
+* Stops using `&Proc.new` for block forwarding. #1083 (@olleolleolle)
+* Update CI to test against ruby 2.0-2.7 #1087, #1099 (@iMacTia, @olleolleolle,
+  @technoweenie)
+* require FARADAY_DEPRECATE=warn to show Faraday v1.0 deprecation warnings
+  #1098 (@technoweenie)
+
 ## v0.17.1
 
 Final release before Faraday v1.0, with important fixes for Ruby 2.7.
@@ -7,7 +23,7 @@ Final release before Faraday v1.0, with important fixes for Ruby 2.7.
 Fixes:
 
 * RaiseError response middleware raises exception if HTTP client returns a nil
-  status. (#1042)
+  status. #1042 (@jonnyom, @BobbyMcWho)
 
 Misc:
 
