@@ -14,7 +14,7 @@ module Faraday
   #
   class Connection
     # A Set of allowed HTTP verbs.
-    METHODS = Set.new %i[get post put delete head patch options trace connect]
+    METHODS = Set.new %i[get post put delete head patch options trace]
 
     # @return [Hash] URI query unencoded key/value pairs.
     attr_reader :params
@@ -172,21 +172,6 @@ module Faraday
     #
     # @example
     #   conn.delete '/items/1'
-    #
-    # @yield [Faraday::Request] for further request customizations
-    # @return [Faraday::Response]
-
-    # @!method connect(url = nil, params = nil, headers = nil)
-    # Makes a CONNECT HTTP request without a body.
-    # @!scope class
-    #
-    # @param url [String] The optional String base URL to use as a prefix for
-    #            all requests.  Can also be the options Hash.
-    # @param params [Hash] Hash of URI query unencoded key/value pairs.
-    # @param headers [Hash] unencoded HTTP header key/value pairs.
-    #
-    # @example
-    #   conn.connect '/items/1'
     #
     # @yield [Faraday::Request] for further request customizations
     # @return [Faraday::Response]
