@@ -40,7 +40,7 @@ Upgrading is simple:
 
 * Checkout the new code from [`master`](https://github.com/lostisland/faraday) and the new [Documentation Website](https://lostisland.github.io/faraday/).
 * If you're upgrading an existing project, check the [UPGRADING](https://github.com/lostisland/faraday/blob/master/UPGRADING.md) file.
-* You can also enable warnings that will point out behaviours in your code that need upgrading, you can do so by setting `FARADAY_DEPRECATE=warn` or `FARADAY_DEPRECATE=1` in ENV.
+* You can also enable upgrade warnings on apps with Faraday 0.x if you run them with `FARADAY_DEPRECATE=warn` or `FARADAY_DEPRECATE=1` in ENV.
 
 ## Usage
 
