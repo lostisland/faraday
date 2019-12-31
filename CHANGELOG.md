@@ -1,6 +1,6 @@
 # Faraday Changelog
 
-## v0.17.2
+## v0.17.3
 
 Fixes:
 
