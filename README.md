@@ -21,7 +21,7 @@ Need more details? See the [Faraday API Documentation][apidoc] to see how it wor
 This library aims to support and is [tested against][actions] the following Ruby
 implementations:
 
-* Ruby 2.3+
+* Ruby 2.4+
 
 If something doesn't work on one of these Ruby versions, it's a bug.
 

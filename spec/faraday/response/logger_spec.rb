@@ -69,10 +69,6 @@ RSpec.describe Faraday::Response::Logger do
   context 'with custom formatter' do
     let(:formatter_class) do
       Class.new(Faraday::Logging::Formatter) do
-        def initialize(*args)
-          super
-        end
-
         def request(_env)
           info 'Custom log formatter request'
         end

@@ -26,7 +26,7 @@ This should work without you noticing if your adapter inherits from `Faraday::Ad
 
 ### Others
 * Dropped support for jruby and Rubinius.
-* Officially supports Ruby 2.3+
+* Officially supports Ruby 2.4+
 * In order to specify the adapter you now MUST use the `#adapter` method on the connection builder. If you don't do so and your adapter inherits from `Faraday::Adapter` then Faraday will raise an exception. Otherwise, Faraday will automatically push the default adapter at the end of the stack causing your request to be executed twice.
 ```ruby
 class OfficialAdapter < Faraday::Adapter
