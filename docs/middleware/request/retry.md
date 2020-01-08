@@ -16,6 +16,7 @@ or server errors (such as network hiccups).
 By default, it retries 2 times and handles only timeout exceptions.
 It can be configured with an arbitrary number of retries, a list of exceptions to handle,
 a retry interval, a percentage of randomness to add to the retry interval, and a backoff factor.
+The middleware also handles the `Retry-After` header automatically.
 
 ### Example Usage
 
