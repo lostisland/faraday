@@ -1,4 +1,4 @@
-# ![Faraday](./docs/assets/img/repo-card-slim.png)
+# [![Faraday](./docs/assets/img/repo-card-slim.png)][website]
 
 [![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
 ![GitHub Actions CI](https://github.com/lostisland/faraday/workflows/CI/badge.svg)
