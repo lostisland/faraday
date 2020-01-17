@@ -120,3 +120,11 @@ footer
 
   100%
     transform: rotate(360deg)
+
+#search-form
+  display: inline-block
+  // You need a minimal window size for the search to display well, should be ok, people are on desktop
+  // when needing search usually
+  @media screen and (max-width: 800px)
+    display: none
+
