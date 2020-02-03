@@ -30,8 +30,10 @@ module Faraday
         Zlib::GzipFile::Error
       ]
 
-      exceptions << OpenSSL::SSL::SSLError if defined?(OpenSSL)
-      exceptions << Net::OpenTimeout if defined?(Net::OpenTimeout)
+      if defined?(::OpenSSL::SSL::SSLError)
+        exceptions << ::OpenSSL::SSL::SSLError
+      end
+      exceptions << ::Net::OpenTimeout if defined?(::Net::OpenTimeout)
 
       NET_HTTP_EXCEPTIONS = exceptions.freeze
 
