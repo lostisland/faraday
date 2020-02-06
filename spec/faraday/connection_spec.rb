@@ -310,12 +310,12 @@ RSpec.describe Faraday::Connection do
 
     it 'parses url params into query' do
       @params = { 'a[b]' => '1 + 2' }
-      expect(subject.query).to eq('a%5Bb%5D=1+%2B+2')
+      expect(subject.query).to eq('a%5Bb%5D=1%20%2B%202')
     end
 
     it 'escapes per spec' do
       @params = { 'a' => '1+2 foo~bar.-baz' }
-      expect(subject.query).to eq('a=1%2B2+foo~bar.-baz')
+      expect(subject.query).to eq('a=1%2B2%20foo~bar.-baz')
     end
 
     it 'bracketizes nested params in query' do

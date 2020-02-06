@@ -16,12 +16,12 @@ module Faraday
       NestedParamsEncoder.encode(params)
     end
 
-    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/.freeze
+    ESCAPE_RE = /[^a-zA-Z0-9.~_-]/.freeze
 
     def escape(str)
       str.to_s.gsub(ESCAPE_RE) do |match|
         '%' + match.unpack('H2' * match.bytesize).join('%').upcase
-      end.tr(' ', '+')
+      end
     end
 
     def unescape(str)
