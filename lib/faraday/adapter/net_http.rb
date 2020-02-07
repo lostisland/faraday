@@ -30,8 +30,10 @@ module Faraday
         Zlib::GzipFile::Error
       ]
 
-      exceptions << OpenSSL::SSL::SSLError if defined?(OpenSSL)
-      exceptions << Net::OpenTimeout if defined?(Net::OpenTimeout)
+      if defined?(::OpenSSL::SSL::SSLError)
+        exceptions << ::OpenSSL::SSL::SSLError
+      end
+      exceptions << ::Net::OpenTimeout if defined?(::Net::OpenTimeout)
 
       NET_HTTP_EXCEPTIONS = exceptions.freeze
 
@@ -137,16 +139,24 @@ module Faraday
       end
 
       def request_via_get_method(http, env, &block)
-        http.get env[:url].request_uri, env[:request_headers], &block
+        # Must use Net::HTTP#start and pass it a block otherwise the server's
+        # TCP socket does not close correctly.
+        http.start do |opened_http|
+          opened_http.get env[:url].request_uri, env[:request_headers], &block
+        end
       end
 
       def request_via_request_method(http, env, &block)
-        if block_given?
-          http.request create_request(env) do |response|
-            response.read_body(&block)
+        # Must use Net::HTTP#start and pass it a block otherwise the server's
+        # TCP socket does not close correctly.
+        http.start do |opened_http|
+          if block_given?
+            opened_http.request create_request(env) do |response|
+              response.read_body(&block)
+            end
+          else
+            opened_http.request create_request(env)
           end
-        else
-          http.request create_request(env)
         end
       end
 

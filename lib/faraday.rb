@@ -153,7 +153,7 @@ module Faraday
     @default_connection_options = ConnectionOptions.from(options)
   end
 
-  unless const_defined? :Timer
+  unless defined?(::Faraday::Timer)
     require 'timeout'
     Timer = Timeout
   end
