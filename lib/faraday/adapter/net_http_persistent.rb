@@ -50,11 +50,7 @@ module Faraday
       end
 
       def perform_request(http, env)
-        # Must use Net::HTTP#start and pass it a block otherwise the server's
-        # TCP socket does not close correctly.
-        http.start do |opened_http|
-          opened_http.request env[:url], create_request(env)
-        end
+        http.request env[:url], create_request(env)
       rescue Errno::ETIMEDOUT => e
         raise Faraday::TimeoutError, e
       rescue Net::HTTP::Persistent::Error => e
