@@ -20,13 +20,15 @@ group :test do
   gem 'multipart-parser'
   gem 'net-http-persistent'
   gem 'patron', '>= 0.4.2', platforms: :ruby
+  gem 'rack', '< 2.1'
   gem 'rack-test', '>= 0.6', require: 'rack/test'
   gem 'rspec', '~> 3.7'
   gem 'rspec_junit_formatter', '~> 0.4'
   gem 'rubocop-performance', '~> 1.0'
   gem 'simplecov'
-  gem 'typhoeus', '~> 1.3', git: 'https://github.com/typhoeus/typhoeus.git',
-                            require: 'typhoeus'
+  gem 'typhoeus', '~> 1.3',
+      git: 'https://github.com/typhoeus/typhoeus.git',
+      require: 'typhoeus'
   gem 'webmock', '~> 3.4'
 end
 
