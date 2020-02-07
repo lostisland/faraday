@@ -4,7 +4,9 @@ module Faraday
   class Request
     # Request middleware for the Authorization HTTP header
     class Authorization < Faraday::Middleware
-      KEY = 'Authorization' unless defined? KEY
+      unless defined?(::Faraday::Request::Authorization::KEY)
+        KEY = 'Authorization'
+      end
 
       # @param type [String, Symbol]
       # @param token [String, Symbol, Hash]
