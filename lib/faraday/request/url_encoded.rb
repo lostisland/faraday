@@ -4,7 +4,9 @@ module Faraday
   class Request
     # Middleware for supporting urlencoded requests.
     class UrlEncoded < Faraday::Middleware
-      CONTENT_TYPE = 'Content-Type' unless defined? CONTENT_TYPE
+      unless defined?(::Faraday::Request::UrlEncoded::CONTENT_TYPE)
+        CONTENT_TYPE = 'Content-Type'
+      end
 
       class << self
         attr_accessor :mime_type

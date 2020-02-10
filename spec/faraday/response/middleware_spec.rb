@@ -26,6 +26,22 @@ RSpec.describe Faraday::Response::Middleware do
     end
   end
 
+  context 'with a custom ResponseMiddleware and private parse' do
+    let(:custom_middleware) do
+      Class.new(Faraday::Response::Middleware) do
+        private
+
+        def parse(body)
+          body.upcase
+        end
+      end
+    end
+
+    it 'parses the response' do
+      expect(conn.get('ok').body).to eq('<BODY></BODY>')
+    end
+  end
+
   context 'with a custom ResponseMiddleware but empty response' do
     let(:custom_middleware) do
       Class.new(Faraday::Response::Middleware) do

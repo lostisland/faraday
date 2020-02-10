@@ -15,8 +15,11 @@ module Faraday
 
       # Override this to modify the environment after the response has finished.
       # Calls the `parse` method if defined
+      # `parse` method can be defined as private, public and protected
       def on_complete(env)
-        env.body = parse(env.body) if respond_to?(:parse) && env.parse_body?
+        return unless respond_to?(:parse, true) && env.parse_body?
+
+        env.body = parse(env.body)
       end
     end
 
