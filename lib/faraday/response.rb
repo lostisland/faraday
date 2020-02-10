@@ -17,8 +17,7 @@ module Faraday
       # Calls the `parse` method if defined
       # `parse` method can be defined as private, public and protected
       def on_complete(env)
-        all_included = true
-        return unless respond_to?(:parse, all_included) && env.parse_body?
+        return unless respond_to?(:parse, true) && env.parse_body?
 
         env.body = parse(env.body)
       end
