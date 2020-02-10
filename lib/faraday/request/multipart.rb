@@ -8,7 +8,7 @@ module Faraday
     # Middleware for supporting multi-part requests.
     class Multipart < UrlEncoded
       self.mime_type = 'multipart/form-data'
-      unless defined? DEFAULT_BOUNDARY_PREFIX
+      unless defined?(::Faraday::Request::Multipart::DEFAULT_BOUNDARY_PREFIX)
         DEFAULT_BOUNDARY_PREFIX = '-----------RubyMultipartPost'
       end
 

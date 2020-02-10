@@ -189,7 +189,7 @@ RSpec.describe Faraday::RackBuilder do
 
     it 'raises an error while making a request' do
       expect { conn.get('/') }.to raise_error(RuntimeError) do |err|
-        expect(err.message).to eq('missing dependency for Broken: cannot load such file -- zomg/i_dont/exist')
+        expect(err.message).to match(%r{missing dependency for Broken: .+ -- zomg/i_dont/exist})
       end
     end
   end

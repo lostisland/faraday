@@ -1,0 +1,21 @@
+<!-- Directly extracted from https://github.com/rohanchandra/type-theme/blob/c6ec5a69ff7dfe2df193be08515193c72bd4a55d/_includes/footer.html
+for customization (DocSearch feature) -->
+
+{% if site.theme_settings.katex and page.id %}
+<script src="{{ "/assets/js/katex_init.js" | relative_url }}"></script>
+{% endif %}
+
+{% if site.theme_settings.footer_text %}
+<footer class="site-footer">
+	<p class="text">{{ site.theme_settings.footer_text }}</p>
+</footer>
+{% endif %}
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script type="text/javascript"> docsearch({
+  apiKey: '4b20e432aa42a515b1a465b1494df8bf',
+  indexName: 'lostisland_faraday',
+  inputSelector: '#search-box',
+  debug: false // Set debug to true if you want to inspect the dropdown
+});
+</script>

@@ -16,6 +16,7 @@ or server errors (such as network hiccups).
 By default, it retries 2 times and handles only timeout exceptions.
 It can be configured with an arbitrary number of retries, a list of exceptions to handle,
 a retry interval, a percentage of randomness to add to the retry interval, and a backoff factor.
+The middleware can also handle the [`Retry-After`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After) header automatically when configured with the right status codes (see below for an example).
 
 ### Example Usage
 
@@ -75,6 +76,18 @@ check the response `status` code and will retry the request if included in the l
 ```ruby
 retry_options = {
   retry_statuses: [401, 409]
+}
+```
+
+#### Automatically handle the `Retry-After` header
+
+Some APIs, like the [Slack API](https://api.slack.com/docs/rate-limits), will inform you when you reach their API limits by replying with a response status code of `429` and a response header of `Retry-After` containing a time in seconds. You should then only retry querying after the amount of time provided by the `Retry-After` header, otherwise you won't get a response.
+
+You can automatically handle this and have Faraday pause and retry for the right amount of time by including the `429` status code in the retry statuses list:
+
+```ruby
+retry_options = {
+  retry_statuses: [429]
 }
 ```
 
