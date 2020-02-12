@@ -58,7 +58,7 @@ RSpec.describe Faraday::Request::UrlEncoded do
   it 'works with unicode' do
     err = capture_warnings do
       response = conn.post('/echo', str: 'eé cç aã aâ')
-      expect(response.body).to eq('str=e%C3%A9%20c%C3%A7%20a%C3%A3%20a%C3%A2')
+      expect(response.body).to eq('str=e%C3%A9+c%C3%A7+a%C3%A3+a%C3%A2')
     end
     expect(err.empty?).to be_truthy
   end
@@ -66,5 +66,12 @@ RSpec.describe Faraday::Request::UrlEncoded do
   it 'works with nested keys' do
     response = conn.post('/echo', 'a' => { 'b' => { 'c' => ['d'] } })
     expect(response.body).to eq('a%5Bb%5D%5Bc%5D%5B%5D=d')
+  end
+
+  it 'allows the character used to encode spaces to be customised' do
+    Faraday::Utils.default_space_encoding = '%20'
+    response = conn.post('/echo', str: 'apple banana')
+    expect(response.body).to eq('str=apple%20banana')
+    Faraday::Utils.default_space_encoding = nil
   end
 end
