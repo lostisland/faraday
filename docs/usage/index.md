@@ -52,7 +52,7 @@ resp = Faraday.get(url, {a: 1}, {'Accept' => 'application/json'})
 
 Faraday also supports HTTP verbs that do include request bodies, though the
 optional method arguments are different. Instead of HTTP query params, these
-methods accept a response body.
+methods accept a request body.
 
 * `post`
 * `put`
