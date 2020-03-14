@@ -6,10 +6,11 @@ module Faraday
   class Error < StandardError
     attr_reader :response, :wrapped_exception
 
-    def initialize(exc, response = nil)
+    def initialize(exc, deprecated_response = nil, response = nil)
       @wrapped_exception = nil unless defined?(@wrapped_exception)
       @response = nil unless defined?(@response)
-      super(exc_msg_and_response!(exc, response))
+      @v2_response = response
+      super(exc_msg_and_response!(exc, deprecated_response))
     end
 
     def backtrace
@@ -26,6 +27,18 @@ module Faraday
       inner << " response=#{@response.inspect}" if @response
       inner << " #{super}" if inner.empty?
       %(#<#{self.class}#{inner}>)
+    end
+
+    def response_status
+      @v2_response&.status
+    end
+
+    def response_body
+      @v2_response&.body
+    end
+
+    def response_headers
+      @v2_response&.headers
     end
 
     protected
