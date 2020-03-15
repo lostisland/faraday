@@ -13,25 +13,34 @@ module Faraday
       def on_complete(env)
         case env[:status]
         when 400
-          raise Faraday::BadRequestError, response_values(env)
+          raise Faraday::BadRequestError
+            .new(response_values(env), nil, env.response)
         when 401
-          raise Faraday::UnauthorizedError, response_values(env)
+          raise Faraday::UnauthorizedError
+            .new(response_values(env), nil, env.response)
         when 403
-          raise Faraday::ForbiddenError, response_values(env)
+          raise Faraday::ForbiddenError
+            .new(response_values(env), nil, env.response)
         when 404
-          raise Faraday::ResourceNotFound, response_values(env)
+          raise Faraday::ResourceNotFound
+            .new(response_values(env), nil, env.response)
         when 407
           # mimic the behavior that we get with proxy requests with HTTPS
           msg = %(407 "Proxy Authentication Required")
-          raise Faraday::ProxyAuthError.new(msg, response_values(env))
+          raise Faraday::ProxyAuthError
+            .new(msg, response_values(env), env.response)
         when 409
-          raise Faraday::ConflictError, response_values(env)
+          raise Faraday::ConflictError
+            .new(response_values(env), nil, env.response)
         when 422
-          raise Faraday::UnprocessableEntityError, response_values(env)
+          raise Faraday::UnprocessableEntityError
+            .new(response_values(env), nil, env.response)
         when ClientErrorStatuses
-          raise Faraday::ClientError, response_values(env)
+          raise Faraday::ClientError
+            .new(response_values(env), nil, env.response)
         when ServerErrorStatuses
-          raise Faraday::ServerError, response_values(env)
+          raise Faraday::ServerError
+            .new(response_values(env), nil, env.response)
         when nil
           raise Faraday::NilStatusError, response_values(env)
         end

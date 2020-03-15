@@ -29,6 +29,9 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.message).to eq('the server responded with status 400')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(400)
+      expect(ex.response_status).to eq(400)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
     end
   end
 
@@ -37,6 +40,9 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.message).to eq('the server responded with status 401')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(401)
+      expect(ex.response_status).to eq(401)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
     end
   end
 
@@ -45,6 +51,9 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.message).to eq('the server responded with status 403')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(403)
+      expect(ex.response_status).to eq(403)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
     end
   end
 
@@ -53,6 +62,9 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.message).to eq('the server responded with status 404')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(404)
+      expect(ex.response_status).to eq(404)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
     end
   end
 
@@ -61,6 +73,9 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.message).to eq('407 "Proxy Authentication Required"')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(407)
+      expect(ex.response_status).to eq(407)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
     end
   end
 
@@ -69,6 +84,9 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.message).to eq('the server responded with status 409')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(409)
+      expect(ex.response_status).to eq(409)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
     end
   end
 
@@ -77,6 +95,9 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.message).to eq('the server responded with status 422')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(422)
+      expect(ex.response_status).to eq(422)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
     end
   end
 
@@ -93,6 +114,9 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.message).to eq('the server responded with status 499')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(499)
+      expect(ex.response_status).to eq(499)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
     end
   end
 
@@ -101,6 +125,9 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.message).to eq('the server responded with status 500')
       expect(ex.response[:headers]['X-Error']).to eq('bailout')
       expect(ex.response[:status]).to eq(500)
+      expect(ex.response_status).to eq(500)
+      expect(ex.response_body).to eq('fail')
+      expect(ex.response_headers['X-Error']).to eq('bailout')
     end
   end
 end
