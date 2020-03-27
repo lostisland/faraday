@@ -8,7 +8,7 @@ module Faraday
   module MiddlewareRegistry
     def self.extended(klass)
       super
-      klass.middleware_mutex
+      klass.init_mutex
     end
 
     # Register middleware class(es) on the current module.
@@ -96,10 +96,13 @@ module Faraday
         raise(Faraday::Error, "#{key.inspect} is not registered on #{self}")
     end
 
+    def init_mutex
+      @middleware_mutex = Monitor.new
+    end
+
     def middleware_mutex(&block)
       puts "#{self}: middleware_mutex" if @middleware_mutex.nil?
-      @middleware_mutex ||= Monitor.new
-      @middleware_mutex.synchronize(&block) if block
+      @middleware_mutex.synchronize(&block)
     end
 
     def fetch_middleware(key)

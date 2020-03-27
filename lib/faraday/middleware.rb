@@ -21,7 +21,7 @@ module Faraday
     def self.inherited(subclass)
       super
       subclass.send(:load_error=, load_error) # DependencyLoader.inherited
-      subclass.middleware_mutex
+      subclass.init_mutex
     end
   end
 end

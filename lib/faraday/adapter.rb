@@ -33,7 +33,7 @@ module Faraday
 
       def inherited(subclass)
         super
-        subclass.middleware_mutex
+        subclass.init_mutex
         subclass.supports_parallel = supports_parallel?
       end
     end
