@@ -12,7 +12,9 @@ module Faraday
     end
 
     def get(name)
-      klass = @constants[name]
+      klass = @lock.synchronize do
+        @constants[name]
+      end
       return klass if klass
 
       Object.const_get(name).tap { |c| set(c, name) }
