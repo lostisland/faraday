@@ -68,10 +68,16 @@ RSpec.describe Faraday::Request::UrlEncoded do
     expect(response.body).to eq('a%5Bb%5D%5Bc%5D%5B%5D=d')
   end
 
-  it 'allows the character used to encode spaces to be customised' do
-    Faraday::Utils.default_space_encoding = '%20'
-    response = conn.post('/echo', str: 'apple banana')
-    expect(response.body).to eq('str=apple%20banana')
-    Faraday::Utils.default_space_encoding = nil
+  context 'customising the character used to encode spaces' do
+    around do |example|
+      Faraday::Utils.default_space_encoding = '%20'
+      example.run
+      Faraday::Utils.default_space_encoding = nil
+    end
+
+    it 'uses the custom character' do
+      response = conn.post('/echo', str: 'apple banana')
+      expect(response.body).to eq('str=apple%20banana')
+    end
   end
 end
