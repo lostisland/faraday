@@ -16,12 +16,20 @@ module Faraday
       NestedParamsEncoder.encode(params)
     end
 
+    def default_space_encoding
+      @default_space_encoding ||= '+'
+    end
+
+    class << self
+      attr_writer :default_space_encoding
+    end
+
     ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/.freeze
 
     def escape(str)
       str.to_s.gsub(ESCAPE_RE) do |match|
         '%' + match.unpack('H2' * match.bytesize).join('%').upcase
-      end.tr(' ', '+')
+      end.gsub(' ', default_space_encoding)
     end
 
     def unescape(str)
