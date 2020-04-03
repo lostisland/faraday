@@ -42,7 +42,7 @@ Open the issues page and check for the `help wanted` label!
 But before you start coding, please read our [Contributing Guide][contributing]
 
 ## Copyright
-&copy; 2009 - 2019, the [Faraday Team][faraday_team]. Website and branding design by [Elena Lo Piccolo](https://elelopic.design).
+&copy; 2009 - 2020, the [Faraday Team][faraday_team]. Website and branding design by [Elena Lo Piccolo](https://elelopic.design).
 
 [website]:      https://lostisland.github.io/faraday
 [faraday_team]: https://lostisland.github.io/faraday/team
