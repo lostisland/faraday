@@ -15,4 +15,4 @@
     <a href="{{ page.next_link }}">{{ page.next_name }} <i class="fa fa-angle-right"></i></a>
   {% endif %}
   </p>
-</div>  
+</div>
