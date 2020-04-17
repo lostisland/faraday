@@ -57,4 +57,3 @@ conn = Faraday.new(...) do |f|
   f.adapter AnyAdapter
 end
 ```
-

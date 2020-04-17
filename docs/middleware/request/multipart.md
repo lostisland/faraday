@@ -25,7 +25,7 @@ can be specified with a String path to a local file, or an IO object.
 * `Faraday::ParamPart` wraps a String value with a Content-Type, and optionally
 a Content-ID.
 
-Note: `Faraday::ParamPart` was added in Faraday v0.16.0. Before that, 
+Note: `Faraday::ParamPart` was added in Faraday v0.16.0. Before that,
 `Faraday::FilePart` was called `Faraday::UploadIO`.
 
 ### Example Usage
@@ -47,13 +47,13 @@ payload = { string: 'value' }
 payload[:file] = Faraday::FilePart.new(__FILE__, 'text/x-ruby')
 
 # specify filename because IO object doesn't know it
-payload[:file_with_name] = Faraday::FilePart.new(File.open(__FILE__), 
-                             'text/x-ruby', 
+payload[:file_with_name] = Faraday::FilePart.new(File.open(__FILE__),
+                             'text/x-ruby',
                              File.basename(__FILE__))
 
 # Sets a custom Content-Disposition:
 # nil filename still defaults to File.basename(__FILE__)
-payload[:file_with_header] = Faraday::FilePart.new(__FILE__, 
+payload[:file_with_header] = Faraday::FilePart.new(__FILE__,
                                'text/x-ruby', nil,
                                'Content-Disposition' => 'form-data; foo=1')
 

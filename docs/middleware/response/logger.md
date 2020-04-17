@@ -86,7 +86,7 @@ end
 
 You can also provide a custom formatter to control how requests and responses are logged.
 Any custom formatter MUST implement the `request` and `response` method, with one argument which
-will be passed being the Faraday environment. 
+will be passed being the Faraday environment.
 If you make your formatter inheriting from `Faraday::Response::Logger::Formatter`,
 then the methods `debug`, `info`, `warn`, `error` and `fatal` are automatically delegated to the logger.
 
@@ -98,7 +98,7 @@ class MyFormatter < Faraday::Logging::Formatter
   end
 
   def response(env)
-    # Build a custom message using `env` 
+    # Build a custom message using `env`
     info('Response') { 'Response Received' }
   end
 end

@@ -19,7 +19,7 @@ begin
 rescue Faraday::ResourceNotFound => e
   e.response[:status]   #=> 404
   e.response[:headers]  #=> { ... }
-  e.response[:body]     #=> "..."  
+  e.response[:body]     #=> "..."
 end
 ```
 

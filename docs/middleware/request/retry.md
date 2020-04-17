@@ -120,7 +120,7 @@ response_statuses = []
 retry_options = {
   retry_block: -> (env, options, retries, exc) { response_statuses << env.status }
 }
-``` 
+```
 
 
 [raise_error]:  ../middleware/raise-error
