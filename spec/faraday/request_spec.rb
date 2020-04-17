@@ -6,20 +6,31 @@ RSpec.describe Faraday::Request do
                 headers: { 'Mime-Version' => '1.0' },
                 request: { oauth: { consumer_key: 'anonymous' } })
   end
-  let(:method) { :get }
+  let(:http_method) { :get }
   let(:block) { nil }
 
-  subject { conn.build_request(method, &block) }
+  subject { conn.build_request(http_method, &block) }
 
   context 'when nothing particular is configured' do
-    it { expect(subject.method).to eq(:get) }
+    it { expect(subject.http_method).to eq(:get) }
     it { expect(subject.to_env(conn).ssl.verify).to be_falsey }
   end
 
-  context 'when method is post' do
-    let(:method) { :post }
+  context 'when HTTP method is post' do
+    let(:http_method) { :post }
+
+    it { expect(subject.http_method).to eq(:post) }
+  end
+
+  describe 'deprecate method for HTTP method' do
+    let(:http_method) { :post }
+    let(:expected_warning) do
+      %r{WARNING: `Faraday::Request#method` is deprecated; use `#http_method` instead. It will be removed in or after version 2.0.\n`Faraday::Request#method` called from .+/spec/faraday/request_spec.rb:\d+.}
+    end
 
     it { expect(subject.method).to eq(:post) }
+
+    it { expect { subject.method }.to output(expected_warning).to_stderr }
   end
 
   context 'when setting the url on setup with a URI' do

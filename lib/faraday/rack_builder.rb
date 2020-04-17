@@ -186,7 +186,7 @@ module Faraday
     end
 
     # ENV Keys
-    # :method - a symbolized request method (:get, :post)
+    # :http_method - a symbolized request HTTP method (:get, :post)
     # :body   - the request body that will eventually be converted to a string.
     # :url    - URI instance for the current request.
     # :status           - HTTP response status code
@@ -207,7 +207,7 @@ module Faraday
         request.options.params_encoder
       )
 
-      Env.new(request.method, request.body, exclusive_url,
+      Env.new(request.http_method, request.body, exclusive_url,
               request.options, request.headers, connection.ssl,
               connection.parallel_manager)
     end

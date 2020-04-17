@@ -23,7 +23,7 @@ module Faraday
     #
     # @return [void]
     def autoload_all(prefix, options)
-      if prefix =~ %r{^faraday(/|$)}i
+      if prefix.match? %r{^faraday(/|$)}i
         prefix = File.join(Faraday.root_path, prefix)
       end
 
