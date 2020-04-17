@@ -15,7 +15,7 @@ if (found = ARGV.index('-u'))
 end
 
 match_credentials = lambda { |credentials|
-  got_username, got_password = credentials.to_s.unpack('m*')[0].split(':', 2)
+  got_username, got_password = credentials.to_s.unpack1('m*').split(':', 2)
   got_username == username && got_password == password
 }
 

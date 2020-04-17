@@ -25,8 +25,11 @@ jobs:
 
     - name: Rubocop
       run: |
-        gem install rubocop rubocop-performance --no-document
-        rubocop --require rubocop-performance --format progress
+        gem install bundler
+        bundle config set without 'development test'
+        bundle config set with 'lint'
+        bundle install
+        bundle exec rubocop --format progress
 
     - name: Yard-Junk
       run: |

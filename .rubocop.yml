@@ -6,7 +6,7 @@ require:
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.4
 
 Metrics/BlockLength:
   Exclude:
@@ -18,6 +18,9 @@ Layout/LineLength:
     - spec/**/*.rb
     - examples/**/*.rb
 
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
 Style/DoubleNegation:
   Enabled: false
 
@@ -25,3 +28,17 @@ Style/Documentation:
   Exclude:
     - 'spec/**/*'
     - 'examples/**/*'
+
+Style/ExponentialNotation:
+  Enabled: true
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true
