@@ -185,31 +185,9 @@ module Faraday
       self.class.new(@handlers.dup, @adapter.dup)
     end
 
-    # ENV Keys
-    # :http_method - a symbolized request HTTP method (:get, :post)
-    # :body   - the request body that will eventually be converted to a string.
-    # :url    - URI instance for the current request.
-    # :status           - HTTP response status code
-    # :request_headers  - hash of HTTP Headers to be sent to the server
-    # :response_headers - Hash of HTTP headers from the server
-    # :parallel_manager - sent if the connection is in parallel mode
-    # :request - Hash of options for configuring the request.
-    #   :timeout      - open/read timeout Integer in seconds
-    #   :open_timeout - read timeout Integer in seconds
-    #   :proxy        - Hash of proxy options
-    #     :uri        - Proxy Server URI
-    #     :user       - Proxy server username
-    #     :password   - Proxy server password
-    # :ssl - Hash of options for configuring SSL requests.
+    # @see Faraday::Request#to_env
     def build_env(connection, request)
-      exclusive_url = connection.build_exclusive_url(
-        request.path, request.params,
-        request.options.params_encoder
-      )
-
-      Env.new(request.http_method, request.body, exclusive_url,
-              request.options, request.headers, connection.ssl,
-              connection.parallel_manager)
+      request.to_env(connection)
     end
 
     private

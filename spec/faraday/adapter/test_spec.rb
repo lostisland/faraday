@@ -30,71 +30,98 @@ RSpec.describe Faraday::Adapter::Test do
       stub.get(%r{\A/resources/(specified)\z}) do |_env, meta|
         [200, { 'Content-Type' => 'text/html' }, "show #{meta[:match_data][1]}"]
       end
+
+      stub.get('foo.json') do
+        [200, { 'Content-Type' => 'application/json' }, { a: 1 }]
+      end
     end
   end
 
   let(:connection) do
-    Faraday.new do |builder|
+    Faraday.new(url: 'https://sushi.com/api') do |builder|
       builder.adapter :test, stubs
     end
   end
 
-  let(:response) { connection.get('/hello') }
+  let(:response) { make_request }
+  let(:request_url) { '/hello' }
+  let(:request_block) { nil }
+  let(:status) { response.status }
+  let(:headers) { response.headers }
+  let(:body) { response.body }
+
+  def make_request
+    connection.get(request_url, &request_block)
+  end
 
   context 'with simple path sets status' do
-    subject { response.status }
+    subject { status }
 
     it { is_expected.to eq 200 }
   end
 
   context 'with simple path sets headers' do
-    subject { response.headers['Content-Type'] }
+    subject { headers['Content-Type'] }
 
     it { is_expected.to eq 'text/html' }
   end
 
   context 'with simple path sets body' do
-    subject { response.body }
+    subject { body }
 
     it { is_expected.to eq 'hello' }
   end
 
   context 'with host points to the right stub' do
-    subject { connection.get('http://domain.test/hello').body }
+    subject { body }
+
+    let(:request_url) { 'http://domain.test/hello' }
 
     it { is_expected.to eq 'domain: hello' }
   end
 
   describe 'can be called several times' do
-    subject { connection.get('/hello').body }
+    subject { body }
+
+    before do
+      make_request
+    end
 
     it { is_expected.to eq 'hello' }
   end
 
   describe 'can handle regular expression path' do
-    subject { connection.get('/resources/1').body }
+    subject { body }
+
+    let(:request_url) { '/resources/1' }
 
     it { is_expected.to eq 'show' }
   end
 
   describe 'can handle single parameter block' do
-    subject { connection.get('/method-echo').body }
+    subject { body }
+
+    let(:request_url) { '/method-echo' }
 
     it { is_expected.to eq 'get' }
   end
 
   describe 'can handle regular expression path with captured result' do
-    subject { connection.get('/resources/specified').body }
+    subject { body }
+
+    let(:request_url) { '/resources/specified' }
 
     it { is_expected.to eq 'show specified' }
   end
 
   context 'with get params' do
-    subject { connection.get('/param?a=1').body }
+    subject { body }
 
     before do
       stubs.get('/param?a=1') { [200, {}, 'a'] }
     end
+
+    let(:request_url) { '/param?a=1' }
 
     it { is_expected.to eq 'a' }
   end
@@ -105,22 +132,26 @@ RSpec.describe Faraday::Adapter::Test do
     end
 
     context 'with multiple params' do
-      subject { connection.get('/optional?a=1&b=1').body }
+      subject { body }
+
+      let(:request_url) { '/optional?a=1&b=1' }
 
       it { is_expected.to eq 'a' }
     end
 
     context 'with single param' do
-      subject { connection.get('/optional?a=1').body }
+      subject { body }
+
+      let(:request_url) { '/optional?a=1' }
 
       it { is_expected.to eq 'a' }
     end
 
     context 'without params' do
-      subject(:request) { connection.get('/optional') }
+      let(:request_url) { '/optional' }
 
       it do
-        expect { request }.to raise_error(
+        expect { response }.to raise_error(
           Faraday::Adapter::Test::Stubs::NotFound
         )
       end
@@ -133,40 +164,52 @@ RSpec.describe Faraday::Adapter::Test do
       stubs.get('/yo') { [200, {}, 'b'] }
     end
 
+    let(:request_url) { '/yo' }
+
     context 'with header' do
-      subject do
-        connection.get('/yo') { |env| env.headers['X-HELLO'] = 'hello' }.body
-      end
+      subject { body }
+
+      let(:request_block) { proc { |env| env.headers['X-HELLO'] = 'hello' } }
 
       it { is_expected.to eq 'a' }
     end
 
     context 'without header' do
-      subject do
-        connection.get('/yo').body
-      end
+      subject { body }
 
       it { is_expected.to eq 'b' }
     end
   end
 
-  describe 'different outcomes for the same request' do
-    def make_request
-      connection.get('/foo')
-    end
+  describe 'request to relative path' do
+    subject { body }
 
-    subject(:request) { make_request.body }
+    let(:request_url) { 'foo.json' }
+
+    it { is_expected.to eq a: 1 }
+
+    context 'when stubbed only absolute path' do
+      let(:request_url) { 'hello' }
+
+      it { expect { response }.to raise_error described_class::Stubs::NotFound }
+    end
+  end
+
+  describe 'different outcomes for the same request' do
+    subject { body }
 
     before do
       stubs.get('/foo') { [200, { 'Content-Type' => 'text/html' }, 'hello'] }
       stubs.get('/foo') { [200, { 'Content-Type' => 'text/html' }, 'world'] }
     end
 
-    context 'the first request' do
+    let(:request_url) { '/foo' }
+
+    describe 'the first request' do
       it { is_expected.to eq 'hello' }
     end
 
-    context 'the second request' do
+    describe 'the second request' do
       before do
         make_request
       end
@@ -176,85 +219,115 @@ RSpec.describe Faraday::Adapter::Test do
   end
 
   describe 'yielding env to stubs' do
-    subject { connection.get('http://foo.com/foo?a=1').body }
+    let(:request_url) { 'http://foo.com/foo?a=1' }
+
+    attr_reader :env
 
     before do
       stubs.get '/foo' do |env|
-        expect(env[:url].path).to eq '/foo'
-        expect(env[:url].host).to eq 'foo.com'
-        expect(env[:params]['a']).to eq '1'
-        expect(env[:request_headers]['Accept']).to eq 'text/plain'
-        [200, {}, 'a']
+        @env = env
       end
 
       connection.headers['Accept'] = 'text/plain'
+
+      make_request
     end
 
-    it { is_expected.to eq 'a' }
+    describe 'path' do
+      subject { env[:url].path }
+
+      it { is_expected.to eq '/foo' }
+    end
+
+    describe 'host' do
+      subject { env[:url].host }
+
+      it { is_expected.to eq 'foo.com' }
+    end
+
+    describe 'params' do
+      subject { env[:params] }
+
+      it { is_expected.to eq 'a' => '1' }
+    end
+
+    describe 'request headers' do
+      subject { env[:request_headers] }
+
+      it { is_expected.to include 'Accept' => 'text/plain' }
+    end
   end
 
   describe 'params parsing' do
-    subject { connection.get('http://foo.com/foo?a[b]=1').body }
+    subject { body }
 
-    context 'with default encoder' do
-      before do
-        stubs.get '/foo' do |env|
-          expect(env[:params]['a']['b']).to eq '1'
-          [200, {}, 'a']
-        end
+    let(:request_url) { 'http://foo.com/foo?a[b]=1' }
+
+    attr_reader :env
+
+    before do
+      stubs.get '/foo' do |env|
+        @env = env
       end
 
-      it { is_expected.to eq 'a' }
+      connection.options.params_encoder = params_encoder if params_encoder
+
+      make_request
+    end
+
+    context 'with default encoder' do
+      let(:params_encoder) {}
+
+      describe 'nested param' do
+        subject { env[:params]['a']['b'] }
+
+        it { is_expected.to eq '1' }
+      end
     end
 
     context 'with nested encoder' do
-      before do
-        stubs.get '/foo' do |env|
-          expect(env[:params]['a']['b']).to eq '1'
-          [200, {}, 'a']
-        end
+      let(:params_encoder) { Faraday::NestedParamsEncoder }
 
-        connection.options.params_encoder = Faraday::NestedParamsEncoder
+      describe 'nested param' do
+        subject { env[:params]['a']['b'] }
+
+        it { is_expected.to eq '1' }
       end
-
-      it { is_expected.to eq 'a' }
     end
 
     context 'with flat encoder' do
-      before do
-        stubs.get '/foo' do |env|
-          expect(env[:params]['a[b]']).to eq '1'
-          [200, {}, 'a']
-        end
+      let(:params_encoder) { Faraday::FlatParamsEncoder }
 
-        connection.options.params_encoder = Faraday::FlatParamsEncoder
+      describe 'root param' do
+        subject { env[:params]['a[b]'] }
+
+        it { is_expected.to eq '1' }
       end
-
-      it { is_expected.to eq 'a' }
     end
   end
 
   describe 'raising an error if no stub was found' do
     describe 'for request' do
-      subject(:request) { connection.get('/invalid') { [200, {}, []] } }
+      let(:request_url) { '/invalid' }
+      let(:request_block) { proc { [200, {}, []] } }
 
-      it { expect { request }.to raise_error described_class::Stubs::NotFound }
+      it { expect { response }.to raise_error described_class::Stubs::NotFound }
     end
 
     describe 'for specified host' do
-      subject(:request) { connection.get('http://domain.test/bait') }
+      let(:request_url) { 'http://domain.test/bait' }
 
-      it { expect { request }.to raise_error described_class::Stubs::NotFound }
+      it { expect { response }.to raise_error described_class::Stubs::NotFound }
     end
 
     describe 'for request without specified header' do
-      subject(:request) { connection.get('/yo') }
+      let(:request_url) { '/yo' }
 
       before do
         stubs.get('/yo', 'X-HELLO' => 'hello') { [200, {}, 'a'] }
       end
 
-      it { expect { request }.to raise_error described_class::Stubs::NotFound }
+      it { expect { response }.to raise_error described_class::Stubs::NotFound }
     end
   end
 end

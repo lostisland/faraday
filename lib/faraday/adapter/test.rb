@@ -58,18 +58,18 @@ module Faraday
           @stack.empty?
         end
 
-        def match(request_method, host, path, headers, body)
+        def match(request_method, *args)
           return false unless @stack.key?(request_method)
 
           stack = @stack[request_method]
           consumed = (@consumed[request_method] ||= [])
 
-          stub, meta = matches?(stack, host, path, headers, body)
+          stub, meta = matches?(stack, *args)
           if stub
             consumed << stack.delete(stub)
             return stub, meta
           end
-          matches?(consumed, host, path, headers, body)
+          matches?(consumed, *args)
         end
 
         def get(path, headers = {}, &block)
@@ -128,13 +128,17 @@ module Faraday
               ]
             end
 
+          if path.is_a?(String) && host.nil? && !path.start_with?('/')
+            normalized_path = normalized_path[1..-1]
+          end
+
           stub = Stub.new(host, normalized_path, headers, body, block)
           (@stack[request_method] ||= []) << stub
         end
 
-        def matches?(stack, host, path, headers, body)
+        def matches?(stack, *args)
           stack.each do |stub|
-            match_result, meta = stub.matches?(host, path, headers, body)
+            match_result, meta = stub.matches?(*args)
             return stub, meta if match_result
           end
           nil
@@ -157,7 +161,9 @@ module Faraday
           super(host, path, params, headers, body, block)
         end
 
-        def matches?(request_host, request_uri, request_headers, request_body)
+        def matches?(
+          request_host, request_uri, url_prefix, request_headers, request_body
+        )
           request_path, request_query = request_uri.split('?')
           request_params =
             if request_query
@@ -169,17 +175,18 @@ module Faraday
           # that will be yielded to consumer block
           meta = {}
           [(host.nil? || host == request_host) &&
-            path_match?(request_path, meta) &&
+            path_match?(request_path, url_prefix, meta) &&
             params_match?(request_params) &&
             (body.to_s.size.zero? || request_body == body) &&
             headers_match?(request_headers), meta]
         end
 
-        def path_match?(request_path, meta)
+        def path_match?(request_path, url_prefix, meta)
           if path.is_a?(Regexp)
             !!(meta[:match_data] = path.match(request_path))
           else
-            path == request_path
+            [path, concat_path_with_prefix(url_prefix, path)]
+              .include?(request_path)
           end
         end
 
@@ -197,6 +204,14 @@ module Faraday
 
         def to_s
           "#{path} #{body}"
+        end
+
+        private
+
+        def concat_path_with_prefix(url_prefix, path)
+          return if path.start_with?('/')
+
+          Faraday::Utils.URI(File.join(url_prefix.to_s, path)).path
         end
       end
 
@@ -217,19 +232,18 @@ module Faraday
         params_encoder = env.request.params_encoder ||
                          Faraday::Utils.default_params_encoder
 
-        stub, meta = stubs.match(env[:method], host, normalized_path,
-                                 env.request_headers, env[:body])
+        stub, meta = stubs.match(
+          env[:method], host, normalized_path, env[:url_prefix],
+          env.request_headers, env[:body]
+        )
 
         unless stub
           raise Stubs::NotFound, "no stubbed request for #{env[:method]} "\
                                  "#{normalized_path} #{env[:body]}"
         end
 
-        env[:params] = if (query = env[:url].query)
-                         params_encoder.decode(query)
-                       else
-                         {}
-                       end
+        env[:params] =
+          (query = env[:url].query) ? params_encoder.decode(query) : {}
         block_arity = stub.block.arity
         status, headers, body =
           if block_arity >= 0

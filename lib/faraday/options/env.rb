@@ -46,7 +46,7 @@ module Faraday
   #
   # @!attribute reason_phrase
   #   @return [String]
-  class Env < Options.new(:method, :request_body, :url, :request,
+  class Env < Options.new(:method, :request_body, :url, :url_prefix, :request,
                           :request_headers, :ssl, :parallel_manager, :params,
                           :response, :response_headers, :status,
                           :reason_phrase, :response_body)

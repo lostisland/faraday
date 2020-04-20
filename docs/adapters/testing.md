@@ -64,6 +64,17 @@ initialized. This is useful for testing.
 stubs.get('/uni') { |env| [ 200, {}, 'urchin' ]}
 ```
 
+You can stub relative paths if your Connection object has URI with a base path:
+
+```ruby
+conn = Faraday.new(url: 'https://sushi.com/api') do |builder|
+  builder.adapter :test, stubs do |stub|
+    # It accepts requests to `/api/users` (not to `/users`)
+    stub.get('users') { |env| [ 200, {}, '[1, 2, 3]' ]}
+  end
+end
+```
+
 Finally, you can treat your stubs as mocks by verifying that all of the stubbed
 calls were made. NOTE: this feature is still fairly experimental. It will not
 verify the order or count of any stub.
