@@ -1,3 +1,8 @@
+## Faraday 2.0
+
+### Others
+* Rename `Faraday::Request#method` to `#http_method`.
+
 ## Faraday 1.0
 
 ### Errors
@@ -52,4 +57,3 @@ conn = Faraday.new(...) do |f|
   f.adapter AnyAdapter
 end
 ```
-

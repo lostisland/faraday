@@ -19,7 +19,7 @@ class Client
   end
 end
 
-Rspec.describe Client do
+RSpec.describe Client do
   let(:stubs)  { Faraday::Adapter::Test::Stubs.new }
   let(:conn)   { Faraday.new { |b| b.adapter(:test, stubs) } }
   let(:client) { Client.new(conn) }

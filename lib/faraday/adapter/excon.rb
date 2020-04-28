@@ -34,9 +34,9 @@ module Faraday
 
         @app.call(env)
       rescue ::Excon::Errors::SocketError => e
-        raise Faraday::TimeoutError, e if e.message =~ /\btimeout\b/
+        raise Faraday::TimeoutError, e if e.message.match?(/\btimeout\b/)
 
-        raise Faraday::SSLError, e if e.message =~ /\bcertificate\b/
+        raise Faraday::SSLError, e if e.message.match?(/\bcertificate\b/)
 
         raise Faraday::ConnectionFailed, e
       rescue ::Excon::Errors::Timeout => e
