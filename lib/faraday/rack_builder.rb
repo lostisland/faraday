@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+def ruby2_keywords(*) end if RUBY_VERSION < '2.7'
+
 require 'faraday/adapter_registry'
 
 module Faraday
@@ -27,7 +29,7 @@ module Faraday
 
       attr_reader :name
 
-      def initialize(klass, *args, &block)
+      ruby2_keywords def initialize(klass, *args, &block)
         @name = klass.to_s
         REGISTRY.set(klass) if klass.respond_to?(:name)
         @args = args
@@ -89,7 +91,7 @@ module Faraday
       @handlers.frozen?
     end
 
-    def use(klass, *args, &block)
+    ruby2_keywords def use(klass, *args, &block)
       if klass.is_a? Symbol
         use_symbol(Faraday::Middleware, klass, *args, &block)
       else
@@ -234,7 +236,7 @@ module Faraday
       klass.ancestors.include?(Faraday::Adapter)
     end
 
-    def use_symbol(mod, key, *args, &block)
+    ruby2_keywords def use_symbol(mod, key, *args, &block)
       use(mod.lookup_middleware(key), *args, &block)
     end
 
