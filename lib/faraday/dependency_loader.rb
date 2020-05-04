@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-def ruby2_keywords(*) end if RUBY_VERSION < '2.7'
+require 'ruby2_keywords'
 
 module Faraday
   # DependencyLoader helps Faraday adapters and middleware load dependencies.
