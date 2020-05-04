@@ -23,7 +23,7 @@ group :test, :development do
   gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
   gem 'multipart-parser'
-  gem 'net-http-persistent'
+  gem 'net-http-persistent', '~> 4.0'
   gem 'patron', '>= 0.4.2', platforms: :ruby
   gem 'rack', '< 2.1'
   gem 'rack-test', '>= 0.6', require: 'rack/test'

@@ -99,7 +99,7 @@ shared_examples 'a request method' do |http_method|
   it 'supports timeout option' do
     conn_options[:request] = { timeout: 1 }
     request_stub.to_timeout
-    exc = adapter == 'NetHttp' ? Faraday::ConnectionFailed : Faraday::TimeoutError
+    exc = %w[NetHttp NetHttpPersistent].include?(adapter) ? Faraday::ConnectionFailed : Faraday::TimeoutError
     expect { conn.public_send(http_method, '/') }.to raise_error(exc)
   end
 
@@ -108,7 +108,7 @@ shared_examples 'a request method' do |http_method|
   it 'supports open_timeout option' do
     conn_options[:request] = { open_timeout: 1 }
     request_stub.to_timeout
-    exc = adapter == 'NetHttp' ? Faraday::ConnectionFailed : Faraday::TimeoutError
+    exc = %w[NetHttp NetHttpPersistent].include?(adapter) ? Faraday::ConnectionFailed : Faraday::TimeoutError
     expect { conn.public_send(http_method, '/') }.to raise_error(exc)
   end
 
