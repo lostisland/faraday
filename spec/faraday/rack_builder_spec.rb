@@ -197,18 +197,23 @@ RSpec.describe Faraday::RackBuilder do
   context 'when middleware is added with arguments' do
     let(:conn) { Faraday::Connection.new {} }
 
-    class Dog < Faraday::Middleware
-      attr_accessor :name
-      def initialize(app, name)
-        super(app)
-        @name = name
+    let(:dog_middleware_class) do
+      Class.new(Faraday::Middleware) do
+        attr_accessor :name
+        def initialize(app, name)
+          super(app)
+          @name = name
+        end
       end
     end
-    class Cat < Faraday::Middleware
-      attr_accessor :name
-      def initialize(app, name:)
-        super(app)
-        @name = name
+
+    let(:cat_middleware_class) do
+      Class.new(Faraday::Middleware) do
+        attr_accessor :name
+        def initialize(app, name:)
+          super(app)
+          @name = name
+        end
       end
     end
     it 'adds a handler to construct middleware with options passed to use' do
