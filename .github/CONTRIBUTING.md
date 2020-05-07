@@ -34,22 +34,17 @@ When adding a feature in Faraday:
 the green light by the core team start working on the PR.
 
 
-### New Middleware
+### New Middleware & Adapters
 
-We will accept middleware that:
+We prefer new adapters and middlewares to be added as separate gems. We can link to such gems from this project.
 
-1. is useful to a broader audience, but can be implemented relatively simple; and
-1. which isn't already present in [faraday_middleware][] project.
+This goes for the [faraday_middleware][] project as well.
 
-
-### New Adapters
-
-We will accept adapters that:
+We encourage adapters that:
 
 1. support SSL & streaming;
 1. are proven and may have better performance than existing ones; or
-1. if they have features not present in included adapters.
-
+1. have features not present in included adapters.
 
 ### Changes to Faraday Website
 
