@@ -4,10 +4,10 @@ In Faraday we always welcome new ideas and features, however we also have to ens
 that the overall code quality stays on reasonable levels.
 For this reason, before adding any contribution to Faraday, we highly recommend reading this
 quick guide to ensure your PR can be reviewed and approved as quickly as possible.
- 
-We are pushing towards a 1.0 release, when we will have to follow [Semantic
-Versioning][semver]. If your patch includes changes to break compatibility,
-note that so we can add it to the [Changelog][].
+
+We are past our 1.0 release, and follow [Semantic Versioning][semver]. If your
+patch includes changes that break compatibility, note that so we can add it to
+the [Changelog][].
 
 
 ### Required Checks
@@ -34,22 +34,17 @@ When adding a feature in Faraday:
 the green light by the core team start working on the PR.
 
 
-### New Middleware
+### New Middleware & Adapters
 
-We will accept middleware that:
+We prefer new adapters and middlewares to be added as separate gems. We can link to such gems from this project.
 
-1. is useful to a broader audience, but can be implemented relatively simple; and
-2. which isn't already present in [faraday_middleware][] project.
+This goes for the [faraday_middleware][] project as well.
 
-
-### New Adapters
-
-We will accept adapters that:
+We encourage adapters that:
 
 1. support SSL & streaming;
 1. are proven and may have better performance than existing ones; or
-2. if they have features not present in included adapters.
-
+1. have features not present in included adapters.
 
 ### Changes to Faraday Website
 
@@ -69,7 +64,7 @@ $ bundle exec jekyll serve
 # The site will now be reachable at http://127.0.0.1:4000/faraday/
 ```
 
-[semver]:               http://semver.org/
+[semver]:               https://semver.org/
 [changelog]:            https://github.com/lostisland/faraday/releases
 [faraday_middleware]:   https://github.com/lostisland/faraday_middleware
 [website]:              https://lostisland.github.io/faraday
