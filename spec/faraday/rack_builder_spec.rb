@@ -304,7 +304,7 @@ RSpec.describe Faraday::RackBuilder do
     let(:rock_handler) do
       Class.new do
         attr_accessor :name
-        def initialize(app, name:)
+        def initialize(_app, name:)
           @name = name
         end
       end
