@@ -108,7 +108,7 @@ module Faraday
       use_symbol(Faraday::Response, key, *args, &block)
     end
 
-    def adapter(klass = NO_ARGUMENT, *args, &block)
+    ruby2_keywords def adapter(klass = NO_ARGUMENT, *args, &block)
       return @adapter if klass == NO_ARGUMENT
 
       klass = Faraday::Adapter.lookup_middleware(klass) if klass.is_a?(Symbol)

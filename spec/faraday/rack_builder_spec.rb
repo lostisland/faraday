@@ -271,4 +271,30 @@ RSpec.describe Faraday::RackBuilder do
       expect(fish.name).to eq('Bubbles')
     end
   end
+
+  context 'when a plain adapter is added with named arguments' do
+    let(:conn) { Faraday::Connection.new {} }
+
+    let(:rabbit_adapter) do
+      Class.new(Faraday::Adapter) do
+        attr_accessor :name
+        def initialize(app, name:)
+          super(app)
+          @name = name
+        end
+      end
+    end
+    let(:rabbit) do
+      subject.adapter.build
+    end
+
+    it 'adds a handler to construct adapter with options passed to adapter' do
+      Faraday::Adapter.register_middleware rabbit_adapter: rabbit_adapter
+      subject.adapter :rabbit_adapter, name: 'Thumper'
+      expect { rabbit }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(rabbit.name).to eq('Thumper')
+    end
+  end
 end
