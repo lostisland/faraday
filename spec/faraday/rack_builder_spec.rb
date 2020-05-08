@@ -194,13 +194,13 @@ RSpec.describe Faraday::RackBuilder do
     end
   end
 
-  context 'when middleware is added with arguments' do
+  context 'when middleware is added with named arguments' do
     let(:conn) { Faraday::Connection.new {} }
 
     let(:dog_middleware) do
       Class.new(Faraday::Middleware) do
         attr_accessor :name
-        def initialize(app, name)
+        def initialize(app, name:)
           super(app)
           @name = name
         end
@@ -210,31 +210,12 @@ RSpec.describe Faraday::RackBuilder do
       subject.handlers.find { |handler| handler == dog_middleware }.build
     end
 
-    let(:cat_middleware) do
-      Class.new(Faraday::Middleware) do
-        attr_accessor :name
-        def initialize(app, name:)
-          super(app)
-          @name = name
-        end
-      end
-    end
-    let(:cat) do
-      subject.handlers.find { |handler| handler == cat_middleware }.build
-    end
-
     it 'adds a handler to construct middleware with options passed to use' do
-      subject.use dog_middleware, 'Rex'
+      subject.use dog_middleware, name: 'Rex'
       expect { dog }.to_not output(
         /warning: Using the last argument as keyword parameters is deprecated/
       ).to_stderr
       expect(dog.name).to eq('Rex')
-
-      subject.use cat_middleware, name: 'Felix'
-      expect { cat }.to_not output(
-        /warning: Using the last argument as keyword parameters is deprecated/
-      ).to_stderr
-      expect(cat.name).to eq('Felix')
     end
   end
 end
