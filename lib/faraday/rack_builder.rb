@@ -117,7 +117,7 @@ module Faraday
 
     ## methods to push onto the various positions in the stack:
 
-    def insert(index, *args, &block)
+    ruby2_keywords def insert(index, *args, &block)
       raise_if_locked
       index = assert_index(index)
       handler = self.class::Handler.new(*args, &block)

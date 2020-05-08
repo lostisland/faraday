@@ -297,4 +297,28 @@ RSpec.describe Faraday::RackBuilder do
       expect(rabbit.name).to eq('Thumper')
     end
   end
+
+  context 'when handlers are directly added or updated' do
+    let(:conn) { Faraday::Connection.new {} }
+
+    let(:rock_handler) do
+      Class.new do
+        attr_accessor :name
+        def initialize(app, name:)
+          @name = name
+        end
+      end
+    end
+    let(:rock) do
+      subject.handlers.find { |handler| handler == rock_handler }.build
+    end
+
+    it 'adds a handler to construct adapter with options passed to insert' do
+      subject.insert 0, rock_handler, name: 'Stony'
+      expect { rock }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(rock.name).to eq('Stony')
+    end
+  end
 end
