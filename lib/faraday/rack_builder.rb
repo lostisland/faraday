@@ -126,7 +126,7 @@ module Faraday
 
     alias insert_before insert
 
-    def insert_after(index, *args, &block)
+    ruby2_keywords def insert_after(index, *args, &block)
       index = assert_index(index)
       insert(index + 1, *args, &block)
     end

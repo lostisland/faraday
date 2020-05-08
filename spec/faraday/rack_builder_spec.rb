@@ -320,5 +320,13 @@ RSpec.describe Faraday::RackBuilder do
       ).to_stderr
       expect(rock.name).to eq('Stony')
     end
+
+    it 'adds a handler with options passed to insert_after' do
+      subject.insert_after 0, rock_handler, name: 'Rocky'
+      expect { rock }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(rock.name).to eq('Rocky')
+    end
   end
 end
