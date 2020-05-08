@@ -100,7 +100,7 @@ module Faraday
       end
     end
 
-    def request(key, *args, &block)
+    ruby2_keywords def request(key, *args, &block)
       use_symbol(Faraday::Request, key, *args, &block)
     end
 

@@ -218,4 +218,31 @@ RSpec.describe Faraday::RackBuilder do
       expect(dog.name).to eq('Rex')
     end
   end
+
+  context 'when a request adapter is added with named arguments' do
+    let(:conn) { Faraday::Connection.new {} }
+
+    let(:cat_request) do
+      Class.new(Faraday::Request) do
+        attr_accessor :name
+        def initialize(app, name:)
+          super(app)
+          @name = name
+        end
+      end
+    end
+    let(:cat) do
+      subject.handlers.find { |handler| handler == cat_request }.build
+    end
+
+    it 'adds a handler to construct request adapter with options passed to request' do
+      skip 'still raising last argument kwarg deprecation warnings'
+      Faraday::Request.register_middleware cat_request: cat_request
+      subject.request :cat_request, name: 'Felix'
+      expect { cat }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(cat.name).to eq('Felix')
+    end
+  end
 end
