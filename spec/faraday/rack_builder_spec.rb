@@ -206,6 +206,9 @@ RSpec.describe Faraday::RackBuilder do
         end
       end
     end
+    let(:dog) do
+      subject.handlers.find { |handler| handler == dog_middleware }.build
+    end
 
     let(:cat_middleware) do
       Class.new(Faraday::Middleware) do
@@ -216,11 +219,22 @@ RSpec.describe Faraday::RackBuilder do
         end
       end
     end
+    let(:cat) do
+      subject.handlers.find { |handler| handler == cat_middleware }.build
+    end
+
     it 'adds a handler to construct middleware with options passed to use' do
       subject.use dog_middleware, 'Rex'
-      expect(subject.handlers.find { |handler| handler == dog_middleware }.build.name).to eq('Rex')
+      expect { dog }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(dog.name).to eq('Rex')
+
       subject.use cat_middleware, name: 'Felix'
-      expect(subject.handlers.find { |handler| handler == cat_middleware }.build.name).to eq('Felix')
+      expect { cat }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(cat.name).to eq('Felix')
     end
   end
 end
