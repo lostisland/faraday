@@ -245,4 +245,30 @@ RSpec.describe Faraday::RackBuilder do
       expect(cat.name).to eq('Felix')
     end
   end
+
+  context 'when a response adapter is added with named arguments' do
+    let(:conn) { Faraday::Connection.new {} }
+
+    let(:fish_response) do
+      Class.new(Faraday::Response::Middleware) do
+        attr_accessor :name
+        def initialize(app, name:)
+          super(app)
+          @name = name
+        end
+      end
+    end
+    let(:fish) do
+      subject.handlers.find { |handler| handler == fish_response }.build
+    end
+
+    it 'adds a handler to construct response adapter with options passed to response' do
+      Faraday::Response.register_middleware fish_response: fish_response
+      subject.response :fish_response, name: 'Bubbles'
+      expect { fish }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(fish.name).to eq('Bubbles')
+    end
+  end
 end

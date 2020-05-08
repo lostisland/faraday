@@ -104,7 +104,7 @@ module Faraday
       use_symbol(Faraday::Request, key, *args, &block)
     end
 
-    def response(key, *args, &block)
+    ruby2_keywords def response(key, *args, &block)
       use_symbol(Faraday::Response, key, *args, &block)
     end
 
