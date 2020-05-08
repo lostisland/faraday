@@ -131,7 +131,7 @@ module Faraday
       insert(index + 1, *args, &block)
     end
 
-    def swap(index, *args, &block)
+    ruby2_keywords def swap(index, *args, &block)
       raise_if_locked
       index = assert_index(index)
       @handlers.delete_at(index)

@@ -328,5 +328,14 @@ RSpec.describe Faraday::RackBuilder do
       ).to_stderr
       expect(rock.name).to eq('Rocky')
     end
+
+    it 'adds a handler with options passed to swap' do
+      subject.insert 0, rock_handler, name: 'Flint'
+      subject.swap 0, rock_handler, name: 'Chert'
+      expect { rock }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(rock.name).to eq('Chert')
+    end
   end
 end
