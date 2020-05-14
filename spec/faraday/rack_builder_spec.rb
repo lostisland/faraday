@@ -223,7 +223,7 @@ RSpec.describe Faraday::RackBuilder do
     let(:conn) { Faraday::Connection.new {} }
 
     let(:cat_request) do
-      Class.new(Faraday::Request) do
+      Class.new(Faraday::Middleware) do
         attr_accessor :name
         def initialize(app, name:)
           super(app)
@@ -236,7 +236,6 @@ RSpec.describe Faraday::RackBuilder do
     end
 
     it 'adds a handler to construct request adapter with options passed to request' do
-      skip 'still raising last argument kwarg deprecation warnings'
       Faraday::Request.register_middleware cat_request: cat_request
       subject.request :cat_request, name: 'Felix'
       expect { cat }.to_not output(
