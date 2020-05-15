@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'ruby2_keywords'
 require 'faraday/adapter_registry'
 
 module Faraday
@@ -27,7 +28,7 @@ module Faraday
 
       attr_reader :name
 
-      def initialize(klass, *args, &block)
+      ruby2_keywords def initialize(klass, *args, &block)
         @name = klass.to_s
         REGISTRY.set(klass) if klass.respond_to?(:name)
         @args = args
@@ -89,7 +90,7 @@ module Faraday
       @handlers.frozen?
     end
 
-    def use(klass, *args, &block)
+    ruby2_keywords def use(klass, *args, &block)
       if klass.is_a? Symbol
         use_symbol(Faraday::Middleware, klass, *args, &block)
       else
@@ -99,15 +100,15 @@ module Faraday
       end
     end
 
-    def request(key, *args, &block)
+    ruby2_keywords def request(key, *args, &block)
       use_symbol(Faraday::Request, key, *args, &block)
     end
 
-    def response(key, *args, &block)
+    ruby2_keywords def response(key, *args, &block)
       use_symbol(Faraday::Response, key, *args, &block)
     end
 
-    def adapter(klass = NO_ARGUMENT, *args, &block)
+    ruby2_keywords def adapter(klass = NO_ARGUMENT, *args, &block)
       return @adapter if klass == NO_ARGUMENT
 
       klass = Faraday::Adapter.lookup_middleware(klass) if klass.is_a?(Symbol)
@@ -116,7 +117,7 @@ module Faraday
 
     ## methods to push onto the various positions in the stack:
 
-    def insert(index, *args, &block)
+    ruby2_keywords def insert(index, *args, &block)
       raise_if_locked
       index = assert_index(index)
       handler = self.class::Handler.new(*args, &block)
@@ -125,12 +126,12 @@ module Faraday
 
     alias insert_before insert
 
-    def insert_after(index, *args, &block)
+    ruby2_keywords def insert_after(index, *args, &block)
       index = assert_index(index)
       insert(index + 1, *args, &block)
     end
 
-    def swap(index, *args, &block)
+    ruby2_keywords def swap(index, *args, &block)
       raise_if_locked
       index = assert_index(index)
       @handlers.delete_at(index)
@@ -234,7 +235,7 @@ module Faraday
       klass.ancestors.include?(Faraday::Adapter)
     end
 
-    def use_symbol(mod, key, *args, &block)
+    ruby2_keywords def use_symbol(mod, key, *args, &block)
       use(mod.lookup_middleware(key), *args, &block)
     end
 

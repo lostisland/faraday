@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.4'
 
   spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
+  spec.add_dependency 'ruby2_keywords'
 
   files = %w[CHANGELOG.md LICENSE.md README.md Rakefile examples lib spec]
   spec.files = `git ls-files -z #{files.join(' ')}`.split("\0")
