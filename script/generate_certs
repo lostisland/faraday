@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+
 # frozen_string_literal: true
 
 # Usage: generate_certs [options]
@@ -22,7 +23,7 @@ def create_self_signed_cert(bits, cname, _comment)
   cert.not_before = Time.now
   cert.not_after = Time.now + (365 * 24 * 60 * 60)
   cert.public_key = rsa.public_key
-  cert.sign(rsa, OpenSSL::Digest::SHA1.new)
+  cert.sign(rsa, OpenSSL::Digest.new('SHA1'))
   [cert, rsa]
 end
 
