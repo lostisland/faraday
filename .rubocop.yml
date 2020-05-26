@@ -49,6 +49,8 @@ Style/HashTransformKeys:
   Enabled: true
 Style/HashTransformValues:
   Enabled: true
+Style/IfUnlessModifier:
+  Enabled: false
 
 Style/SlicingWithRange: # (0.83)
   Enabled: true
