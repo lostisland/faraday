@@ -13,12 +13,24 @@ Metrics/BlockLength:
     - spec/**/*.rb
     - examples/**/*.rb
 
+Layout/EmptyLinesAroundAttributeAccessor: # (0.83)
+  Enabled: true
+
 Layout/LineLength:
   Exclude:
     - spec/**/*.rb
     - examples/**/*.rb
 
 Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Lint/DeprecatedOpenSSLConstant: # (0.84)
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
   Enabled: true
 
 Style/DoubleNegation:
@@ -37,8 +49,9 @@ Style/HashTransformKeys:
   Enabled: true
 Style/HashTransformValues:
   Enabled: true
+Style/IfUnlessModifier:
+  Enabled: false
 
-Lint/RaiseException:
+Style/SlicingWithRange: # (0.83)
   Enabled: true
-Lint/StructNewOverride:
-  Enabled: true
+

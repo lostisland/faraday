@@ -200,6 +200,7 @@ RSpec.describe Faraday::RackBuilder do
     let(:dog_middleware) do
       Class.new(Faraday::Middleware) do
         attr_accessor :name
+
         def initialize(app, name:)
           super(app)
           @name = name
@@ -225,6 +226,7 @@ RSpec.describe Faraday::RackBuilder do
     let(:cat_request) do
       Class.new(Faraday::Middleware) do
         attr_accessor :name
+
         def initialize(app, name:)
           super(app)
           @name = name
@@ -251,6 +253,7 @@ RSpec.describe Faraday::RackBuilder do
     let(:fish_response) do
       Class.new(Faraday::Response::Middleware) do
         attr_accessor :name
+
         def initialize(app, name:)
           super(app)
           @name = name
@@ -277,6 +280,7 @@ RSpec.describe Faraday::RackBuilder do
     let(:rabbit_adapter) do
       Class.new(Faraday::Adapter) do
         attr_accessor :name
+
         def initialize(app, name:)
           super(app)
           @name = name
@@ -303,6 +307,7 @@ RSpec.describe Faraday::RackBuilder do
     let(:rock_handler) do
       Class.new do
         attr_accessor :name
+
         def initialize(_app, name:)
           @name = name
         end
