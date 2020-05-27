@@ -30,9 +30,7 @@ group :test, :development do
   gem 'rspec', '~> 3.7'
   gem 'rspec_junit_formatter', '~> 0.4'
   gem 'simplecov'
-  gem 'typhoeus', '~> 1.3',
-      git: 'https://github.com/typhoeus/typhoeus.git',
-      require: 'typhoeus'
+  gem 'typhoeus', '~> 1.4'
   gem 'webmock', '~> 3.4'
 end
 
