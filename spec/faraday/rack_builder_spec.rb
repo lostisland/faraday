@@ -193,4 +193,153 @@ RSpec.describe Faraday::RackBuilder do
       end
     end
   end
+
+  context 'when middleware is added with named arguments' do
+    let(:conn) { Faraday::Connection.new {} }
+
+    let(:dog_middleware) do
+      Class.new(Faraday::Middleware) do
+        attr_accessor :name
+
+        def initialize(app, name:)
+          super(app)
+          @name = name
+        end
+      end
+    end
+    let(:dog) do
+      subject.handlers.find { |handler| handler == dog_middleware }.build
+    end
+
+    it 'adds a handler to construct middleware with options passed to use' do
+      subject.use dog_middleware, name: 'Rex'
+      expect { dog }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(dog.name).to eq('Rex')
+    end
+  end
+
+  context 'when a request adapter is added with named arguments' do
+    let(:conn) { Faraday::Connection.new {} }
+
+    let(:cat_request) do
+      Class.new(Faraday::Middleware) do
+        attr_accessor :name
+
+        def initialize(app, name:)
+          super(app)
+          @name = name
+        end
+      end
+    end
+    let(:cat) do
+      subject.handlers.find { |handler| handler == cat_request }.build
+    end
+
+    it 'adds a handler to construct request adapter with options passed to request' do
+      Faraday::Request.register_middleware cat_request: cat_request
+      subject.request :cat_request, name: 'Felix'
+      expect { cat }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(cat.name).to eq('Felix')
+    end
+  end
+
+  context 'when a response adapter is added with named arguments' do
+    let(:conn) { Faraday::Connection.new {} }
+
+    let(:fish_response) do
+      Class.new(Faraday::Response::Middleware) do
+        attr_accessor :name
+
+        def initialize(app, name:)
+          super(app)
+          @name = name
+        end
+      end
+    end
+    let(:fish) do
+      subject.handlers.find { |handler| handler == fish_response }.build
+    end
+
+    it 'adds a handler to construct response adapter with options passed to response' do
+      Faraday::Response.register_middleware fish_response: fish_response
+      subject.response :fish_response, name: 'Bubbles'
+      expect { fish }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(fish.name).to eq('Bubbles')
+    end
+  end
+
+  context 'when a plain adapter is added with named arguments' do
+    let(:conn) { Faraday::Connection.new {} }
+
+    let(:rabbit_adapter) do
+      Class.new(Faraday::Adapter) do
+        attr_accessor :name
+
+        def initialize(app, name:)
+          super(app)
+          @name = name
+        end
+      end
+    end
+    let(:rabbit) do
+      subject.adapter.build
+    end
+
+    it 'adds a handler to construct adapter with options passed to adapter' do
+      Faraday::Adapter.register_middleware rabbit_adapter: rabbit_adapter
+      subject.adapter :rabbit_adapter, name: 'Thumper'
+      expect { rabbit }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(rabbit.name).to eq('Thumper')
+    end
+  end
+
+  context 'when handlers are directly added or updated' do
+    let(:conn) { Faraday::Connection.new {} }
+
+    let(:rock_handler) do
+      Class.new do
+        attr_accessor :name
+
+        def initialize(_app, name:)
+          @name = name
+        end
+      end
+    end
+    let(:rock) do
+      subject.handlers.find { |handler| handler == rock_handler }.build
+    end
+
+    it 'adds a handler to construct adapter with options passed to insert' do
+      subject.insert 0, rock_handler, name: 'Stony'
+      expect { rock }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(rock.name).to eq('Stony')
+    end
+
+    it 'adds a handler with options passed to insert_after' do
+      subject.insert_after 0, rock_handler, name: 'Rocky'
+      expect { rock }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(rock.name).to eq('Rocky')
+    end
+
+    it 'adds a handler with options passed to swap' do
+      subject.insert 0, rock_handler, name: 'Flint'
+      subject.swap 0, rock_handler, name: 'Chert'
+      expect { rock }.to_not output(
+        /warning: Using the last argument as keyword parameters is deprecated/
+      ).to_stderr
+      expect(rock.name).to eq('Chert')
+    end
+  end
 end

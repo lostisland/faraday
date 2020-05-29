@@ -27,6 +27,7 @@ module Faraday
     # This module marks an Adapter as supporting parallel requests.
     module Parallelism
       attr_writer :supports_parallel
+
       def supports_parallel?
         @supports_parallel
       end
