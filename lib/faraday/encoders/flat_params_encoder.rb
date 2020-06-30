@@ -35,7 +35,7 @@ module Faraday
         end
         # Useful default for OAuth and caching.
         # Only to be used for non-Array inputs. Arrays should preserve order.
-        params.sort!
+        params.sort! if @sort_params
       end
 
       # The params have form [['key1', 'value1'], ['key2', 'value2']].
@@ -94,5 +94,11 @@ module Faraday
         end
       end
     end
+
+    class << self
+      attr_accessor :sort_params
+    end
   end
+
+  FlatParamsEncoder.sort_params = true
 end

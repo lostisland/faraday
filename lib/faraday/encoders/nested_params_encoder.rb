@@ -23,7 +23,7 @@ module Faraday
         end
         # Useful default for OAuth and caching.
         # Only to be used for non-Array inputs. Arrays should preserve order.
-        params.sort!
+        params.sort! if @sort_params
       end
 
       # The params have form [['key1', 'value1'], ['key2', 'value2']].
@@ -161,6 +161,8 @@ module Faraday
   # for your requests.
   module NestedParamsEncoder
     class << self
+      attr_accessor :sort_params
+
       extend Forwardable
       def_delegators :'Faraday::Utils', :escape, :unescape
     end
@@ -168,4 +170,6 @@ module Faraday
     extend EncodeMethods
     extend DecodeMethods
   end
+
+  NestedParamsEncoder.sort_params = true
 end
