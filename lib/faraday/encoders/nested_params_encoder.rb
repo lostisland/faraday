@@ -21,7 +21,7 @@ module Faraday
           key = key.to_s if key.is_a?(Symbol)
           [key, value]
         end
-        # Useful default for OAuth and caching.
+
         # Only to be used for non-Array inputs. Arrays should preserve order.
         params.sort! if @sort_params
       end
@@ -167,9 +167,10 @@ module Faraday
       def_delegators :'Faraday::Utils', :escape, :unescape
     end
 
+    # Useful default for OAuth and caching.
+    @sort_params = true
+
     extend EncodeMethods
     extend DecodeMethods
   end
-
-  NestedParamsEncoder.sort_params = true
 end
