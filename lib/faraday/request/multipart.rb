@@ -12,6 +12,11 @@ module Faraday
         DEFAULT_BOUNDARY_PREFIX = '-----------RubyMultipartPost'
       end
 
+      def initialize(app = nil, options = {})
+        @app = app
+        @options = options
+      end
+
       # Checks for files in the payload, otherwise leaves everything untouched.
       #
       # @param env [Faraday::Env]
@@ -30,7 +35,7 @@ module Faraday
         type = request_type(env)
         env.body.respond_to?(:each_key) && !env.body.empty? && (
           (type.empty? && has_multipart?(env.body)) ||
-          (type == self.class.mime_type)
+            (type == self.class.mime_type)
         )
       end
 
@@ -79,7 +84,9 @@ module Faraday
       # @param pieces [Array]
       def process_params(params, prefix = nil, pieces = nil, &block)
         params.inject(pieces || []) do |all, (key, value)|
-          key = "#{prefix}[#{key}]" if prefix
+          if prefix
+            key = @options[:flat_encode] ? prefix.to_s : "#{prefix}[#{key}]"
+          end
 
           case value
           when Array
