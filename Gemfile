@@ -25,7 +25,6 @@ group :test, :development do
   gem 'multipart-parser'
   gem 'net-http-persistent', '~> 3.0'
   gem 'patron', '>= 0.4.2', platforms: :ruby
-  gem 'rack', '< 2.1'
   gem 'rack-test', '>= 0.6', require: 'rack/test'
   gem 'rspec', '~> 3.7'
   gem 'rspec_junit_formatter', '~> 0.4'
