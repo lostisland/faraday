@@ -13,8 +13,8 @@ shared_examples 'a request method' do |http_method|
   end
 
   it 'handles headers with multiple values' do
-    request_stub.to_return(headers: { 'Set-Cookie' => 'one, two' })
-    expect(response.headers['set-cookie']).to eq('one, two')
+    request_stub.to_return(headers: { 'Set-Cookie' => 'name=value' })
+    expect(response.headers['set-cookie']).to eq('name=value')
   end
 
   it 'retrieves the response headers' do
