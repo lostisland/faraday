@@ -108,6 +108,12 @@ RSpec.describe Faraday::Connection do
       it { expect(subject.ssl.verify?).to be_falsey }
     end
 
+    context 'with verify_hostname false' do
+      let(:options) { { ssl: { verify_hostname: false } } }
+
+      it { expect(subject.ssl.verify_hostname?).to be_falsey }
+    end
+
     context 'with empty block' do
       let(:conn) { Faraday::Connection.new {} }
 

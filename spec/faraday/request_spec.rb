@@ -14,6 +14,7 @@ RSpec.describe Faraday::Request do
   context 'when nothing particular is configured' do
     it { expect(subject.http_method).to eq(:get) }
     it { expect(subject.to_env(conn).ssl.verify).to be_falsey }
+    it { expect(subject.to_env(conn).ssl.verify_hostname).to be_falsey }
   end
 
   context 'when HTTP method is post' do
