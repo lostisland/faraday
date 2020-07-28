@@ -3,7 +3,24 @@
 RSpec.describe Faraday::Adapter::NetHttp do
   features :request_body_on_query_methods, :reason_phrase_parse, :compression, :streaming, :trace_method
 
-  it_behaves_like 'an adapter'
+  context 'without verify_hostname' do
+    it_behaves_like 'an adapter'
+  end
+
+  context 'with verify_hostname' do
+    before do
+      c = Net::HTTP.new('localhost')
+      unless c.respond_to?(:verify_hostname=)
+        request_stub.disable
+        skip 'Using net/http gem does not support verify_hostname attributes'
+      end
+      ENV['SSL_VERIFY_HOSTNAME'] = 'yes'
+    end
+
+    after { ENV['SSL_VERIFY_HOSTNAME'] = 'no' }
+
+    it_behaves_like 'an adapter'
+  end
 
   context 'checking http' do
     let(:url) { URI('http://example.com') }
