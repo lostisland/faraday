@@ -3,7 +3,24 @@
 RSpec.describe Faraday::Adapter::Excon do
   features :request_body_on_query_methods, :reason_phrase_parse, :trace_method
 
-  it_behaves_like 'an adapter'
+  context 'without verify_hostname' do
+    it_behaves_like 'an adapter'
+  end
+
+  context 'with verify_hostname' do
+    before do
+      c = described_class.new
+      unless c.handles_ssl_verify_hostname?
+        request_stub.disable
+        skip 'Using excon gem does not support verify_hostname attributes'
+      end
+      ENV['SSL_VERIFY_HOSTNAME'] = 'yes'
+    end
+
+    after { ENV['SSL_VERIFY_HOSTNAME'] = 'no' }
+
+    it_behaves_like 'an adapter'
+  end
 
   it 'allows to provide adapter specific configs' do
     url = URI('https://example.com:1234')

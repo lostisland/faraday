@@ -48,6 +48,11 @@ module Faraday
         env[:body].respond_to?(:read) ? env[:body].read : env[:body]
       end
 
+      # To be public for tests.
+      def handles_ssl_verify_hostname?
+        Gem::Version.new(::Excon::VERSION) >= Gem::Version.new('0.76.0')
+      end
+
       private
 
       def opts_from_env(env)
@@ -83,6 +88,10 @@ module Faraday
         # https://github.com/geemus/excon/issues/106
         # https://github.com/jruby/jruby-ossl/issues/19
         opts[:nonblock] = false
+        # https://github.com/excon/excon/pull/722
+        if handles_ssl_verify_hostname?
+          opts[:ssl_verify_hostname] = !!ssl.fetch(:verify_hostname, false)
+        end
 
         OPTS_KEYS.each do |(key_in_opts, key_in_ssl)|
           next unless ssl[key_in_ssl]
