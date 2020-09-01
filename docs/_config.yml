@@ -1,6 +1,7 @@
 # SITE CONFIGURATION
 url: 'https://lostisland.github.io'
 baseurl: '/faraday'
+repository: 'lostisland/faraday'
 
 # THEME-SPECIFIC CONFIGURATION
 theme_settings:
