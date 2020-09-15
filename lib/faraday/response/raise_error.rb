@@ -38,7 +38,18 @@ module Faraday
       end
 
       def response_values(env)
-        { status: env.status, headers: env.response_headers, body: env.body }
+        {
+          status: env.status,
+          headers: env.response_headers,
+          body: env.body,
+          request: {
+            method: env.method,
+            url_path: env.url.path,
+            params: env.params,
+            headers: env.request_headers,
+            body: env.request_body
+          }
+        }
       end
     end
   end
