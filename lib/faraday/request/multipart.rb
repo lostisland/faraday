@@ -13,7 +13,7 @@ module Faraday
       end
 
       def initialize(app = nil, options = {})
-        @app = app
+        super(app)
         @options = options
       end
 

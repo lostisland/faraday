@@ -28,7 +28,7 @@ module Faraday
 
     def escape(str)
       str.to_s.gsub(ESCAPE_RE) do |match|
-        '%' + match.unpack('H2' * match.bytesize).join('%').upcase
+        "%#{match.unpack('H2' * match.bytesize).join('%').upcase}"
       end.gsub(' ', default_space_encoding)
     end
 
@@ -89,7 +89,7 @@ module Faraday
     # the path with the query string sorted.
     def normalize_path(url)
       url = URI(url)
-      (url.path.start_with?('/') ? url.path : '/' + url.path) +
+      (url.path.start_with?('/') ? url.path : "/#{url.path}") +
         (url.query ? "?#{sort_query_params(url.query)}" : '')
     end
 

@@ -232,7 +232,7 @@ module Faraday
     end
 
     def is_adapter?(klass) # rubocop:disable Naming/PredicateName
-      klass.ancestors.include?(Faraday::Adapter)
+      klass <= Faraday::Adapter
     end
 
     ruby2_keywords def use_symbol(mod, key, *args, &block)

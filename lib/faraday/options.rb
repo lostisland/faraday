@@ -103,12 +103,10 @@ module Faraday
     end
 
     # Public
-    def each_key
+    def each_key(&block)
       return to_enum(:each_key) unless block_given?
 
-      keys.each do |key|
-        yield(key)
-      end
+      keys.each(&block)
     end
 
     # Public
@@ -119,12 +117,10 @@ module Faraday
     alias has_key? key?
 
     # Public
-    def each_value
+    def each_value(&block)
       return to_enum(:each_value) unless block_given?
 
-      values.each do |value|
-        yield(value)
-      end
+      values.each(&block)
     end
 
     # Public
