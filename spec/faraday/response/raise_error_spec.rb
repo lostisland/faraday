@@ -103,4 +103,37 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.response[:status]).to eq(500)
     end
   end
+
+  describe 'request info' do
+    let(:conn) do
+      Faraday.new do |b|
+        b.response :raise_error
+        b.adapter :test do |stub|
+          stub.post('request?full=true', request_body, request_headers) do
+            [400, { 'X-Reason' => 'because' }, 'keep looking']
+          end
+        end
+      end
+    end
+    let(:request_body) { JSON.generate({ 'item' => 'sth' }) }
+    let(:request_headers) { { 'Authorization' => 'Basic 123' } }
+
+    subject(:perform_request) do
+      conn.post 'request' do |req|
+        req.headers['Authorization'] = 'Basic 123'
+        req.params[:full] = true
+        req.body = request_body
+      end
+    end
+
+    it 'returns the request info in the exception' do
+      expect { perform_request }.to raise_error(Faraday::BadRequestError) do |ex|
+        expect(ex.response[:request][:method]).to eq(:post)
+        expect(ex.response[:request][:url_path]).to eq('/request')
+        expect(ex.response[:request][:params]).to eq({ 'full' => 'true' })
+        expect(ex.response[:request][:headers]).to match(a_hash_including(request_headers))
+        expect(ex.response[:request][:body]).to eq(request_body)
+      end
+    end
+  end
 end
