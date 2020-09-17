@@ -38,6 +38,14 @@ module Faraday
     #              :headers - String key/value hash of HTTP response header
     #                         values.
     #              :body    - Optional string HTTP response body.
+    #              :request - Hash
+    #                           :method   - Symbol with the request HTTP method.
+    #                           :url_path - String with the url path requested.
+    #                           :params   - String key/value hash of query params
+    #                                     present in the request.
+    #                           :headers  - String key/value hash of HTTP request
+    #                                     header values.
+    #                           :body     - String HTTP request body.
     #
     # If a subclass has to call this, then it should pass a string message
     # to `super`. See NilStatusError.
