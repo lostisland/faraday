@@ -429,7 +429,7 @@ module Faraday
     # @return [String] the new path prefix
     def path_prefix=(value)
       url_prefix.path = if value
-                          value = '/' + value unless value[0, 1] == '/'
+                          value = "/#{value}" unless value[0, 1] == '/'
                           value
                         end
     end
@@ -520,7 +520,7 @@ module Faraday
       base = url_prefix
       if url && base.path && base.path !~ %r{/$}
         base = base.dup
-        base.path = base.path + '/' # ensure trailing slash
+        base.path = "#{base.path}/" # ensure trailing slash
       end
       uri = url ? base + url : base
       if params
@@ -593,7 +593,7 @@ module Faraday
       uri = ENV['http_proxy']
       return unless uri && !uri.empty?
 
-      uri = 'http://' + uri unless uri.match?(/^http/i)
+      uri = "http://#{uri}" unless uri.match?(/^http/i)
       uri
     end
 

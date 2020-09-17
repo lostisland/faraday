@@ -231,7 +231,7 @@ module Faraday
 
         def add(&block)
           if running?
-            perform_request { yield }
+            perform_request(&block)
           else
             @registered_procs << block
           end

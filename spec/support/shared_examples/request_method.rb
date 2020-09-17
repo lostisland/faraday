@@ -119,7 +119,7 @@ shared_examples 'a request method' do |http_method|
       request_stub.with(headers: { 'Content-Type' => %r{\Amultipart/form-data} }) do |request|
         # WebMock does not support matching body for multipart/form-data requests yet :(
         # https://github.com/bblimke/webmock/issues/623
-        request.body =~ /RubyMultipartPost/
+        request.body.include?('RubyMultipartPost')
       end
       conn.public_send(http_method, '/', payload)
     end
