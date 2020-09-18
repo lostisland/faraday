@@ -21,8 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
   spec.add_dependency 'ruby2_keywords'
 
-  files = %w[CHANGELOG.md LICENSE.md README.md Rakefile examples lib spec]
-  spec.files = `git ls-files -z #{files.join(' ')}`.split("\0")
+  spec.files = Dir['CHANGELOG.md', '{examples,lib,spec}/**/*', 'LICENSE.md', 'Rakefile', 'README.md']
   spec.require_paths = %w[lib spec/external_adapters]
   spec.metadata = {
     'homepage_uri' => 'https://lostisland.github.io/faraday',
