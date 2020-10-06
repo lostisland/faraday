@@ -14,7 +14,6 @@ conn = Faraday.new(...) do |f|
   f.adapter :net_http_persistent, pool_size: 5 do |http|
     # yields Net::HTTP::Persistent
     http.idle_timeout = 100
-    http.retry_change_requests = true
   end
 end
 ```
