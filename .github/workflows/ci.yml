@@ -19,13 +19,12 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
+      uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.6.x
 
     - name: Rubocop
       run: |
-        gem install bundler
         bundle config set without 'development test'
         bundle config set with 'lint'
         bundle install
@@ -45,6 +44,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}  
 
     - name: Install dependencies
       run: |
@@ -53,12 +55,6 @@ jobs:
     - name: Set up RVM
       run: |
         curl -sSL https://get.rvm.io | bash
-        
-    - name: Set up Ruby
-      run: |
-        source $HOME/.rvm/scripts/rvm
-        rvm install ${{ matrix.ruby }} --disable-binary
-        rvm --default use ${{ matrix.ruby }}
 
     - name: Build
       run: |
