@@ -19,7 +19,7 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Set up Ruby 2.7
-      uses: actions/setup-ruby@v1
+      uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7.x
 
@@ -45,30 +45,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
 
     - name: Install dependencies
       run: |
         sudo apt-get install libcurl4-openssl-dev
 
-    - name: Set up RVM
-      run: |
-        curl -sSL https://get.rvm.io | bash
-
-    - name: Set up Ruby
-      run: |
-        source $HOME/.rvm/scripts/rvm
-        rvm install ${{ matrix.ruby }} --disable-binary
-        rvm --default use ${{ matrix.ruby }}
 
     - name: Build
       run: |
-        source $HOME/.rvm/scripts/rvm
         sudo apt-get install libcurl4-openssl-dev
         gem install bundler -v '<2'
         bundle install --jobs 4 --retry 3
 
     - name: Test
       run: |
-        source $HOME/.rvm/scripts/rvm
         bundle exec rake
 
