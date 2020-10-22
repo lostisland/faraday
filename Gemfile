@@ -24,7 +24,7 @@ group :test, :development do
   gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
   gem 'multipart-parser'
-  gem 'net-http-persistent', '~> 3.0'
+  gem 'net-http-persistent', '>= 3.0' # Ruby 3 requires 4.0.0+
   gem 'patron', '>= 0.4.2', platforms: :ruby
   gem 'rack-test', '>= 0.6', require: 'rack/test'
   gem 'rspec', '~> 3.7'
