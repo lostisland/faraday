@@ -52,7 +52,14 @@ exist. Its only function is to make this example more concrete.
 
 ### An Adapter _is_ a Middleware
 
-There are only two things which are actually mandatory for an adapter middleware to function:
+When you subclass `::Faraday::Adapter`, you get helpful methods defined:
+
+```ruby
+class FlorpHttp < ::Faraday::Adapter
+end
+```
+
+Now, there are only two things which are actually mandatory for an adapter middleware to function:
 
 - a `#call` implementation
 - a call to `#save_response` inside `#call`, which will keep the Response around.
@@ -60,15 +67,6 @@ There are only two things which are actually mandatory for an adapter middleware
 These are the only two things.
 
 The rest of this text is about methods which make the authoring easier.
-
-### Helpful class: `::Faraday::Adapter`
-
-By subclassing `::Faraday::Adapter`, you get helpful methods defined:
-
-```ruby
-class FlorpHttp < ::Faraday::Adapter
-end
-```
 
 ### Helpful method: `#build_connection`
 
