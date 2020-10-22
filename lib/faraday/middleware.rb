@@ -6,15 +6,25 @@ module Faraday
     extend MiddlewareRegistry
     extend DependencyLoader
 
-    def initialize(app = nil)
+    attr_reader :app, :options
+
+    def initialize(app = nil, options = {})
       @app = app
+      @options = options
+    end
+
+    def call(env)
+      on_request(env) if respond_to?(:on_request)
+      app.call(env).on_complete do |environment|
+        on_complete(environment) if respond_to?(:on_complete)
+      end
     end
 
     def close
-      if @app.respond_to?(:close)
-        @app.close
+      if app.respond_to?(:close)
+        app.close
       else
-        warn "#{@app} does not implement \#close!"
+        warn "#{app} does not implement \#close!"
       end
     end
   end
