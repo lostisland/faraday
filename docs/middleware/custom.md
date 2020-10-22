@@ -46,7 +46,7 @@ later, response. Some keys are:
 ### Faraday::Middleware
 
 There's an easier way to write middleware, and it's also the recommended one: make your middleware subclass `Faraday::Middleware`.
-`Faraday::Middleware` already implements the `#call` method for you and looks for two methods in your subclass: `#on_request(env) and `#on_complete(env)`.
+`Faraday::Middleware` already implements the `#call` method for you and looks for two methods in your subclass: `#on_request(env)` and `#on_complete(env)`.
 `#on_request` is called when the request is being built and is given the `env` representing the request.
 `#on_complete` is called after the response has been received (that's right, it already supports parallel mode!) and receives the `env` of the response.
 
