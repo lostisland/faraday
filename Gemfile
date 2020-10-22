@@ -24,7 +24,8 @@ group :test, :development do
   gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
   gem 'multipart-parser'
-  gem 'net-http-persistent', RUBY_VERSION.start_with?('3') ? '~> 4.0' : '~> 3.0' # Ruby 3 requires 4.0.0+
+  # This does not currently work, since there's no .gemspec file in the repo:
+  gem 'net-http-persistent', (RUBY_VERSION.start_with?('3') ? '>= 3.0' : '~> 3.0'), **(RUBY_VERSION.start_with?('3') ? { github: 'drbrain/net-http-persistent' } : {})
   gem 'patron', '>= 0.4.2', platforms: :ruby
   gem 'rack-test', '>= 0.6', require: 'rack/test'
   gem 'rspec', '~> 3.7'
