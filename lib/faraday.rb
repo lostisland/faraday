@@ -6,6 +6,8 @@ require 'forwardable'
 require 'faraday/middleware_registry'
 require 'faraday/dependency_loader'
 
+require 'faraday/net_http'
+
 # This is the main namespace for Faraday.
 #
 # It provides methods to create {Connection} objects, and HTTP-related
