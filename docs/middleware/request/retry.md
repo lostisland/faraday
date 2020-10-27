@@ -21,7 +21,7 @@ The middleware can also handle the [`Retry-After`](https://developer.mozilla.org
 ### Example Usage
 
 This example will result in a first interval that is random between 0.05 and 0.075
-and a second interval that is random between 0.1 and 0.15.
+and a second interval that is random between 0.1 and 0.125.
 
 ```ruby
 retry_options = {
