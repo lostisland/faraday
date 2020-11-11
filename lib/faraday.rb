@@ -115,9 +115,7 @@ module Faraday
       # When running under debugger with a breakpoint set,
       # self.to_str is called repeatedly during module load,
       # including the time before the default_connection getter below is loaded
-      if name == :default_connection
-        return nil
-      end
+      return nil if name == :default_connection
 
       if default_connection.respond_to?(name)
         default_connection.send(name, *args, &block)
@@ -146,9 +144,7 @@ module Faraday
     # self.to_str is called repeatedly during module load,
     # including the time after this getter is loaded but
     # before the libs delay-loading below fires
-    unless const_defined?(:Connection)
-      return nil
-    end
+    return nil unless const_defined?(:Connection)
 
     @default_connection ||= Connection.new(default_connection_options)
   end
