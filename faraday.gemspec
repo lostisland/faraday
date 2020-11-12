@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
-lib = 'faraday'
-lib_file = File.expand_path("../lib/#{lib}.rb", __FILE__)
-File.read(lib_file) =~ /\bVERSION\s*=\s*["'](.+?)["']/
-version = Regexp.last_match(1)
+require_relative 'lib/faraday/version'
 
 Gem::Specification.new do |spec|
-  spec.name    = lib
-  spec.version = version
+  spec.name    = 'faraday'
+  spec.version = Faraday::VERSION
 
   spec.summary = 'HTTP/REST API client library.'
 

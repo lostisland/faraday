@@ -11,6 +11,8 @@ unless defined?(::Faraday::Timer)
   Timer = Timeout
 end
 
+require 'faraday/version'
+require 'faraday/methods'
 require 'faraday/utils'
 require 'faraday/options'
 require 'faraday/connection'
@@ -37,10 +39,6 @@ require 'faraday/param_part'
 #   conn.get '/'
 #
 module Faraday
-  VERSION = '1.1.0'
-  METHODS_WITH_QUERY = %w[get head delete trace].freeze
-  METHODS_WITH_BODY = %w[post put patch].freeze
-
   class << self
     # The root path that Faraday is being loaded from.
     #
@@ -125,11 +123,6 @@ module Faraday
       default_connection.respond_to?(symbol, include_private) || super
     end
 
-    @ignore_env_proxy = false
-    @root_path = File.expand_path __dir__
-    @lib_path = File.expand_path 'faraday', __dir__
-    @default_adapter = :net_http
-
     # @overload default_connection
     #   Gets the default connection used for simple scripts.
     #   @return [Faraday::Connection] a connection configured with
@@ -170,6 +163,11 @@ module Faraday
       end
     end
   end
+
+  self.ignore_env_proxy = false
+  self.root_path = File.expand_path __dir__
+  self.lib_path = File.expand_path 'faraday', __dir__
+  self.default_adapter = :net_http
 
   require_lib 'autoload' unless ENV['FARADAY_NO_AUTOLOAD']
 end
