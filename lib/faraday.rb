@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'cgi'
+require 'date'
 require 'set'
 require 'forwardable'
 require 'faraday/middleware_registry'
