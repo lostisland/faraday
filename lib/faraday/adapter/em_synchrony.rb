@@ -12,6 +12,22 @@ module Faraday
         require 'em-synchrony/em-http'
         require 'em-synchrony/em-multi'
         require 'fiber'
+
+        require 'faraday/adapter/em_synchrony/parallel_manager'
+
+        if Faraday::Adapter::EMSynchrony.loaded?
+          begin
+            require 'openssl'
+          rescue LoadError
+            warn 'Warning: no such file to load -- openssl. ' \
+              'Make sure it is installed if you want HTTPS support'
+          else
+            require 'em-http/version'
+            if EventMachine::HttpRequest::VERSION < '1.1.6'
+              require 'faraday/adapter/em_http_ssl_patch'
+            end
+          end
+        end
       end
 
       self.supports_parallel = true
@@ -133,18 +149,5 @@ module Faraday
         client
       end
     end
-  end
-end
-
-require 'faraday/adapter/em_synchrony/parallel_manager'
-
-if Faraday::Adapter::EMSynchrony.loaded?
-  begin
-    require 'openssl'
-  rescue LoadError
-    warn 'Warning: no such file to load -- openssl. ' \
-      'Make sure it is installed if you want HTTPS support'
-  else
-    require 'faraday/adapter/em_http_ssl_patch'
   end
 end
