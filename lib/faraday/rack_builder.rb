@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'ruby2_keywords'
 require 'faraday/adapter_registry'
 
 module Faraday
@@ -28,10 +27,11 @@ module Faraday
 
       attr_reader :name
 
-      ruby2_keywords def initialize(klass, *args, &block)
+      def initialize(klass, *args, **kwargs, &block)
         @name = klass.to_s
         REGISTRY.set(klass) if klass.respond_to?(:name)
         @args = args
+        @kwargs = kwargs
         @block = block
       end
 
@@ -54,7 +54,7 @@ module Faraday
       end
 
       def build(app = nil)
-        klass.new(app, *@args, &@block)
+        klass.new(app, *@args, **@kwargs, &@block)
       end
     end
 
@@ -90,52 +90,52 @@ module Faraday
       @handlers.frozen?
     end
 
-    ruby2_keywords def use(klass, *args, &block)
+    def use(klass, *args, **kwargs, &block)
       if klass.is_a? Symbol
-        use_symbol(Faraday::Middleware, klass, *args, &block)
+        use_symbol(Faraday::Middleware, klass, *args, **kwargs, &block)
       else
         raise_if_locked
         raise_if_adapter(klass)
-        @handlers << self.class::Handler.new(klass, *args, &block)
+        @handlers << self.class::Handler.new(klass, *args, **kwargs, &block)
       end
     end
 
-    ruby2_keywords def request(key, *args, &block)
-      use_symbol(Faraday::Request, key, *args, &block)
+    def request(key, *args, **kwargs, &block)
+      use_symbol(Faraday::Request, key, *args, **kwargs, &block)
     end
 
-    ruby2_keywords def response(key, *args, &block)
-      use_symbol(Faraday::Response, key, *args, &block)
+    def response(key, *args, **kwargs, &block)
+      use_symbol(Faraday::Response, key, *args, **kwargs, &block)
     end
 
-    ruby2_keywords def adapter(klass = NO_ARGUMENT, *args, &block)
+    def adapter(klass = NO_ARGUMENT, *args, **kwargs, &block)
       return @adapter if klass == NO_ARGUMENT
 
       klass = Faraday::Adapter.lookup_middleware(klass) if klass.is_a?(Symbol)
-      @adapter = self.class::Handler.new(klass, *args, &block)
+      @adapter = self.class::Handler.new(klass, *args, **kwargs, &block)
     end
 
     ## methods to push onto the various positions in the stack:
 
-    ruby2_keywords def insert(index, *args, &block)
+    def insert(index, *args, **kwargs, &block)
       raise_if_locked
       index = assert_index(index)
-      handler = self.class::Handler.new(*args, &block)
+      handler = self.class::Handler.new(*args, **kwargs, &block)
       @handlers.insert(index, handler)
     end
 
     alias insert_before insert
 
-    ruby2_keywords def insert_after(index, *args, &block)
+    def insert_after(index, *args, **kwargs, &block)
       index = assert_index(index)
-      insert(index + 1, *args, &block)
+      insert(index + 1, *args, **kwargs, &block)
     end
 
-    ruby2_keywords def swap(index, *args, &block)
+    def swap(index, *args, **kwargs, &block)
       raise_if_locked
       index = assert_index(index)
       @handlers.delete_at(index)
-      insert(index, *args, &block)
+      insert(index, *args, **kwargs, &block)
     end
 
     def delete(handler)
@@ -235,8 +235,8 @@ module Faraday
       klass <= Faraday::Adapter
     end
 
-    ruby2_keywords def use_symbol(mod, key, *args, &block)
-      use(mod.lookup_middleware(key), *args, &block)
+    def use_symbol(mod, key, *args, **kwargs, &block)
+      use(mod.lookup_middleware(key), *args, **kwargs, &block)
     end
 
     def assert_index(index)
