@@ -39,9 +39,15 @@ jobs:
   build:
     needs: [linting]
     runs-on: ubuntu-latest
+    name: build ${{ matrix.ruby }}
     strategy:
+      fail-fast: false
       matrix:
         ruby: ['2.4', '2.5', '2.6', '2.7']
+        experimental: [false]
+        include:
+        - ruby: head
+          experimental: true
 
     steps:
     - uses: actions/checkout@v1
@@ -49,11 +55,9 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
 
-
     - name: Install dependencies
       run: |
         sudo apt-get install libcurl4-openssl-dev
-
 
     - name: Build
       run: |
@@ -62,6 +66,6 @@ jobs:
         bundle install --jobs 4 --retry 3
 
     - name: Test
-      run: |
-        bundle exec rake
+      continue-on-error: ${{ matrix.experimental }}
+      run: bundle exec rake
 
