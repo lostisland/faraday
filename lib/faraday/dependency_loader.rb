@@ -18,7 +18,7 @@ module Faraday
         raise "missing dependency for #{self}: #{load_error.message}"
       end
 
-      super(*args, **kwargs)
+      super
     end
 
     def loaded?
