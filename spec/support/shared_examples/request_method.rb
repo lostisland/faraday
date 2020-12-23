@@ -3,6 +3,7 @@
 shared_examples 'proxy examples' do
   it 'handles requests with proxy' do
     res = conn.public_send(http_method, '/')
+
     expect(res.status).to eq(200)
   end
 
@@ -233,7 +234,7 @@ shared_examples 'a request method' do |http_method|
 
   context 'when a proxy is provided as option' do
     before do
-      conn_options[:proxy] = 'http://google.co.uk'
+      conn_options[:proxy] = 'http://env-proxy.com:80'
     end
 
     include_examples 'proxy examples'
