@@ -1,5 +1,19 @@
 # frozen_string_literal: true
 
+shared_examples 'proxy examples' do
+  it 'handles requests with proxy' do
+    res = conn.public_send(http_method, '/')
+
+    expect(res.status).to eq(200)
+  end
+
+  it 'handles proxy failures' do
+    request_stub.to_return(status: 407)
+
+    expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::ProxyAuthError)
+  end
+end
+
 shared_examples 'a request method' do |http_method|
   let(:query_or_body) { method_with_body?(http_method) ? :body : :query }
   let(:response) { conn.public_send(http_method, '/') }
@@ -218,17 +232,31 @@ shared_examples 'a request method' do |http_method|
     end
   end
 
-  it 'handles requests with proxy' do
-    conn_options[:proxy] = 'http://google.co.uk'
+  context 'when a proxy is provided as option' do
+    before do
+      conn_options[:proxy] = 'http://env-proxy.com:80'
+    end
 
-    res = conn.public_send(http_method, '/')
-    expect(res.status).to eq(200)
+    include_examples 'proxy examples'
   end
 
-  it 'handles proxy failures' do
-    conn_options[:proxy] = 'http://google.co.uk'
-    request_stub.to_return(status: 407)
+  context 'when http_proxy env variable is set' do
+    let(:proxy_url) { 'http://env-proxy.com:80' }
 
-    expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::ProxyAuthError)
+    around do |example|
+      with_env 'http_proxy' => proxy_url do
+        example.run
+      end
+    end
+
+    include_examples 'proxy examples'
+
+    context 'when the env proxy is ignored' do
+      around do |example|
+        with_env_proxy_disabled(&example)
+      end
+
+      include_examples 'proxy examples'
+    end
   end
 end

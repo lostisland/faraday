@@ -33,6 +33,7 @@ shared_examples 'adapter examples' do |**options|
 
   let(:protocol) { ssl_mode? ? 'https' : 'http' }
   let(:remote) { "#{protocol}://example.com" }
+  let(:stub_remote) { remote }
 
   let(:conn) do
     conn_options[:ssl] ||= {}
@@ -46,7 +47,7 @@ shared_examples 'adapter examples' do |**options|
     end
   end
 
-  let!(:request_stub) { stub_request(http_method, remote) }
+  let!(:request_stub) { stub_request(http_method, stub_remote) }
 
   after do
     expect(request_stub).to have_been_requested unless request_stub.disabled?
