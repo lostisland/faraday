@@ -27,6 +27,8 @@ require 'faraday/error'
 require 'faraday/file_part'
 require 'faraday/param_part'
 
+require 'faraday/net_http'
+
 # This is the main namespace for Faraday.
 #
 # It provides methods to create {Connection} objects, and HTTP-related
