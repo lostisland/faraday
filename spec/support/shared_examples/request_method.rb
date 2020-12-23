@@ -218,17 +218,41 @@ shared_examples 'a request method' do |http_method|
     end
   end
 
-  it 'handles requests with proxy' do
-    conn_options[:proxy] = 'http://google.co.uk'
+  context 'when a proxy is provided as option' do
+    before do
+      conn_options[:proxy] = 'http://google.co.uk'
+    end
 
-    res = conn.public_send(http_method, '/')
-    expect(res.status).to eq(200)
+    it 'handles requests with proxy' do
+      res = conn.public_send(http_method, '/')
+      expect(res.status).to eq(200)
+    end
+
+    it 'handles proxy failures' do
+      request_stub.to_return(status: 407)
+
+      expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::ProxyAuthError)
+    end
   end
 
-  it 'handles proxy failures' do
-    conn_options[:proxy] = 'http://google.co.uk'
-    request_stub.to_return(status: 407)
+  context 'when http_proxy env variable is set' do
+    let(:proxy_url) { 'http://env-proxy.com:80' }
 
-    expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::ProxyAuthError)
+    around do |example|
+      with_env 'http_proxy' => proxy_url do
+        example.run
+      end
+    end
+
+    it 'handles requests with proxy' do
+      res = conn.public_send(http_method, '/')
+      expect(res.status).to eq(200)
+    end
+
+    it 'handles proxy failures' do
+      request_stub.to_return(status: 407)
+
+      expect { conn.public_send(http_method, '/') }.to raise_error(Faraday::ProxyAuthError)
+    end
   end
 end

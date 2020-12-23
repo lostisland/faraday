@@ -53,14 +53,15 @@ module Faraday
       end
 
       def net_http_connection(env)
-        klass = if (proxy = env[:request][:proxy])
-                  Net::HTTP::Proxy(proxy[:uri].hostname, proxy[:uri].port,
-                                   proxy[:user], proxy[:password])
-                else
-                  Net::HTTP
-                end
+        proxy = env[:request][:proxy]
         port = env[:url].port || (env[:url].scheme == 'https' ? 443 : 80)
-        klass.new(env[:url].hostname, port)
+        if proxy
+          Net::HTTP.new(env[:url].hostname, port,
+                        proxy[:uri].hostname, proxy[:uri].port,
+                        proxy[:user], proxy[:password])
+        else
+          Net::HTTP.new(env[:url].hostname, port, nil)
+        end
       end
 
       def call(env)
@@ -182,7 +183,7 @@ module Faraday
         end
 
         if (sec = http.respond_to?(:write_timeout=) &&
-                  request_timeout(:write, req))
+          request_timeout(:write, req))
           http.write_timeout = sec
         end
 
@@ -200,19 +201,19 @@ module Faraday
         return ssl[:cert_store] if ssl[:cert_store]
 
         @ssl_cert_store ||= begin
-          # Use the default cert store by default, i.e. system ca certs
-          OpenSSL::X509::Store.new.tap(&:set_default_paths)
-        end
+                              # Use the default cert store by default, i.e. system ca certs
+                              OpenSSL::X509::Store.new.tap(&:set_default_paths)
+                            end
       end
 
       def ssl_verify_mode(ssl)
         ssl[:verify_mode] || begin
-          if ssl.fetch(:verify, true)
-            OpenSSL::SSL::VERIFY_PEER
-          else
-            OpenSSL::SSL::VERIFY_NONE
-          end
-        end
+                               if ssl.fetch(:verify, true)
+                                 OpenSSL::SSL::VERIFY_PEER
+                               else
+                                 OpenSSL::SSL::VERIFY_NONE
+                               end
+                             end
       end
     end
   end
