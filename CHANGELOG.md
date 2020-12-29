@@ -1,5 +1,79 @@
 # Faraday Changelog
 
+## [v1.2.0](https://github.com/lostisland/faraday/releases/tag/v1.2.0) (2020-12-23)
+
+### Features
+
+* Introduces `on_request` and `on_complete` methods in `Faraday::Middleware`. (#1194, @iMacTia)
+
+### Fixes
+
+* Require 'date' to avoid retry exception (#1206, @rustygeldmacher)
+* Fix rdebug recursion issue (#1205, @native-api)
+* Update call to `em_http_ssl_patch` (#1202, @kylekeesling)
+* `EmHttp` adapter: drop superfluous loaded? check (#1213, @olleolleolle)
+* Avoid 1 use of keyword hackery (#1211, @grosser)
+* Fix #1219 `Net::HTTP` still uses env proxy (#1221, @iMacTia)
+
+### Documentation
+
+* Add comment in gemspec to explain exposure of `examples` and `spec` folders. (#1192, @iMacTia)
+* Adapters, how to create them (#1193, @olleolleolle)
+* Update documentation on using the logger (#1196, @tijmenb)
+* Adjust the retry documentation and spec to align with implementation (#1198, @nbeyer)
+
+### Misc
+
+* Test against ruby head (#1208, @grosser)
+
+## [v1.1.0](https://github.com/lostisland/faraday/releases/tag/v1.1.0) (2020-10-17)
+
+### Features
+
+* Makes parameters sorting configurable (#1162 @wishdev)
+* Introduces `flat_encode` option for multipart adapter. (#1163 @iMacTia)
+* Include request info in exceptions raised by RaiseError Middleware (#1181 @SandroDamilano)
+
+### Fixes
+
+* Avoid `last arg as keyword param` warning when building user middleware on Ruby 2.7 (#1153 @dgholz)
+* Limits net-http-persistent version to < 4.0 (#1156 @iMacTia)
+* Update `typhoeus` to new stable version (`1.4`) (#1159 @AlexWayfer)
+* Properly fix test failure with Rack 2.1+. (#1171 @voxik)
+
+### Documentation
+
+* Improves documentation on how to contribute to the site by using Docker. (#1175 @iMacTia)
+* Remove retry_change_requests from documentation (#1185 @stim371)
+
+### Misc
+
+* Link from GitHub Actions badge to CI workflow (#1141 @olleolleolle)
+* Return tests of `Test` adapter (#1147 @AlexWayfer)
+* Add 1.0 release to wording in CONTRIBUTING (#1155 @olleolleolle)
+* Fix linting bumping Rubocop to 0.90.0 (#1182 @iMacTia)
+* Drop `git ls-files` in gemspec (#1183 @utkarsh2102)
+* Upgrade CI to ruby/setup-ruby (#1187 @gogainda)
+
+## [v1.0.1](https://github.com/lostisland/faraday/releases/tag/v1.0.1) (2020-03-29)
+
+### Fixes
+
+* Use Net::HTTP#start(&block) to ensure closed TCP connections (#1117)
+* Fully qualify constants to be checked (#1122)
+* Allows `parse` method to be private/protected in response middleware (#1123)
+* Encode Spaces in Query Strings as '%20' Instead of '+' (#1125)
+* Limits rack to v2.0.x (#1127)
+* Adapter Registry reads also use mutex (#1136) 
+
+### Documentation
+
+* Retry middleware documentation fix (#1109)
+* Docs(retry): precise usage of retry-after (#1111)
+* README: Link the logo to the website (#1112)
+* Website: add search bar (#1116)
+* Fix request/response mix-up in docs text (#1132)
+
 ## v1.0
 
 Features:
