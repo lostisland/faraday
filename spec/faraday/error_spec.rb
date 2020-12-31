@@ -13,6 +13,7 @@ RSpec.describe Faraday::ClientError do
       it { expect(subject.message).to eq(exception.message) }
       it { expect(subject.backtrace).to eq(exception.backtrace) }
       it { expect(subject.inspect).to eq('#<Faraday::ClientError wrapped=#<RuntimeError: test>>') }
+      it { expect(subject.response_status).to be_nil }
     end
 
     context 'with response hash' do
@@ -22,6 +23,7 @@ RSpec.describe Faraday::ClientError do
       it { expect(subject.response).to eq(exception) }
       it { expect(subject.message).to eq('the server responded with status 400') }
       it { expect(subject.inspect).to eq('#<Faraday::ClientError response={:status=>400}>') }
+      it { expect(subject.response_status).to eq(400) }
     end
 
     context 'with string' do
@@ -31,6 +33,7 @@ RSpec.describe Faraday::ClientError do
       it { expect(subject.response).to be_nil }
       it { expect(subject.message).to eq('custom message') }
       it { expect(subject.inspect).to eq('#<Faraday::ClientError #<Faraday::ClientError: custom message>>') }
+      it { expect(subject.response_status).to be_nil }
     end
 
     context 'with anything else #to_s' do
@@ -40,6 +43,7 @@ RSpec.describe Faraday::ClientError do
       it { expect(subject.response).to be_nil }
       it { expect(subject.message).to eq('["error1", "error2"]') }
       it { expect(subject.inspect).to eq('#<Faraday::ClientError #<Faraday::ClientError: ["error1", "error2"]>>') }
+      it { expect(subject.response_status).to be_nil }
     end
 
     context 'with exception string and response hash' do
@@ -50,6 +54,7 @@ RSpec.describe Faraday::ClientError do
       it { expect(subject.response).to eq(response) }
       it { expect(subject.message).to eq('custom message') }
       it { expect(subject.inspect).to eq('#<Faraday::ClientError response={:status=>400}>') }
+      it { expect(subject.response_status).to eq(400) }
     end
   end
 end
