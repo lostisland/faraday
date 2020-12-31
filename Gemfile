@@ -26,7 +26,7 @@ group :test, :development do
   gem 'multipart-parser'
   # TODO: remove this once v4 is released
   options = (RUBY_VERSION.start_with?('3') ? { github: 'grosser/net-http-persistent', branch: 'grosser/spec' } : {})
-  gem 'net-http-persistent', (RUBY_VERSION.start_with?('3') ? '>= 3.0' : '~> 3.0'), **options
+  gem 'net-http-persistent', '>= 3.0', **options
   gem 'patron', '>= 0.4.2', platforms: :ruby
   gem 'rack-test', '>= 0.6', require: 'rack/test'
   gem 'rspec', '~> 3.7'
