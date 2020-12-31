@@ -41,5 +41,15 @@ RSpec.describe Faraday::ClientError do
       it { expect(subject.message).to eq('["error1", "error2"]') }
       it { expect(subject.inspect).to eq('#<Faraday::ClientError #<Faraday::ClientError: ["error1", "error2"]>>') }
     end
+
+    context 'with exception string and response hash' do
+      let(:exception) { 'custom message' }
+      let(:response) { { status: 400 } }
+
+      it { expect(subject.wrapped_exception).to be_nil }
+      it { expect(subject.response).to eq(response) }
+      it { expect(subject.message).to eq('custom message') }
+      it { expect(subject.inspect).to eq('#<Faraday::ClientError response={:status=>400}>') }
+    end
   end
 end

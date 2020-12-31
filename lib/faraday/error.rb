@@ -28,6 +28,18 @@ module Faraday
       %(#<#{self.class}#{inner}>)
     end
 
+    def response_status
+      @response[:status] if @response
+    end
+
+    def response_headers
+      @response[:headers] if @response
+    end
+
+    def response_body
+      @response[:body] if @response
+    end
+
     protected
 
     # Pulls out potential parent exception and response hash, storing them in
