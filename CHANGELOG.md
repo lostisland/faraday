@@ -1,5 +1,35 @@
 # Faraday Changelog
 
+## [v1.3.0](https://github.com/lostisland/faraday/releases/tag/v1.3.0) (2020-12-31)
+
+### Highlights
+Faraday v1.3.0 is the first release to officially support Ruby 3.0 in the CI pipeline 🎉 🍾! 
+
+This is also the first release with a previously "included" adapter (Net::HTTP) being isolated into a [separate gem](https://github.com/lostisland/faraday-net_http) 🎊!
+The new adapter is added to Faraday as a dependency for now, so that means full backwards-compatibility, but just to be safe be careful when upgrading!
+
+This is a huge step towards are Faraday v2.0 objective of pushing adapters and middleware into separate gems.
+Many thanks to the Faraday Team, @JanDintel and everyone who attended the [ROSS Conf remote event](https://www.rossconf.io/event/remote/)
+
+### Features
+
+* Improves consistency with Faraday::Error and Faraday::RaiseError (#1229, @qsona, @iMacTia)
+
+### Fixes
+
+* Don't assign to global ::Timer (#1227, @bpo)
+
+### Documentation
+
+* CHANGELOG: add releases after 1.0 (#1225, @olleolleolle)
+* Improves retry middleware documentation. (#1228, @iMacTia)
+
+### Misc
+
+* Move out Net::HTTP adapter (#1222, @JanDintel, @iMacTia)
+* Adds Ruby 3.0 to CI Matrix (#1226, @iMacTia)
+
+
 ## [v1.2.0](https://github.com/lostisland/faraday/releases/tag/v1.2.0) (2020-12-23)
 
 ### Features
