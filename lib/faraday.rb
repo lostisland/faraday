@@ -9,7 +9,7 @@ require 'faraday/dependency_loader'
 
 unless defined?(::Faraday::Timer)
   require 'timeout'
-  Timer = Timeout
+  ::Faraday::Timer = Timeout
 end
 
 require 'faraday/version'
