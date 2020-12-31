@@ -110,7 +110,7 @@ retry_options = {
 
 ### Call a block on every retry
 
-You can specify a block through the `retry_block` option that will be called every time the request is retried.
+You can specify a block through the `retry_block` option that will be called before every retry.
 There are many different applications for this feature, spacing from instrumentation to monitoring.
 Request environment, middleware options, current number of retries and the exception is passed to the block as parameters.
 For example, you might want to keep track of the response statuses:
