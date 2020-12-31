@@ -51,7 +51,7 @@ module Faraday
 
       def perform_request(http, env)
         http.request env[:url], create_request(env)
-      rescue Errno::ETIMEDOUT => e
+      rescue Errno::ETIMEDOUT, Net::OpenTimeout => e
         raise Faraday::TimeoutError, e
       rescue Net::HTTP::Persistent::Error => e
         raise Faraday::TimeoutError, e if e.message.include? 'Timeout'
