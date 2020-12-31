@@ -112,7 +112,7 @@ module Faraday
       #   not independent of the retry count. This would be useful
       #   if the exception produced is non-recoverable or if the
       #   the HTTP method called is not idempotent.
-      # @option options [Block] :retry_block block that is executed after
+      # @option options [Block] :retry_block block that is executed before
       #   every retry. Request environment, middleware options, current number
       #   of retries and the exception is passed to the block as parameters.
       # @option options [Array] :retry_statuses Array of Integer HTTP status
