@@ -57,7 +57,6 @@ jobs:
 
     - name: Build
       run: |
-        sudo apt-get install libcurl4-openssl-dev
         gem install bundler -v '<2'
         bundle install --jobs 4 --retry 3
 
