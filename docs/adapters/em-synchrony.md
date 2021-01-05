@@ -7,7 +7,7 @@ top_name: Adapters
 top_link: ./
 ---
 
-This adapter uses [EventMachine](https://github.com/eventmachine/eventmachine/) and the tie in [em-http-request](https://www.rubydoc.info/gems/em-http-request) in conjunction with [em-synchrony][rdoc]
+This Adapter uses [EventMachine](https://github.com/eventmachine/eventmachine/) and the tie in [em-http-request](https://www.rubydoc.info/gems/em-http-request) in conjunction with [em-synchrony][rdoc]
 
 It can be used to make parallel requests using EventMachine.
 

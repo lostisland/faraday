@@ -7,7 +7,7 @@ top_name: Adapters
 top_link: ./
 ---
 
-This adapter uses [EventMachine](https://github.com/eventmachine/eventmachine/) and the tie in [em-http-request][src]
+This Adapter uses [EventMachine](https://github.com/eventmachine/eventmachine/) and the tie in [em-http-request][src]
 
 It can be used to make parallel requests using EventMachine.
 
