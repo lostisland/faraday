@@ -20,6 +20,7 @@ Faraday includes these adapters (but not the HTTP client libraries):
 * [Excon][excon]
 * [Patron][patron]
 * [EM-Synchrony][em-synchrony]
+* [EM-Http][em-http]
 * [HTTPClient][httpclient]
 
 While most adapters use a common Ruby HTTP client library, adapters can also
@@ -176,6 +177,7 @@ Compare to the finished example [em-synchrony](https://github.com/lostisland/far
 [excon]:        ./excon
 [patron]:       ./patron
 [em-synchrony]: ./em-synchrony
+[em-http]:      ./em-http
 [httpclient]:   ./httpclient
 [typhoeus]:     https://github.com/typhoeus/typhoeus/blob/master/lib/typhoeus/adapters/faraday.rb
 [faraday-http]: https://github.com/lostisland/faraday-http
