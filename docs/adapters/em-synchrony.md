@@ -53,7 +53,7 @@ end
 
 begin
   conn.in_parallel do
-    puts "Parrallel manager: #{conn.parallel_manager}"
+    puts "Parallel manager: #{conn.parallel_manager}"
 
     @responses = urls.map do |url|
       conn.get(url)
