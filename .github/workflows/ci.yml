@@ -60,7 +60,18 @@ jobs:
         gem install bundler -v '<2'
         bundle install --jobs 4 --retry 3
 
+    - name: Setup Code Climate
+      if: matrix.ruby == '2.6'
+      run: |
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
+        ./cc-test-reporter before-build
+
     - name: Test
       continue-on-error: ${{ matrix.experimental }}
       run: bundle exec rake
 
+    - name: Run Code Climate Test Reporter
+      if: success() && matrix.ruby == '2.6'
+      run: ./cc-test-reporter after-build --coverage-input-type simplecov --exit-code $?
+      continue-on-error: true
