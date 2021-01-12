@@ -27,4 +27,4 @@ end
 
 [rdoc]: https://www.rubydoc.info/gems/httpclient
 [src]: https://github.com/nahi/httpclient
-[adapter_rdoc]: https://www.rubydoc.info/gems/faraday/Faraday/Adapter/HTTPClient
+[adapter_rdoc]: https://www.rubydoc.info/github/lostisland/faraday/Faraday/Adapter/HTTPClient
