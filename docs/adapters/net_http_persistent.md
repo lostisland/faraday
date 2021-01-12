@@ -26,4 +26,4 @@ end
 
 [rdoc]: https://www.rubydoc.info/gems/net-http-persistent
 [src]: https://github.com/drbrain/net-http-persistent
-[adapter_rdoc]: https://www.rubydoc.info/gems/faraday/Faraday/Adapter/NetHttpPersistent
+[adapter_rdoc]: https://www.rubydoc.info/github/lostisland/faraday/Faraday/Adapter/NetHttpPersistent

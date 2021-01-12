@@ -28,4 +28,4 @@ end
 * [Adapter RDoc][adapter_rdoc]
 
 [rdoc]: http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html
-[adapter_rdoc]: https://www.rubydoc.info/gems/faraday/Faraday/Adapter/NetHttp
+[adapter_rdoc]: https://www.rubydoc.info/github/lostisland/faraday/Faraday/Adapter/NetHttp
