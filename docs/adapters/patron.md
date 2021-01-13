@@ -26,4 +26,4 @@ end
 
 [rdoc]: https://www.rubydoc.info/gems/patron
 [src]: https://github.com/toland/patron
-[adapter_rdoc]: https://www.rubydoc.info/gems/faraday/Faraday/Adapter/Patron
+[adapter_rdoc]: https://www.rubydoc.info/github/lostisland/faraday/Faraday/Adapter/Patron
