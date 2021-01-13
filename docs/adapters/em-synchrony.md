@@ -25,4 +25,4 @@ end
 
 [rdoc]: https://www.rubydoc.info/gems/em-synchrony
 [src]: https://github.com/igrigorik/em-synchrony
-[adapter_rdoc]: https://www.rubydoc.info/gems/faraday/Faraday/Adapter/EMSynchrony
+[adapter_rdoc]: https://www.rubydoc.info/github/lostisland/faraday/Faraday/Adapter/EMSynchrony
