@@ -524,7 +524,6 @@ module Faraday
       end
       url = url && URI.parse(url.to_s).opaque ? url.to_s.gsub(':', '%3A') : url
       uri = url ? base + url : base
-      uri = URI.parse(CGI.unescape(uri.to_s))
       if params
         uri.query = params.to_query(params_encoder || options.params_encoder)
       end
