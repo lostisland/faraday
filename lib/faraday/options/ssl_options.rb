@@ -41,10 +41,13 @@ module Faraday
   #
   # @!attribute max_version
   #   @return [String, Symbol] maximum SSL version (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL/SSLContext.html#method-i-max_version-3D)
+  #
+  # @!attribute ciphers
+  #   @return [String] allowed ciphers list
   class SSLOptions < Options.new(:verify, :ca_file, :ca_path, :verify_mode,
                                  :cert_store, :client_cert, :client_key,
                                  :certificate, :private_key, :verify_depth,
-                                 :version, :min_version, :max_version)
+                                 :version, :min_version, :max_version, :ciphers)
 
     # @return [Boolean] true if should verify
     def verify?
