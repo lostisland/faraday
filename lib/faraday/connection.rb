@@ -522,6 +522,7 @@ module Faraday
         base = base.dup
         base.path = "#{base.path}/" # ensure trailing slash
       end
+      url = url && URI.parse(url.to_s).opaque ? url.to_s.gsub(':', '%3A') : url
       uri = url ? base + url : base
       if params
         uri.query = params.to_query(params_encoder || options.params_encoder)

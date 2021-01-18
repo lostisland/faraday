@@ -270,6 +270,29 @@ RSpec.describe Faraday::Connection do
         expect(uri.to_s).to eq('http://sushi.com/sake/')
       end
     end
+
+    context 'with colon in path' do
+      let(:url) { 'http://service.com' }
+
+      it 'joins url to base when used absolute path' do
+        conn = Faraday.new(url: url)
+        uri = conn.build_exclusive_url('/service:search?limit=400')
+        expect(uri.to_s).to eq('http://service.com/service:search?limit=400')
+      end
+
+      it 'joins url to base when used relative path' do
+        conn = Faraday.new(url: url)
+        uri = conn.build_exclusive_url('service:search?limit=400')
+        expect(uri.to_s).to eq('http://service.com/service%3Asearch?limit=400')
+      end
+
+      it 'joins url to base when used with path prefix' do
+        conn = Faraday.new(url: url)
+        conn.path_prefix = '/api'
+        uri = conn.build_exclusive_url('service:search?limit=400')
+        expect(uri.to_s).to eq('http://service.com/api/service%3Asearch?limit=400')
+      end
+    end
   end
 
   describe '#build_url' do
