@@ -6,6 +6,11 @@ module Faraday
   # Adds the ability for other modules to register and lookup
   # middleware classes.
   module MiddlewareRegistry
+    def self.extended(klass)
+      super
+      klass.init_mutex
+    end
+
     # Register middleware class(es) on the current module.
     #
     # @param autoload_path [String] Middleware autoload path
@@ -91,8 +96,12 @@ module Faraday
         raise(Faraday::Error, "#{key.inspect} is not registered on #{self}")
     end
 
+    def init_mutex
+      @middleware_mutex = Monitor.new
+    end
+
     def middleware_mutex(&block)
-      @middleware_mutex ||= Monitor.new
+      puts "#{self}: middleware_mutex" if @middleware_mutex.nil?
       @middleware_mutex.synchronize(&block)
     end
 
