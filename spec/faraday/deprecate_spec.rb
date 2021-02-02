@@ -56,6 +56,84 @@ RSpec.describe Faraday::DeprecatedClass do
     expect { raise SampleDeprecatedClass, nil }.to raise_error(SampleClass)
   end
 
+  describe 'match behavior' do
+    class SampleDeprecatedClassA < SampleDeprecatedClass; end
+    class SampleDeprecatedClassB < SampleDeprecatedClass; end
+
+    class SampleDeprecatedClassAX < SampleDeprecatedClassA; end
+
+    class SampleClassA < SampleClass; end
+
+    describe 'undeprecated class' do
+      it 'is === to instance of deprecated class' do
+        expect(SampleClass === SampleDeprecatedClass.new).to be true
+      end
+
+      it 'is === to instance of subclass of deprecated class' do
+        expect(SampleClass === SampleDeprecatedClassA.new).to be true
+      end
+
+      it 'is === to instance of subclass of subclass of deprecated class' do
+        expect(SampleClass === SampleDeprecatedClassAX.new).to be true
+      end
+    end
+
+    describe 'subclass of undeprecated class' do
+      it 'is not === to instance of undeprecated class' do
+        expect(SampleClassA === SampleClass.new).to be false
+      end
+
+      it 'is not === to instance of deprecated class' do
+        expect(SampleClassA === SampleDeprecatedClass.new).to be false
+      end
+    end
+
+    describe 'deprecated class' do
+      it 'is === to instance of undeprecated class' do
+        expect(SampleDeprecatedClass === SampleClass.new).to be true
+      end
+
+      it 'is === to instance of subclass of undeprecated class' do
+        expect(SampleDeprecatedClass === SampleClassA.new).to be true
+      end
+
+      it 'is === to instance of subclass of deprecated class' do
+        expect(SampleDeprecatedClass === SampleDeprecatedClassA.new).to be true
+      end
+
+      it 'is === to instance of subclass of subclass of deprecated class' do
+        expect(SampleDeprecatedClass === SampleDeprecatedClassAX.new).to be true
+      end
+    end
+
+    describe 'subclass of deprecated class' do
+      it 'is not === to instance of subclass of undeprecated class' do
+        expect(SampleDeprecatedClassA === SampleClass.new).to be false
+      end
+
+      it 'is not === to instance of another subclass of deprecated class' do
+        expect(SampleDeprecatedClassA === SampleDeprecatedClassB.new).to be false
+      end
+
+      it 'is === to instance of its subclass' do
+        expect(SampleDeprecatedClassA === SampleDeprecatedClassAX.new).to be true
+      end
+
+      it 'is === to instance of deprecated class' do
+        expect(SampleDeprecatedClass === SampleDeprecatedClassB.new).to be true
+      end
+    end
+
+    describe 'subclass of subclass of deprecated class' do
+      it 'is not === to instance of subclass of another subclass of deprecated class' do
+        expect(SampleDeprecatedClassAX === SampleDeprecatedClassB.new).to be false
+      end
+
+      it 'is not === to instance of its superclass' do
+        expect(SampleDeprecatedClassA === SampleDeprecatedClass.new).to be false
+      end
+    end
+  end
 
   def with_warn_squelching
     stderr_catcher = StringIO.new
