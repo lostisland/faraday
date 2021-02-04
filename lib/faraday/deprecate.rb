@@ -9,11 +9,13 @@ module Faraday
   module DeprecatedClass
     def self.proxy_class(origclass, ver = '1.0')
       proxy = Class.new(origclass) do
+        const_set("ORIG_CLASS", origclass)
+
         class << self
           extend Faraday::Deprecate
 
           def ===(other)
-            other.is_a?(superclass) || super
+            (superclass == const_get("ORIG_CLASS") && other.is_a?(superclass)) || super
           end
         end
       end
