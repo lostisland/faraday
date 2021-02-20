@@ -6,6 +6,7 @@ require 'set'
 require 'forwardable'
 require 'faraday/middleware_registry'
 require 'faraday/dependency_loader'
+require 'faraday/proxy_selector'
 
 unless defined?(::Faraday::Timer)
   require 'timeout'
