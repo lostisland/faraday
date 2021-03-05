@@ -35,6 +35,7 @@ Please refer to their documentation for usage examples.
 
 * [Typhoeus][typhoeus]
 * [HTTP.rb][faraday-http]
+* [httpx][httpx]
 
 ## Ad-hoc adapters customization
 
@@ -180,3 +181,4 @@ Compare to the finished example [em-synchrony](https://github.com/lostisland/far
 [typhoeus]:     https://github.com/typhoeus/typhoeus/blob/master/lib/typhoeus/adapters/faraday.rb
 [faraday-http]: https://github.com/lostisland/faraday-http
 [testing]:      ./testing
+[httpx]:        https://honeyryderchuck.gitlab.io/httpx/wiki/Faraday-Adapter
