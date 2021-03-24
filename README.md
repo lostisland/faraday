@@ -47,7 +47,7 @@ But before you start coding, please read our [Contributing Guide][contributing]
 [website]:      https://lostisland.github.io/faraday
 [faraday_team]: https://lostisland.github.io/faraday/team
 [contributing]: https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md
-[apidoc]:       http://www.rubydoc.info/gems/faraday
+[apidoc]:       https://www.rubydoc.info/github/lostisland/faraday
 [actions]:      https://github.com/lostisland/faraday/actions
 [jruby]:        http://jruby.org/
 [rubinius]:     http://rubini.us/

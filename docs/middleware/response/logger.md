@@ -87,7 +87,7 @@ end
 You can also provide a custom formatter to control how requests and responses are logged.
 Any custom formatter MUST implement the `request` and `response` method, with one argument which
 will be passed being the Faraday environment.
-If you make your formatter inheriting from `Faraday::Response::Logger::Formatter`,
+If you make your formatter inheriting from `Faraday::Logging::Formatter`,
 then the methods `debug`, `info`, `warn`, `error` and `fatal` are automatically delegated to the logger.
 
 ```ruby

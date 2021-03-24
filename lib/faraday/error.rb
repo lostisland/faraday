@@ -28,6 +28,18 @@ module Faraday
       %(#<#{self.class}#{inner}>)
     end
 
+    def response_status
+      @response[:status] if @response
+    end
+
+    def response_headers
+      @response[:headers] if @response
+    end
+
+    def response_body
+      @response[:body] if @response
+    end
+
     protected
 
     # Pulls out potential parent exception and response hash, storing them in
@@ -38,6 +50,14 @@ module Faraday
     #              :headers - String key/value hash of HTTP response header
     #                         values.
     #              :body    - Optional string HTTP response body.
+    #              :request - Hash
+    #                           :method   - Symbol with the request HTTP method.
+    #                           :url_path - String with the url path requested.
+    #                           :params   - String key/value hash of query params
+    #                                     present in the request.
+    #                           :headers  - String key/value hash of HTTP request
+    #                                     header values.
+    #                           :body     - String HTTP request body.
     #
     # If a subclass has to call this, then it should pass a string message
     # to `super`. See NilStatusError.

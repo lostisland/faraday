@@ -31,4 +31,12 @@ RSpec.describe Faraday::FlatParamsEncoder do
     params = { a: [] }
     expect(subject.encode(params)).to eq('a=')
   end
+
+  it 'encodes unsorted when asked' do
+    params = { b: false, a: true }
+    expect(subject.encode(params)).to eq('a=true&b=false')
+    Faraday::FlatParamsEncoder.sort_params = false
+    expect(subject.encode(params)).to eq('b=false&a=true')
+    Faraday::FlatParamsEncoder.sort_params = true
+  end
 end

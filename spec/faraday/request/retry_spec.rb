@@ -117,7 +117,7 @@ RSpec.describe Faraday::Request::Retry do
       let(:options) { { max: 2, interval: 0.1, interval_randomness: 0.05 } }
       let(:middleware) { Faraday::Request::Retry.new(nil, options) }
 
-      it { expect(middleware.send(:calculate_retry_interval, 2)).to be_between(0.1, 0.15) }
+      it { expect(middleware.send(:calculate_retry_interval, 2)).to be_between(0.1, 0.105) }
     end
   end
 

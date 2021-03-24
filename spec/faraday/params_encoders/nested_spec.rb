@@ -94,6 +94,14 @@ RSpec.describe Faraday::NestedParamsEncoder do
     expect(subject.encode(params)).to eq('a%5B%5D=true&a%5B%5D=false')
   end
 
+  it 'encodes unsorted when asked' do
+    params = { b: false, a: true }
+    expect(subject.encode(params)).to eq('a=true&b=false')
+    Faraday::NestedParamsEncoder.sort_params = false
+    expect(subject.encode(params)).to eq('b=false&a=true')
+    Faraday::NestedParamsEncoder.sort_params = true
+  end
+
   shared_examples 'a wrong decoding' do
     it do
       expect { subject.decode(query) }.to raise_error(TypeError) do |e|

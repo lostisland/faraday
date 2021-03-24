@@ -7,12 +7,6 @@ module Faraday
   class Response
     # Used for simple response middleware.
     class Middleware < Faraday::Middleware
-      def call(env)
-        @app.call(env).on_complete do |environment|
-          on_complete(environment)
-        end
-      end
-
       # Override this to modify the environment after the response has finished.
       # Calls the `parse` method if defined
       # `parse` method can be defined as private, public and protected

@@ -1,10 +1,33 @@
 # frozen_string_literal: true
 
 require 'cgi'
+require 'date'
 require 'set'
 require 'forwardable'
 require 'faraday/middleware_registry'
 require 'faraday/dependency_loader'
+
+unless defined?(::Faraday::Timer)
+  require 'timeout'
+  ::Faraday::Timer = Timeout
+end
+
+require 'faraday/version'
+require 'faraday/methods'
+require 'faraday/utils'
+require 'faraday/options'
+require 'faraday/connection'
+require 'faraday/rack_builder'
+require 'faraday/parameters'
+require 'faraday/middleware'
+require 'faraday/adapter'
+require 'faraday/request'
+require 'faraday/response'
+require 'faraday/error'
+require 'faraday/file_part'
+require 'faraday/param_part'
+
+require 'faraday/net_http'
 
 # This is the main namespace for Faraday.
 #
@@ -19,10 +42,6 @@ require 'faraday/dependency_loader'
 #   conn.get '/'
 #
 module Faraday
-  VERSION = '1.0.1'
-  METHODS_WITH_QUERY = %w[get head delete trace].freeze
-  METHODS_WITH_BODY = %w[post put patch].freeze
-
   class << self
     # The root path that Faraday is being loaded from.
     #
@@ -107,6 +126,34 @@ module Faraday
       default_connection.respond_to?(symbol, include_private) || super
     end
 
+    # @overload default_connection
+    #   Gets the default connection used for simple scripts.
+    #   @return [Faraday::Connection] a connection configured with
+    #   the default_adapter.
+    # @overload default_connection=(connection)
+    #   @param connection [Faraday::Connection]
+    #   Sets the default {Faraday::Connection} for simple scripts that
+    #   access the Faraday constant directly, such as
+    #   <code>Faraday.get "https://faraday.com"</code>.
+    def default_connection
+      @default_connection ||= Connection.new(default_connection_options)
+    end
+
+    # Gets the default connection options used when calling {Faraday#new}.
+    #
+    # @return [Faraday::ConnectionOptions]
+    def default_connection_options
+      @default_connection_options ||= ConnectionOptions.new
+    end
+
+    # Sets the default options used when calling {Faraday#new}.
+    #
+    # @param options [Hash, Faraday::ConnectionOptions]
+    def default_connection_options=(options)
+      @default_connection = nil
+      @default_connection_options = ConnectionOptions.from(options)
+    end
+
     private
 
     # Internal: Proxies method calls on the Faraday constant to
@@ -124,43 +171,6 @@ module Faraday
   self.root_path = File.expand_path __dir__
   self.lib_path = File.expand_path 'faraday', __dir__
   self.default_adapter = :net_http
-
-  # @overload default_connection
-  #   Gets the default connection used for simple scripts.
-  #   @return [Faraday::Connection] a connection configured with
-  #   the default_adapter.
-  # @overload default_connection=(connection)
-  #   @param connection [Faraday::Connection]
-  #   Sets the default {Faraday::Connection} for simple scripts that
-  #   access the Faraday constant directly, such as
-  #   <code>Faraday.get "https://faraday.com"</code>.
-  def self.default_connection
-    @default_connection ||= Connection.new(default_connection_options)
-  end
-
-  # Gets the default connection options used when calling {Faraday#new}.
-  #
-  # @return [Faraday::ConnectionOptions]
-  def self.default_connection_options
-    @default_connection_options ||= ConnectionOptions.new
-  end
-
-  # Sets the default options used when calling {Faraday#new}.
-  #
-  # @param options [Hash, Faraday::ConnectionOptions]
-  def self.default_connection_options=(options)
-    @default_connection = nil
-    @default_connection_options = ConnectionOptions.from(options)
-  end
-
-  unless defined?(::Faraday::Timer)
-    require 'timeout'
-    Timer = Timeout
-  end
-
-  require_libs 'utils', 'options', 'connection', 'rack_builder', 'parameters',
-               'middleware', 'adapter', 'request', 'response', 'error',
-               'file_part', 'param_part'
 
   require_lib 'autoload' unless ENV['FARADAY_NO_AUTOLOAD']
 end

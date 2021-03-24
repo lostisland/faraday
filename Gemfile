@@ -12,7 +12,8 @@ group :development, :test do
 end
 
 group :lint, :development do
-  gem 'rubocop', '~> 0.84.0'
+  gem 'rubocop', '~> 0.90.0'
+  gem 'rubocop-packaging', '~> 0.5'
   gem 'rubocop-performance', '~> 1.0'
 end
 
@@ -23,9 +24,10 @@ group :test, :development do
   gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
   gem 'multipart-parser'
-  gem 'net-http-persistent', '~> 3.0'
+  # TODO: remove this once v4 is released
+  options = (RUBY_VERSION.start_with?('3') ? { github: 'grosser/net-http-persistent', branch: 'grosser/spec' } : {})
+  gem 'net-http-persistent', '>= 3.0', **options
   gem 'patron', '>= 0.4.2', platforms: :ruby
-  gem 'rack', '< 2.1'
   gem 'rack-test', '>= 0.6', require: 'rack/test'
   gem 'rspec', '~> 3.7'
   gem 'rspec_junit_formatter', '~> 0.4'

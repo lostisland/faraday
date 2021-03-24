@@ -56,7 +56,7 @@ RSpec.describe Faraday::Request::Authorization do
     end
 
     context 'when other values are provided' do
-      let(:auth_config) { ['baz', foo: 42] }
+      let(:auth_config) { ['baz', { foo: 42 }] }
 
       it { expect(response.body).to match(/^Token /) }
       it { expect(response.body).to match(/token="baz"/) }
@@ -78,7 +78,7 @@ RSpec.describe Faraday::Request::Authorization do
     end
 
     context 'when passed a string and a hash' do
-      let(:auth_config) { ['baz', foo: 42] }
+      let(:auth_config) { ['baz', { foo: 42 }] }
 
       it { expect(response.body).to eq('baz foo="42"') }
 

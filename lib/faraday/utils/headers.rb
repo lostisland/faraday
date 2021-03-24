@@ -105,7 +105,7 @@ module Faraday
       end
 
       def to_hash
-        ::Hash.new.update(self)
+        {}.update(self)
       end
 
       def parse(header_string)

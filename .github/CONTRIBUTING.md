@@ -49,7 +49,20 @@ We encourage adapters that:
 ### Changes to Faraday Website
 
 The [Faraday Website][website] is included in the Faraday repository, under the `/docs` folder.
-If you want to apply changes to it, please test it locally using `Jekyll`.
+If you want to apply changes to it, please test it locally before opening your PR.
+
+#### Test website changes using Docker
+
+Start cloning the repository and navigate to the newly cloned directory on your computer, then run the following:
+
+```bash
+docker container run -p 80:4000 -v $(pwd)/docs:/site bretfisher/jekyll-serve
+```
+
+And that's it! Open your browser and go to `http://localhost` to see the website running.
+Any change done to files in the `/docs` folder will be automatically picked (except for config changes).
+
+#### Test website changes using `Jekyll`
 
 ```bash
 # Navigate into the /docs folder

@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Faraday::Request::Multipart do
+  let(:options) { {} }
   let(:conn) do
     Faraday.new do |b|
-      b.request :multipart
+      b.request :multipart, options
       b.request :url_encoded
       b.adapter :test do |stub|
         stub.post('/echo') do |env|
@@ -54,9 +55,10 @@ RSpec.describe Faraday::Request::Multipart do
       part_bc, body_bc = result.part('b[c]')
       expect(part_bc).to_not be_nil
       expect(part_bc.filename).to eq('multipart_spec.rb')
-      expect(part_bc.headers['content-disposition']).to eq(
-        'form-data; foo=1; name="b[c]"; filename="multipart_spec.rb"'
-      )
+      expect(part_bc.headers['content-disposition'])
+        .to eq(
+          'form-data; foo=1; name="b[c]"; filename="multipart_spec.rb"'
+        )
       expect(part_bc.headers['content-type']).to eq('text/x-ruby')
       expect(part_bc.headers['content-transfer-encoding']).to eq('binary')
       expect(body_bc).to eq(File.read(__FILE__))
@@ -135,9 +137,10 @@ RSpec.describe Faraday::Request::Multipart do
       part_bc, body_bc = result.part('b[][c]')
       expect(part_bc).to_not be_nil
       expect(part_bc.filename).to eq('multipart_spec.rb')
-      expect(part_bc.headers['content-disposition']).to eq(
-        'form-data; name="b[][c]"; filename="multipart_spec.rb"'
-      )
+      expect(part_bc.headers['content-disposition'])
+        .to eq(
+          'form-data; name="b[][c]"; filename="multipart_spec.rb"'
+        )
       expect(part_bc.headers['content-type']).to eq('text/x-ruby')
       expect(part_bc.headers['content-transfer-encoding']).to eq('binary')
       expect(body_bc).to eq(File.read(__FILE__))
@@ -177,9 +180,10 @@ RSpec.describe Faraday::Request::Multipart do
       part_bc, body_bc = result.part('b[c]')
       expect(part_bc).to_not be_nil
       expect(part_bc.filename).to eq('multipart_spec.rb')
-      expect(part_bc.headers['content-disposition']).to eq(
-        'form-data; foo=1; name="b[c]"; filename="multipart_spec.rb"'
-      )
+      expect(part_bc.headers['content-disposition'])
+        .to eq(
+          'form-data; foo=1; name="b[c]"; filename="multipart_spec.rb"'
+        )
       expect(part_bc.headers['content-type']).to eq('text/x-ruby')
       expect(part_bc.headers['content-transfer-encoding']).to eq('binary')
       expect(body_bc).to eq(File.read(__FILE__))
@@ -258,9 +262,10 @@ RSpec.describe Faraday::Request::Multipart do
       part_bc, body_bc = result.part('b[][c]')
       expect(part_bc).to_not be_nil
       expect(part_bc.filename).to eq('multipart_spec.rb')
-      expect(part_bc.headers['content-disposition']).to eq(
-        'form-data; name="b[][c]"; filename="multipart_spec.rb"'
-      )
+      expect(part_bc.headers['content-disposition'])
+        .to eq(
+          'form-data; name="b[][c]"; filename="multipart_spec.rb"'
+        )
       expect(part_bc.headers['content-type']).to eq('text/x-ruby')
       expect(part_bc.headers['content-transfer-encoding']).to eq('binary')
       expect(body_bc).to eq(File.read(__FILE__))
@@ -269,6 +274,29 @@ RSpec.describe Faraday::Request::Multipart do
       expect(part_bd).to_not be_nil
       expect(part_bd.filename).to be_nil
       expect(body_bd).to eq('2')
+    end
+  end
+
+  context 'when passing flat_encode=true option' do
+    let(:options) { { flat_encode: true } }
+    let(:io) { StringIO.new('io-content') }
+    let(:payload) do
+      {
+        a: 1,
+        b: [
+          Faraday::UploadIO.new(io, 'application/pdf'),
+          Faraday::UploadIO.new(io, 'application/pdf')
+        ]
+      }
+    end
+
+    it_behaves_like 'a multipart request'
+
+    it 'encode params using flat encoder' do
+      response = conn.post('/echo', payload)
+
+      expect(response.body).to include('name="b"')
+      expect(response.body).not_to include('name="b[]"')
     end
   end
 end
