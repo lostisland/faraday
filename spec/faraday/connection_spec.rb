@@ -18,6 +18,13 @@ shared_examples 'initializer with url' do
     it { expect(subject.path_prefix).to eq('/fish') }
     it { expect(subject.params).to eq('a' => '1') }
   end
+
+  context 'with IPv6 address' do
+    let(:address) { 'http://[::1]:85/' }
+
+    it { expect(subject.host).to eq('[::1]') }
+    it { expect(subject.port).to eq(85) }
+  end
 end
 
 shared_examples 'default connection options' do

@@ -577,7 +577,7 @@ module Faraday
         case url
         when String
           uri = Utils.URI(url)
-          uri = URI.parse("#{uri.scheme}://#{uri.hostname}").find_proxy
+          uri = URI.parse("#{uri.scheme}://#{uri.host}").find_proxy
         when URI
           uri = url.find_proxy
         when nil
