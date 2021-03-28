@@ -10,6 +10,7 @@ env:
   GIT_COMMIT_SHA: ${{ github.sha }}
   GIT_BRANCH: ${{ github.ref }}
   CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
 jobs:
   linting:
