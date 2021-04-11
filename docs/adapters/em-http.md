@@ -69,4 +69,4 @@ puts @responses.map(&:status).compact.count
 
 [rdoc]: https://www.rubydoc.info/gems/em-http-request
 [src]: https://github.com/igrigorik/em-http-request#readme
-[adapter_rdoc]: https://www.rubydoc.info/gems/faraday/Faraday/Adapter/EMHttp
+[adapter_rdoc]: https://www.rubydoc.info/github/lostisland/faraday/Faraday/Adapter/EMHttp

@@ -24,4 +24,4 @@ end
 
 [rdoc]: https://www.rubydoc.info/gems/excon
 [src]: https://github.com/excon/excon
-[adapter_rdoc]: https://www.rubydoc.info/gems/faraday/Faraday/Adapter/Excon
+[adapter_rdoc]: https://www.rubydoc.info/github/lostisland/faraday/Faraday/Adapter/Excon
