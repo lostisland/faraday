@@ -11,15 +11,10 @@ module Faraday
 
     register_middleware File.expand_path('adapter', __dir__),
                         test: [:Test, 'test'],
-                        net_http_persistent: [
-                          :NetHttpPersistent,
-                          'net_http_persistent'
-                        ],
                         typhoeus: [:Typhoeus, 'typhoeus'],
                         patron: [:Patron, 'patron'],
                         em_synchrony: [:EMSynchrony, 'em_synchrony'],
                         em_http: [:EMHttp, 'em_http'],
-                        excon: [:Excon, 'excon'],
                         rack: [:Rack, 'rack'],
                         httpclient: [:HTTPClient, 'httpclient']
 

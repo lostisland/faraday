@@ -28,6 +28,8 @@ require 'faraday/file_part'
 require 'faraday/param_part'
 
 require 'faraday/net_http'
+require 'faraday/net_http_persistent'
+require 'faraday/excon'
 
 # This is the main namespace for Faraday.
 #
