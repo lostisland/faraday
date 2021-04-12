@@ -58,12 +58,10 @@ module Faraday
   class Adapter
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
-                 NetHttpPersistent: 'net_http_persistent',
                  EMSynchrony: 'em_synchrony',
                  EMHttp: 'em_http',
                  Typhoeus: 'typhoeus',
                  Patron: 'patron',
-                 Excon: 'excon',
                  Test: 'test',
                  Rack: 'rack',
                  HTTPClient: 'httpclient'

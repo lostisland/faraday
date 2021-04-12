@@ -21,7 +21,6 @@ group :test, :development do
   gem 'coveralls_reborn', require: false
   gem 'em-http-request', '>= 1.1', require: 'em-http'
   gem 'em-synchrony', '>= 1.0.3', require: %w[em-synchrony em-synchrony/em-http]
-  gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
   gem 'multipart-parser'
   gem 'patron', '>= 0.4.2', platforms: :ruby
