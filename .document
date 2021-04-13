@@ -1,6 +1,5 @@
 LICENSE.md
 README.md
-bin/*
 lib/**/*.rb
-test/**/*.rb
+spec/**/*.rb
 .github/*.md
