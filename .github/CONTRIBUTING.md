@@ -6,7 +6,7 @@ For this reason, before adding any contribution to Faraday, we highly recommend 
 quick guide to ensure your PR can be reviewed and approved as quickly as possible.
 
 We are past our 1.0 release, and follow [Semantic Versioning][semver]. If your
-patch includes changes that break compatibility, note that so we can add it to
+patch includes changes that break compatibility, note that in the Pull Request, so we can add it to
 the [Changelog][].
 
 
@@ -19,7 +19,7 @@ our GitHub Actions Workflow to block your contribution.
 # Run unit tests and check code coverage
 $ bundle exec rspec
 
-# Run Rubocop and check code style
+# Check code style
 $ bundle exec rubocop
 ```
 
@@ -36,7 +36,7 @@ the green light by the core team start working on the PR.
 
 ### New Middleware & Adapters
 
-We prefer new adapters and middlewares to be added as separate gems. We can link to such gems from this project.
+We prefer new adapters and middlewares to be added **as separate gems**. We can link to such gems from this project.
 
 This goes for the [faraday_middleware][] project as well.
 
@@ -46,36 +46,48 @@ We encourage adapters that:
 1. are proven and may have better performance than existing ones; or
 1. have features not present in included adapters.
 
-### Changes to Faraday Website
+
+### Changes to the Faraday Website
 
 The [Faraday Website][website] is included in the Faraday repository, under the `/docs` folder.
 If you want to apply changes to it, please test it locally before opening your PR.
 
+
 #### Test website changes using Docker
 
-Start cloning the repository and navigate to the newly cloned directory on your computer, then run the following:
+Start by cloning the repository and navigate to the newly-cloned directory on your computer. Then run the following:
 
 ```bash
 docker container run -p 80:4000 -v $(pwd)/docs:/site bretfisher/jekyll-serve
 ```
 
-And that's it! Open your browser and go to `http://localhost` to see the website running.
-Any change done to files in the `/docs` folder will be automatically picked (except for config changes).
+And that's it! Open your browser and navigate to `http://localhost` to see the website running.
+Any change done to files in the `/docs` folder will be automatically picked up (with the exception of config changes).
 
-#### Test website changes using `Jekyll`
+
+#### Test website changes using Jekyll
+
+You can test website changes locally, on your machine, too. Here's how:
+
+Navigate into the /docs folder:
 
 ```bash
-# Navigate into the /docs folder
 $ cd docs
-
-# Install Jekyll dependencies, this bundle is different from Faraday's one.
-$ bundle install
-
-# Run the Jekyll server with the Faraday website
-$ bundle exec jekyll serve
-
-# The site will now be reachable at http://127.0.0.1:4000/faraday/
 ```
+
+Install Jekyll dependencies, this bundle is different from Faraday's one.
+
+```bash
+$ bundle install
+```
+
+Run the Jekyll server with the Faraday website
+
+```bash
+$ bundle exec jekyll serve
+```
+
+Now, navigate to http://127.0.0.1:4000/faraday/ to see the website running.
 
 [semver]:               https://semver.org/
 [changelog]:            https://github.com/lostisland/faraday/releases
