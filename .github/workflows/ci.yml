@@ -4,7 +4,7 @@ on:
   pull_request:
 
   push:
-    branches: [master, 0.1x]
+    branches: [main, 0.1x]
 
 env:
   GIT_COMMIT_SHA: ${{ github.sha }}
