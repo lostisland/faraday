@@ -10,6 +10,21 @@ patch includes changes that break compatibility, note that in the Pull Request, 
 the [Changelog][].
 
 
+### Policy on inclusive language
+
+You have read our [Code of Conduct][], which includes a note about **inclusive language**. This section tries to make that actionable.
+
+Faraday has a large and diverse userbase. To make Faraday a pleasant and effective experience for everyone, we use inclusive language.
+
+These resources can help:
+
+- Google's tutorial [Writing inclusive documentation](https://developers.google.com/style/inclusive-documentation) teaches by example, how to reword non-inclusive things.
+- Linux kernel mailing list's [Coding Style: Inclusive Terminology](https://lkml.org/lkml/2020/7/4/229) said "Add no new instances of non-inclusive words, here is a list of words not include new ones of."
+- Linguistic Society of America published [Guidelines for Inclusive Language](https://www.linguisticsociety.org/resource/guidelines-inclusive-language) which concluded: "We encourage all linguists to consider the possible reactions of their potential audience to their writing and, in so doing, to choose expository practices and content that is positive, inclusive, and respectful."
+
+This project attempts to improve in these areas. Join us in doing that.
+
+
 ### Required Checks
 
 Before pushing your code and opening a PR, we recommend you run the following checks to avoid
@@ -93,3 +108,4 @@ Now, navigate to http://127.0.0.1:4000/faraday/ to see the website running.
 [changelog]:            https://github.com/lostisland/faraday/releases
 [faraday_middleware]:   https://github.com/lostisland/faraday_middleware
 [website]:              https://lostisland.github.io/faraday
+[Code of Conduct]:      ./CODE_OF_CONDUCT.md
