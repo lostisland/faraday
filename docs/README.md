@@ -3,6 +3,8 @@
 This is the root directory of the [Faraday Website][website].
 If you want to apply changes to it, please test it locally using `Jekyll`.
 
+Here is how:
+
 ```bash
 # Navigate into the /docs folder
 $ cd docs
