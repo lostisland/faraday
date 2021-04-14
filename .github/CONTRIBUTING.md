@@ -22,7 +22,9 @@ These resources can help:
 - Linux kernel mailing list's [Coding Style: Inclusive Terminology](https://lkml.org/lkml/2020/7/4/229) said "Add no new instances of non-inclusive words, here is a list of words not include new ones of."
 - Linguistic Society of America published [Guidelines for Inclusive Language](https://www.linguisticsociety.org/resource/guidelines-inclusive-language) which concluded: "We encourage all linguists to consider the possible reactions of their potential audience to their writing and, in so doing, to choose expository practices and content that is positive, inclusive, and respectful."
 
-This project attempts to improve in these areas. Join us in doing that.
+This project attempts to improve in these areas. Join us in doing that important work.
+
+If you want to privately raise any breach to this policy with the Faraday team, feel free to reach out to [@iMacTia](https://twitter.com/iMacTia) and [@olleolleolle](https://twitter.com/olleolleolle) on Twitter.
 
 
 ### Required Checks
