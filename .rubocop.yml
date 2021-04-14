@@ -1,6 +1,7 @@
 inherit_from: .rubocop_todo.yml
 
 require:
+  - rubocop-inclusivity
   - rubocop-packaging
   - rubocop-performance
 
@@ -8,6 +9,9 @@ AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
   TargetRubyVersion: 2.4
+
+Inclusivity/Race:
+  Enabled: true
 
 Metrics/BlockLength:
   Exclude:
