@@ -1,5 +1,0 @@
-LICENSE.md
-README.md
-lib/**/*.rb
-spec/**/*.rb
-.github/*.md
