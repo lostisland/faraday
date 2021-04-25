@@ -175,8 +175,8 @@ bodies into form bodies? Internally, the top level shortcut methods
 middleware used for the default connection is `:url_encoded`, which encodes
 those form hashes.
 
-Note that if you create your own connection, it won't encode form bodies unless
-you too include the `:url_encoded` middleware!
+Note that if you create your own connection with middleware, it won't encode
+form bodies unless you too include the `:url_encoded` middleware!
 
 [encoding]: ../middleware/url-encoded
 [multipart]: ../middleware/multipart
