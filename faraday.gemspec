@@ -15,6 +15,8 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.4'
 
+  spec.add_dependency 'faraday-em_http', '~> 1.0'
+  spec.add_dependency 'faraday-em_synchrony', '~> 1.0'
   spec.add_dependency 'faraday-excon', '~> 1.1'
   spec.add_dependency 'faraday-net_http', '~> 1.0'
   spec.add_dependency 'faraday-net_http_persistent', '~> 1.1'
