@@ -14,20 +14,20 @@ requiring the Faraday gem and using `Faraday.get`:
 ```ruby
 require 'faraday'
 
-resp = Faraday.get 'http://httpbingo.org'
+response = Faraday.get 'http://httpbingo.org'
 ```
 
 This returns a `Faraday::Response` object with the response status, headers, and
 body.
 
 ```ruby
-resp.status
+response.status
 # => 200
 
-resp.headers
+response.headers
 # => {"server"=>"Fly/c375678 (2021-04-23)", "content-type"=> ...
 
-resp.body
+response.body
 # => "<!DOCTYPE html><html> ...
 ```
 
@@ -45,7 +45,7 @@ You can specify URI query parameters and HTTP headers when making a request.
 
 ```ruby
 url = 'http://httpbingo.org/get'
-resp = Faraday.get(url, {boom: 'zap'}, {'User-Agent' => 'myapp'})
+response = Faraday.get(url, {boom: 'zap'}, {'User-Agent' => 'myapp'})
 # => GET http://httpbingo.org/get?boom=zap
 ```
 
@@ -62,10 +62,10 @@ accept a request body:
 url = 'http://httpbingo.org/post'
 
 # POST 'application/x-www-form-urlencoded' content
-resp = Faraday.post(url, "boom=zap")
+response = Faraday.post(url, "boom=zap")
 
 # POST JSON content
-resp = Faraday.post(url, '{"boom": "zap"}',
+response = Faraday.post(url, '{"boom": "zap"}',
   "Content-Type" => "application/json")
 ```
 
@@ -76,7 +76,7 @@ Faraday will automatically convert key/value hashes into proper form bodies.
 ```ruby
 # POST 'application/x-www-form-urlencoded' content
 url = 'http://httpbingo.org/post'
-resp = Faraday.post(url, boom: 'zap')
+response = Faraday.post(url, boom: 'zap')
 # => POST 'boom=zap' to http://httpbingo.org/post
 ```
 
@@ -93,10 +93,10 @@ This example shows a hypothetical search endpoint that accepts a JSON request
 body as the actual search query.
 
 ```ruby
-resp = Faraday.post('http://httpbingo.org/post') do |req|
+response = Faraday.post('http://httpbingo.org/post') do |req|
   req.params['limit'] = 100
   req.headers['Content-Type'] = 'application/json'
-  req.body = {query: 'bacon'}.to_json
+  req.body = {query: 'chunky bacon'}.to_json
 end
 # => POST http://httpbingo.org/post?limit=100
 ```
@@ -121,9 +121,9 @@ conn = Faraday.new(
   headers: {'Content-Type' => 'application/json'}
 )
 
-resp = conn.post('/post') do |req|
+response = conn.post('/post') do |req|
   req.params['limit'] = 100
-  req.body = {query: 'bacon'}.to_json
+  req.body = {query: 'chunky bacon'}.to_json
 end
 # => POST http://httpbingo.org/post?param=1&limit=100
 ```
@@ -162,9 +162,9 @@ conn = Faraday.new do |f|
   f.request :json # encode req bodies as JSON
   f.request :retry # retry transient failures
   f.response :follow_redirects # follow redirects
-  f.response :json # decode resp bodies as JSON
+  f.response :json # decode response bodies as JSON
 end
-resp = conn.get("http://httpbingo.org/get")
+response = conn.get("http://httpbingo.org/get")
 ```
 
 #### Default Connection, Default Middleware
