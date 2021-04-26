@@ -58,8 +58,6 @@ module Faraday
   class Adapter
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
-                 EMSynchrony: 'em_synchrony',
-                 EMHttp: 'em_http',
                  Typhoeus: 'typhoeus',
                  Patron: 'patron',
                  Test: 'test',

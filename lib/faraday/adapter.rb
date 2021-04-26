@@ -13,8 +13,6 @@ module Faraday
                         test: [:Test, 'test'],
                         typhoeus: [:Typhoeus, 'typhoeus'],
                         patron: [:Patron, 'patron'],
-                        em_synchrony: [:EMSynchrony, 'em_synchrony'],
-                        em_http: [:EMHttp, 'em_http'],
                         rack: [:Rack, 'rack'],
                         httpclient: [:HTTPClient, 'httpclient']
 
