@@ -442,6 +442,14 @@ RSpec.describe Faraday::Connection do
       end
     end
 
+    it 'allows when url in no proxy list with url_prefix' do
+      with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
+        conn = Faraday::Connection.new
+        conn.url_prefix = 'http://example.com'
+        expect(conn.proxy).to be_nil
+      end
+    end
+
     it 'allows when prefixed url is not in no proxy list' do
       with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
         conn = Faraday::Connection.new('http://prefixedexample.com')
