@@ -60,19 +60,20 @@ For example, the `Faraday::Request::UrlEncoded` middleware registers itself in
 `Faraday::Request` so it can be added with `request`. These two are equivalent:
 
 ```ruby
-require 'faraday_middleware'
-
+# add by symbol, lookup from Faraday::Request,
+# Faraday::Response and Faraday::Adapter registries
 conn = Faraday.new do |f|
-  # add by symbol, lookup from Faraday::Request registry
   f.request :url_encoded
-  # add by symbol, lookup from Faraday::Response registry
   f.response :follow_redirects
-  # add by symbol, lookup from Faraday::Adapter registry
   f.adapter :httpclient
+end
+```
 
-  # or
+or:
 
-  # identical, but add the class directly
+```ruby
+# identical, but add the class directly instead of using lookups
+conn = Faraday.new do |f|
   f.use Faraday::Request::UrlEncoded
   f.use FaradayMiddleware::FollowRedirects
   f.use Faraday::Adapter::HTTPClient
