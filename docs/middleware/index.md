@@ -7,16 +7,99 @@ next_link: ./list
 order: 3
 ---
 
+Under the hood, Faraday uses a Rack-inspired middleware stack for making
+requests. Much of Faraday's power is unlocked with custom middleware. Some
+middleware is included with Faraday, and others are in external gems.
+
+Here are some of the features that middleware can provide:
+
+- authentication
+- caching responses on disk or in memory
+- cookies
+- following redirects
+- JSON encoding/decoding
+- logging
+- retrying
+
+To use these great features, create a `Faraday::Connection` with `Faraday.new`
+and add the correct middleware in a block. For example:
+
+```ruby
+require 'faraday_middleware'
+
+conn = Faraday.new do |f|
+  f.request :json # encode req bodies as JSON
+  f.request :retry # retry transient failures
+  f.response :follow_redirects # follow redirects
+  f.response :json # decode response bodies as JSON
+end
+response = conn.get("http://httpbingo.org/get")
+```
+
+### How it Works
+
 A `Faraday::Connection` uses a `Faraday::RackBuilder` to assemble a
 Rack-inspired middleware stack for making HTTP requests. Each middleware runs
 and passes an Env object around to the next one. After the final middleware has
 run, Faraday will return a `Faraday::Response` to the end user.
 
+The order in which middleware is stacked is important. Like with Rack, the first
+middleware on the list wraps all others, while the last middleware is the
+innermost one. If you want to use a custom [adapter](../adapters), it must
+therefore be last.
+
 ![Middleware](../assets/img/middleware.png)
 
-The order in which middleware is stacked is important. Like with Rack, the
-first middleware on the list wraps all others, while the last middleware is the
-innermost one, so that must be the adapter.
+### Using Middleware
+
+Calling `use` is the most basic way to add middleware to your stack, but most
+middleware is conveniently registered in the `request`, `response` or `adapter`
+namespaces. All four methods are equivalent apart from the namespacing.
+
+For example, the `Faraday::Request::UrlEncoded` middleware registers itself in
+`Faraday::Request` so it can be added with `request`. These two are equivalent:
+
+```ruby
+require 'faraday_middleware'
+
+conn = Faraday.new do |f|
+  # add by symbol, lookup from Faraday::Request registry
+  f.request :url_encoded
+  # add by symbol, lookup from Faraday::Response registry
+  f.response :follow_redirects
+  # add by symbol, lookup from Faraday::Adapter registry
+  f.adapter :httpclient
+
+  # or
+
+  # identical, but add the class directly
+  f.use Faraday::Request::UrlEncoded
+  f.use FaradayMiddleware::FollowRedirects
+  f.use Faraday::Adapter::HTTPClient
+end
+```
+
+This is also the place to pass options. For example:
+
+```ruby
+conn = Faraday.new do |f|
+  f.request :retry, max: 10
+end
+```
+
+### Available Middleware
+
+The [Awesome Faraday](https://github.com/lostisland/awesome-faraday/) project
+has a complete list of useful, well-maintained Faraday middleware. Middleware is
+often provided by external gems, like the
+[faraday-middleware](https://github.com/lostisland/faraday_middleware) gem.
+
+We also have [great documentation](list) for the middleware that ships with
+Faraday.
+
+### Detailed Example
+
+Here's a more realistic example:
 
 ```ruby
 Faraday.new(...) do |conn|
@@ -25,7 +108,7 @@ Faraday.new(...) do |conn|
   conn.request :url_encoded
 
   # Last middleware must be the adapter:
-  conn.adapter :net_http
+  conn.adapter :typhoeus
 end
 ```
 
@@ -40,7 +123,7 @@ Swapping middleware means giving the other priority. Specifying the
 "Content-Type" for the request is explicitly stating which middleware should
 process it.
 
-Examples:
+For example:
 
 ```ruby
 # uploading a file:
