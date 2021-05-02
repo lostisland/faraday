@@ -419,6 +419,8 @@ module Faraday
         basic_auth user, password
         uri.user = uri.password = nil
       end
+
+      @proxy = proxy_from_env(url) unless @manual_proxy
     end
 
     # Sets the path prefix and ensures that it always has a leading
@@ -577,7 +579,11 @@ module Faraday
         case url
         when String
           uri = Utils.URI(url)
-          uri = URI.parse("#{uri.scheme}://#{uri.host}").find_proxy
+          uri = if uri.host.nil?
+                  find_default_proxy
+                else
+                  URI.parse("#{uri.scheme}://#{uri.host}").find_proxy
+                end
         when URI
           uri = url.find_proxy
         when nil
