@@ -19,6 +19,13 @@ module Faraday
           value[:uri] = Utils.URI(uri)
         end
       end
+
+      # URIs without a scheme should default to http (like 'example:123'). This
+      # fixes #1282 and prevents a silent failure in some adapters.
+      if value && !value[:uri].to_s.include?('://')
+        value[:uri] = Utils.URI("http://#{value[:uri]}")
+      end
+
       super(value)
     end
 
