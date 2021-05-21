@@ -13,7 +13,7 @@ module Faraday
       when String
         # URIs without a scheme should default to http (like 'example:123').
         # This fixes #1282 and prevents a silent failure in some adapters.
-        value = "http://#{value}" if !value.include?('://')
+        value = "http://#{value}" unless value.include?('://')
         value = { uri: Utils.URI(value) }
       when URI
         value = { uri: value }
