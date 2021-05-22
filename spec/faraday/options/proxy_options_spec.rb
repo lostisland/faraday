@@ -14,6 +14,13 @@ RSpec.describe Faraday::ProxyOptions do
       expect(options.inspect).to match('#<Faraday::ProxyOptions uri=')
     end
 
+    it 'defaults to http' do
+      options = Faraday::ProxyOptions.from 'example.org'
+      expect(options.port).to eq(80)
+      expect(options.host).to eq('example.org')
+      expect(options.scheme).to eq('http')
+    end
+
     it 'works with nil' do
       options = Faraday::ProxyOptions.from nil
       expect(options).to be_a_kind_of(Faraday::ProxyOptions)
