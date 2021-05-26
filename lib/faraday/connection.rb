@@ -73,6 +73,7 @@ module Faraday
       @options = options.request
       @ssl = options.ssl
       @default_parallel_manager = options.parallel_manager
+      @manual_proxy = nil
 
       @builder = options.builder || begin
         # pass an empty block to Builder so it doesn't assume default middleware
