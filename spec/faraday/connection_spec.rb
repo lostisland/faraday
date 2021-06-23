@@ -253,6 +253,13 @@ RSpec.describe Faraday::Connection do
       expect(uri.path).to eq('/sake.html')
     end
 
+    it 'always returns new URI instance' do
+      conn.url_prefix = 'http://sushi.com'
+      uri1 = conn.build_exclusive_url(nil)
+      uri2 = conn.build_exclusive_url(nil)
+      expect(uri1).not_to equal(uri2)
+    end
+
     context 'with url_prefixed connection' do
       let(:url) { 'http://sushi.com/sushi/' }
 
