@@ -61,8 +61,7 @@ module Faraday
                  Typhoeus: 'typhoeus',
                  Patron: 'patron',
                  Test: 'test',
-                 Rack: 'rack',
-                 HTTPClient: 'httpclient'
+                 Rack: 'rack'
   end
 
   # Request represents a single HTTP request for a Faraday adapter to make.

@@ -13,8 +13,7 @@ module Faraday
                         test: [:Test, 'test'],
                         typhoeus: [:Typhoeus, 'typhoeus'],
                         patron: [:Patron, 'patron'],
-                        rack: [:Rack, 'rack'],
-                        httpclient: [:HTTPClient, 'httpclient']
+                        rack: [:Rack, 'rack']
 
     # This module marks an Adapter as supporting parallel requests.
     module Parallelism

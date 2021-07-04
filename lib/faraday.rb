@@ -30,6 +30,7 @@ require 'faraday/param_part'
 require 'faraday/em_http'
 require 'faraday/em_synchrony'
 require 'faraday/excon'
+require 'faraday/httpclient'
 require 'faraday/net_http'
 require 'faraday/net_http_persistent'
 
