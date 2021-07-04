@@ -59,7 +59,6 @@ module Faraday
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
                  Typhoeus: 'typhoeus',
-                 Patron: 'patron',
                  Test: 'test',
                  Rack: 'rack'
   end
