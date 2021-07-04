@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faraday-httpclient', '~> 1.0.1'
   spec.add_dependency 'faraday-net_http', '~> 1.0'
   spec.add_dependency 'faraday-net_http_persistent', '~> 1.1'
+  spec.add_dependency 'faraday-patron', '~> 1.0'
   spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
   spec.add_dependency 'ruby2_keywords', '>= 0.0.4'
 
