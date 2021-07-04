@@ -2,7 +2,7 @@
 
 require_relative 'lib/faraday/version'
 
-Gem::Specification.new do |spec|
+Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   spec.name    = 'faraday'
   spec.version = Faraday::VERSION
 
