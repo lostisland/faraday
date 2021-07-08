@@ -26,7 +26,7 @@ module Faraday
     #   Connection. This includes a default host name, scheme, port, and path.
     attr_reader :url_prefix
 
-    # @return [Faraday::Builder] Builder for this Connection.
+    # @return [Faraday::RackBuilder] Builder for this Connection.
     attr_reader :builder
 
     # @return [Hash] SSL options.
