@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Faraday::Adapter::EMSynchrony, unless: defined?(JRUBY_VERSION) do
+RSpec.describe Faraday::Adapter::EMSynchrony do
   features :request_body_on_query_methods, :reason_phrase_parse,
            :skip_response_body_on_head, :parallel, :local_socket_binding
 
@@ -13,4 +13,4 @@ RSpec.describe Faraday::Adapter::EMSynchrony, unless: defined?(JRUBY_VERSION) do
 
     expect(req.connopts.inactivity_timeout).to eq(20)
   end
-end
+end unless defined?(JRUBY_VERSION)

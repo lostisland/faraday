@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Faraday::Adapter::EMHttp, unless: defined?(JRUBY_VERSION) do
+RSpec.describe Faraday::Adapter::EMHttp do
   features :request_body_on_query_methods, :reason_phrase_parse, :trace_method,
            :skip_response_body_on_head, :parallel, :local_socket_binding
 
@@ -44,4 +44,4 @@ RSpec.describe Faraday::Adapter::EMHttp, unless: defined?(JRUBY_VERSION) do
       expect(options[:connect_timeout]).to eq(1)
     end
   end
-end
+end unless defined?(JRUBY_VERSION)

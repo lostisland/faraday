@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 ruby RUBY_VERSION
 
-gem 'jruby-openssl', '~> 0.8.8', platforms: :jruby
+gem 'jruby-openssl', '~> 0.10.7', platforms: :jruby
 
 group :development, :test do
   gem 'pry'
@@ -20,8 +20,8 @@ end
 
 group :test, :development do
   gem 'coveralls_reborn', require: false
-  gem 'em-http-request', '>= 1.1', require: 'em-http'
-  gem 'em-synchrony', '>= 1.0.3', require: %w[em-synchrony em-synchrony/em-http]
+  gem 'em-http-request', '>= 1.1', require: 'em-http', platform: :ruby
+  gem 'em-synchrony', '>= 1.0.3', require: %w[em-synchrony em-synchrony/em-http], platform: :ruby
   gem 'excon', '>= 0.27.4'
   gem 'httpclient', '>= 2.2'
   gem 'multipart-parser'
