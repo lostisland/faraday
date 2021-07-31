@@ -257,4 +257,89 @@ RSpec.describe Faraday::Adapter::Test do
       it { expect { request }.to raise_error described_class::Stubs::NotFound }
     end
   end
+
+  describe 'strict_mode' do
+    let(:stubs) do
+      described_class::Stubs.new(strict_mode: true) do |stubs|
+        stubs.get('/strict?a=12&b=xy', 'Authorization' => 'Bearer m_ck', 'X-C' => 'hello') { [200, {}, 'a'] }
+        stubs.get('/with_user_agent?a=12&b=xy', authorization: 'Bearer m_ck', 'User-Agent' => 'My Agent') { [200, {}, 'a'] }
+      end
+    end
+
+    context 'when params and headers are exactly set' do
+      subject(:request) { connection.get('/strict', { a: '12', b: 'xy' }, { authorization: 'Bearer m_ck', x_c: 'hello' }) }
+
+      it { expect(request.status).to eq 200 }
+    end
+
+    context 'when params and headers are exactly set with a custom user agent' do
+      subject(:request) { connection.get('/with_user_agent', { a: '12', b: 'xy' }, { authorization: 'Bearer m_ck', 'User-Agent' => 'My Agent' }) }
+
+      it { expect(request.status).to eq 200 }
+    end
+
+    shared_examples 'raise NotFound when params do not satisfy the strict check' do |params|
+      subject(:request) { connection.get('/strict', params, { 'Authorization' => 'Bearer m_ck', 'X-C' => 'hello' }) }
+
+      context "with #{params.inspect}" do
+        it { expect { request }.to raise_error described_class::Stubs::NotFound }
+      end
+    end
+
+    it_behaves_like 'raise NotFound when params do not satisfy the strict check', { a: '12' }
+    it_behaves_like 'raise NotFound when params do not satisfy the strict check', { b: 'xy' }
+    it_behaves_like 'raise NotFound when params do not satisfy the strict check', { a: '123', b: 'xy' }
+    it_behaves_like 'raise NotFound when params do not satisfy the strict check', { a: '12', b: 'xyz' }
+    it_behaves_like 'raise NotFound when params do not satisfy the strict check', { a: '12', b: 'xy', c: 'hello' }
+    it_behaves_like 'raise NotFound when params do not satisfy the strict check', { additional: 'special', a: '12', b: 'xy', c: 'hello' }
+
+    shared_examples 'raise NotFound when headers do not satisfy the strict check' do |path, headers|
+      subject(:request) { connection.get(path, { a: 12, b: 'xy' }, headers) }
+
+      context "with #{headers.inspect}" do
+        it { expect { request }.to raise_error described_class::Stubs::NotFound }
+      end
+    end
+
+    it_behaves_like 'raise NotFound when headers do not satisfy the strict check', '/strict', { authorization: 'Bearer m_ck' }
+    it_behaves_like 'raise NotFound when headers do not satisfy the strict check', '/strict', { 'X-C' => 'hello' }
+    it_behaves_like 'raise NotFound when headers do not satisfy the strict check', '/strict', { authorization: 'Bearer m_ck', 'x-c': 'Hi' }
+    it_behaves_like 'raise NotFound when headers do not satisfy the strict check', '/strict', { authorization: 'Basic m_ck', 'x-c': 'hello' }
+    it_behaves_like 'raise NotFound when headers do not satisfy the strict check', '/strict', { authorization: 'Bearer m_ck', 'x-c': 'hello', x_special: 'special' }
+    it_behaves_like 'raise NotFound when headers do not satisfy the strict check', '/with_user_agent', { authorization: 'Bearer m_ck' }
+    it_behaves_like 'raise NotFound when headers do not satisfy the strict check', '/with_user_agent', { authorization: 'Bearer m_ck', user_agent: 'Unknown' }
+    it_behaves_like 'raise NotFound when headers do not satisfy the strict check', '/with_user_agent', { authorization: 'Bearer m_ck', user_agent: 'My Agent', x_special: 'special' }
+
+    context 'when strict_mode is disabled' do
+      before do
+        stubs.strict_mode = false
+      end
+
+      shared_examples 'does not raise NotFound even when params do not satisfy the strict check' do |params|
+        subject(:request) { connection.get('/strict', params, { 'Authorization' => 'Bearer m_ck', 'X-C' => 'hello' }) }
+
+        context "with #{params.inspect}" do
+          it { expect(request.status).to eq 200 }
+        end
+      end
+
+      it_behaves_like 'does not raise NotFound even when params do not satisfy the strict check', { a: '12', b: 'xy' }
+      it_behaves_like 'does not raise NotFound even when params do not satisfy the strict check', { a: '12', b: 'xy', c: 'hello' }
+      it_behaves_like 'does not raise NotFound even when params do not satisfy the strict check', { additional: 'special', a: '12', b: 'xy', c: 'hello' }
+
+      shared_examples 'does not raise NotFound even when headers do not satisfy the strict check' do |path, headers|
+        subject(:request) { connection.get(path, { a: 12, b: 'xy' }, headers) }
+
+        context "with #{headers.inspect}" do
+          it { expect(request.status).to eq 200 }
+        end
+      end
+
+      it_behaves_like 'does not raise NotFound even when headers do not satisfy the strict check', '/strict', { authorization: 'Bearer m_ck', 'x-c': 'hello' }
+      it_behaves_like 'does not raise NotFound even when headers do not satisfy the strict check', '/strict', { authorization: 'Bearer m_ck', 'x-c': 'hello', x_special: 'special' }
+      it_behaves_like 'does not raise NotFound even when headers do not satisfy the strict check', '/strict', { authorization: 'Bearer m_ck', 'x-c': 'hello', user_agent: 'Special Agent' }
+      it_behaves_like 'does not raise NotFound even when headers do not satisfy the strict check', '/with_user_agent', { authorization: 'Bearer m_ck', user_agent: 'My Agent' }
+      it_behaves_like 'does not raise NotFound even when headers do not satisfy the strict check', '/with_user_agent', { authorization: 'Bearer m_ck', user_agent: 'My Agent', x_special: 'special' }
+    end
+  end
 end
