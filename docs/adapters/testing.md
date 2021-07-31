@@ -64,6 +64,33 @@ initialized. This is useful for testing.
 stubs.get('/uni') { |env| [ 200, {}, 'urchin' ]}
 ```
 
+If you want to stub requests that exactly match a path, parameters, and headers,
+`strict_mode` would be useful.
+
+```ruby
+stubs = Faraday::Adapter::Test::Stubs.new(strict_mode: true) do |stub|
+  stub.get('/ikura?nori=true', 'X-Soy-Sauce' => '5ml' ) { |env| [200, {}, 'ikura gunkan maki'] }
+end
+```
+
+This stub expects the connection will be called like this:
+
+```ruby
+conn.get('/ikura', { nori: 'true' }, { 'X-Soy-Sauce' => '5ml' } )
+```
+
+If there are other parameters or headers included, the Faraday Test adapter
+will raise `Faraday::Test::Stubs::NotFound`. It also raises the error
+if the specified parameters (`nori`) or headers (`X-Soy-Sauce`) are omitted.
+
+You can also enable `strict_mode` after initializing the connection.
+In this case, all requests, including ones that have been already stubbed,
+will be handled in a strict way.
+
+```ruby
+stubs.strict_mode = true
+```
+
 Finally, you can treat your stubs as mocks by verifying that all of the stubbed
 calls were made. NOTE: this feature is still fairly experimental. It will not
 verify the order or count of any stub.
