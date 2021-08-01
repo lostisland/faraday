@@ -11,8 +11,7 @@ module Faraday
 
     register_middleware File.expand_path('adapter', __dir__),
                         test: [:Test, 'test'],
-                        typhoeus: [:Typhoeus, 'typhoeus'],
-                        rack: [:Rack, 'rack']
+                        typhoeus: [:Typhoeus, 'typhoeus']
 
     # This module marks an Adapter as supporting parallel requests.
     module Parallelism
