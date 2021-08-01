@@ -59,8 +59,7 @@ module Faraday
     extend AutoloadHelper
     autoload_all 'faraday/adapter',
                  Typhoeus: 'typhoeus',
-                 Test: 'test',
-                 Rack: 'rack'
+                 Test: 'test'
   end
 
   # Request represents a single HTTP request for a Faraday adapter to make.

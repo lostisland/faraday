@@ -36,6 +36,7 @@ require 'faraday/httpclient'
 require 'faraday/net_http'
 require 'faraday/net_http_persistent'
 require 'faraday/patron'
+require 'faraday/rack'
 
 # This is the main namespace for Faraday.
 #
