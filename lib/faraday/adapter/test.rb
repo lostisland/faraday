@@ -25,6 +25,9 @@ module Faraday
     #          "showing item: #{meta[:match_data][1]}"
     #         ]
     #       end
+    #
+    #       # You can set strict_mode to exactly match the stubbed requests.
+    #       stub.strict_mode = true
     #     end
     #   end
     #
@@ -47,10 +50,11 @@ module Faraday
         class NotFound < StandardError
         end
 
-        def initialize
+        def initialize(strict_mode: false)
           # { get: [Stub, Stub] }
           @stack = {}
           @consumed = {}
+          @strict_mode = strict_mode
           yield(self) if block_given?
         end
 
@@ -115,6 +119,17 @@ module Faraday
           raise failed_stubs.join(' ') unless failed_stubs.empty?
         end
 
+        # Set strict_mode. If the value is true, this adapter tries to find matched requests strictly,
+        # which means that all of a path, parameters, and headers must be the same as an actual request.
+        def strict_mode=(value)
+          @strict_mode = value
+          @stack.each do |_method, stubs|
+            stubs.each do |stub|
+              stub.strict_mode = value
+            end
+          end
+        end
+
         protected
 
         def new_stub(request_method, path, headers = {}, body = nil, &block)
@@ -128,7 +143,8 @@ module Faraday
               ]
             end
 
-          stub = Stub.new(host, normalized_path, headers, body, block)
+          headers = Utils::Headers.new(headers)
+          stub = Stub.new(host, normalized_path, headers, body, @strict_mode, block)
           (@stack[request_method] ||= []) << stub
         end
 
@@ -143,9 +159,9 @@ module Faraday
 
       # Stub request
       # rubocop:disable Style/StructInheritance
-      class Stub < Struct.new(:host, :path, :params, :headers, :body, :block)
+      class Stub < Struct.new(:host, :path, :params, :headers, :body, :strict_mode, :block)
         # rubocop:enable Style/StructInheritance
-        def initialize(host, full, headers, body, block)
+        def initialize(host, full, headers, body, strict_mode, block) # rubocop:disable Metrics/ParameterLists
           path, query = full.respond_to?(:split) ? full.split('?') : full
           params =
             if query
@@ -154,7 +170,7 @@ module Faraday
               {}
             end
 
-          super(host, path, params, headers, body, block)
+          super(host, path, params, headers, body, strict_mode, block)
         end
 
         def matches?(request_host, request_uri, request_headers, request_body)
@@ -184,12 +200,25 @@ module Faraday
         end
 
         def params_match?(request_params)
+          if strict_mode
+            return Set.new(params) == Set.new(request_params)
+          end
+
           params.keys.all? do |key|
             request_params[key] == params[key]
           end
         end
 
         def headers_match?(request_headers)
+          if strict_mode
+            headers_with_user_agent = headers.dup.tap do |hs|
+              # NOTE: Set User-Agent in case it's not set when creating Stubs.
+              #       Users would not want to set Faraday's User-Agent explicitly.
+              hs[:user_agent] ||= Connection::USER_AGENT
+            end
+            return Set.new(headers_with_user_agent) == Set.new(request_headers)
+          end
+
           headers.keys.all? do |key|
             request_headers[key] == headers[key]
           end
