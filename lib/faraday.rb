@@ -27,17 +27,6 @@ require 'faraday/error'
 require 'faraday/file_part'
 require 'faraday/param_part'
 
-unless defined?(JRUBY_VERSION)
-  require 'faraday/em_http'
-  require 'faraday/em_synchrony'
-end
-require 'faraday/excon'
-require 'faraday/httpclient'
-require 'faraday/net_http'
-require 'faraday/net_http_persistent'
-require 'faraday/patron'
-require 'faraday/rack'
-
 # This is the main namespace for Faraday.
 #
 # It provides methods to create {Connection} objects, and HTTP-related
