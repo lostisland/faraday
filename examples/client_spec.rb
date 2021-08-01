@@ -12,8 +12,8 @@ class Client
     @conn = conn
   end
 
-  def sushi(jname)
-    res = @conn.get("/#{jname}")
+  def sushi(jname, params: {})
+    res = @conn.get("/#{jname}", params)
     data = JSON.parse(res.body)
     data['name']
   end
@@ -61,5 +61,24 @@ RSpec.describe Client do
 
     expect { client.sushi('ebi') }.to raise_error(Faraday::ConnectionFailed)
     stubs.verify_stubbed_calls
+  end
+
+  context 'When the test stub is run in strict_mode' do
+    let(:stubs) { Faraday::Adapter::Test::Stubs.new(strict_mode: true) }
+
+    it 'verifies the all parameter values are identical' do
+      stubs.get('/ebi?abc=123') do
+        [
+          200,
+          { 'Content-Type': 'application/javascript' },
+          '{"name": "shrimp"}'
+        ]
+      end
+
+      # uncomment to raise Stubs::NotFound
+      # expect(client.sushi('ebi', params: { abc: 123, foo: 'Kappa' })).to eq('shrimp')
+      expect(client.sushi('ebi', params: { abc: 123 })).to eq('shrimp')
+      stubs.verify_stubbed_calls
+    end
   end
 end
