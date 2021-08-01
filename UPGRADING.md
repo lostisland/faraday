@@ -1,38 +1,6 @@
 ## Faraday 2.0
 
-### Adapters have moved!
-
-With this release, we've officially moved all adapters out of Faraday.
-What that means, is that they won't be available out-of-the-box anymore,
-and you'll instead need to add them to your Gemfile.
-
-#### Why was this decision made?
-
-We've taken this decision for the following technical reasons:
-
-* We wanted the Faraday gem to focus on providing a clean, standardized, middleware-stack-based API.
-* We wanted to free the core team from maintaining all the different adapters, relying more on the community to
-  maintain them based on the broad interest. This will allow the core team to focus on implementing features
-  focused on the Faraday API more quickly, without having to push it on all adapters immediately.
-* With the community creating more and more adapters, we wanted to avoid having first and second-class adapters
-  by having some of them included with the gem and others available externally.
-* Moving adapters into separate gems allow to solve the dependency issues once and for all.
-  Faraday will remain a dependency-free gem, while adapter gems will be able to automatically pull
-  any necessary dependency, without having to rely on the developer to do so.
-
-#### So what will this mean for me?
-
-We did our best to make this transition as painless as possible for you, so here is what we did.
-
-* All adapters have already been moved out and released as separate gems.
-  They've then been re-added into Faraday's dependencies so that you wouldn't notice.
-  This means that immediately after v2.0 will be released, all the adapters that were previously available will be
-  already compatible with Faraday 2.0!
-* We've setup an [Awesome Faraday](https://github.com/lostisland/awesome-faraday) repository, where you can find and discover adapters.
-  We also highlighted their unique features and level of compliance with Faraday's features.
-
 ### Others
-
 * Rename `Faraday::Request#method` to `#http_method`.
 
 ## Faraday 1.0

@@ -4,7 +4,7 @@ on:
   pull_request:
 
   push:
-    branches: [main, 1.x, 0.1x]
+    branches: [main, 0.1x]
 
 env:
   GIT_COMMIT_SHA: ${{ github.sha }}
@@ -14,24 +14,27 @@ env:
 jobs:
   linting:
     runs-on: ubuntu-latest
-    env:
-      BUNDLE_WITH: lint
-      BUNDLE_WITHOUT: development:test
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v1
 
     - name: Set up Ruby 2.7
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7
-        bundler-cache: true
 
     - name: Rubocop
-      run: bundle exec rubocop --format progress
+      run: |
+        gem install bundler
+        bundle config set without 'development test'
+        bundle config set with 'lint'
+        bundle install
+        bundle exec rubocop --format progress
 
     - name: Yard-Junk
-      run: bundle exec yard-junk --path lib
+      run: |
+        gem install yard-junk --no-document
+        yard-junk --path lib
 
   build:
     needs: [linting]
@@ -40,14 +43,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ['2.6', '2.7', '3.0']
+        ruby: ['2.4', '2.5', '2.6', '2.7', '3.0']
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v1
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libcurl4-openssl-dev
+
+    - name: Build
+      run: |
+        gem install bundler -v '<2'
+        bundle install --jobs 4 --retry 3
 
     - name: Test
       continue-on-error: ${{ matrix.experimental }}
