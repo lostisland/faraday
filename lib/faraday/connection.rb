@@ -15,7 +15,7 @@ module Faraday
   class Connection
     # A Set of allowed HTTP verbs.
     METHODS = Set.new %i[get post put delete head patch options trace]
-    USER_AGENT = "Faraday v#{VERSION}".freeze
+    USER_AGENT = "Faraday v#{VERSION}"
 
     # @return [Hash] URI query unencoded key/value pairs.
     attr_reader :params
