@@ -17,9 +17,11 @@ module Faraday
 
       def on_request(env)
         match_content_type(env) do |data|
-          env[:body] = encode data
+          env[:body] = encode(data)
         end
       end
+
+      private
 
       def encode(data)
         ::JSON.generate(data)
@@ -34,10 +36,10 @@ module Faraday
 
       def process_request?(env)
         type = request_type(env)
-        has_body?(env) && (type.empty? || MIME_TYPE_REGEX =~ type)
+        body?(env) && (type.empty? || MIME_TYPE_REGEX =~ type)
       end
 
-      def has_body?(env)
+      def body?(env)
         (body = env[:body]) && !(body.respond_to?(:to_str) && body.empty?)
       end
 
