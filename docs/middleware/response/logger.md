@@ -3,8 +3,8 @@ layout: documentation
 title: "Logger Middleware"
 permalink: /middleware/logger
 hide: true
-prev_name: Instrumentation Middleware
-prev_link: ./instrumentation
+prev_name: Json Response Middleware
+prev_link: ./json-response
 next_name: RaiseError Middleware
 next_link: ./raise-error
 top_name: Back to Middleware
