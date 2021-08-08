@@ -4,9 +4,10 @@ RSpec.describe Faraday::Response::Json, type: :response do
   let(:options) { {} }
   let(:headers) { {} }
   let(:middleware) do
+    puts options
     described_class.new(lambda { |env|
       Faraday::Response.new(env)
-    }, options)
+    }, **options)
   end
 
   def process(body, content_type = 'application/json', options = {})
