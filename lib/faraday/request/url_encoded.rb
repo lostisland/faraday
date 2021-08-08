@@ -54,3 +54,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Request.register_middleware(url_encoded: Faraday::Request::UrlEncoded)

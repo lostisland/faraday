@@ -52,3 +52,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Request.register_middleware(instrumentation: Faraday::Request::Instrumentation)

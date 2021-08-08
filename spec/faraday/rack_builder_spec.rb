@@ -17,10 +17,6 @@ RSpec.describe Faraday::RackBuilder do
   class Banana < Handler
   end
 
-  class Broken < Faraday::Middleware
-    dependency 'zomg/i_dont/exist'
-  end
-
   subject { conn.builder }
 
   context 'with default stack' do
@@ -127,24 +123,6 @@ RSpec.describe Faraday::RackBuilder do
       subject.use(:apple)
       expect(subject.handlers).to eq([Apple])
     end
-
-    it 'allows to register with symbol' do
-      Faraday::Middleware.register_middleware(apple: :Apple)
-      subject.use(:apple)
-      expect(subject.handlers).to eq([Apple])
-    end
-
-    it 'allows to register with string' do
-      Faraday::Middleware.register_middleware(apple: 'Apple')
-      subject.use(:apple)
-      expect(subject.handlers).to eq([Apple])
-    end
-
-    it 'allows to register with Proc' do
-      Faraday::Middleware.register_middleware(apple: -> { Apple })
-      subject.use(:apple)
-      expect(subject.handlers).to eq([Apple])
-    end
   end
 
   context 'when having two handlers' do
@@ -176,24 +154,6 @@ RSpec.describe Faraday::RackBuilder do
     end
   end
 
-  context 'when having a handler with broken dependency' do
-    let(:conn) do
-      Faraday::Connection.new do |builder|
-        builder.adapter :test do |stub|
-          stub.get('/') { |_| [200, {}, ''] }
-        end
-      end
-    end
-
-    before { subject.use(Broken) }
-
-    it 'raises an error while making a request' do
-      expect { conn.get('/') }.to raise_error(RuntimeError) do |err|
-        expect(err.message).to match(%r{missing dependency for Broken: .+ -- zomg/i_dont/exist})
-      end
-    end
-  end
-
   context 'when middleware is added with named arguments' do
     let(:conn) { Faraday::Connection.new {} }
 
@@ -220,7 +180,7 @@ RSpec.describe Faraday::RackBuilder do
     end
   end
 
-  context 'when a request adapter is added with named arguments' do
+  context 'when a middleware is added with named arguments' do
     let(:conn) { Faraday::Connection.new {} }
 
     let(:cat_request) do
@@ -247,11 +207,11 @@ RSpec.describe Faraday::RackBuilder do
     end
   end
 
-  context 'when a response adapter is added with named arguments' do
+  context 'when a middleware is added with named arguments' do
     let(:conn) { Faraday::Connection.new {} }
 
     let(:fish_response) do
-      Class.new(Faraday::Response::Middleware) do
+      Class.new(Faraday::Middleware) do
         attr_accessor :name
 
         def initialize(app, name:)

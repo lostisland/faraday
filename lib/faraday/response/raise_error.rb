@@ -54,3 +54,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Response.register_middleware(raise_error: Faraday::Response::RaiseError)

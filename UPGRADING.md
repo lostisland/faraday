@@ -31,9 +31,25 @@ We did our best to make this transition as painless as possible for you, so here
 * We've setup an [Awesome Faraday](https://github.com/lostisland/awesome-faraday) repository, where you can find and discover adapters.
   We also highlighted their unique features and level of compliance with Faraday's features.
 
+### Autoloading and dependencies
+
+Faraday have until now provided and relied on a complex dynamic dependencies system.
+This would allow to reference classes and require dependencies only when needed (e.g. when running the first request) based
+on the middleware/adapters used.
+As part of Faraday v2.0, we've removed all external dependencies, which means we don't really need this anymore.
+This change should not affect you directly, but if you're registering middleware then beware of the new syntax:
+
+```ruby
+# `name` here can be anything you want.
+# `klass` is your custom middleware class.
+# This method can be also called on `Faraday::Adapter`, `Faraday::Request` and `Faraday::Response`
+Faraday::Middleware.register_middleware(name: klass)
+```
+
 ### Others
 
 * Rename `Faraday::Request#method` to `#http_method`.
+* Remove `Faraday::Response::Middleware`. You can now use the new `on_complete` callback provided by `Faraday::Middleware`.
 
 ## Faraday 1.0
 
