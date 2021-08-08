@@ -33,16 +33,16 @@ We did our best to make this transition as painless as possible for you, so here
 
 ### Autoloading and dependencies
 
-Faraday have until now provided and relied on a complex dynamic dependencies system.
+Faraday has until now provided and relied on a complex dynamic dependencies system.
 This would allow to reference classes and require dependencies only when needed (e.g. when running the first request) based
 on the middleware/adapters used.
 As part of Faraday v2.0, we've removed all external dependencies, which means we don't really need this anymore.
-This change should not affect you directly, but if you're registering middleware then beware of the new syntax:
+This change should not affect you directly, but if you're registering middleware then be aware of the new syntax:
 
 ```ruby
 # `name` here can be anything you want.
 # `klass` is your custom middleware class.
-# This method can be also called on `Faraday::Adapter`, `Faraday::Request` and `Faraday::Response`
+# This method can also be called on `Faraday::Adapter`, `Faraday::Request` and `Faraday::Response`
 Faraday::Middleware.register_middleware(name: klass)
 ```
 
