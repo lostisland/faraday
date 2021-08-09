@@ -5,8 +5,8 @@ permalink: /middleware/instrumentation
 hide: true
 prev_name: Retry Middleware
 prev_link: ./retry
-next_name: Logger Middleware
-next_link: ./logger
+next_name: JSON Response Middleware
+next_link: ./json-response
 top_name: Back to Middleware
 top_link: ./list
 ---
