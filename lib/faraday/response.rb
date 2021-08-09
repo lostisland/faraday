@@ -26,6 +26,7 @@ module Faraday
     def headers
       finished? ? env.response_headers : {}
     end
+
     def_delegator :headers, :[]
 
     def body

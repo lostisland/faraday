@@ -9,8 +9,8 @@ top_name: Back to Middleware
 top_link: ./list
 ---
 
-Basic and Token authentication are handled by Faraday::Request::BasicAuthentication
-and Faraday::Request::TokenAuthentication respectively.
+Basic and Token authentication are handled by `Faraday::Request::BasicAuthentication`
+and `Faraday::Request::TokenAuthentication` respectively.
 These can be added as middleware manually or through the helper methods.
 
 ### Basic Authentication
