@@ -5,13 +5,8 @@ module Faraday
   # responsible for fulfilling a Faraday request.
   class Adapter
     extend MiddlewareRegistry
-    extend DependencyLoader
 
     CONTENT_LENGTH = 'Content-Length'
-
-    register_middleware File.expand_path('adapter', __dir__),
-                        test: [:Test, 'test'],
-                        typhoeus: [:Typhoeus, 'typhoeus']
 
     # This module marks an Adapter as supporting parallel requests.
     module Parallelism

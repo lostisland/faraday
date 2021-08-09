@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'uri'
 require 'faraday/utils/headers'
 require 'faraday/utils/params_hash'
 
@@ -71,10 +72,7 @@ module Faraday
     end
 
     def default_uri_parser
-      @default_uri_parser ||= begin
-        require 'uri'
-        Kernel.method(:URI)
-      end
+      @default_uri_parser ||= Kernel.method(:URI)
     end
 
     def default_uri_parser=(parser)

@@ -31,3 +31,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Response.register_middleware(logger: Faraday::Response::Logger)

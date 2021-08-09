@@ -273,3 +273,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Adapter.register_middleware(test: Faraday::Adapter::Test)

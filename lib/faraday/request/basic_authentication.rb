@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require 'base64'
+require 'faraday/request/authorization'
 
 module Faraday
   class Request
     # Authorization middleware for Basic Authentication.
-    class BasicAuthentication < load_middleware(:authorization)
+    class BasicAuthentication < Authorization
       # @param login [String]
       # @param pass [String]
       #
@@ -18,3 +19,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Request.register_middleware(basic_auth: Faraday::Request::BasicAuthentication)

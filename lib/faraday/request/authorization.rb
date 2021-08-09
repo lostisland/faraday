@@ -4,9 +4,7 @@ module Faraday
   class Request
     # Request middleware for the Authorization HTTP header
     class Authorization < Faraday::Middleware
-      unless defined?(::Faraday::Request::Authorization::KEY)
-        KEY = 'Authorization'
-      end
+      KEY = 'Authorization'
 
       # @param type [String, Symbol]
       # @param token [String, Symbol, Hash]
@@ -53,3 +51,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Request.register_middleware(authorization: Faraday::Request::Authorization)
