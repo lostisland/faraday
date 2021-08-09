@@ -38,7 +38,7 @@ module Faraday
       def process_response_type?(env)
         type = response_type(env)
         @content_types.empty? || @content_types.any? do |pattern|
-          pattern.is_a?(Regexp) ? type =~ pattern : type == pattern
+          pattern.is_a?(Regexp) ? type.match?(pattern) : type == pattern
         end
       end
 

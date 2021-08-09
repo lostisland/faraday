@@ -36,7 +36,7 @@ module Faraday
 
       def process_request?(env)
         type = request_type(env)
-        body?(env) && (type.empty? || MIME_TYPE_REGEX =~ type)
+        body?(env) && (type.empty? || type.match?(MIME_TYPE_REGEX))
       end
 
       def body?(env)

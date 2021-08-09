@@ -11,11 +11,11 @@ top_name: Back to Middleware
 top_link: ./list
 ---
 
-The `Json Response` middleware parses response body into a hash of key/value pairs.
+The `JSON` response middleware parses response body into a hash of key/value pairs.
 The behaviour can be customized with the following options:
-* **parser_options:** options that will be sent to the JSON.parse method. Defaults to {}
-* **content_type:** Single value or Array of response content-types that should be processed. Can be either strings or Regex. Defaults to `/\bjson$/`
-* **preserve_raw:** If set to true, the original un-parsed response will be stored in the `response.env[:raw_body]` property. Defaults to `false`
+* **parser_options:** options that will be sent to the JSON.parse method. Defaults to {}.
+* **content_type:** Single value or Array of response content-types that should be processed. Can be either strings or Regex. Defaults to `/\bjson$/`.
+* **preserve_raw:** If set to true, the original un-parsed response will be stored in the `response.env[:raw_body]` property. Defaults to `false`.
 
 ### Example Usage
 
