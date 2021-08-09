@@ -3,7 +3,7 @@ layout: documentation
 title: "Logger Middleware"
 permalink: /middleware/logger
 hide: true
-prev_name: Json Response Middleware
+prev_name: JSON Response Middleware
 prev_link: ./json-response
 next_name: RaiseError Middleware
 next_link: ./raise-error

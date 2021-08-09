@@ -27,7 +27,7 @@ base64 representation.
 * [`Multipart`][multipart] converts a `Faraday::Request#body` hash of key/value pairs into a
 multipart form request.
 * [`UrlEncoded`][url_encoded] converts a `Faraday::Request#body` hash of key/value pairs into a url-encoded request body.
-* [`Json Request`][json-request] converts a `Faraday::Request#body` hash of key/value pairs into a json request body.
+* [`Json Request`][json-request] converts a `Faraday::Request#body` hash of key/value pairs into a JSON request body.
 * [`Json Response`][json-response] parses response body into a hash of key/value pairs.
 * [`Retry`][retry] automatically retries requests that fail due to intermittent client
 or server errors (such as network hiccups).

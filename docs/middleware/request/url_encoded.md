@@ -5,7 +5,7 @@ permalink: /middleware/url-encoded
 hide: true
 prev_name: Multipart Middleware
 prev_link: ./multipart
-next_name: Json Request Middleware
+next_name: JSON Request Middleware
 next_link: ./json-request
 top_name: Back to Middleware
 top_link: ./list

@@ -1,6 +1,6 @@
 ---
 layout: documentation
-title: "Json Request Middleware"
+title: "JSON Request Middleware"
 permalink: /middleware/json-request
 hide: true
 prev_name: UrlEncoded Middleware
@@ -11,9 +11,9 @@ top_name: Back to Middleware
 top_link: ./list
 ---
 
-The `Json Request` middleware converts a `Faraday::Request#body` hash of key/value pairs into a json request body.
+The `Json Request` middleware converts a `Faraday::Request#body` hash of key/value pairs into a JSON request body.
 The middleware also automatically sets the `Content-Type` header to `application/json`,
-processes only requests with matching Content-type or those without a type and
+processes only requests with matching Content-Type or those without a type and
 doesn't try to encode bodies that already are in string form.
 
 ### Example Usage

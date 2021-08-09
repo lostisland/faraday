@@ -1,6 +1,6 @@
 ---
 layout: documentation
-title: "Json Response Middleware"
+title: "JSON Response Middleware"
 permalink: /middleware/json-response
 hide: true
 prev_name: Instrumentation Middleware
