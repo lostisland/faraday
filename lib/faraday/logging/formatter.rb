@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'pp'
+
 module Faraday
   module Logging
     # Serves as an integration point to customize logging

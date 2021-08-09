@@ -5,25 +5,8 @@ require 'forwardable'
 module Faraday
   # Response represents an HTTP response from making an HTTP request.
   class Response
-    # Used for simple response middleware.
-    class Middleware < Faraday::Middleware
-      # Override this to modify the environment after the response has finished.
-      # Calls the `parse` method if defined
-      # `parse` method can be defined as private, public and protected
-      def on_complete(env)
-        return unless respond_to?(:parse, true) && env.parse_body?
-
-        env.body = parse(env.body)
-      end
-    end
-
     extend Forwardable
     extend MiddlewareRegistry
-
-    register_middleware File.expand_path('response', __dir__),
-                        raise_error: [:RaiseError, 'raise_error'],
-                        logger: [:Logger, 'logger'],
-                        json: [:Json, 'json']
 
     def initialize(env = nil)
       @env = Env.from(env) if env
@@ -101,3 +84,6 @@ module Faraday
     end
   end
 end
+
+require 'faraday/response/logger'
+require 'faraday/response/raise_error'

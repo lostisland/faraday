@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require 'faraday/request/authorization'
+
 module Faraday
   class Request
     # TokenAuthentication is a middleware that adds a 'Token' header to a
     # Faraday request.
-    class TokenAuthentication < load_middleware(:authorization)
+    class TokenAuthentication < Authorization
       # Public
       def self.header(token, options = nil)
         options ||= {}
@@ -18,3 +20,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Request.register_middleware(token_auth: Faraday::Request::TokenAuthentication)

@@ -26,28 +26,10 @@ module Faraday
   #   @return [RequestOptions] options
   #
   # rubocop:disable Style/StructInheritance
-  class Request < Struct.new(
-    :http_method, :path, :params, :headers, :body, :options
-  )
+  class Request < Struct.new(:http_method, :path, :params, :headers, :body, :options)
     # rubocop:enable Style/StructInheritance
 
     extend MiddlewareRegistry
-
-    register_middleware File.expand_path('request', __dir__),
-                        url_encoded: [:UrlEncoded, 'url_encoded'],
-                        multipart: [:Multipart, 'multipart'],
-                        retry: [:Retry, 'retry'],
-                        authorization: [:Authorization, 'authorization'],
-                        basic_auth: [
-                          :BasicAuthentication,
-                          'basic_authentication'
-                        ],
-                        token_auth: [
-                          :TokenAuthentication,
-                          'token_authentication'
-                        ],
-                        instrumentation: [:Instrumentation, 'instrumentation'],
-                        json: [:Json, 'json']
 
     # @param request_method [String]
     # @yield [request] for block customization, if block given
@@ -155,3 +137,11 @@ module Faraday
     end
   end
 end
+
+require 'faraday/request/authorization'
+require 'faraday/request/basic_authentication'
+require 'faraday/request/instrumentation'
+require 'faraday/request/multipart'
+require 'faraday/request/retry'
+require 'faraday/request/token_authentication'
+require 'faraday/request/url_encoded'

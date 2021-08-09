@@ -4,16 +4,10 @@ require 'cgi'
 require 'date'
 require 'set'
 require 'forwardable'
-require 'faraday/middleware_registry'
-require 'faraday/dependency_loader'
-
-unless defined?(::Faraday::Timer)
-  require 'timeout'
-  ::Faraday::Timer = Timeout
-end
-
 require 'faraday/version'
 require 'faraday/methods'
+require 'faraday/error'
+require 'faraday/middleware_registry'
 require 'faraday/utils'
 require 'faraday/options'
 require 'faraday/connection'
@@ -23,7 +17,6 @@ require 'faraday/middleware'
 require 'faraday/adapter'
 require 'faraday/request'
 require 'faraday/response'
-require 'faraday/error'
 require 'faraday/file_part'
 require 'faraday/param_part'
 
@@ -103,19 +96,6 @@ module Faraday
       Faraday::Connection.new(url, options, &block)
     end
 
-    # @private
-    # Internal: Requires internal Faraday libraries.
-    #
-    # @param libs [Array] one or more relative String names to Faraday classes.
-    # @return [void]
-    def require_libs(*libs)
-      libs.each do |lib|
-        require "#{lib_path}/#{lib}"
-      end
-    end
-
-    alias require_lib require_libs
-
     # Documented elsewhere, see default_adapter reader
     def default_adapter=(adapter)
       @default_connection = nil
@@ -171,6 +151,4 @@ module Faraday
   self.root_path = File.expand_path __dir__
   self.lib_path = File.expand_path 'faraday', __dir__
   self.default_adapter = :net_http
-
-  require_lib 'autoload' unless ENV['FARADAY_NO_AUTOLOAD']
 end

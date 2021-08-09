@@ -237,3 +237,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Request.register_middleware(retry: Faraday::Request::Retry)

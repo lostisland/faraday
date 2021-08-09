@@ -104,3 +104,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Request.register_middleware(multipart: Faraday::Request::Multipart)
