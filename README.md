@@ -9,6 +9,11 @@ Faraday is an HTTP client library that provides a common interface over many
 adapters (such as Net::HTTP) and embraces the concept of Rack middleware when
 processing the request/response cycle.
 
+## ATTENTION
+
+You're reading the README and looking at the code of our upcoming v2.0 release (the `main` branch).
+If you're here to read about our latest v1.x release, then please head over to the [1.x branch](https://github.com/lostisland/faraday/tree/1.x).
+
 ## Getting Started
 
 The best starting point is the [Faraday Website][website], with its introduction and explanation.
