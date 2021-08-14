@@ -297,6 +297,11 @@ module Faraday
     #
     # @return [void]
     def basic_auth(login, pass)
+      warn <<~TEXT
+        WARNING: `Faraday::Connection#basic_auth` is deprecated; it will be removed in version 2.0.
+        While initializing your connection, use `#request(:basic_auth, ...)` instead.
+        See https://lostisland.github.io/faraday/middleware/authentication for more usage info.
+      TEXT
       set_authorization_header(:basic_auth, login, pass)
     end
 
@@ -314,6 +319,11 @@ module Faraday
     #
     # @return [void]
     def token_auth(token, options = nil)
+      warn <<~TEXT
+        WARNING: `Faraday::Connection#token_auth` is deprecated; it will be removed in version 2.0.
+        While initializing your connection, use `#request(:token_auth, ...)` instead.
+        See https://lostisland.github.io/faraday/middleware/authentication for more usage info.
+      TEXT
       set_authorization_header(:token_auth, token, options)
     end
 
@@ -336,6 +346,11 @@ module Faraday
     #
     # @return [void]
     def authorization(type, token)
+      warn <<~TEXT
+        WARNING: `Faraday::Connection#authorization` is deprecated; it will be removed in version 2.0.
+        While initializing your connection, use `#request(:authorization, ...)` instead.
+        See https://lostisland.github.io/faraday/middleware/authentication for more usage info.
+      TEXT
       set_authorization_header(:authorization, type, token)
     end
 
