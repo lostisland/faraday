@@ -10,12 +10,7 @@ top_link: ./list
 ---
 
 The `Faraday::Request::Authorization` middleware allows you to automatically add an `Authorization` header
-to your requests. It also features 2 specialised sub-classes that provide useful extra features for Basic Authentication
-and Token Authentication requests.
-
-### Any Authentication
-
-The generic `Authorization` middleware allows you to add any type of Authorization header.
+to your requests. It also features a handy helper to manage Basic authentication.
 
 ```ruby
 Faraday.new(...) do |conn|
@@ -23,24 +18,22 @@ Faraday.new(...) do |conn|
 end
 ```
 
-### Basic Authentication
+### With a proc
 
-`BasicAuthentication` adds a 'Basic' type Authorization header to a Faraday request.
+You can also provide a proc, which will be evaluated on each request:
 
 ```ruby
 Faraday.new(...) do |conn|
-  conn.request :basic_auth, 'username', 'password'
+  conn.request :authorization, 'Bearer', -> { MyAuthStorage.get_auth_token }
 end
 ```
 
-### Token Authentication
+### Basic Authentication
 
-`TokenAuthentication` adds a 'Token' type Authorization header to a Faraday request.
-You can optionally provide a hash of `options` that will be appended to the token.
-This is not used anymore in modern web and have been replaced by Bearer tokens.
+The middleware will automatically Base64 encode your Basic username and password:
 
 ```ruby
 Faraday.new(...) do |conn|
-  conn.request :token_auth, 'authentication-token', **options
+  conn.request :authorization, :basic, 'username', 'password'
 end
 ```
