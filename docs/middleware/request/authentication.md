@@ -15,16 +15,32 @@ These can be added as middleware manually or through the helper methods.
 
 ### Basic Authentication
 
+`TokenAuthentication` adds a 'Basic' type Authorization header to a Faraday request.
+
 ```ruby
 Faraday.new(...) do |conn|
-  conn.basic_auth('username', 'password')
+  conn.request :basic_auth, 'username', 'password'
 end
 ```
 
 ### Token Authentication
 
+`TokenAuthentication` adds a 'Token' type Authorization header to a Faraday request.
+You can optionally provide a hash of `options` that will be appended to the token.
+This is not used anymore in modern web and have been replaced by Bearer tokens.
+
 ```ruby
 Faraday.new(...) do |conn|
-  conn.token_auth('authentication-token')
+  conn.request :token_auth, 'authentication-token', **options
+end
+```
+
+### Custom Authentication
+
+The generic `Authorization` middleware allows you to add any other type of Authorization header.
+
+```ruby
+Faraday.new(...) do |conn|
+  conn.request :authorization, 'Bearer', 'authentication-token'
 end
 ```
