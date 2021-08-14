@@ -15,7 +15,7 @@ These can be added as middleware manually or through the helper methods.
 
 ### Basic Authentication
 
-`TokenAuthentication` adds a 'Basic' type Authorization header to a Faraday request.
+`BasicAuthentication` adds a 'Basic' type Authorization header to a Faraday request.
 
 ```ruby
 Faraday.new(...) do |conn|
