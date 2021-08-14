@@ -9,8 +9,8 @@ top_name: Back to Middleware
 top_link: ./list
 ---
 
-The `Faraday::Request::Authentication` middleware allows you to automatically add an `Authorization` header
-to your requests. It also feature 2 specialised sub-classes that provide useful extra features for Basic Authentication
+The `Faraday::Request::Authorization` middleware allows you to automatically add an `Authorization` header
+to your requests. It also features 2 specialised sub-classes that provide useful extra features for Basic Authentication
 and Token Authentication requests.
 
 ### Any Authentication
