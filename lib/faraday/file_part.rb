@@ -52,12 +52,6 @@ module Faraday
   # @return [IO]
   FilePart = ::UploadIO
 
-  # Multipart value used to POST a file.
-  #
-  # @deprecated Use FilePart instead of this class. It behaves identically, with
-  #   a matching name to ParamPart.
-  UploadIO = ::UploadIO
-
   Parts = ::Parts
 
   # Similar to, but not compatible with CompositeReadIO provided by the

@@ -169,7 +169,7 @@ RSpec.describe Faraday::Request::Retry do
 
     it 'UploadIO: should rewind files on retry' do
       io = StringIO.new('Test data')
-      upload_io = Faraday::UploadIO.new(io, 'application/octet/stream')
+      upload_io = Faraday::FilePart.new(io, 'application/octet/stream')
 
       rewound = 0
       rewind = -> { rewound += 1 }

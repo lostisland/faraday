@@ -50,6 +50,7 @@ Faraday::Middleware.register_middleware(name: klass)
 
 * Rename `Faraday::Request#method` to `#http_method`.
 * Remove `Faraday::Response::Middleware`. You can now use the new `on_complete` callback provided by `Faraday::Middleware`.
+* Drop `Faraday::UploadIO` in favour of `Faraday::FilePart`.
 
 ## Faraday 1.0
 

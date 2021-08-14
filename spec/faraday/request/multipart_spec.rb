@@ -157,7 +157,7 @@ RSpec.describe Faraday::Request::Multipart do
       {
         a: 1,
         b: {
-          c: Faraday::UploadIO.new(__FILE__, 'text/x-ruby', nil,
+          c: Faraday::FilePart.new(__FILE__, 'text/x-ruby', nil,
                                    'Content-Disposition' => 'form-data; foo=1'),
           d: 2
         }
@@ -207,7 +207,7 @@ RSpec.describe Faraday::Request::Multipart do
     let(:payload) do
       {
         json: Faraday::ParamPart.new(json, 'application/json'),
-        io: Faraday::UploadIO.new(io, 'application/pdf')
+        io: Faraday::FilePart.new(io, 'application/pdf')
       }
     end
 
@@ -239,7 +239,7 @@ RSpec.describe Faraday::Request::Multipart do
       {
         a: 1,
         b: [{
-          c: Faraday::UploadIO.new(__FILE__, 'text/x-ruby'),
+          c: Faraday::FilePart.new(__FILE__, 'text/x-ruby'),
           d: 2
         }]
       }
@@ -284,8 +284,8 @@ RSpec.describe Faraday::Request::Multipart do
       {
         a: 1,
         b: [
-          Faraday::UploadIO.new(io, 'application/pdf'),
-          Faraday::UploadIO.new(io, 'application/pdf')
+          Faraday::FilePart.new(io, 'application/pdf'),
+          Faraday::FilePart.new(io, 'application/pdf')
         ]
       }
     end
