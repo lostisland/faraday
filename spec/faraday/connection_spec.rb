@@ -141,28 +141,6 @@ RSpec.describe Faraday::Connection do
     end
   end
 
-  describe 'basic_auth' do
-    subject { conn }
-
-    context 'calling the #basic_auth method' do
-      before { subject.basic_auth 'Aladdin', 'open sesame' }
-
-      it { expect(subject.headers['Authorization']).to eq('Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==') }
-    end
-
-    context 'adding basic auth info to url' do
-      let(:url) { 'http://Aladdin:open%20sesame@sushi.com/fish' }
-
-      it { expect(subject.headers['Authorization']).to eq('Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==') }
-    end
-  end
-
-  describe '#token_auth' do
-    before { subject.token_auth('abcdef', nonce: 'abc') }
-
-    it { expect(subject.headers['Authorization']).to eq('Token nonce="abc", token="abcdef"') }
-  end
-
   describe '#build_exclusive_url' do
     context 'with relative path' do
       subject { conn.build_exclusive_url('sake.html') }
@@ -605,7 +583,6 @@ RSpec.describe Faraday::Connection do
 
     context 'after manual changes' do
       before do
-        subject.basic_auth('', '')
         subject.headers['content-length'] = 12
         subject.params['b'] = '2'
         subject.options[:open_timeout] = 10
