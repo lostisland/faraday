@@ -111,7 +111,7 @@ module Faraday
       def parse(header_string)
         return unless header_string && !header_string.empty?
 
-        headers = header_string.split(/\r\n/)
+        headers = header_string.split("\r\n")
 
         # Find the last set of response headers.
         start_index = headers.rindex { |x| x.start_with?('HTTP/') } || 0

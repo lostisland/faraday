@@ -61,7 +61,7 @@ module Faraday
     def initialize(handlers = [], adapter = nil, &block)
       @adapter = adapter
       @handlers = handlers
-      if block_given?
+      if block
         build(&block)
       elsif @handlers.empty?
         # default stack, if nothing else is configured
