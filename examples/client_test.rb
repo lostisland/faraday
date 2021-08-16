@@ -42,7 +42,7 @@ class ClientTest < Test::Unit::TestCase
     stubs.verify_stubbed_calls
   end
 
-  def test_sushi_404
+  def test_sushi_not_found
     stubs = Faraday::Adapter::Test::Stubs.new
     stubs.get('/ebi') do
       [
