@@ -104,7 +104,7 @@ module Faraday
 
     # Public
     def each_key(&block)
-      return to_enum(:each_key) unless block_given?
+      return to_enum(:each_key) unless block
 
       keys.each(&block)
     end
@@ -118,7 +118,7 @@ module Faraday
 
     # Public
     def each_value(&block)
-      return to_enum(:each_value) unless block_given?
+      return to_enum(:each_value) unless block
 
       values.each(&block)
     end
@@ -168,7 +168,7 @@ module Faraday
     end
 
     def self.memoized(key, &block)
-      unless block_given?
+      unless block
         raise ArgumentError, '#memoized must be called with a block'
       end
 

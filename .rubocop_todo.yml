@@ -57,19 +57,6 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 14
 
-# Offense count: 4
-# Cop supports --auto-correct.
-Performance/BlockGivenWithExplicitBlock:
-  Exclude:
-    - 'lib/faraday/options.rb'
-    - 'lib/faraday/rack_builder.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Performance/RedundantSplitRegexpArgument:
-  Exclude:
-    - 'lib/faraday/utils/headers.rb'
-
 # Offense count: 3
 Style/DocumentDynamicEvalDefinition:
   Exclude:
