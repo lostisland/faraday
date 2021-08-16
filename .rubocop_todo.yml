@@ -83,9 +83,3 @@ Style/DocumentDynamicEvalDefinition:
     - 'lib/faraday/connection.rb'
     - 'lib/faraday/options.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/PerlBackrefs:
-  Exclude:
-    - 'lib/faraday/encoders/nested_params_encoder.rb'
-    - 'spec/support/fake_safe_buffer.rb'

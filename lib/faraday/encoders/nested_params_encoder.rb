@@ -102,7 +102,7 @@ module Faraday
       subkeys = key.scan(SUBKEYS_REGEX)
       subkeys.each_with_index do |subkey, i|
         is_array = subkey =~ /[\[\]]+\Z/
-        subkey = $` if is_array
+        subkey = Regexp.last_match.pre_match if is_array
         last_subkey = i == subkeys.length - 1
 
         context = prepare_context(context, subkey, is_array, last_subkey)
