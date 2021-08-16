@@ -83,12 +83,6 @@ Style/DocumentDynamicEvalDefinition:
     - 'lib/faraday/connection.rb'
     - 'lib/faraday/options.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/NegatedIfElseCondition:
-  Exclude:
-    - 'lib/faraday/response.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Style/PerlBackrefs:

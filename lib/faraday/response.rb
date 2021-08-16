@@ -38,10 +38,10 @@ module Faraday
     end
 
     def on_complete(&block)
-      if !finished?
-        @on_complete_callbacks << block
-      else
+      if finished?
         yield(env)
+      else
+        @on_complete_callbacks << block
       end
       self
     end
