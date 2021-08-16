@@ -8,7 +8,7 @@ FakeSafeBuffer = Struct.new(:string) do
 
   def gsub(regex)
     string.gsub(regex) do
-      match, = $&, '' =~ /a/
+      match, = Regexp.last_match(0), '' =~ /a/
       yield(match)
     end
   end
