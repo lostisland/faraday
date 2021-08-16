@@ -4,7 +4,7 @@ RSpec.describe Faraday::Utils do
   describe 'headers parsing' do
     let(:multi_response_headers) do
       "HTTP/1.x 500 OK\r\nContent-Type: text/html; charset=UTF-8\r\n" \
-      "HTTP/1.x 200 OK\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"
+        "HTTP/1.x 200 OK\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"
     end
 
     it 'parse headers for aggregated responses' do
