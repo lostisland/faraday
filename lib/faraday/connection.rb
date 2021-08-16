@@ -550,7 +550,7 @@ module Faraday
     end
 
     def support_parallel?(adapter)
-      adapter&.respond_to?(:supports_parallel?) && adapter&.supports_parallel?
+      adapter.respond_to?(:supports_parallel?) && adapter&.supports_parallel?
     end
   end
 end

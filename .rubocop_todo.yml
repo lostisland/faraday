@@ -24,14 +24,6 @@ Lint/EmptyBlock:
     - 'spec/faraday/rack_builder_spec.rb'
     - 'spec/faraday/response_spec.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowedMethods.
-# AllowedMethods: instance_of?, kind_of?, is_a?, eql?, respond_to?, equal?
-Lint/RedundantSafeNavigation:
-  Exclude:
-    - 'lib/faraday/connection.rb'
-
 # Offense count: 16
 # Configuration parameters: IgnoredMethods, CountRepeatedAttributes.
 Metrics/AbcSize:
