@@ -60,3 +60,65 @@ Style/IfUnlessModifier:
 Style/SlicingWithRange: # (0.83)
   Enabled: true
 
+Layout/BeginEndAlignment: # (new in 0.91)
+  Enabled: true
+Lint/BinaryOperatorWithIdenticalOperands: # (new in 0.89)
+  Enabled: true
+Lint/ConstantDefinitionInBlock: # (new in 0.91)
+  Enabled: true
+Lint/DuplicateElsifCondition: # (new in 0.88)
+  Enabled: true
+Lint/DuplicateRequire: # (new in 0.90)
+  Enabled: true
+Lint/DuplicateRescueException: # (new in 0.89)
+  Enabled: true
+Lint/EmptyConditionalBody: # (new in 0.89)
+  Enabled: true
+Lint/EmptyFile: # (new in 0.90)
+  Enabled: true
+Lint/FloatComparison: # (new in 0.89)
+  Enabled: true
+Lint/HashCompareByIdentity: # (new in 0.93)
+  Enabled: true
+Lint/IdentityComparison: # (new in 0.91)
+  Enabled: true
+Lint/MissingSuper: # (new in 0.89)
+  Enabled: true
+Lint/MixedRegexpCaptureTypes: # (new in 0.85)
+  Enabled: true
+Lint/OutOfRangeRegexpRef: # (new in 0.89)
+  Enabled: true
+Lint/RedundantSafeNavigation: # (new in 0.93)
+  Enabled: true
+Lint/SelfAssignment: # (new in 0.89)
+  Enabled: true
+Lint/TopLevelReturnWithArgument: # (new in 0.89)
+  Enabled: true
+Lint/TrailingCommaInAttributeDeclaration: # (new in 0.90)
+  Enabled: true
+Performance/BlockGivenWithExplicitBlock: # (new in 1.9)
+  Enabled: true
+Performance/CollectionLiteralInLoop: # (new in 1.8)
+  Enabled: true
+Performance/ConstantRegexp: # (new in 1.9)
+  Enabled: true
+Performance/MethodObjectAsBlock: # (new in 1.9)
+  Enabled: true
+Performance/RedundantEqualityComparisonBlock: # (new in 1.10)
+  Enabled: true
+Performance/RedundantSortBlock: # (new in 1.7)
+  Enabled: true
+Performance/RedundantSplitRegexpArgument: # (new in 1.10)
+  Enabled: true
+Performance/RedundantStringChars: # (new in 1.7)
+  Enabled: true
+Performance/ReverseFirst: # (new in 1.7)
+  Enabled: true
+Performance/SortReverse: # (new in 1.7)
+  Enabled: true
+Performance/Squeeze: # (new in 1.7)
+  Enabled: true
+Performance/StringInclude: # (new in 1.7)
+  Enabled: true
+Performance/Sum: # (new in 1.8)
+  Enabled: true
