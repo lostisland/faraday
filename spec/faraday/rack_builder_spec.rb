@@ -12,8 +12,10 @@ RSpec.describe Faraday::RackBuilder do
 
   class Apple < Handler
   end
+
   class Orange < Handler
   end
+
   class Banana < Handler
   end
 
