@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://lostisland.github.io/faraday'
   spec.licenses = ['MIT']
 
-  spec.required_ruby_version = '>= 2.4'
+  spec.required_ruby_version = '>= 2.6'
 
   spec.add_dependency 'faraday-net_http', '~> 1.0'
   spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
