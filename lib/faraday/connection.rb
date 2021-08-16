@@ -469,7 +469,7 @@ module Faraday
       if url && base.path && base.path !~ %r{/$}
         base.path = "#{base.path}/" # ensure trailing slash
       end
-      url = url && URI.parse(url.to_s).opaque ? url.to_s.gsub(':', '%3A') : url
+      url = url.to_s.gsub(':', '%3A') if url && URI.parse(url.to_s).opaque
       uri = url ? base + url : base
       if params
         uri.query = params.to_query(params_encoder || options.params_encoder)
