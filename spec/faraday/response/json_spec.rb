@@ -76,12 +76,10 @@ RSpec.describe Faraday::Response::Json, type: :response do
   end
 
   it 'includes the response on the ParsingError instance' do
-    begin
-      process('{') { |env| env[:response] = Faraday::Response.new }
-      raise 'Parsing should have failed.'
-    rescue Faraday::ParsingError => e
-      expect(e.response).to be_a(Faraday::Response)
-    end
+    process('{') { |env| env[:response] = Faraday::Response.new }
+    raise 'Parsing should have failed.'
+  rescue Faraday::ParsingError => e
+    expect(e.response).to be_a(Faraday::Response)
   end
 
   context 'HEAD responses' do

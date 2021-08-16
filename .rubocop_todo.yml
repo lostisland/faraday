@@ -67,9 +67,3 @@ Performance/StringInclude:
   Exclude:
     - 'spec/support/fake_safe_buffer.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/RedundantBegin:
-  Exclude:
-    - 'spec/faraday/request/instrumentation_spec.rb'
-    - 'spec/faraday/response/json_spec.rb'
