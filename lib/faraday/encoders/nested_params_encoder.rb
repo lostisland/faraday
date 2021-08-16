@@ -124,7 +124,7 @@ module Faraday
       value_type = is_array ? Array : Hash
       if context[subkey] && !context[subkey].is_a?(value_type)
         raise TypeError, "expected #{value_type.name} " \
-          "(got #{context[subkey].class.name}) for param `#{subkey}'"
+                         "(got #{context[subkey].class.name}) for param `#{subkey}'"
       end
 
       context[subkey] ||= value_type.new
