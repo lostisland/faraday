@@ -79,7 +79,7 @@ shared_examples 'a request method' do |http_method|
 
   on_feature :request_body_on_query_methods do
     it 'sends request body' do
-      request_stub.with(Hash[:body, 'test'])
+      request_stub.with({ body: 'test' })
       res = if query_or_body == :body
               conn.public_send(http_method, '/', 'test')
             else
@@ -93,7 +93,7 @@ shared_examples 'a request method' do |http_method|
 
   it 'sends url encoded parameters' do
     payload = { name: 'zack' }
-    request_stub.with(Hash[query_or_body, payload])
+    request_stub.with({ query_or_body => payload })
     res = conn.public_send(http_method, '/', payload)
     if query_or_body == :query
       expect(res.env.request_body).to be_nil
@@ -104,7 +104,7 @@ shared_examples 'a request method' do |http_method|
 
   it 'sends url encoded nested parameters' do
     payload = { name: { first: 'zack' } }
-    request_stub.with(Hash[query_or_body, payload])
+    request_stub.with({ query_or_body => payload })
     conn.public_send(http_method, '/', payload)
   end
 
@@ -199,11 +199,11 @@ shared_examples 'a request method' do |http_method|
         @payload2 = { b: '2' }
 
         request_stub
-          .with(Hash[query_or_body, @payload1])
+          .with({ query_or_body => @payload1 })
           .to_return(body: @payload1.to_json)
 
         stub_request(http_method, remote)
-          .with(Hash[query_or_body, @payload2])
+          .with({ query_or_body => @payload2 })
           .to_return(body: @payload2.to_json)
 
         conn.in_parallel do
