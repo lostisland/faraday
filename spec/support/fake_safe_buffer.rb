@@ -8,7 +8,7 @@ FakeSafeBuffer = Struct.new(:string) do
 
   def gsub(regex)
     string.gsub(regex) do
-      match, = Regexp.last_match(0), '' =~ /a/
+      match, = Regexp.last_match(0), '' =~ /a/ # rubocop:disable Performance/StringInclude
       yield(match)
     end
   end

@@ -70,13 +70,6 @@ Performance/RedundantSplitRegexpArgument:
   Exclude:
     - 'lib/faraday/utils/headers.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect.
-Performance/StringInclude:
-  Exclude:
-    - 'spec/support/fake_safe_buffer.rb'
-
 # Offense count: 3
 Style/DocumentDynamicEvalDefinition:
   Exclude:
