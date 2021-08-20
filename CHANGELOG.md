@@ -1,5 +1,108 @@
 # Faraday Changelog
 
+## [v1.7.0](https://github.com/lostisland/faraday/releases/tag/v1.7.0) (2021-08-09)
+
+### Features
+
+* Add strict_mode to Test::Stubs (#1298, @yykamei)
+
+## [v1.6.0](https://github.com/lostisland/faraday/releases/tag/v1.6.0) (2021-08-01)
+
+### Misc
+
+* Use external Rack adapter (#1296, @iMacTia)
+
+## [v1.5.1](https://github.com/lostisland/faraday/releases/tag/v1.5.1) (2021-07-11)
+
+### Fixes
+
+* Fix JRuby incompatibility after moving out EM adapters (#1294, @ahorek)
+
+### Documentation
+
+* Update YARD to follow RackBuilder (#1292, @kachick)
+
+## [v1.5.0](https://github.com/lostisland/faraday/releases/tag/v1.5.0) (2021-07-04)
+
+### Misc
+
+* Use external httpclient adapter (#1289, @iMacTia)
+* Use external patron adapter (#1290, @iMacTia)
+
+## [v1.4.3](https://github.com/lostisland/faraday/releases/tag/v1.4.3) (2021-06-24)
+
+### Fixes
+
+* Silence warning (#1286, @gurgeous)
+* Always dup url_prefix in Connection#build_exclusive_url (#1288, @alexeyds)
+
+## [v1.4.2](https://github.com/lostisland/faraday/releases/tag/v1.4.2) (2021-05-22)
+
+### Fixes
+* Add proxy setting when url_prefix is changed (#1276, @ci)
+* Default proxy scheme to http:// if necessary, fixes #1282 (#1283, @gurgeous)
+
+### Documentation
+* Improve introduction page (#1273, @gurgeous)
+* Docs: add more middleware examples (#1277, @gurgeous)
+
+### Misc
+* Use external `em_http` and `em_synchrony` adapters (#1274, @iMacTia)
+
+## [v1.4.1](https://github.com/lostisland/faraday/releases/tag/v1.4.1) (2021-04-18)
+
+### Fixes
+
+* Fix dependencies from external adapter gems (#1269, @iMacTia)
+
+## [v1.4.0](https://github.com/lostisland/faraday/releases/tag/v1.4.0) (2021-04-16)
+
+### Highlights
+
+With this release, we continue the work of gradually moving out adapters into their own gems 🎉 
+Thanks to @MikeRogers0 for helping the Faraday team in progressing with this quest 👏
+
+And thanks to @olleolleolle efforts, Faraday is becoming more inclusive than ever 🤗
+Faraday's `master` branch has been renamed into `main`, we have an official policy on inclusive language and even a rubocop plugin to check for non-inclusive words ❤️!
+Checkout the "Misc" section below for more details 🙌 !
+
+### Fixes
+
+* Fix NoMethodError undefined method 'coverage' (#1255, @Maroo-b)
+
+### Documentation
+
+* Some docs on EventMachine adapters. (#1232, @damau)
+* CONTRIBUTING: Fix grammar and layout (#1261, @olleolleolle)
+
+### Misc
+
+* Replacing Net::HTTP::Persistent with faraday-net_http_persistent (#1250, @MikeRogers0)
+* CI: Configure the regenerated Coveralls token (#1256, @olleolleolle)
+* Replace Excon adapter with Faraday::Excon gem, and fix autoloading issue with Faraday::NetHttpPersistent (#1257, @iMacTia)
+* Drop CodeClimate (#1259, @olleolleolle)
+* CI: Rename default branch to main (#1263, @olleolleolle)
+* Drop RDoc support file .document (#1264, @olleolleolle, @iMacTia)
+* CONTRIBUTING: add a policy on inclusive language (#1262, @olleolleolle)
+* Add rubocop-inclusivity (#1267, @olleolleolle, @iMacTia)
+
+## [v1.3.1](https://github.com/lostisland/faraday/releases/tag/v1.3.1) (2021-04-16)
+
+### Fixes
+
+* Escape colon in path segment (#1237, @yarafan)
+* Handle IPv6 address String on Faraday::Connection#proxy_from_env (#1252, @cosmo0920)
+
+### Documentation
+
+* Fix broken Rubydoc.info links (#1236, @nickcampbell18)
+* Add httpx to list of external adapters (#1246, @HoneyryderChuck)
+
+### Misc
+
+* Refactor CI to remove duplicated line (#1230, @tricknotes)
+* Gemspec: Pick a good ruby2_keywords release (#1241, @olleolleolle)
+
 ## [v1.3.0](https://github.com/lostisland/faraday/releases/tag/v1.3.0) (2020-12-31)
 
 ### Highlights
@@ -104,7 +207,7 @@ Many thanks to the Faraday Team, @JanDintel and everyone who attended the [ROSS 
 * Website: add search bar (#1116)
 * Fix request/response mix-up in docs text (#1132)
 
-## v1.0
+## [v1.0](https://github.com/lostisland/faraday/releases/tag/v1.0.0) (2020-01-22)
 
 Features:
 
@@ -147,6 +250,13 @@ Misc:
 * Cleanup adapter connections #1023 (@technoweenie)
 * Describe clearing cached stubs #1045 (@viraptor)
 * Add project metadata to the gemspec #1046 (@orien)
+
+## v0.17.4
+
+Fixes:
+
+* NetHttp adapter: wrap Errno::EADDRNOTAVAIL (#1114, @embs)
+* Fix === for subclasses of deprecated classes (#1243, @mervync)
 
 ## v0.17.3
 
