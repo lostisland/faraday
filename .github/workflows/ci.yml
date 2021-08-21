@@ -12,13 +12,6 @@ env:
   COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
 jobs:
-  refresh_stats:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Refresh Team Stats
-        run: |
-          curl "https://api.github.com/repos/${{ github.repository }}/stats/contributors"
-    if: github.ref == 'refs/heads/main'
   linting:
     runs-on: ubuntu-latest
     env:
