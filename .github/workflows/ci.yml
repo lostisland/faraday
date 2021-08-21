@@ -15,12 +15,9 @@ jobs:
   refresh_stats:
     runs-on: ubuntu-latest
     steps:
-      - uses: octokit/request-action@v2.x
-        id: refresh_stats
-        with:
-          route: GET /repos/{github.repository}/stats/contributors
-        env:
-          GITHUB_TOKEN: xxx
+      - name: Refresh Team Stats
+        run: |
+          curl "https://api.github.com/repos/${{ github.repository }}/stats/contributors"
 #    if: github.ref == 'refs/heads/main'
   linting:
     runs-on: ubuntu-latest
