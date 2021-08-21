@@ -4,7 +4,7 @@ on:
   pull_request:
 
   push:
-    branches: [main, 1.x, 0.1x]
+    branches: [ main, 1.x, 0.1x ]
 
 env:
   GIT_COMMIT_SHA: ${{ github.sha }}
@@ -19,37 +19,37 @@ jobs:
       BUNDLE_WITHOUT: development:test
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Ruby 2.7
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 2.7
-        bundler-cache: true
+      - name: Set up Ruby 2.7
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler-cache: true
 
-    - name: Rubocop
-      run: bundle exec rubocop --format progress
+      - name: Rubocop
+        run: bundle exec rubocop --format progress
 
-    - name: Yard-Junk
-      run: bundle exec yard-junk --path lib
+      - name: Yard-Junk
+        run: bundle exec yard-junk --path lib
 
   build:
-    needs: [linting]
+    needs: [ linting ]
     runs-on: ubuntu-latest
     name: build ${{ matrix.ruby }}
     strategy:
       fail-fast: false
       matrix:
-        ruby: ['2.6', '2.7', '3.0']
+        ruby: [ '2.6', '2.7', '3.0' ]
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
 
-    - name: Test
-      continue-on-error: ${{ matrix.experimental }}
-      run: bundle exec rake
+      - name: Test
+        continue-on-error: ${{ matrix.experimental }}
+        run: bundle exec rake
 

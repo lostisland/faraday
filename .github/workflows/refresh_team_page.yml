@@ -1,0 +1,14 @@
+name: Refresh Team Page
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Refresh Contributors Stats
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call GitHub API
+        run: |
+          curl "https://api.github.com/repos/${{ github.repository }}/stats/contributors"
