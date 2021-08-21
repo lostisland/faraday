@@ -18,7 +18,7 @@ jobs:
       - name: Refresh Team Stats
         run: |
           curl "https://api.github.com/repos/${{ github.repository }}/stats/contributors"
-#    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
   linting:
     runs-on: ubuntu-latest
     env:
