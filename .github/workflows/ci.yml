@@ -19,6 +19,8 @@ jobs:
         id: refresh_stats
         with:
           route: GET /repos/{github.repository}/stats/contributors
+        env:
+          GITHUB_TOKEN: xxx
 #    if: github.ref == 'refs/heads/main'
   linting:
     runs-on: ubuntu-latest
