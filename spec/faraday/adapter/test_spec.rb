@@ -258,6 +258,38 @@ RSpec.describe Faraday::Adapter::Test do
     end
   end
 
+  describe 'for request with non default params encoder' do
+    let(:connection) do
+      Faraday.new(request: { params_encoder: Faraday::FlatParamsEncoder }) do |builder|
+        builder.adapter :test, stubs
+      end
+    end
+    let(:stubs) do
+      described_class::Stubs.new do |stubs|
+        stubs.get('/path?a=x&a=y&a=z') { [200, {}, 'a'] }
+      end
+    end
+
+    context 'when all flat param values are correctly set' do
+      subject(:request) { connection.get('/path?a=x&a=y&a=z') }
+
+      it { expect(request.status).to eq 200 }
+    end
+
+    shared_examples 'raise NotFound when params do not satisfy the flat param values' do |params|
+      subject(:request) { connection.get('/path', params) }
+
+      context "with #{params.inspect}" do
+        it { expect { request }.to raise_error described_class::Stubs::NotFound }
+      end
+    end
+
+    it_behaves_like 'raise NotFound when params do not satisfy the flat param values', { a: %w[x] }
+    it_behaves_like 'raise NotFound when params do not satisfy the flat param values', { a: %w[x y] }
+    it_behaves_like 'raise NotFound when params do not satisfy the flat param values', { a: %w[x z y] } # NOTE: The order of the value is also compared.
+    it_behaves_like 'raise NotFound when params do not satisfy the flat param values', { b: %w[x y z] }
+  end
+
   describe 'strict_mode' do
     let(:stubs) do
       described_class::Stubs.new(strict_mode: true) do |stubs|

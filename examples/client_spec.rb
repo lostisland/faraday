@@ -81,4 +81,17 @@ RSpec.describe Client do
       stubs.verify_stubbed_calls
     end
   end
+
+  context 'When the Faraday is configured with FlatParamsEncoder' do
+    let(:conn) { Faraday.new(request: { params_encoder: Faraday::FlatParamsEncoder }) { |b| b.adapter(:test, stubs) } }
+
+    it 'handles the same multiple URL parameters' do
+      stubs.get('/ebi?a=x&a=y&a=z') { [200, { 'Content-Type' => 'application/json' }, '{"name": "shrimp"}'] }
+
+      # uncomment to raise Stubs::NotFound
+      # expect(client.sushi('ebi', params: { a: %w[x y] })).to eq('shrimp')
+      expect(client.sushi('ebi', params: { a: %w[x y z] })).to eq('shrimp')
+      stubs.verify_stubbed_calls
+    end
+  end
 end
