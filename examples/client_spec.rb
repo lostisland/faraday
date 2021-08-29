@@ -82,7 +82,7 @@ RSpec.describe Client do
     end
   end
 
-  context 'When the Faraday is configured with FlatParamsEncoder' do
+  context 'When the Faraday connection is configured with FlatParamsEncoder' do
     let(:conn) { Faraday.new(request: { params_encoder: Faraday::FlatParamsEncoder }) { |b| b.adapter(:test, stubs) } }
 
     it 'handles the same multiple URL parameters' do
