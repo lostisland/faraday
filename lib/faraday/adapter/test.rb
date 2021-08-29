@@ -168,8 +168,6 @@ module Faraday
         def matches?(env)
           request_host = env[:url].host
           request_path = Faraday::Utils.normalize_path(env[:url].path)
-          params_encoder = env.request.params_encoder || Faraday::Utils.default_params_encoder
-          request_params = params_encoder.decode(env[:url].query) || {}
           request_headers = env.request_headers
           request_body = env[:body]
 
@@ -178,7 +176,7 @@ module Faraday
           meta = {}
           [(host.nil? || host == request_host) &&
             path_match?(request_path, meta) &&
-            params_match?(params_encoder, request_params) &&
+            params_match?(env) &&
             (body.to_s.size.zero? || request_body == body) &&
             headers_match?(request_headers), meta]
         end
@@ -191,8 +189,10 @@ module Faraday
           end
         end
 
-        def params_match?(params_encoder, request_params)
-          params = params_encoder.decode(query) || {}
+        # @param env [Faraday::Env]
+        def params_match?(env)
+          request_params = env[:params]
+          params = env.params_encoder.decode(query) || {}
 
           if strict_mode
             return Set.new(params) == Set.new(request_params)
@@ -236,16 +236,16 @@ module Faraday
       # @param env [Faraday::Env]
       def call(env)
         super
+
+        env.request.params_encoder ||= Faraday::Utils.default_params_encoder
+        env[:params] = env.params_encoder.decode(env[:url].query) || {}
         stub, meta = stubs.match(env)
 
         unless stub
-          normalized_path = Faraday::Utils.normalize_path(env[:url])
           raise Stubs::NotFound, "no stubbed request for #{env[:method]} "\
-                                 "#{normalized_path} #{env[:body]}"
+                                 "#{env[:url]} #{env[:body]}"
         end
 
-        params_encoder = env.request.params_encoder || Faraday::Utils.default_params_encoder
-        env[:params] = params_encoder.decode(env[:url].query) || {}
         block_arity = stub.block.arity
         status, headers, body =
           if block_arity >= 0
