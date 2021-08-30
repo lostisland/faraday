@@ -13,8 +13,8 @@ class Client
     @conn = conn
   end
 
-  def sushi(jname)
-    res = @conn.get("/#{jname}")
+  def sushi(jname, params: {})
+    res = @conn.get("/#{jname}", params)
     data = JSON.parse(res.body)
     data['name']
   end
@@ -67,6 +67,45 @@ class ClientTest < Test::Unit::TestCase
     assert_raise Faraday::ConnectionFailed do
       cli.sushi('ebi')
     end
+    stubs.verify_stubbed_calls
+  end
+
+  def test_strict_mode
+    stubs = Faraday::Adapter::Test::Stubs.new(strict_mode: true)
+    stubs.get('/ebi?abc=123') do
+      [
+        200,
+        { 'Content-Type': 'application/javascript' },
+        '{"name": "shrimp"}'
+      ]
+    end
+
+    cli = client(stubs)
+    assert_equal 'shrimp', cli.sushi('ebi', params: { abc: 123 })
+
+    # uncomment to raise Stubs::NotFound
+    # assert_equal 'shrimp', cli.sushi('ebi', params: { abc: 123, foo: 'Kappa' })
+    stubs.verify_stubbed_calls
+  end
+
+  def test_non_default_params_encoder
+    stubs = Faraday::Adapter::Test::Stubs.new(strict_mode: true)
+    stubs.get('/ebi?a=x&a=y&a=z') do
+      [
+        200,
+        { 'Content-Type': 'application/javascript' },
+        '{"name": "shrimp"}'
+      ]
+    end
+    conn = Faraday.new(request: { params_encoder: Faraday::FlatParamsEncoder }) do |builder|
+      builder.adapter :test, stubs
+    end
+
+    cli = Client.new(conn)
+    assert_equal 'shrimp', cli.sushi('ebi', params: { a: %w[x y z] })
+
+    # uncomment to raise Stubs::NotFound
+    # assert_equal 'shrimp', cli.sushi('ebi', params: { a: %w[x y] })
     stubs.verify_stubbed_calls
   end
 
