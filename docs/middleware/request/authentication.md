@@ -34,6 +34,6 @@ The middleware will automatically Base64 encode your Basic username and password
 
 ```ruby
 Faraday.new(...) do |conn|
-  conn.request :authorization, :basic, 'username', 'password'
+  conn.request :basic_auth, 'username', 'password'
 end
 ```
