@@ -3,7 +3,7 @@
 RSpec.describe Faraday::Request::Authorization do
   let(:conn) do
     Faraday.new do |b|
-      b.request :authorization, auth_type, *auth_config
+      b.request auth_type, *auth_config
       b.adapter :test do |stub|
         stub.get('/auth-echo') do |env|
           [200, {}, env[:request_headers]['Authorization']]
@@ -14,10 +14,10 @@ RSpec.describe Faraday::Request::Authorization do
 
   shared_examples 'does not interfere with existing authentication' do
     context 'and request already has an authentication header' do
-      let(:response) { conn.get('/auth-echo', nil, authorization: 'OAuth oauth_token') }
+      let(:response) { conn.get('/auth-echo', nil, authorization: 'Token token="bar"') }
 
       it 'does not interfere with existing authorization' do
-        expect(response.body).to eq('OAuth oauth_token')
+        expect(response.body).to eq('Token token="bar"')
       end
     end
   end
@@ -25,7 +25,7 @@ RSpec.describe Faraday::Request::Authorization do
   let(:response) { conn.get('/auth-echo') }
 
   describe 'basic_auth' do
-    let(:auth_type) { :basic }
+    let(:auth_type) { :basic_auth }
 
     context 'when passed correct params' do
       let(:auth_config) { %w[aladdin opensesame] }
@@ -44,29 +44,51 @@ RSpec.describe Faraday::Request::Authorization do
     end
   end
 
-  describe 'authorization' do
-    let(:auth_type) { :Bearer }
+  describe 'token_auth' do
+    let(:auth_type) { :token_auth }
 
-    context 'when passed a string' do
-      let(:auth_config) { ['custom'] }
+    context 'when passed correct params' do
+      let(:auth_config) { 'quux' }
 
-      it { expect(response.body).to eq('Bearer custom') }
+      it { expect(response.body).to eq('Token token="quux"') }
 
       include_examples 'does not interfere with existing authentication'
     end
 
-    context 'when passed a proc' do
-      let(:auth_config) { [-> { 'custom_from_proc' }] }
+    context 'when other values are provided' do
+      let(:auth_config) { ['baz', { foo: 42 }] }
+
+      it { expect(response.body).to match(/^Token /) }
+      it { expect(response.body).to match(/token="baz"/) }
+      it { expect(response.body).to match(/foo="42"/) }
+
+      include_examples 'does not interfere with existing authentication'
+    end
+  end
+
+  describe 'authorization' do
+    let(:auth_type) { :authorization }
+
+    context 'when passed two strings' do
+      let(:auth_config) { ['custom', 'abc def'] }
+
+      it { expect(response.body).to eq('custom abc def') }
+
+      include_examples 'does not interfere with existing authentication'
+    end
+
+    context 'when passed a string and a hash' do
+      let(:auth_config) { ['baz', { foo: 42 }] }
+
+      it { expect(response.body).to eq('baz foo="42"') }
+
+      include_examples 'does not interfere with existing authentication'
+    end
+
+    context 'when passed a string and a proc' do
+      let(:auth_config) { ['Bearer', -> { 'custom_from_proc' }] }
 
       it { expect(response.body).to eq('Bearer custom_from_proc') }
-
-      include_examples 'does not interfere with existing authentication'
-    end
-
-    context 'when passed too many arguments' do
-      let(:auth_config) { %w[baz foo] }
-
-      it { expect { response }.to raise_error(ArgumentError) }
 
       include_examples 'does not interfere with existing authentication'
     end
