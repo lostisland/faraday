@@ -46,6 +46,13 @@ This change should not affect you directly, but if you're registering middleware
 Faraday::Middleware.register_middleware(name: klass)
 ```
 
+### Authentication helper methods in Connection have been removed
+
+You were previously able to call `authorization`, `basic_auth` and `token_auth` against the `Connection` object, but this helper methods have now been dropped.
+Instead, you should be using the equivalent middleware, as explained in [this page](https://lostisland.github.io/faraday/middleware/authentication).
+
+For more details, see https://github.com/lostisland/faraday/pull/1306
+
 ### Others
 
 * Rename `Faraday::Request#method` to `#http_method`.
