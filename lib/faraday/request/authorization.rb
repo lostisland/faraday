@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'base64'
-
 module Faraday
   class Request
     # Request middleware for the Authorization HTTP header
@@ -34,7 +32,7 @@ module Faraday
       # @return [String] a header value
       def header_from(type, *params)
         if type.to_s.casecmp('basic').zero? && params.size == 2
-          basic_header_from(*params)
+          Utils.basic_header_from(*params)
         elsif params.size != 1
           raise ArgumentError, "Unexpected params received (got #{params.size} instead of 1)"
         else
@@ -42,12 +40,6 @@ module Faraday
           value = value.call if value.is_a?(Proc)
           "#{type} #{value}"
         end
-      end
-
-      def basic_header_from(login, pass)
-        value = Base64.encode64("#{login}:#{pass}")
-        value.delete!("\n")
-        "Basic #{value}"
       end
     end
   end

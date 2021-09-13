@@ -103,6 +103,12 @@ RSpec.describe Faraday::Connection do
       it { expect(subject.params).to eq('a' => 3, 'b' => '2') }
     end
 
+    context 'with basic_auth in url' do
+      let(:url) { 'http://Aladdin:open%20sesame@sushi.com/fish' }
+
+      it { expect(subject.headers['Authorization']).to eq('Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==') }
+    end
+
     context 'with custom headers' do
       let(:options) { { headers: { user_agent: 'Faraday' } } }
 
