@@ -105,7 +105,7 @@ RSpec.describe Faraday::Connection do
 
     context 'with basic_auth in url' do
       let(:url) { 'http://Aladdin:open%20sesame@sushi.com/fish' }
-  
+
       it { expect(subject.headers['Authorization']).to eq('Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==') }
     end
 
