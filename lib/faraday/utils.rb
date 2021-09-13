@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'base64'
 require 'uri'
 require 'faraday/utils/headers'
 require 'faraday/utils/params_hash'
@@ -50,6 +51,12 @@ module Faraday
 
     def default_params_encoder
       @default_params_encoder ||= NestedParamsEncoder
+    end
+
+    def basic_header_from(login, pass)
+      value = Base64.encode64("#{login}:#{pass}")
+      value.delete!("\n")
+      "Basic #{value}"
     end
 
     class << self

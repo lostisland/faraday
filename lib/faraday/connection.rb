@@ -362,11 +362,16 @@ module Faraday
       uri.query = nil
 
       with_uri_credentials(uri) do |user, password|
-        basic_auth user, password
+        set_basic_auth(user, password)
         uri.user = uri.password = nil
       end
 
       @proxy = proxy_from_env(url) unless @manual_proxy
+    end
+
+    def set_basic_auth(user, password)
+      header = Faraday::Utils.basic_header_from(user, password)
+      headers[Faraday::Request::Authorization::KEY] = header
     end
 
     # Sets the path prefix and ensures that it always has a leading
