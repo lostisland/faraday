@@ -7,9 +7,9 @@ ruby RUBY_VERSION
 gem 'jruby-openssl', '~> 0.10.7', platforms: :jruby
 
 group :development, :test do
+  gem 'irb'
   gem 'pry'
   gem 'rake'
-  gem 'irb'
 end
 
 group :lint, :development do
