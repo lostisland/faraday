@@ -53,6 +53,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        sudo apt-get udpate
         sudo apt-get install libcurl4-openssl-dev
 
     - name: Build
