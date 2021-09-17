@@ -15,7 +15,8 @@ module Faraday
       # @return [String] a header value
       def self.header(type, token)
         case token
-        when String, Symbol
+        when String, Symbol, Proc
+          token = token.call if token.is_a?(Proc)
           "#{type} #{token}"
         when Hash
           build_hash(type.to_s, token)
@@ -34,6 +35,7 @@ module Faraday
         comma = ', '
         values = []
         hash.each do |key, value|
+          value = value.call if value.is_a?(Proc)
           values << "#{key}=#{value.to_s.inspect}"
         end
         "#{type} #{values * comma}"
@@ -41,14 +43,11 @@ module Faraday
 
       # @param app [#call]
       # @param type [String, Symbol] Type of Authorization
-      # @param params [Array<String, Proc>] parameters to build the Authorization header.
-      #   If the type is `:basic`, then these can be a login and password pair.
-      #   Otherwise, a single value is expected that will be appended after the type.
+      # @param param [String, Symbol, Hash, Proc] parameter to build the Authorization header.
       #   This value can be a proc, in which case it will be invoked on each request.
-      def initialize(app, type, *params)
+      def initialize(app, type, param)
         @type = type
-        @params = params
-        @header_value = self.class.header(type, params[0]) unless params[0].is_a? Proc
+        @param = param
         super(app)
       end
 
@@ -56,32 +55,7 @@ module Faraday
       def on_request(env)
         return if env.request_headers[KEY]
 
-        env.request_headers[KEY] = header_from(@type, *@params)
-      end
-
-      private
-
-      # @param type [String, Symbol]
-      # @param params [Array]
-      # @return [String] a header value
-      def header_from(type, *params)
-        return @header_value if @header_value
-
-        if type.to_s.casecmp('basic').zero? && params.size == 2
-          basic_header_from(*params)
-        elsif params.size != 1
-          raise ArgumentError, "Unexpected params received (got #{params.size} instead of 1)"
-        else
-          value = params.first
-          value = value.call if value.is_a?(Proc)
-          "#{type} #{value}"
-        end
-      end
-
-      def basic_header_from(login, pass)
-        value = Base64.encode64("#{login}:#{pass}")
-        value.delete!("\n")
-        "Basic #{value}"
+        env.request_headers[KEY] = self.class.header(@type, @param)
       end
     end
   end
