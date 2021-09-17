@@ -84,5 +84,13 @@ RSpec.describe Faraday::Request::Authorization do
 
       include_examples 'does not interfere with existing authentication'
     end
+
+    context 'when passed a string and a proc' do
+      let(:auth_config) { ['Bearer', -> { 'custom_from_proc' }] }
+
+      it { expect(response.body).to eq('Bearer custom_from_proc') }
+
+      include_examples 'does not interfere with existing authentication'
+    end
   end
 end

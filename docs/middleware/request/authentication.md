@@ -23,6 +23,16 @@ Faraday.new(...) do |conn|
 end
 ```
 
+### With a proc
+
+You can also provide a proc, which will be evaluated on each request:
+
+ ```ruby
+ Faraday.new(...) do |conn|
+  conn.request :authorization, 'Bearer', -> { MyAuthStorage.get_auth_token }
+ end
+ ```
+
 ### Basic Authentication
 
 `BasicAuthentication` adds a 'Basic' type Authorization header to a Faraday request.
