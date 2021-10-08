@@ -85,5 +85,6 @@ module Faraday
   end
 end
 
+require 'faraday/response/json'
 require 'faraday/response/logger'
 require 'faraday/response/raise_error'

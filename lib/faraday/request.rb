@@ -132,6 +132,7 @@ end
 
 require 'faraday/request/authorization'
 require 'faraday/request/instrumentation'
+require 'faraday/request/json'
 require 'faraday/request/multipart'
 require 'faraday/request/retry'
 require 'faraday/request/url_encoded'
