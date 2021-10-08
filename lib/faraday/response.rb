@@ -22,7 +22,8 @@ module Faraday
 
     register_middleware File.expand_path('response', __dir__),
                         raise_error: [:RaiseError, 'raise_error'],
-                        logger: [:Logger, 'logger']
+                        logger: [:Logger, 'logger'],
+                        json: [:Json, 'json']
 
     def initialize(env = nil)
       @env = Env.from(env) if env

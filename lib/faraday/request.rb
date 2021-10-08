@@ -44,7 +44,8 @@ module Faraday
                           :TokenAuthentication,
                           'token_authentication'
                         ],
-                        instrumentation: [:Instrumentation, 'instrumentation']
+                        instrumentation: [:Instrumentation, 'instrumentation'],
+                        json: [:Json, 'json']
 
     # @param request_method [String]
     # @yield [request] for block customization, if block given

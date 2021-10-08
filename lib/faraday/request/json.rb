@@ -51,3 +51,5 @@ module Faraday
     end
   end
 end
+
+Faraday::Request.register_middleware(json: Faraday::Request::Json)
