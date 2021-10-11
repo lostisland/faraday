@@ -184,7 +184,7 @@ module Faraday
               if ex.is_a? Module
                 error.is_a? ex
               else
-                error.class.to_s == ex.to_s
+                Object.const_defined?(ex.to_s) && error.is_a?(Object.const_get(ex.to_s))
               end
             end
           end

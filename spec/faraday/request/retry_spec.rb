@@ -32,6 +32,18 @@ RSpec.describe Faraday::Request::Retry do
 
       it { expect(times_called).to eq(3) }
     end
+
+    context 'and this is passed as a string custom exception' do
+      let(:options) { [{ exceptions: 'StandardError' }] }
+
+      it { expect(times_called).to eq(3) }
+    end
+
+    context 'and a non-existent string custom exception is passed' do
+      let(:options) { [{ exceptions: 'WrongStandardErrorNotExisting' }] }
+
+      it { expect(times_called).to eq(1) }
+    end
   end
 
   context 'when an expected error happens' do
