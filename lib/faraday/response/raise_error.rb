@@ -44,12 +44,18 @@ module Faraday
           body: env.body,
           request: {
             method: env.method,
+            url: env.url,
             url_path: env.url.path,
-            params: env.params,
+            params: query_params(env),
             headers: env.request_headers,
             body: env.request_body
           }
         }
+      end
+
+      def query_params(env)
+        env.request.params_encoder ||= Faraday::Utils.default_params_encoder
+        env.params_encoder.decode(env[:url].query)
       end
     end
   end
