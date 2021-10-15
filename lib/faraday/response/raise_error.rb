@@ -55,7 +55,7 @@ module Faraday
 
       def query_params(env)
         env.request.params_encoder ||= Faraday::Utils.default_params_encoder
-        env.params_encoder.decode(env[:url].query)
+        env.params_encoder.decode(env.url.query)
       end
     end
   end
