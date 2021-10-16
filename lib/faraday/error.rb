@@ -52,6 +52,7 @@ module Faraday
     #              :body    - Optional string HTTP response body.
     #              :request - Hash
     #                           :method   - Symbol with the request HTTP method.
+    #                           :url      - URI object with the url requested.
     #                           :url_path - String with the url path requested.
     #                           :params   - String key/value hash of query params
     #                                     present in the request.
