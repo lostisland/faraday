@@ -31,6 +31,19 @@ We did our best to make this transition as painless as possible for you, so here
 * We've setup an [Awesome Faraday](https://github.com/lostisland/awesome-faraday) repository, where you can find and discover adapters.
   We also highlighted their unique features and level of compliance with Faraday's features.
 
+#### That's great! What should I change in my code immediately after upgrading?
+
+* Add the corresponding adapter gem to your Gemfile (e.g. `faraday-net_http`). Ideally, this should replace
+  `faraday` altogether as these gems usually have Faraday already in their dependencies.
+* If you're relying on `Faraday.default_adapter` (e.g. if you use `Faraday.get` or other verb class methods, or not
+  specifying an adapter in your connection initializer), then you'll now need to set it yourself. It previously
+  defaulted to `:net_http`, but it now defaults to `:test`. You can do so simply by using the setter:
+  
+  ```ruby
+  # For example, to use net_http (previous default value, will now require `gem 'faraday-net_http'` in your gemfile)
+  Faraday.default_adapter = :net_http
+  ```
+
 ### Autoloading and dependencies
 
 Faraday has until now provided and relied on a complex dynamic dependencies system.

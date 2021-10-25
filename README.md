@@ -5,13 +5,14 @@
 [![GitHub Discussions](https://img.shields.io/github/discussions/lostisland/faraday?logo=github)](https://github.com/lostisland/faraday/discussions)
 
 
-Faraday is an HTTP client library that provides a common interface over many
-adapters (such as Net::HTTP) and embraces the concept of Rack middleware when
-processing the request/response cycle.
+Faraday is an HTTP client library abstraction layer that provides a common interface over many
+adapters (such as Net::HTTP) and embraces the concept of Rack middleware when processing the request/response cycle.
+You probably don't want to use Faraday directly in your project, as it will lack an actual client library to perform
+requests. Instead, you probably want to have a look at [Awesome Faraday][awesome] for a list of available adapters.
 
-## ATTENTION
+## FARADAY 2.0
 
-You're reading the README and looking at the code of our upcoming v2.0 release (the `main` branch).
+You're reading the README and looking at the code of our upcoming v2.0 release (the `main` branch, currently in alpha).
 If you're here to read about our latest v1.x release, then please head over to the [1.x branch](https://github.com/lostisland/faraday/tree/1.x).
 
 ## Getting Started
@@ -48,6 +49,7 @@ But before you start coding, please read our [Contributing Guide][contributing]
 ## Copyright
 &copy; 2009 - 2021, the [Faraday Team][faraday_team]. Website and branding design by [Elena Lo Piccolo](https://elelopic.design).
 
+[awesome]:      https://github.com/lostisland/awesome-faraday/#adapters
 [website]:      https://lostisland.github.io/faraday
 [faraday_team]: https://lostisland.github.io/faraday/team
 [contributing]: https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md

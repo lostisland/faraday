@@ -1,5 +1,15 @@
 # frozen_string_literal: true
 
+class CustomEncoder
+  def encode(params)
+    params.map { |k, v| "#{k.upcase}-#{v.to_s.upcase}" }.join(',')
+  end
+
+  def decode(params)
+    params.split(',').map { |pair| pair.split('-') }.to_h
+  end
+end
+
 shared_examples 'initializer with url' do
   context 'with simple url' do
     let(:address) { 'http://sushi.com' }
@@ -130,7 +140,7 @@ RSpec.describe Faraday::Connection do
     context 'with block' do
       let(:conn) do
         Faraday::Connection.new(params: { 'a' => '1' }) do |faraday|
-          faraday.adapter :net_http
+          faraday.adapter :test
           faraday.url_prefix = 'http://sushi.com/omnom'
         end
       end
@@ -540,26 +550,32 @@ RSpec.describe Faraday::Connection do
     end
 
     context 'performing a request' do
-      before { stub_request(:get, 'http://example.com') }
+      let(:url) { 'http://example.com' }
+      let(:conn) do
+        Faraday.new do |f|
+          f.adapter :test do |stubs|
+            stubs.get(url) do
+              [200, {}, 'ok']
+            end
+          end
+        end
+      end
 
       it 'dynamically checks proxy' do
         with_env 'http_proxy' => 'http://proxy.com:80' do
-          conn = Faraday.new
           expect(conn.proxy.uri.host).to eq('proxy.com')
 
-          conn.get('http://example.com') do |req|
+          conn.get(url) do |req|
             expect(req.options.proxy.uri.host).to eq('proxy.com')
           end
         end
 
-        conn.get('http://example.com')
+        conn.get(url)
         expect(conn.instance_variable_get('@temp_proxy')).to be_nil
       end
 
       it 'dynamically check no proxy' do
         with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'example.com' do
-          conn = Faraday.new
-
           expect(conn.proxy.uri.host).to eq('proxy.com')
 
           conn.get('http://example.com') do |req|
@@ -628,9 +644,16 @@ RSpec.describe Faraday::Connection do
   describe 'request params' do
     context 'with simple url' do
       let(:url) { 'http://example.com' }
-      let!(:stubbed) { stub_request(:get, 'http://example.com?a=a&p=3') }
+      let(:stubs) { Faraday::Adapter::Test::Stubs.new }
 
-      after { expect(stubbed).to have_been_made.once }
+      before do
+        conn.adapter(:test, stubs)
+        stubs.get('http://example.com?a=a&p=3') do
+          [200, {}, 'ok']
+        end
+      end
+
+      after { stubs.verify_stubbed_calls }
 
       it 'test_overrides_request_params' do
         conn.get('?p=2&a=a', p: 3)
@@ -652,15 +675,22 @@ RSpec.describe Faraday::Connection do
     context 'with url and extra params' do
       let(:url) { 'http://example.com?a=1&b=2' }
       let(:options) { { params: { c: 3 } } }
+      let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+
+      before do
+        conn.adapter(:test, stubs)
+      end
 
       it 'merges connection and request params' do
-        stubbed = stub_request(:get, 'http://example.com?a=1&b=2&c=3&limit=5&page=1')
+        expected = 'http://example.com?a=1&b=2&c=3&limit=5&page=1'
+        stubs.get(expected) { [200, {}, 'ok'] }
         conn.get('?page=1', limit: 5)
-        expect(stubbed).to have_been_made.once
+        stubs.verify_stubbed_calls
       end
 
       it 'allows to override all params' do
-        stubbed = stub_request(:get, 'http://example.com?b=b')
+        expected = 'http://example.com?b=b'
+        stubs.get(expected) { [200, {}, 'ok'] }
         conn.get('?p=1&a=a', p: 2) do |req|
           expect(req.params[:a]).to eq('a')
           expect(req.params['c']).to eq(3)
@@ -668,47 +698,61 @@ RSpec.describe Faraday::Connection do
           req.params = { b: 'b' }
           expect(req.params['b']).to eq('b')
         end
-        expect(stubbed).to have_been_made.once
+        stubs.verify_stubbed_calls
       end
 
       it 'allows to set params_encoder for single request' do
-        encoder = Object.new
-        def encoder.encode(params)
-          params.map { |k, v| "#{k.upcase}-#{v.to_s.upcase}" }.join(',')
-        end
-        stubbed = stub_request(:get, 'http://example.com/?A-1,B-2,C-3,FEELING-BLUE')
+        encoder = CustomEncoder.new
+        expected = 'http://example.com/?A-1,B-2,C-3,FEELING-BLUE'
+        stubs.get(expected) { [200, {}, 'ok'] }
 
-        conn.get('/', feeling: 'blue') do |req|
+        conn.get('/', a: 1, b: 2, c: 3, feeling: 'blue') do |req|
           req.options.params_encoder = encoder
         end
-        expect(stubbed).to have_been_made.once
+        stubs.verify_stubbed_calls
       end
     end
 
     context 'with default params encoder' do
-      let!(:stubbed) { stub_request(:get, 'http://example.com?color%5B%5D=red&color%5B%5D=blue') }
-      after { expect(stubbed).to have_been_made.once }
+      let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+
+      before do
+        conn.adapter(:test, stubs)
+        stubs.get('http://example.com?color%5B%5D=blue&color%5B%5D=red') do
+          [200, {}, 'ok']
+        end
+      end
+
+      after { stubs.verify_stubbed_calls }
 
       it 'supports array params in url' do
-        conn.get('http://example.com?color[]=red&color[]=blue')
+        conn.get('http://example.com?color[]=blue&color[]=red')
       end
 
       it 'supports array params in params' do
-        conn.get('http://example.com', color: %w[red blue])
+        conn.get('http://example.com', color: %w[blue red])
       end
     end
 
     context 'with flat params encoder' do
       let(:options) { { request: { params_encoder: Faraday::FlatParamsEncoder } } }
-      let!(:stubbed) { stub_request(:get, 'http://example.com?color=blue') }
-      after { expect(stubbed).to have_been_made.once }
+      let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+
+      before do
+        conn.adapter(:test, stubs)
+        stubs.get('http://example.com?color=blue&color=red') do
+          [200, {}, 'ok']
+        end
+      end
+
+      after { stubs.verify_stubbed_calls }
 
       it 'supports array params in params' do
-        conn.get('http://example.com', color: %w[red blue])
+        conn.get('http://example.com', color: %w[blue red])
       end
 
       context 'with array param in url' do
-        let(:url) { 'http://example.com?color[]=red&color[]=blue' }
+        let(:url) { 'http://example.com?color[]=blue&color[]=red' }
 
         it do
           conn.get('/')
