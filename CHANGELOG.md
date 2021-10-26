@@ -1,5 +1,11 @@
 # Faraday Changelog
 
+## [1.8.0](https://github.com/lostisland/faraday/releases/tag/v1.8.0) (2021-09-18)
+
+### Features
+
+* Backport authorization procs (#1322, @jarl-dk)
+
 ## [v1.7.0](https://github.com/lostisland/faraday/releases/tag/v1.7.0) (2021-08-09)
 
 ### Features
