@@ -44,6 +44,20 @@ We did our best to make this transition as painless as possible for you, so here
   Faraday.default_adapter = :net_http
   ```
 
+### Faraday Middleware Deprecation
+
+In case you never used it, [Faraday Middleware](https://github.com/lostisland/faraday_middleware) is a handy collection of middleware that have so far been maintained by the Faraday core team.
+With Faraday 2.0 focus on becoming an ecosystem, rather than an out-of-the-box solution, it only made sense to take the same approach for middleware as we did for adapters. For this reason, `faraday_middleware` will not be updated to support Faraday 2.0.
+Instead, we'll support the transition from centralised-repo colleciton of middleware to individual middleware gems, effectively replicating what we did with adapters. Each middleware will have it's own repository and gem, and it will allow developers to only add the ones they require to their Gemfile.
+
+So don't fret yet! We're doing our best to support our `faraday_middleware` users out there, so here are the steps we've taken to make this work:
+* We've promoted the highly popular JSON middleware (both request encoding and response parsing) to a core middleware and it will now be shipped together with Faraday. We expect many `faraday_middleware` users will be able to just stop using the extra dependency thanks to this.
+* We've created a [faraday-middleware-template](https://github.com/lostisland/faraday-middleware-template) repository that will make creating a new middleware gem simple and straightforward.
+* We've added a middleware section to the [awesome-faraday](https://github.com/lostisland/awesome-faraday) repo, so you can easily find available middleware when you need it.
+
+It will obviously take time for some of the middleware in `faraday_middleware` to make its way into a separate gem, so we appreciate this might be an upgrade obstacle for some. However this is part of an effort to focus the core team resources tackling the most requested features.
+We'll be listening to the community and prioritize middleware that are most used, and will be welcoming contributors who want to become owners of the middleware when these get separate from the `faraday_middleware` repo.
+
 ### Autoloading and dependencies
 
 Faraday has until now provided and relied on a complex dynamic dependencies system.
