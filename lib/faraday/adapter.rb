@@ -98,3 +98,5 @@ module Faraday
     }.freeze
   end
 end
+
+require 'faraday/adapter/test'
