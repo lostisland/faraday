@@ -64,7 +64,7 @@ module Faraday
       options = ConnectionOptions.from(options)
 
       if url.is_a?(Hash) || url.is_a?(ConnectionOptions)
-        options = options.merge(url)
+        options = Utils.deep_merge(options, url)
         url     = options.url
       end
 
