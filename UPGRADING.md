@@ -85,6 +85,7 @@ For more details, see https://github.com/lostisland/faraday/pull/1306
 * Rename `Faraday::Request#method` to `#http_method`.
 * Remove `Faraday::Response::Middleware`. You can now use the new `on_complete` callback provided by `Faraday::Middleware`.
 * Drop `Faraday::UploadIO` in favour of `Faraday::FilePart`.
+* `Faraday.default_connection_options` will now be deep-merged into new connections to avoid overriding them (e.g. headers).
 
 ## Faraday 1.0
 
