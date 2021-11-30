@@ -92,7 +92,7 @@ module Faraday
     #               params: { page: 1 }
     #   # => Faraday::Connection to http://faraday.com?page=1
     def new(url = nil, options = {}, &block)
-      options = default_connection_options.merge(options)
+      options = Utils.deep_merge(default_connection_options, options)
       Faraday::Connection.new(url, options, &block)
     end
 

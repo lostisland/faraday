@@ -53,4 +53,65 @@ RSpec.describe Faraday::Utils do
       expect(headers).not_to have_key('authorization')
     end
   end
+
+  describe '.deep_merge!' do
+    let(:connection_options) { Faraday::ConnectionOptions.new }
+    let(:url) do
+      {
+        url: 'http://example.com/abc',
+        headers: { 'Mime-Version' => '1.0' },
+        request: { oauth: { consumer_key: 'anonymous' } },
+        ssl: { version: '2' }
+      }
+    end
+
+    it 'recursively merges the headers' do
+      connection_options.headers = { user_agent: 'My Agent 1.0' }
+      deep_merge = Faraday::Utils.deep_merge!(connection_options, url)
+
+      expect(deep_merge.headers).to eq('Mime-Version' => '1.0', user_agent: 'My Agent 1.0')
+    end
+
+    context 'when a target hash has an Options Struct value' do
+      let(:request) do
+        {
+          params_encoder: nil,
+          proxy: nil,
+          bind: nil,
+          timeout: nil,
+          open_timeout: nil,
+          read_timeout: nil,
+          write_timeout: nil,
+          boundary: nil,
+          oauth: { consumer_key: 'anonymous' },
+          context: nil,
+          on_data: nil
+        }
+      end
+      let(:ssl) do
+        {
+          verify: nil,
+          ca_file: nil,
+          ca_path: nil,
+          verify_mode: nil,
+          cert_store: nil,
+          client_cert: nil,
+          client_key: nil,
+          certificate: nil,
+          private_key: nil,
+          verify_depth: nil,
+          version: '2',
+          min_version: nil,
+          max_version: nil
+        }
+      end
+
+      it 'does not overwrite an Options Struct value' do
+        deep_merge = Faraday::Utils.deep_merge!(connection_options, url)
+
+        expect(deep_merge.request.to_h).to eq(request)
+        expect(deep_merge.ssl.to_h).to eq(ssl)
+      end
+    end
+  end
 end
