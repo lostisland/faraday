@@ -641,18 +641,21 @@ RSpec.describe Faraday::Connection do
     end
 
     context 'preserving a user_agent assigned via default_conncetion_options' do
+      around do |example|
+        old = Faraday.default_connection_options
+        Faraday.default_connection_options = { headers: { user_agent: 'My Agent 1.2' } }
+        example.run
+        Faraday.default_connection_options = old
+      end
+
       context 'when url is a Hash' do
         let(:conn) { Faraday.new(url: 'http://example.co', headers: { 'CustomHeader' => 'CustomValue' }) }
-
-        before { Faraday.default_connection_options = { headers: { user_agent: 'My Agent 1.2' } } }
 
         it { expect(conn.headers).to eq('CustomHeader' => 'CustomValue', 'User-Agent' => 'My Agent 1.2') }
       end
 
       context 'when url is a String' do
         let(:conn) { Faraday.new('http://example.co', headers: { 'CustomHeader' => 'CustomValue' }) }
-
-        before { Faraday.default_connection_options = { headers: { user_agent: 'My Agent 1.2' } } }
 
         it { expect(conn.headers).to eq('CustomHeader' => 'CustomValue', 'User-Agent' => 'My Agent 1.2') }
       end
