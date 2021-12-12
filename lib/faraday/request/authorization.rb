@@ -38,7 +38,7 @@ module Faraday
           raise ArgumentError, "Unexpected params received (got #{params.size} instead of 1)"
         else
           value = params.first
-          value = value.call if value.respond_to?(:call)
+          value = value.call if value.is_a?(Proc) || value.respond_to?(:call)
           "#{type} #{value}"
         end
       end
