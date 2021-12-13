@@ -63,7 +63,7 @@ RSpec.describe Faraday::Request::Authorization do
       include_examples 'does not interfere with existing authentication'
     end
 
-    context 'when passed as callable' do
+    context 'when passed a callable' do
       let(:callable) { double('Callable Authorizer', call: 'custom_from_callable') }
       let(:auth_config) { [callable] }
 
