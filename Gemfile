@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 # Even though we don't officially support JRuby, this dependency makes Faraday
 # compatible with it, so we're leaving it in for jruby users to use it.
-gem 'jruby-openssl', '~> 0.10.7', platforms: :jruby
+gem 'jruby-openssl', '~> 0.11.0', platforms: :jruby
 
 group :development, :test do
   gem 'coveralls_reborn', require: false
