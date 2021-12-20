@@ -60,7 +60,7 @@ class ClientTest < Test::Unit::TestCase
   def test_sushi_exception
     stubs = Faraday::Adapter::Test::Stubs.new
     stubs.get('/ebi') do
-      raise Faraday::ConnectionFailed, nil
+      raise Faraday::ConnectionFailed
     end
 
     cli = client(stubs)

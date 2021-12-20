@@ -56,7 +56,7 @@ RSpec.describe Client do
 
   it 'handles exception' do
     stubs.get('/ebi') do
-      raise Faraday::ConnectionFailed, nil
+      raise Faraday::ConnectionFailed
     end
 
     expect { client.sushi('ebi') }.to raise_error(Faraday::ConnectionFailed)
