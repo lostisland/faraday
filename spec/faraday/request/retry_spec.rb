@@ -85,6 +85,16 @@ RSpec.describe Faraday::Request::Retry do
 
       it { expect(Time.now - @started).to be_within(0.04).of(0.2) }
     end
+
+    context 'and retry_block is set' do
+      let(:options) { [{ retry_block: ->(env, options, retries, exc) { retry_block_calls << [env, options, retries, exc] } }] }
+      let(:retry_block_calls) { [] }
+      let(:retry_block_times_called) { retry_block_calls.size }
+
+      it 'calls retry block for each retry' do
+        expect(retry_block_times_called).to eq(2)
+      end
+    end
   end
 
   context 'when no exception raised' do
@@ -249,6 +259,24 @@ RSpec.describe Faraday::Request::Retry do
       let(:options) { [{ max: 2, interval: 0.1, max_interval: 5, retry_statuses: 504 }] }
 
       it { expect(times_called).to eq(1) }
+
+      context 'and retry_block is set' do
+        let(:options) do
+          [{
+            retry_block: ->(env, options, retries, exc) { retry_block_calls << [env, options, retries, exc] },
+            max: 2,
+            max_interval: 5,
+            retry_statuses: 504
+          }]
+        end
+
+        let(:retry_block_calls) { [] }
+        let(:retry_block_times_called) { retry_block_calls.size }
+
+        it 'retry_block is not called' do
+          expect(retry_block_times_called).to eq(0)
+        end
+      end
     end
   end
 end

@@ -154,8 +154,8 @@ module Faraday
           if retries.positive? && retry_request?(env, e)
             retries -= 1
             rewind_files(request_body)
-            @options.retry_block.call(env, @options, retries, e)
             if (sleep_amount = calculate_sleep_amount(retries + 1, env))
+              @options.retry_block.call(env, @options, retries, e)
               sleep sleep_amount
               retry
             end

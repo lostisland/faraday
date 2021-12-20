@@ -38,7 +38,7 @@ We did our best to make this transition as painless as possible for you, so here
 * If you're relying on `Faraday.default_adapter` (e.g. if you use `Faraday.get` or other verb class methods, or not
   specifying an adapter in your connection initializer), then you'll now need to set it yourself. It previously
   defaulted to `:net_http`, but it now defaults to `:test`. You can do so simply by using the setter:
-  
+
   ```ruby
   # For example, to use net_http (previous default value, will now require `gem 'faraday-net_http'` in your gemfile)
   Faraday.default_adapter = :net_http
@@ -86,6 +86,7 @@ For more details, see https://github.com/lostisland/faraday/pull/1306
 * Remove `Faraday::Response::Middleware`. You can now use the new `on_complete` callback provided by `Faraday::Middleware`.
 * Drop `Faraday::UploadIO` in favour of `Faraday::FilePart`.
 * `Faraday.default_connection_options` will now be deep-merged into new connections to avoid overriding them (e.g. headers).
+* Retry middleware `retry_block` is not called if retry will not happen due to `max_interval`. (#1350)
 
 ## Faraday 1.0
 
