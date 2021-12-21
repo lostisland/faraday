@@ -33,7 +33,7 @@ conn = Faraday.new do |builder|
 
     # test exceptions too
     stub.get('/boom') do
-      raise Faraday::ConnectionFailed, nil
+      raise Faraday::ConnectionFailed
     end
   end
 end
