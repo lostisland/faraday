@@ -6,7 +6,7 @@ module Faraday
   class Error < StandardError
     attr_reader :response, :wrapped_exception
 
-    def initialize(exc, response = nil)
+    def initialize(exc = nil, response = nil)
       @wrapped_exception = nil unless defined?(@wrapped_exception)
       @response = nil unless defined?(@response)
       super(exc_msg_and_response!(exc, response))
