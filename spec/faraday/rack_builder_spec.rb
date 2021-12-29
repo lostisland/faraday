@@ -20,6 +20,8 @@ RSpec.describe Faraday::RackBuilder do
   end
 
   subject { conn.builder }
+  before { Faraday.default_adapter = :test }
+  after { Faraday.default_adapter = nil }
 
   context 'with default stack' do
     let(:conn) { Faraday::Connection.new }
@@ -85,13 +87,6 @@ RSpec.describe Faraday::RackBuilder do
     before { subject.use(Apple) }
 
     it { expect(subject.handlers).to eq([Apple]) }
-
-    it 'allows rebuilding' do
-      subject.build do |builder|
-        builder.use(Orange)
-      end
-      expect(subject.handlers).to eq([Orange])
-    end
 
     it 'allows use' do
       subject.use(Orange)

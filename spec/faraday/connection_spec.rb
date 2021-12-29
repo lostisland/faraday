@@ -151,6 +151,9 @@ RSpec.describe Faraday::Connection do
   end
 
   describe '#close' do
+    before { Faraday.default_adapter = :test }
+    after { Faraday.default_adapter = nil }
+
     it 'can close underlying app' do
       expect(conn.app).to receive(:close)
       conn.close

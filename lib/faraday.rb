@@ -150,5 +150,4 @@ module Faraday
   self.ignore_env_proxy = false
   self.root_path = File.expand_path __dir__
   self.lib_path = File.expand_path 'faraday', __dir__
-  self.default_adapter = :test
 end
