@@ -50,7 +50,7 @@ The `env` contains stuff like:
 - `env[:ssl]`
 - `env[:request]`
 
-There are helper to fetch timeouts: `#request_timeout(type, options)` knows
+There are helper methods to fetch timeouts: `#request_timeout(type, options)` knows
 about supported timeout types, and falls back to `:timeout` if they are not set.
 You can use those when building the options you need for your backend's instantiation.
 
