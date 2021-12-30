@@ -117,7 +117,7 @@ module Faraday
 
     extend Forwardable
 
-    def_delegators :builder, :build, :use, :request, :response, :adapter, :app
+    def_delegators :builder, :use, :request, :response, :adapter, :app
 
     # Closes the underlying resources and/or connections. In the case of
     # persistent connections, this closes all currently open connections

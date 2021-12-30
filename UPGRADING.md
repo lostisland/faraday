@@ -87,6 +87,7 @@ For more details, see https://github.com/lostisland/faraday/pull/1306
 * Drop `Faraday::UploadIO` in favour of `Faraday::FilePart`.
 * `Faraday.default_connection_options` will now be deep-merged into new connections to avoid overriding them (e.g. headers).
 * Retry middleware `retry_block` is not called if retry will not happen due to `max_interval`. (#1350)
+* `Faraday::Builder#build` method is not exposed through `Faraday::Connection` anymore and does not reset the handlers if called multiple times. This method should be used internally only.
 
 ## Faraday 1.0
 

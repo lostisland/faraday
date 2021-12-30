@@ -58,22 +58,21 @@ module Faraday
       end
     end
 
-    def initialize(handlers = [], adapter = nil, &block)
-      @adapter = adapter
-      @handlers = handlers
-      if block
-        build(&block)
-      elsif @handlers.empty?
-        # default stack, if nothing else is configured
-        request :url_encoded
-        self.adapter Faraday.default_adapter
-      end
+    def initialize(&block)
+      @adapter = nil
+      @handlers = []
+      build(&block)
     end
 
-    def build(options = {})
+    def initialize_dup(original)
+      super
+      @adapter = original.adapter
+      @handlers = original.handlers.dup
+    end
+
+    def build
       raise_if_locked
-      @handlers.clear unless options[:keep]
-      yield(self) if block_given?
+      block_given? ? yield(self) : request(:url_encoded)
       adapter(Faraday.default_adapter) unless @adapter
     end
 
@@ -109,7 +108,7 @@ module Faraday
     end
 
     ruby2_keywords def adapter(klass = NO_ARGUMENT, *args, &block)
-      return @adapter if klass == NO_ARGUMENT
+      return @adapter if klass == NO_ARGUMENT || klass.nil?
 
       klass = Faraday::Adapter.lookup_middleware(klass) if klass.is_a?(Symbol)
       @adapter = self.class::Handler.new(klass, *args, &block)
@@ -164,6 +163,7 @@ module Faraday
     def app
       @app ||= begin
         lock!
+        ensure_adapter!
         to_app
       end
     end
@@ -180,10 +180,6 @@ module Faraday
       other.is_a?(self.class) &&
         @handlers == other.handlers &&
         @adapter == other.adapter
-    end
-
-    def dup
-      self.class.new(@handlers.dup, @adapter.dup)
     end
 
     # ENV Keys
@@ -216,6 +212,9 @@ module Faraday
     private
 
     LOCK_ERR = "can't modify middleware stack after making a request"
+    MISSING_ADAPTER_ERROR = "An attempt to run a request with a Faraday::Connection without adapter has been made.\n" \
+                            "Please set Faraday.default_adapter or provide one when initializing the connection.\n" \
+                            'For more info, check https://lostisland.github.io/faraday/usage/.'
 
     def raise_if_locked
       raise StackLocked, LOCK_ERR if locked?
@@ -225,6 +224,10 @@ module Faraday
       return unless is_adapter?(klass)
 
       raise 'Adapter should be set using the `adapter` method, not `use`'
+    end
+
+    def ensure_adapter!
+      raise MISSING_ADAPTER_ERROR unless @adapter
     end
 
     def adapter_set?
