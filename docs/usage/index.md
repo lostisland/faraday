@@ -8,17 +8,29 @@ order: 1
 ---
 
 Let's fetch the home page for the wonderful
-[httpbingo.org](https://httpbingo.org) service. Make a simple `GET` request by
-requiring the Faraday gem and using `Faraday.get`:
+[httpbingo.org](https://httpbingo.org) service.
+
+First of all, you need to tell Faraday which [`adapter`](../adapters) you wish to use.
+Adapters are responsible for actually executing HTTP requests.
+There are many different adapters you can choose from.
+Just pick the one you like and install it, or add it to your project Gemfile.
+You might want to use Faraday with the `Net::HTTP` adapter, for example.
+[Learn more about Adapters](../adapters).
+
+Remember you'll need to install the corresponding adapter gem before you'll be able to use it.
 
 ```ruby
-require 'faraday'
-
-response = Faraday.get 'http://httpbingo.org'
+require 'faraday/net_http'
+Faraday.default_adapter = :net_http
 ```
 
-This returns a `Faraday::Response` object with the response status, headers, and
-body.
+Next, you can make a simple `GET` request using `Faraday.get`:
+
+```ruby
+response = Faraday.get('http://httpbingo.org')
+```
+
+This returns a `Faraday::Response` object with the response status, headers, and body.
 
 ```ruby
 response.status
@@ -31,10 +43,36 @@ response.body
 # => "<!DOCTYPE html><html> ...
 ```
 
-### GET
+### Faraday Connection
 
-Faraday supports the following HTTP verbs that typically don't include a request
-body:
+The recommended way to use Faraday, especially when integrating to 3rd party services and API, is to create
+a `Faraday::Connection`. The connection object can be configured with things like:
+
+- default request headers & query parameters
+- network settings like proxy or timeout
+- common URL base path
+- Faraday adapter & middleware (see below)
+
+Create a `Faraday::Connection` by calling `Faraday.new`. You can then call each HTTP verb
+(`get`, `post`, ...) on your `Faraday::Connection` to perform a request:
+
+```ruby
+conn = Faraday.new(
+  url: 'http://httpbingo.org',
+  params: {param: '1'},
+  headers: {'Content-Type' => 'application/json'}
+)
+
+response = conn.post('/post') do |req|
+  req.params['limit'] = 100
+  req.body = {query: 'chunky bacon'}.to_json
+end
+# => POST http://httpbingo.org/post?param=1&limit=100
+```
+
+### GET, HEAD, DELETE, TRACE
+
+Faraday supports the following HTTP verbs that typically don't include a request body:
 
 - `get(url, params = nil, headers = nil)`
 - `head(url, params = nil, headers = nil)`
@@ -44,12 +82,11 @@ body:
 You can specify URI query parameters and HTTP headers when making a request.
 
 ```ruby
-url = 'http://httpbingo.org/get'
-response = Faraday.get(url, {boom: 'zap'}, {'User-Agent' => 'myapp'})
+response = conn.get('get', { boom: 'zap' }, { 'User-Agent' => 'myapp' })
 # => GET http://httpbingo.org/get?boom=zap
 ```
 
-### POST
+### POST, PUT, PATCH
 
 Faraday also supports HTTP verbs with bodies. Instead of query parameters, these
 accept a request body:
@@ -59,13 +96,11 @@ accept a request body:
 - `patch(url, body = nil, headers = nil)`
 
 ```ruby
-url = 'http://httpbingo.org/post'
-
 # POST 'application/x-www-form-urlencoded' content
-response = Faraday.post(url, "boom=zap")
+response = conn.post('post', 'boom=zap')
 
 # POST JSON content
-response = Faraday.post(url, '{"boom": "zap"}',
+response = conn.post('post', '{"boom": "zap"}',
   "Content-Type" => "application/json")
 ```
 
@@ -75,8 +110,7 @@ Faraday will automatically convert key/value hashes into proper form bodies.
 
 ```ruby
 # POST 'application/x-www-form-urlencoded' content
-url = 'http://httpbingo.org/post'
-response = Faraday.post(url, boom: 'zap')
+response = conn.post('post', boom: 'zap')
 # => POST 'boom=zap' to http://httpbingo.org/post
 ```
 
@@ -93,47 +127,13 @@ This example shows a hypothetical search endpoint that accepts a JSON request
 body as the actual search query.
 
 ```ruby
-response = Faraday.post('http://httpbingo.org/post') do |req|
+response = conn.post('post') do |req|
   req.params['limit'] = 100
   req.headers['Content-Type'] = 'application/json'
   req.body = {query: 'chunky bacon'}.to_json
 end
 # => POST http://httpbingo.org/post?limit=100
 ```
-
-### Customizing Faraday::Connection
-
-You may want to create a `Faraday::Connection` to setup a common config for
-multiple requests. The connection object can be configured with things like:
-
-- default request headers & query parameters
-- network settings like proxy or timeout
-- common URL base path
-- Faraday adapter & middleware (see below)
-
-Create a `Faraday::Connection` by calling `Faraday.new`. The HTTP verbs
-described above (`get`, `post`, ...) are `Faraday::Connection` methods:
-
-```ruby
-conn = Faraday.new(
-  url: 'http://httpbingo.org',
-  params: {param: '1'},
-  headers: {'Content-Type' => 'application/json'}
-)
-
-response = conn.post('/post') do |req|
-  req.params['limit'] = 100
-  req.body = {query: 'chunky bacon'}.to_json
-end
-# => POST http://httpbingo.org/post?param=1&limit=100
-```
-
-### Adapters
-
-Adapters are responsible for actually executing HTTP requests. The default
-adapter uses Ruby's `Net::HTTP`, but there are many different adapters
-available. You might want to use Faraday with the Typhoeus adapter, for example.
-[Learn more about Adapters](../adapters).
 
 ### Middleware
 
@@ -158,13 +158,20 @@ and add the correct middleware in a block. For example:
 ```ruby
 require 'faraday_middleware'
 
-conn = Faraday.new do |f|
-  f.request :json # encode req bodies as JSON
+conn = Faraday.new('http://httpbingo.org') do |f|
+  f.request :json # encode req bodies as JSON and automatically set the Content-Type header
   f.request :retry # retry transient failures
-  f.response :follow_redirects # follow redirects
+  f.response :follow_redirects # follow redirects (3xx HTTP response codes)
   f.response :json # decode response bodies as JSON
+  f.adapter :net_http # adds the adapter to the connection, defaults to `Faraday.default_adapter`
 end
-response = conn.get("http://httpbingo.org/get")
+
+# Sends a GET request with JSON body that will automatically retry in case of failure
+# and follow 3xx redirects.
+response = conn.get('get', boom: 'zap')
+
+# response body is automatically decoded from JSON to a Ruby hash
+response.body['args'] #=> {"boom"=>["zap"]}
 ```
 
 #### Default Connection, Default Middleware
@@ -173,10 +180,10 @@ Remember how we said that Faraday will automatically encode key/value hash
 bodies into form bodies? Internally, the top level shortcut methods
 `Faraday.get`, `post`, etc. use a simple default `Faraday::Connection`. The only
 middleware used for the default connection is `:url_encoded`, which encodes
-those form hashes.
+those form hashes, and the `default_adapter`.
 
 Note that if you create your own connection with middleware, it won't encode
-form bodies unless you too include the `:url_encoded` middleware!
+form bodies unless you too include the [`:url_encoded`](encoding) middleware!
 
-[encoding]: ../middleware/url-encoded
-[multipart]: ../middleware/multipart
+[encoding]:   ../middleware/url-encoded
+[multipart]:  ../middleware/multipart
