@@ -34,4 +34,8 @@ end
 streamed.join
 ```
 
-The `on_data` streaming is currently only supported by the `Net::HTTP` adapter.
+The `on_data` streaming is currently only supported by some adapters.
+To see which ones, please refer to [Awesome Faraday][awesome] comparative table or check the adapter documentation.
+
+[awesome]:      https://github.com/lostisland/awesome-faraday/#adapters
+
