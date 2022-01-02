@@ -25,13 +25,15 @@ To use these great features, create a `Faraday::Connection` with `Faraday.new`
 and add the correct middleware in a block. For example:
 
 ```ruby
-require 'faraday_middleware'
+require 'faraday'
+require 'faraday/net_http'
+require 'faraday/retry'
 
 conn = Faraday.new do |f|
   f.request :json # encode req bodies as JSON
   f.request :retry # retry transient failures
-  f.response :follow_redirects # follow redirects
   f.response :json # decode response bodies as JSON
+  f.adapter :net_http # Use the Net::HTTP adapter
 end
 response = conn.get("http://httpbingo.org/get")
 ```
@@ -64,7 +66,7 @@ For example, the `Faraday::Request::UrlEncoded` middleware registers itself in
 # Faraday::Response and Faraday::Adapter registries
 conn = Faraday.new do |f|
   f.request :url_encoded
-  f.response :follow_redirects
+  f.response :logger
   f.adapter :httpclient
 end
 ```
@@ -75,7 +77,7 @@ or:
 # identical, but add the class directly instead of using lookups
 conn = Faraday.new do |f|
   f.use Faraday::Request::UrlEncoded
-  f.use FaradayMiddleware::FollowRedirects
+  f.use Faraday::Response::Logger
   f.use Faraday::Adapter::HTTPClient
 end
 ```
@@ -84,7 +86,7 @@ This is also the place to pass options. For example:
 
 ```ruby
 conn = Faraday.new do |f|
-  f.request :retry, max: 10
+  f.request :logger, bodies: true
 end
 ```
 
@@ -93,7 +95,7 @@ end
 The [Awesome Faraday](https://github.com/lostisland/awesome-faraday/) project
 has a complete list of useful, well-maintained Faraday middleware. Middleware is
 often provided by external gems, like the
-[faraday-middleware](https://github.com/lostisland/faraday_middleware) gem.
+[faraday-retry](https://github.com/lostisland/faraday-retry) gem.
 
 We also have [great documentation](list) for the middleware that ships with
 Faraday.

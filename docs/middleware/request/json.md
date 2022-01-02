@@ -5,8 +5,8 @@ permalink: /middleware/json-request
 hide: true
 prev_name: UrlEncoded Middleware
 prev_link: ./url-encoded
-next_name: Retry Middleware
-next_link: ./retry
+next_name: Instrumentation Middleware
+next_link: ./instrumentation
 top_name: Back to Middleware
 top_link: ./list
 ---
