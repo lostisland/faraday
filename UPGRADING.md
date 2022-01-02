@@ -84,9 +84,8 @@ For more details, see https://github.com/lostisland/faraday/pull/1306
 
 * Rename `Faraday::Request#method` to `#http_method`.
 * Remove `Faraday::Response::Middleware`. You can now use the new `on_complete` callback provided by `Faraday::Middleware`.
-* Drop `Faraday::UploadIO` in favour of `Faraday::FilePart`.
 * `Faraday.default_connection_options` will now be deep-merged into new connections to avoid overriding them (e.g. headers).
-* Retry middleware has been moved to a separate `faraday-retry` gem.
+* Retry and Multipart middleware have been moved to separate `faraday-retry` and `faraday-multipart` gems.
 * `Faraday::Builder#build` method is not exposed through `Faraday::Connection` anymore and does not reset the handlers if called multiple times. This method should be used internally only.
 
 ## Faraday 1.0
