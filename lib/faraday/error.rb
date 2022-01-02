@@ -141,13 +141,7 @@ module Faraday
   class SSLError < Error
   end
 
-  # Raised by FaradayMiddleware::ResponseMiddleware
+  # Raised by middlewares that parse the response, like the JSON response middleware.
   class ParsingError < Error
-  end
-
-  # Exception used to control the Retry middleware.
-  #
-  # @see Faraday::Request::Retry
-  class RetriableResponse < Error
   end
 end

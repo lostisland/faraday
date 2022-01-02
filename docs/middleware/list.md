@@ -29,8 +29,6 @@ multipart form request.
 * [`UrlEncoded`][url_encoded] converts a `Faraday::Request#body` hash of key/value pairs into a url-encoded request body.
 * [`Json Request`][json-request] converts a `Faraday::Request#body` hash of key/value pairs into a JSON request body.
 * [`Json Response`][json-response] parses response body into a hash of key/value pairs.
-* [`Retry`][retry] automatically retries requests that fail due to intermittent client
-or server errors (such as network hiccups).
 * [`Instrumentation`][instrumentation] allows to instrument requests using different tools.
 
 
@@ -47,8 +45,7 @@ before returning it.
 [multipart]:            ./multipart
 [url_encoded]:          ./url-encoded
 [json-request]:         ./json-request
-[retry]:                ./retry
 [instrumentation]:      ./instrumentation
-[json-response]:         ./json-response
+[json-response]:        ./json-response
 [logger]:               ./logger
 [raise_error]:          ./raise-error

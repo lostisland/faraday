@@ -37,9 +37,6 @@ Or install it yourself as:
 $ gem install faraday
 ```
 
-You can also install the [`faraday_middleware`][faraday_middleware]
-extension gem to access a collection of useful Faraday middleware.
-
 {: .mt-60}
 
 {: .text-center}
@@ -47,5 +44,4 @@ extension gem to access a collection of useful Faraday middleware.
 
 [github]:                   https://github.com/lostisland/faraday
 [gitter]:                   https://gitter.im/lostisland/faraday
-[faraday_middleware]:       https://github.com/lostisland/faraday_middleware
 [usage]:                    ./usage

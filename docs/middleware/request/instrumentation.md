@@ -3,8 +3,8 @@ layout: documentation
 title: "Instrumentation Middleware"
 permalink: /middleware/instrumentation
 hide: true
-prev_name: Retry Middleware
-prev_link: ./retry
+prev_name: JSON Request Middleware
+prev_link: ./json-request
 next_name: JSON Response Middleware
 next_link: ./json-response
 top_name: Back to Middleware

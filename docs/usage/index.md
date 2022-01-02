@@ -156,18 +156,17 @@ To use these great features, create a `Faraday::Connection` with `Faraday.new`
 and add the correct middleware in a block. For example:
 
 ```ruby
-require 'faraday_middleware'
+require 'faraday'
+require 'faraday/retry'
 
 conn = Faraday.new('http://httpbingo.org') do |f|
   f.request :json # encode req bodies as JSON and automatically set the Content-Type header
   f.request :retry # retry transient failures
-  f.response :follow_redirects # follow redirects (3xx HTTP response codes)
   f.response :json # decode response bodies as JSON
   f.adapter :net_http # adds the adapter to the connection, defaults to `Faraday.default_adapter`
 end
 
-# Sends a GET request with JSON body that will automatically retry in case of failure
-# and follow 3xx redirects.
+# Sends a GET request with JSON body that will automatically retry in case of failure.
 response = conn.get('get', boom: 'zap')
 
 # response body is automatically decoded from JSON to a Ruby hash
