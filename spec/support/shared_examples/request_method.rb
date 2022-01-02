@@ -126,19 +126,6 @@ shared_examples 'a request method' do |http_method|
     expect { conn.public_send(http_method, '/') }.to raise_error(exc)
   end
 
-  # Can't send files on get, head and delete methods
-  if method_with_body?(http_method)
-    it 'sends files' do
-      payload = { uploaded_file: multipart_file }
-      request_stub.with(headers: { 'Content-Type' => %r{\Amultipart/form-data} }) do |request|
-        # WebMock does not support matching body for multipart/form-data requests yet :(
-        # https://github.com/bblimke/webmock/issues/623
-        request.body.include?('RubyMultipartPost')
-      end
-      conn.public_send(http_method, '/', payload)
-    end
-  end
-
   on_feature :reason_phrase_parse do
     it 'parses the reason phrase' do
       request_stub.to_return(status: [200, 'OK'])

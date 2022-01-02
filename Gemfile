@@ -8,7 +8,6 @@ gem 'jruby-openssl', '~> 0.11.0', platforms: :jruby
 
 group :development, :test do
   gem 'coveralls_reborn', require: false
-  gem 'multipart-parser'
   gem 'pry'
   gem 'rack', '~> 2.2'
   gem 'rake'

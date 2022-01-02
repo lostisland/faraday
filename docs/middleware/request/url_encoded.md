@@ -3,8 +3,8 @@ layout: documentation
 title: "UrlEncoded Middleware"
 permalink: /middleware/url-encoded
 hide: true
-prev_name: Multipart Middleware
-prev_link: ./multipart
+prev_name: Authentication Middleware
+prev_link: ./authentication
 next_name: JSON Request Middleware
 next_link: ./json-request
 top_name: Back to Middleware

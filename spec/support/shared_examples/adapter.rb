@@ -40,7 +40,6 @@ shared_examples 'adapter examples' do |**options|
     conn_options[:ssl][:ca_file] ||= ENV['SSL_FILE']
 
     Faraday.new(remote, conn_options) do |conn|
-      conn.request :multipart
       conn.request :url_encoded
       conn.response :raise_error
       conn.adapter described_class, *adapter_options

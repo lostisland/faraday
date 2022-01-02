@@ -106,32 +106,23 @@ Here's a more realistic example:
 
 ```ruby
 Faraday.new(...) do |conn|
-  # POST/PUT params encoders:
-  conn.request :multipart
+  # POST/PUT params encoder
   conn.request :url_encoded
 
-  # Last middleware must be the adapter:
+  # Logging of requests/responses
+  conn.response :logger
+
+  # Last middleware must be the adapter
   conn.adapter :typhoeus
 end
 ```
 
 This request middleware setup affects POST/PUT requests in the following way:
 
-1. `Request::Multipart` checks for files in the payload, otherwise leaves
-  everything untouched;
-2. `Request::UrlEncoded` encodes as "application/x-www-form-urlencoded" if not
-  already encoded or of another type
+1. `Request::UrlEncoded` encodes as "application/x-www-form-urlencoded" if not
+  already encoded or of another type.
+2. `Response::Logger' logs request and response headers, can be configured to log bodies as well.
 
 Swapping middleware means giving the other priority. Specifying the
 "Content-Type" for the request is explicitly stating which middleware should
 process it.
-
-For example:
-
-```ruby
-# uploading a file:
-payload[:profile_pic] = Faraday::FilePart.new('/path/to/avatar.jpg', 'image/jpeg')
-
-# "Multipart" middleware detects files and encodes with "multipart/form-data":
-conn.put '/profile', payload
-```
