@@ -17,8 +17,6 @@ require 'faraday/middleware'
 require 'faraday/adapter'
 require 'faraday/request'
 require 'faraday/response'
-require 'faraday/file_part'
-require 'faraday/param_part'
 
 # This is the main namespace for Faraday.
 #

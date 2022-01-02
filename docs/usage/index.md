@@ -106,15 +106,14 @@ response = conn.post('post', '{"boom": "zap"}',
 
 #### Posting Forms
 
-Faraday will automatically convert key/value hashes into proper form bodies.
+Faraday will automatically convert key/value hashes into proper form bodies
+thanks to the `url_encoded` middleware included in the default connection.
 
 ```ruby
 # POST 'application/x-www-form-urlencoded' content
 response = conn.post('post', boom: 'zap')
 # => POST 'boom=zap' to http://httpbingo.org/post
 ```
-
-Faraday can also [upload files][multipart].
 
 ### Detailed HTTP Requests
 
@@ -185,4 +184,3 @@ Note that if you create your own connection with middleware, it won't encode
 form bodies unless you too include the [`:url_encoded`](encoding) middleware!
 
 [encoding]:   ../middleware/url-encoded
-[multipart]:  ../middleware/multipart

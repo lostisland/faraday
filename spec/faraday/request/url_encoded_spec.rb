@@ -3,7 +3,6 @@
 RSpec.describe Faraday::Request::UrlEncoded do
   let(:conn) do
     Faraday.new do |b|
-      b.request :multipart
       b.request :url_encoded
       b.adapter :test do |stub|
         stub.post('/echo') do |env|

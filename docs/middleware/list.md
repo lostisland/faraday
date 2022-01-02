@@ -24,8 +24,6 @@ content type.
 * [`BasicAuthentication`][authentication] sets the `Authorization` header to the `user:password`
 base64 representation.
 * [`TokenAuthentication`][authentication] sets the `Authorization` header to the specified token.
-* [`Multipart`][multipart] converts a `Faraday::Request#body` hash of key/value pairs into a
-multipart form request.
 * [`UrlEncoded`][url_encoded] converts a `Faraday::Request#body` hash of key/value pairs into a url-encoded request body.
 * [`Json Request`][json-request] converts a `Faraday::Request#body` hash of key/value pairs into a JSON request body.
 * [`Json Response`][json-response] parses response body into a hash of key/value pairs.
@@ -42,7 +40,6 @@ before returning it.
 
 
 [authentication]:       ./authentication
-[multipart]:            ./multipart
 [url_encoded]:          ./url-encoded
 [json-request]:         ./json-request
 [instrumentation]:      ./instrumentation

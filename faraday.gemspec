@@ -15,7 +15,6 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.6'
 
-  spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
   spec.add_dependency 'ruby2_keywords', '>= 0.0.4'
 
   # Includes `examples` and `spec` to allow external adapter gems to run Faraday unit and integration tests
