@@ -58,6 +58,34 @@ So don't fret yet! We're doing our best to support our `faraday_middleware` user
 It will obviously take time for some of the middleware in `faraday_middleware` to make its way into a separate gem, so we appreciate this might be an upgrade obstacle for some. However this is part of an effort to focus the core team resources tackling the most requested features.
 We'll be listening to the community and prioritize middleware that are most used, and will be welcoming contributors who want to become owners of the middleware when these become separate from the `faraday_middleware` repo.
 
+### Bundled middleware moved out
+
+Moving middleware into its own gem makes sense not only for `faraday_middleware`, but also for middleware bundled with Faraday.
+As of v2.0, the `retry` and `multipart` middleware have been moved to separate `faraday-retry` and `faraday-multipart` gems.
+These have been identified as good candidates due to their complexity and external dependencies.
+Thanks to this change, we were able to make Faraday 2.0 completely dependency free 🎉 (the only exception being `ruby2_keywords`, which will be necessary only while we keep supporting Ruby 2.6).
+
+#### So what should I do if I currently use the `retry` or `multipart` middleware?
+
+Upgrading is pretty simple, because the middleware was simply moved out to external gems.
+All you need to do is to add them to your gemfile (either `faraday-retry` or `faraday-multipart` and require them before usage:
+
+```ruby
+# Gemfile
+gem 'faraday-multipart'
+gem 'faraday-retry'
+
+# Connection initializer
+require 'faraday/retry'
+require 'faraday/multipart
+
+conn = Faraday.new(url) do |f|
+  f.request :multipart
+  f.request :retry
+  # ...
+end
+```
+
 ### Autoloading and dependencies
 
 Faraday has until now provided and relied on a complex dynamic dependencies system.
@@ -85,7 +113,6 @@ For more details, see https://github.com/lostisland/faraday/pull/1306
 * Rename `Faraday::Request#method` to `#http_method`.
 * Remove `Faraday::Response::Middleware`. You can now use the new `on_complete` callback provided by `Faraday::Middleware`.
 * `Faraday.default_connection_options` will now be deep-merged into new connections to avoid overriding them (e.g. headers).
-* Retry and Multipart middleware have been moved to separate `faraday-retry` and `faraday-multipart` gems.
 * `Faraday::Builder#build` method is not exposed through `Faraday::Connection` anymore and does not reset the handlers if called multiple times. This method should be used internally only.
 
 ## Faraday 1.0
