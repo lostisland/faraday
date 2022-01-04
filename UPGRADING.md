@@ -77,7 +77,7 @@ gem 'faraday-retry'
 
 # Connection initializer
 require 'faraday/retry'
-require 'faraday/multipart
+require 'faraday/multipart'
 
 conn = Faraday.new(url) do |f|
   f.request :multipart
