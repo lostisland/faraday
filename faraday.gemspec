@@ -19,7 +19,7 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   spec.add_dependency 'faraday-em_synchrony', '~> 1.0'
   spec.add_dependency 'faraday-excon', '~> 1.1'
   spec.add_dependency 'faraday-httpclient', '~> 1.0.1'
-  spec.add_dependency 'faraday-net_http', '~> 1.0'
+  spec.add_dependency 'faraday-net_http'
   spec.add_dependency 'faraday-net_http_persistent', '~> 1.1'
   spec.add_dependency 'faraday-patron', '~> 1.0'
   spec.add_dependency 'faraday-rack', '~> 1.0'
