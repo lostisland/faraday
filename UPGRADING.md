@@ -42,6 +42,8 @@ We did our best to make this transition as painless as possible for you, so here
   specifying an adapter in your connection initializer), then you'll now need to set it yourself. It previously
   defaulted to `:net_http`, but it now requires to be explicitly set. You can do so simply by using the setter:
   ```ruby
+  require 'faraday/net_http'
+  
   Faraday.default_adapter = :net_http
   ```
 
