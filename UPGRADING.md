@@ -34,15 +34,16 @@ We did our best to make this transition as painless as possible for you, so here
 #### That's great! What should I change in my code immediately after upgrading?
 
 * Add the corresponding adapter gem to your Gemfile (e.g. `faraday-net_http`). Ideally, this should replace
-  `faraday` altogether as these gems usually have Faraday already in their dependencies.
+  `faraday` altogether as these gems usually have Faraday already in their dependencies. Example Gemfile line:
+  ```ruby
+  gem 'faraday-net_http'
+  ```
 * If you're relying on `Faraday.default_adapter` (e.g. if you use `Faraday.get` or other verb class methods, or not
   specifying an adapter in your connection initializer), then you'll now need to set it yourself. It previously
   defaulted to `:net_http`, but it now requires to be explicitly set. You can do so simply by using the setter:
-
-```ruby
-# For example, to use net_http (previous default value, will now require `gem 'faraday-net_http'` in your gemfile)
-Faraday.default_adapter = :net_http
-```
+  ```ruby
+  Faraday.default_adapter = :net_http
+  ```
 
 ### Faraday Middleware Deprecation
 
