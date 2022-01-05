@@ -17,7 +17,7 @@ require 'faraday/middleware'
 require 'faraday/adapter'
 require 'faraday/request'
 require 'faraday/response'
-
+require 'faraday/net_http'
 # This is the main namespace for Faraday.
 #
 # It provides methods to create {Connection} objects, and HTTP-related
@@ -148,4 +148,5 @@ module Faraday
   self.ignore_env_proxy = false
   self.root_path = File.expand_path __dir__
   self.lib_path = File.expand_path 'faraday', __dir__
+  self.default_adapter = :net_http
 end
