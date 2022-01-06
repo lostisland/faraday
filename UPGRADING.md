@@ -2,7 +2,7 @@
 
 ### Adapters have moved!
 
-With this release, we've officially moved all adapters out of Faraday.
+With this release, we've officially moved all adapters, except for the `net_http` one, out of Faraday.
 What that means, is that they won't be available out-of-the-box anymore,
 and you'll instead need to add them to your Gemfile.
 
@@ -24,8 +24,8 @@ We've taken this decision for the following technical reasons:
 
 We did our best to make this transition as painless as possible for you, so here is what we did.
 
-* All adapters have already been moved out and released as separate gems.
-  They've then been re-added into Faraday's dependencies so that you wouldn't notice.
+* All adapters, except for the `net_http` one, have already been moved out and released as separate gems.
+  They've then been re-added into Faraday's v1 dependencies so that you wouldn't notice.
   This means that immediately after v2.0 will be released, all the adapters that were previously available will be
   already compatible with Faraday 2.0!
 * We've setup an [Awesome Faraday](https://github.com/lostisland/awesome-faraday) repository, where you can find and discover adapters.
@@ -33,18 +33,16 @@ We did our best to make this transition as painless as possible for you, so here
 
 #### That's great! What should I change in my code immediately after upgrading?
 
-* Add the corresponding adapter gem to your Gemfile (e.g. `faraday-net_http`). Ideally, this should replace
-  `faraday` altogether as these gems usually have Faraday already in their dependencies. Example Gemfile line:
+* If you just use the default `net_http` adapter, then you don't need to do anything!
+* Otherwise, add the corresponding adapter gem to your Gemfile (e.g. `faraday-net_http_persistent`). Then, simply require them after you require `faraday`.
   ```ruby
-  gem 'faraday-net_http'
-  ```
-* If you're relying on `Faraday.default_adapter` (e.g. if you use `Faraday.get` or other verb class methods, or not
-  specifying an adapter in your connection initializer), then you'll now need to set it yourself. It previously
-  defaulted to `:net_http`, but it now requires to be explicitly set. You can do so simply by using the setter:
-  ```ruby
-  require 'faraday/net_http'
+  # Gemfile
+  gem 'faraday'
+  gem 'faraday-net_http_persistent'
   
-  Faraday.default_adapter = :net_http
+  # Code
+  require 'faraday'
+  require 'faraday/net_http_persistent'
   ```
 
 ### Faraday Middleware Deprecation
