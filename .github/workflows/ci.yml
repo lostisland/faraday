@@ -2,9 +2,8 @@ name: CI
 
 on:
   pull_request:
-
   push:
-    branches: [main, 0.1x]
+    branches: [main, 0.1x, 1.x]
 
 env:
   GIT_COMMIT_SHA: ${{ github.sha }}
