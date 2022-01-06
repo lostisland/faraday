@@ -8,7 +8,7 @@ require:
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.4
 
 Inclusivity/Race:
   Enabled: true
