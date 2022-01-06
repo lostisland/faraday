@@ -24,9 +24,13 @@ require 'faraday/adapter'
 require 'faraday/request'
 require 'faraday/response'
 require 'faraday/error'
-require 'faraday/file_part'
-require 'faraday/param_part'
+require 'faraday/request/url_encoded' # needed by multipart
 
+# External Middleware gems
+require 'faraday/multipart'
+require 'faraday/retry'
+
+# External Adapters gems
 unless defined?(JRUBY_VERSION)
   require 'faraday/em_http'
   require 'faraday/em_synchrony'
