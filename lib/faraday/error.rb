@@ -143,10 +143,4 @@ module Faraday
   # Raised by FaradayMiddleware::ResponseMiddleware
   class ParsingError < Error
   end
-
-  # Exception used to control the Retry middleware.
-  #
-  # @see Faraday::Request::Retry
-  class RetriableResponse < Error
-  end
 end

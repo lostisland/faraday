@@ -18,12 +18,13 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   spec.add_dependency 'faraday-em_http', '~> 1.0'
   spec.add_dependency 'faraday-em_synchrony', '~> 1.0'
   spec.add_dependency 'faraday-excon', '~> 1.1'
-  spec.add_dependency 'faraday-httpclient', '~> 1.0.1'
-  spec.add_dependency 'faraday-net_http'
-  spec.add_dependency 'faraday-net_http_persistent', '~> 1.1'
-  spec.add_dependency 'faraday-patron', '~> 1.0'
+  spec.add_dependency 'faraday-httpclient', '< 3'
+  spec.add_dependency 'faraday-multipart', '~> 1.0'
+  spec.add_dependency 'faraday-net_http', '< 3'
+  spec.add_dependency 'faraday-net_http_persistent', '< 3'
+  spec.add_dependency 'faraday-patron', '< 3'
   spec.add_dependency 'faraday-rack', '~> 1.0'
-  spec.add_dependency 'multipart-post', '>= 1.2', '< 3'
+  spec.add_dependency 'faraday-retry', '~> 1.0'
   spec.add_dependency 'ruby2_keywords', '>= 0.0.4'
 
   # Includes `examples` and `spec` to allow external adapter gems to run Faraday unit and integration tests
