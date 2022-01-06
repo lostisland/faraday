@@ -35,8 +35,6 @@ module Faraday
 
     register_middleware File.expand_path('request', __dir__),
                         url_encoded: [:UrlEncoded, 'url_encoded'],
-                        multipart: [:Multipart, 'multipart'],
-                        retry: [:Retry, 'retry'],
                         authorization: [:Authorization, 'authorization'],
                         basic_auth: [
                           :BasicAuthentication,

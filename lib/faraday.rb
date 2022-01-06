@@ -26,9 +26,11 @@ require 'faraday/response'
 require 'faraday/error'
 require 'faraday/request/url_encoded' # needed by multipart
 
-# External Middleware gems
+# External Middleware gems and their aliases
 require 'faraday/multipart'
 require 'faraday/retry'
+Faraday::Request::Multipart = Faraday::Multipart::Middleware
+Faraday::Request::Retry = Faraday::Retry::Middleware
 
 # External Adapters gems
 unless defined?(JRUBY_VERSION)
