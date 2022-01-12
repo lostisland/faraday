@@ -73,7 +73,10 @@ module Faraday
 
           stub, meta = matches?(stack, env)
           if stub
-            @stubs_mutex.synchronize { consumed << stack.delete(stub) }
+            @stubs_mutex.synchronize do
+              removed = stack.delete(stub)
+              consumed << removed unless removed.nil?
+            end
             return stub, meta
           end
           matches?(consumed, env)
