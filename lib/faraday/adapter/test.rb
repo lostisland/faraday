@@ -160,7 +160,7 @@ module Faraday
           end
           nil
         end
-        
+
         # Executes the given block in a mutex context to avoid multi-thread race conditions
         def stubs_mutex(&block)
           @stubs_mutex ||= Monitor.new
