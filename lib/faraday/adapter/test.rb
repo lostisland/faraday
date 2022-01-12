@@ -55,6 +55,7 @@ module Faraday
           @stack = {}
           @consumed = {}
           @strict_mode = strict_mode
+          @stubs_mutex = Monitor.new
           yield(self) if block_given?
         end
 
@@ -72,7 +73,10 @@ module Faraday
 
           stub, meta = matches?(stack, env)
           if stub
-            consumed << stack.delete(stub)
+            @stubs_mutex.synchronize do
+              removed = stack.delete(stub)
+              consumed << removed unless removed.nil?
+            end
             return stub, meta
           end
           matches?(consumed, env)
