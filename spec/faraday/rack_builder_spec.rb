@@ -152,7 +152,7 @@ RSpec.describe Faraday::RackBuilder do
   end
 
   context 'when adapter is added with named options' do
-    after { Faraday.default_adapter_options = nil }
+    after { Faraday.default_adapter_options = {} }
     let(:conn) { Faraday::Connection.new {} }
 
     let(:cat_adapter) do
@@ -169,9 +169,8 @@ RSpec.describe Faraday::RackBuilder do
     let(:cat) { subject.adapter.build }
 
     it 'adds a handler to construct adapter with named options' do
-      Faraday.default_adapter = :cat_adapter
+      Faraday.default_adapter = cat_adapter
       Faraday.default_adapter_options = { name: 'Chloe' }
-      Faraday::Adapter.register_middleware(cat_adapter: cat_adapter)
       expect { cat }.to_not output(
         /warning: Using the last argument as keyword parameters is deprecated/
       ).to_stderr
