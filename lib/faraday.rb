@@ -54,6 +54,10 @@ module Faraday
     #   @return [Symbol] the new default_adapter.
     attr_reader :default_adapter
 
+    # Option for the default_adapter
+    #   @return [Hash] default_adapter options
+    attr_accessor :default_adapter_options
+
     # Documented below, see default_connection
     attr_writer :default_connection
 
@@ -149,4 +153,5 @@ module Faraday
   self.root_path = File.expand_path __dir__
   self.lib_path = File.expand_path 'faraday', __dir__
   self.default_adapter = :net_http
+  self.default_adapter_options = {}
 end

@@ -73,7 +73,7 @@ module Faraday
     def build
       raise_if_locked
       block_given? ? yield(self) : request(:url_encoded)
-      adapter(Faraday.default_adapter) unless @adapter
+      adapter(Faraday.default_adapter, **Faraday.default_adapter_options) unless @adapter
     end
 
     def [](idx)
