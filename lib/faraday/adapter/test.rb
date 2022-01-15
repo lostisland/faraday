@@ -71,13 +71,13 @@ module Faraday
           stack = @stack[request_method]
           consumed = (@consumed[request_method] ||= [])
 
-          stub, meta = matches?(stack, env)
-          if stub
-            @stubs_mutex.synchronize do
+          @stubs_mutex.synchronize do
+            stub, meta = matches?(stack, env)
+            if stub
               removed = stack.delete(stub)
               consumed << removed unless removed.nil?
+              return stub, meta
             end
-            return stub, meta
           end
           matches?(consumed, env)
         end
