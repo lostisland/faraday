@@ -21,7 +21,7 @@ This example implements such a callback:
 # A buffer to store the streamed data
 streamed = []
 
-conn.get('/nigiri/sake.json') do |req|
+conn.get('/stream/10') do |req|
   # Set a callback which will receive tuples of chunk Strings
   # and the sum of characters received so far
   req.options.on_data = Proc.new do |chunk, overall_received_bytes|
