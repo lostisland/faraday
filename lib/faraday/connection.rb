@@ -6,9 +6,9 @@ module Faraday
   #
   # @example
   #
-  #   conn = Faraday::Connection.new 'http://sushi.com'
+  #   conn = Faraday::Connection.new 'http://httpbingo.org'
   #
-  #   # GET http://sushi.com/nigiri
+  #   # GET http://httpbingo.org/nigiri
   #   conn.get 'nigiri'
   #   # => #<Faraday::Response>
   #
@@ -349,11 +349,11 @@ module Faraday
     # @example
     #
     #   conn = Faraday::Connection.new { ... }
-    #   conn.url_prefix = "https://sushi.com/api"
+    #   conn.url_prefix = "https://httpbingo.org/api"
     #   conn.scheme      # => https
     #   conn.path_prefix # => "/api"
     #
-    #   conn.get("nigiri?page=2") # accesses https://sushi.com/api/nigiri
+    #   conn.get("nigiri?page=2") # accesses https://httpbingo.org/api/nigiri
     def url_prefix=(url, encoder = nil)
       uri = @url_prefix = Utils.URI(url)
       self.path_prefix = uri.path
@@ -395,15 +395,15 @@ module Faraday
     #
     # @example
     #   conn = Faraday::Connection.new { ... }
-    #   conn.url_prefix = "https://sushi.com/api?token=abc"
+    #   conn.url_prefix = "https://httpbingo.org/api?token=abc"
     #   conn.scheme      # => https
     #   conn.path_prefix # => "/api"
     #
     #   conn.build_url("nigiri?page=2")
-    #   # => https://sushi.com/api/nigiri?token=abc&page=2
+    #   # => https://httpbingo.org/api/nigiri?token=abc&page=2
     #
     #   conn.build_url("nigiri", page: 2)
-    #   # => https://sushi.com/api/nigiri?token=abc&page=2
+    #   # => https://httpbingo.org/api/nigiri?token=abc&page=2
     #
     def build_url(url = nil, extra_params = nil)
       uri = build_exclusive_url(url)

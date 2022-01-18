@@ -13,24 +13,24 @@ class Client
     @conn = conn
   end
 
-  def sushi(jname, params: {})
+  def httpbingo(jname, params: {})
     res = @conn.get("/#{jname}", params)
     data = JSON.parse(res.body)
-    data['name']
+    data['origin']
   end
 end
 
 # Example API client test
 class ClientTest < Test::Unit::TestCase
-  def test_sushi_name
+  def test_httpbingo_name
     stubs = Faraday::Adapter::Test::Stubs.new
-    stubs.get('/ebi') do |env|
+    stubs.get('/api') do |env|
       # optional: you can inspect the Faraday::Env
-      assert_equal '/ebi', env.url.path
+      assert_equal '/api', env.url.path
       [
         200,
         { 'Content-Type': 'application/javascript' },
-        '{"name": "shrimp"}'
+        '{"origin": "127.0.0.1"}'
       ]
     end
 
@@ -38,13 +38,13 @@ class ClientTest < Test::Unit::TestCase
     # stubs.get('/unused') { [404, {}, ''] }
 
     cli = client(stubs)
-    assert_equal 'shrimp', cli.sushi('ebi')
+    assert_equal '127.0.0.1', cli.httpbingo('api')
     stubs.verify_stubbed_calls
   end
 
-  def test_sushi_not_found
+  def test_httpbingo_not_found
     stubs = Faraday::Adapter::Test::Stubs.new
-    stubs.get('/ebi') do
+    stubs.get('/api') do
       [
         404,
         { 'Content-Type': 'application/javascript' },
@@ -53,48 +53,48 @@ class ClientTest < Test::Unit::TestCase
     end
 
     cli = client(stubs)
-    assert_nil cli.sushi('ebi')
+    assert_nil cli.httpbingo('api')
     stubs.verify_stubbed_calls
   end
 
-  def test_sushi_exception
+  def test_httpbingo_exception
     stubs = Faraday::Adapter::Test::Stubs.new
-    stubs.get('/ebi') do
+    stubs.get('/api') do
       raise Faraday::ConnectionFailed
     end
 
     cli = client(stubs)
     assert_raise Faraday::ConnectionFailed do
-      cli.sushi('ebi')
+      cli.httpbingo('api')
     end
     stubs.verify_stubbed_calls
   end
 
   def test_strict_mode
     stubs = Faraday::Adapter::Test::Stubs.new(strict_mode: true)
-    stubs.get('/ebi?abc=123') do
+    stubs.get('/api?abc=123') do
       [
         200,
         { 'Content-Type': 'application/javascript' },
-        '{"name": "shrimp"}'
+        '{"origin": "127.0.0.1"}'
       ]
     end
 
     cli = client(stubs)
-    assert_equal 'shrimp', cli.sushi('ebi', params: { abc: 123 })
+    assert_equal '127.0.0.1', cli.httpbingo('api', params: { abc: 123 })
 
     # uncomment to raise Stubs::NotFound
-    # assert_equal 'shrimp', cli.sushi('ebi', params: { abc: 123, foo: 'Kappa' })
+    # assert_equal '127.0.0.1', cli.httpbingo('api', params: { abc: 123, foo: 'Kappa' })
     stubs.verify_stubbed_calls
   end
 
   def test_non_default_params_encoder
     stubs = Faraday::Adapter::Test::Stubs.new(strict_mode: true)
-    stubs.get('/ebi?a=x&a=y&a=z') do
+    stubs.get('/api?a=x&a=y&a=z') do
       [
         200,
         { 'Content-Type': 'application/javascript' },
-        '{"name": "shrimp"}'
+        '{"origin": "127.0.0.1"}'
       ]
     end
     conn = Faraday.new(request: { params_encoder: Faraday::FlatParamsEncoder }) do |builder|
@@ -102,10 +102,10 @@ class ClientTest < Test::Unit::TestCase
     end
 
     cli = Client.new(conn)
-    assert_equal 'shrimp', cli.sushi('ebi', params: { a: %w[x y z] })
+    assert_equal '127.0.0.1', cli.httpbingo('api', params: { a: %w[x y z] })
 
     # uncomment to raise Stubs::NotFound
-    # assert_equal 'shrimp', cli.sushi('ebi', params: { a: %w[x y] })
+    # assert_equal '127.0.0.1', cli.httpbingo('api', params: { a: %w[x y] })
     stubs.verify_stubbed_calls
   end
 

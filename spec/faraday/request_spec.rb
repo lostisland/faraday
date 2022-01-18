@@ -2,7 +2,7 @@
 
 RSpec.describe Faraday::Request do
   let(:conn) do
-    Faraday.new(url: 'http://sushi.com/api',
+    Faraday.new(url: 'http://httpbingo.org/api',
                 headers: { 'Mime-Version' => '1.0' },
                 request: { oauth: { consumer_key: 'anonymous' } })
   end
@@ -27,7 +27,7 @@ RSpec.describe Faraday::Request do
 
     it { expect(subject.path).to eq(URI.parse('foo.json')) }
     it { expect(subject.params).to eq('a' => '1') }
-    it { expect(subject.to_env(conn).url.to_s).to eq('http://sushi.com/api/foo.json?a=1') }
+    it { expect(subject.to_env(conn).url.to_s).to eq('http://httpbingo.org/api/foo.json?a=1') }
   end
 
   context 'when setting the url on setup with a string path and params' do
@@ -35,7 +35,7 @@ RSpec.describe Faraday::Request do
 
     it { expect(subject.path).to eq('foo.json') }
     it { expect(subject.params).to eq('a' => 1) }
-    it { expect(subject.to_env(conn).url.to_s).to eq('http://sushi.com/api/foo.json?a=1') }
+    it { expect(subject.to_env(conn).url.to_s).to eq('http://httpbingo.org/api/foo.json?a=1') }
   end
 
   context 'when setting the url on setup with a path including params' do
@@ -43,7 +43,7 @@ RSpec.describe Faraday::Request do
 
     it { expect(subject.path).to eq('foo.json') }
     it { expect(subject.params).to eq('a' => '1', 'b' => '2') }
-    it { expect(subject.to_env(conn).url.to_s).to eq('http://sushi.com/api/foo.json?a=1&b=2') }
+    it { expect(subject.to_env(conn).url.to_s).to eq('http://httpbingo.org/api/foo.json?a=1&b=2') }
   end
 
   context 'when setting a header on setup with []= syntax' do

@@ -68,9 +68,9 @@ RSpec.describe Faraday::Utils::Headers do
     end
 
     context 'when response headers values include a colon' do
-      let(:headers) { "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nLocation: http://sushi.com/\r\n\r\n" }
+      let(:headers) { "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nLocation: http://httpbingo.org/\r\n\r\n" }
 
-      it { expect(subject['location']).to eq('http://sushi.com/') }
+      it { expect(subject['location']).to eq('http://httpbingo.org/') }
     end
 
     context 'when response headers include a blank line' do
