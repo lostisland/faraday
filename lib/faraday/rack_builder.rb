@@ -8,7 +8,7 @@ module Faraday
   # middleware stack (heavily inspired by Rack).
   #
   # @example
-  #   Faraday::Connection.new(url: 'http://sushi.com') do |builder|
+  #   Faraday::Connection.new(url: 'http://httpbingo.org') do |builder|
   #     builder.request  :url_encoded  # Faraday::Request::UrlEncoded
   #     builder.adapter  :net_http     # Faraday::Adapter::NetHttp
   #   end
