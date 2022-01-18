@@ -17,12 +17,12 @@ It is highly customizable and allows to mask confidential information if necessa
 ### Basic Usage
 
 ```ruby
-conn = Faraday.new(url: 'http://sushi.com') do |faraday|
+conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
   faraday.response :logger # log requests and responses to $stdout
 end
 
 conn.get
-# => INFO  -- request: GET http://sushi.com/
+# => INFO  -- request: GET http://httpbingo.org/
 # => DEBUG -- request: User-Agent: "Faraday v1.0.0"
 # => INFO  -- response: Status 301
 # => DEBUG -- response: date: "Sun, 19 May 2019 16:05:40 GMT"
@@ -34,7 +34,7 @@ By default, the `Logger` middleware uses the Ruby `Logger.new($stdout)`.
 You can customize it to use any logger you want by providing it when you add the middleware to the stack:
 
 ```ruby
-conn = Faraday.new(url: 'http://sushi.com') do |faraday|
+conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
   faraday.response :logger, MyLogger.new($stdout)
 end
 ```
@@ -46,7 +46,7 @@ to log bodies as well, or disable headers logging if you need to. To do so, simp
 when you add the middleware to the stack:
 
 ```ruby
-conn = Faraday.new(url: 'http://sushi.com') do |faraday|
+conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
   faraday.response :logger, nil, { headers: true, bodies: true }
 end
 ```
@@ -58,14 +58,14 @@ Please note this only works with the default formatter.
 You can filter sensitive information from Faraday logs using a regex matcher:
 
 ```ruby
-conn = Faraday.new(url: 'http://sushi.com') do |faraday|
+conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
   faraday.response :logger do | logger |
     logger.filter(/(api_key=)([^&]+)/, '\1[REMOVED]')
   end
 end
 
 conn.get('/', api_key: 'secret')
-# => INFO  -- request: GET http://sushi.com/?api_key=[REMOVED]
+# => INFO  -- request: GET http://httpbingo.org/?api_key=[REMOVED]
 # => DEBUG -- request: User-Agent: "Faraday v1.0.0"
 # => INFO  -- response: Status 301
 # => DEBUG -- response: date: "Sun, 19 May 2019 16:12:36 GMT"
@@ -77,7 +77,7 @@ By default, the `logger` middleware logs on the `info` log level. It is possible
 the severity by providing the `log_level` option:
 
 ```ruby
-conn = Faraday.new(url: 'http://sushi.com') do |faraday|
+conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
   faraday.response :logger, nil, { bodies: true, log_level: :debug }
 end
 ```
@@ -103,7 +103,7 @@ class MyFormatter < Faraday::Logging::Formatter
   end
 end
 
-conn = Faraday.new(url: 'http://sushi.com/api_key=s3cr3t') do |faraday|
+conn = Faraday.new(url: 'http://httpbingo.org/api_key=s3cr3t') do |faraday|
   faraday.response :logger, nil, formatter: MyFormatter
 end
 ```
