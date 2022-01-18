@@ -12,10 +12,10 @@ class Client
     @conn = conn
   end
 
-  def sushi(jname, params: {})
+  def httpbingo(jname, params: {})
     res = @conn.get("/#{jname}", params)
     data = JSON.parse(res.body)
-    data['name']
+    data['origin']
   end
 end
 
@@ -24,42 +24,42 @@ RSpec.describe Client do
   let(:conn)   { Faraday.new { |b| b.adapter(:test, stubs) } }
   let(:client) { Client.new(conn) }
 
-  it 'parses name' do
-    stubs.get('/ebi') do |env|
+  it 'parses origin' do
+    stubs.get('/ip') do |env|
       # optional: you can inspect the Faraday::Env
-      expect(env.url.path).to eq('/ebi')
+      expect(env.url.path).to eq('/ip')
       [
         200,
         { 'Content-Type': 'application/javascript' },
-        '{"name": "shrimp"}'
+        '{"origin": "127.0.0.1"}'
       ]
     end
 
     # uncomment to trigger stubs.verify_stubbed_calls failure
     # stubs.get('/unused') { [404, {}, ''] }
 
-    expect(client.sushi('ebi')).to eq('shrimp')
+    expect(client.httpbingo('ip')).to eq('127.0.0.1')
     stubs.verify_stubbed_calls
   end
 
   it 'handles 404' do
-    stubs.get('/ebi') do
+    stubs.get('/api') do
       [
         404,
         { 'Content-Type': 'application/javascript' },
         '{}'
       ]
     end
-    expect(client.sushi('ebi')).to be_nil
+    expect(client.httpbingo('api')).to be_nil
     stubs.verify_stubbed_calls
   end
 
   it 'handles exception' do
-    stubs.get('/ebi') do
+    stubs.get('/api') do
       raise Faraday::ConnectionFailed
     end
 
-    expect { client.sushi('ebi') }.to raise_error(Faraday::ConnectionFailed)
+    expect { client.httpbingo('api') }.to raise_error(Faraday::ConnectionFailed)
     stubs.verify_stubbed_calls
   end
 
@@ -67,17 +67,17 @@ RSpec.describe Client do
     let(:stubs) { Faraday::Adapter::Test::Stubs.new(strict_mode: true) }
 
     it 'verifies the all parameter values are identical' do
-      stubs.get('/ebi?abc=123') do
+      stubs.get('/api?abc=123') do
         [
           200,
           { 'Content-Type': 'application/javascript' },
-          '{"name": "shrimp"}'
+          '{"origin": "127.0.0.1"}'
         ]
       end
 
       # uncomment to raise Stubs::NotFound
-      # expect(client.sushi('ebi', params: { abc: 123, foo: 'Kappa' })).to eq('shrimp')
-      expect(client.sushi('ebi', params: { abc: 123 })).to eq('shrimp')
+      # expect(client.httpbingo('api', params: { abc: 123, foo: 'Kappa' })).to eq('127.0.0.1')
+      expect(client.httpbingo('api', params: { abc: 123 })).to eq('127.0.0.1')
       stubs.verify_stubbed_calls
     end
   end
@@ -86,11 +86,11 @@ RSpec.describe Client do
     let(:conn) { Faraday.new(request: { params_encoder: Faraday::FlatParamsEncoder }) { |b| b.adapter(:test, stubs) } }
 
     it 'handles the same multiple URL parameters' do
-      stubs.get('/ebi?a=x&a=y&a=z') { [200, { 'Content-Type' => 'application/json' }, '{"name": "shrimp"}'] }
+      stubs.get('/api?a=x&a=y&a=z') { [200, { 'Content-Type' => 'application/json' }, '{"origin": "127.0.0.1"}'] }
 
       # uncomment to raise Stubs::NotFound
-      # expect(client.sushi('ebi', params: { a: %w[x y] })).to eq('shrimp')
-      expect(client.sushi('ebi', params: { a: %w[x y z] })).to eq('shrimp')
+      # expect(client.httpbingo('api', params: { a: %w[x y] })).to eq('127.0.0.1')
+      expect(client.httpbingo('api', params: { a: %w[x y z] })).to eq('127.0.0.1')
       stubs.verify_stubbed_calls
     end
   end
