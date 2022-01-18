@@ -14,15 +14,15 @@ Configuration can be set up with the connection and/or adjusted per request.
 As connection options:
 
 ```ruby
-conn = Faraday.new('http://sushi.com', request: { timeout: 5 })
-conn.get('/search')
+conn = Faraday.new('http://httpbingo.org', request: { timeout: 5 })
+conn.get('/ip')
 ```
 
 Or as per-request options:
 
 ```ruby
 conn.get do |req|
-  req.url '/search'
+  req.url '/ip'
   req.options.timeout = 5
 end
 ```
@@ -32,7 +32,7 @@ This will be available in the `env` on all middleware.
 
 ```ruby
 conn.get do |req|
-  req.url '/search'
+  req.url '/get'
   req.options.context = {
     foo: 'foo',
     bar: 'bar'
