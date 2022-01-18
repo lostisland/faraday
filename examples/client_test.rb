@@ -38,11 +38,11 @@ class ClientTest < Test::Unit::TestCase
     # stubs.get('/unused') { [404, {}, ''] }
 
     cli = client(stubs)
-    assert_equal '127.0.0.1', cli.sushi('api')
+    assert_equal '127.0.0.1', cli.httpbingo('api')
     stubs.verify_stubbed_calls
   end
 
-  def test_sushi_not_found
+  def test_httpbingo_not_found
     stubs = Faraday::Adapter::Test::Stubs.new
     stubs.get('/api') do
       [
@@ -53,7 +53,7 @@ class ClientTest < Test::Unit::TestCase
     end
 
     cli = client(stubs)
-    assert_nil cli.sushi('api')
+    assert_nil cli.httpbingo('api')
     stubs.verify_stubbed_calls
   end
 
@@ -65,7 +65,7 @@ class ClientTest < Test::Unit::TestCase
 
     cli = client(stubs)
     assert_raise Faraday::ConnectionFailed do
-      cli.sushi('api')
+      cli.httpbingo('api')
     end
     stubs.verify_stubbed_calls
   end
@@ -81,10 +81,10 @@ class ClientTest < Test::Unit::TestCase
     end
 
     cli = client(stubs)
-    assert_equal '127.0.0.1', cli.sushi('api', params: { abc: 123 })
+    assert_equal '127.0.0.1', cli.httpbingo('api', params: { abc: 123 })
 
     # uncomment to raise Stubs::NotFound
-    # assert_equal '127.0.0.1', cli.sushi('api', params: { abc: 123, foo: 'Kappa' })
+    # assert_equal '127.0.0.1', cli.httpbingo('api', params: { abc: 123, foo: 'Kappa' })
     stubs.verify_stubbed_calls
   end
 
@@ -102,10 +102,10 @@ class ClientTest < Test::Unit::TestCase
     end
 
     cli = Client.new(conn)
-    assert_equal '127.0.0.1', cli.sushi('api', params: { a: %w[x y z] })
+    assert_equal '127.0.0.1', cli.httpbingo('api', params: { a: %w[x y z] })
 
     # uncomment to raise Stubs::NotFound
-    # assert_equal '127.0.0.1', cli.sushi('api', params: { a: %w[x y] })
+    # assert_equal '127.0.0.1', cli.httpbingo('api', params: { a: %w[x y] })
     stubs.verify_stubbed_calls
   end
 
