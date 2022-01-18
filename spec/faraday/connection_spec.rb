@@ -12,9 +12,9 @@ end
 
 shared_examples 'initializer with url' do
   context 'with simple url' do
-    let(:address) { 'http://sushi.com' }
+    let(:address) { 'http://httpbingo.org' }
 
-    it { expect(subject.host).to eq('sushi.com') }
+    it { expect(subject.host).to eq('httpbingo.org') }
     it { expect(subject.port).to eq(80) }
     it { expect(subject.scheme).to eq('http') }
     it { expect(subject.path_prefix).to eq('/') }
@@ -22,7 +22,7 @@ shared_examples 'initializer with url' do
   end
 
   context 'with complex url' do
-    let(:address) { 'http://sushi.com:815/fish?a=1' }
+    let(:address) { 'http://httpbingo.org:815/fish?a=1' }
 
     it { expect(subject.port).to eq(815) }
     it { expect(subject.path_prefix).to eq('/fish') }
@@ -41,17 +41,17 @@ shared_examples 'default connection options' do
   after { Faraday.default_connection_options = nil }
 
   it 'works with implicit url' do
-    conn = Faraday.new 'http://sushi.com/foo'
+    conn = Faraday.new 'http://httpbingo.org/foo'
     expect(conn.options.timeout).to eq(10)
   end
 
   it 'works with option url' do
-    conn = Faraday.new url: 'http://sushi.com/foo'
+    conn = Faraday.new url: 'http://httpbingo.org/foo'
     expect(conn.options.timeout).to eq(10)
   end
 
   it 'works with instance connection options' do
-    conn = Faraday.new 'http://sushi.com/foo', request: { open_timeout: 1 }
+    conn = Faraday.new 'http://httpbingo.org/foo', request: { open_timeout: 1 }
     expect(conn.options.timeout).to eq(10)
     expect(conn.options.open_timeout).to eq(1)
   end
@@ -61,7 +61,7 @@ shared_examples 'default connection options' do
     conn.options.timeout = 1
     expect(Faraday.default_connection_options.request.timeout).to eq(10)
 
-    other = Faraday.new url: 'https://sushi.com/foo'
+    other = Faraday.new url: 'https://httpbingo.org/foo'
     other.options.timeout = 1
 
     expect(Faraday.default_connection_options.request.timeout).to eq(10)
@@ -81,14 +81,14 @@ RSpec.describe Faraday::Connection do
     subject { conn }
 
     context 'with implicit url param' do
-      # Faraday::Connection.new('http://sushi.com')
+      # Faraday::Connection.new('http://httpbingo.org')
       let(:url) { address }
 
       it_behaves_like 'initializer with url'
     end
 
     context 'with explicit url param' do
-      # Faraday::Connection.new(url: 'http://sushi.com')
+      # Faraday::Connection.new(url: 'http://httpbingo.org')
       let(:url) { { url: address } }
 
       it_behaves_like 'initializer with url'
@@ -108,13 +108,13 @@ RSpec.describe Faraday::Connection do
     end
 
     context 'with custom params and params in url' do
-      let(:url) { 'http://sushi.com/fish?a=1&b=2' }
+      let(:url) { 'http://httpbingo.org/fish?a=1&b=2' }
       let(:options) { { params: { a: 3 } } }
       it { expect(subject.params).to eq('a' => 3, 'b' => '2') }
     end
 
     context 'with basic_auth in url' do
-      let(:url) { 'http://Aladdin:open%20sesame@sushi.com/fish' }
+      let(:url) { 'http://Aladdin:open%20sesame@httpbingo.org/fish' }
 
       it { expect(subject.headers['Authorization']).to eq('Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==') }
     end
@@ -141,7 +141,7 @@ RSpec.describe Faraday::Connection do
       let(:conn) do
         Faraday::Connection.new(params: { 'a' => '1' }) do |faraday|
           faraday.adapter :test
-          faraday.url_prefix = 'http://sushi.com/omnom'
+          faraday.url_prefix = 'http://httpbingo.org/omnom'
         end
       end
 
@@ -165,8 +165,8 @@ RSpec.describe Faraday::Connection do
       subject { conn.build_exclusive_url('sake.html') }
 
       it 'uses connection host as default host' do
-        conn.host = 'sushi.com'
-        expect(subject.host).to eq('sushi.com')
+        conn.host = 'httpbingo.org'
+        expect(subject.host).to eq('httpbingo.org')
         expect(subject.scheme).to eq('http')
       end
 
@@ -203,10 +203,10 @@ RSpec.describe Faraday::Connection do
     end
 
     context 'with complete url' do
-      subject { conn.build_exclusive_url('http://sushi.com/sake.html?a=1') }
+      subject { conn.build_exclusive_url('http://httpbingo.org/sake.html?a=1') }
 
       it { expect(subject.scheme).to eq('http') }
-      it { expect(subject.host).to eq('sushi.com') }
+      it { expect(subject.host).to eq('httpbingo.org') }
       it { expect(subject.port).to eq(80) }
       it { expect(subject.path).to eq('/sake.html') }
       it { expect(subject.query).to eq('a=1') }
@@ -214,35 +214,35 @@ RSpec.describe Faraday::Connection do
 
     it 'overrides connection port for absolute url' do
       conn.port = 23
-      uri = conn.build_exclusive_url('http://sushi.com')
+      uri = conn.build_exclusive_url('http://httpbingo.org')
       expect(uri.port).to eq(80)
     end
 
     it 'does not add ending slash given nil url' do
-      conn.url_prefix = 'http://sushi.com/nigiri'
+      conn.url_prefix = 'http://httpbingo.org/nigiri'
       uri = conn.build_exclusive_url
       expect(uri.path).to eq('/nigiri')
     end
 
     it 'does not add ending slash given empty url' do
-      conn.url_prefix = 'http://sushi.com/nigiri'
+      conn.url_prefix = 'http://httpbingo.org/nigiri'
       uri = conn.build_exclusive_url('')
       expect(uri.path).to eq('/nigiri')
     end
 
     it 'does not use connection params' do
-      conn.url_prefix = 'http://sushi.com/nigiri'
+      conn.url_prefix = 'http://httpbingo.org/nigiri'
       conn.params = { a: 1 }
-      expect(conn.build_exclusive_url.to_s).to eq('http://sushi.com/nigiri')
+      expect(conn.build_exclusive_url.to_s).to eq('http://httpbingo.org/nigiri')
     end
 
     it 'allows to provide params argument' do
-      conn.url_prefix = 'http://sushi.com/nigiri'
+      conn.url_prefix = 'http://httpbingo.org/nigiri'
       conn.params = { a: 1 }
       params = Faraday::Utils::ParamsHash.new
       params[:a] = 2
       uri = conn.build_exclusive_url(nil, params)
-      expect(uri.to_s).to eq('http://sushi.com/nigiri?a=2')
+      expect(uri.to_s).to eq('http://httpbingo.org/nigiri?a=2')
     end
 
     it 'handles uri instances' do
@@ -251,34 +251,34 @@ RSpec.describe Faraday::Connection do
     end
 
     it 'always returns new URI instance' do
-      conn.url_prefix = 'http://sushi.com'
+      conn.url_prefix = 'http://httpbingo.org'
       uri1 = conn.build_exclusive_url(nil)
       uri2 = conn.build_exclusive_url(nil)
       expect(uri1).not_to equal(uri2)
     end
 
     context 'with url_prefixed connection' do
-      let(:url) { 'http://sushi.com/sushi/' }
+      let(:url) { 'http://httpbingo.org/get/' }
 
       it 'parses url and changes scheme' do
         conn.scheme = 'https'
         uri = conn.build_exclusive_url('sake.html')
-        expect(uri.to_s).to eq('https://sushi.com/sushi/sake.html')
+        expect(uri.to_s).to eq('https://httpbingo.org/get/sake.html')
       end
 
       it 'joins url to base with ending slash' do
         uri = conn.build_exclusive_url('sake.html')
-        expect(uri.to_s).to eq('http://sushi.com/sushi/sake.html')
+        expect(uri.to_s).to eq('http://httpbingo.org/get/sake.html')
       end
 
       it 'used default base with ending slash' do
         uri = conn.build_exclusive_url
-        expect(uri.to_s).to eq('http://sushi.com/sushi/')
+        expect(uri.to_s).to eq('http://httpbingo.org/get/')
       end
 
       it 'overrides base' do
         uri = conn.build_exclusive_url('/sake/')
-        expect(uri.to_s).to eq('http://sushi.com/sake/')
+        expect(uri.to_s).to eq('http://httpbingo.org/sake/')
       end
     end
 
@@ -307,22 +307,22 @@ RSpec.describe Faraday::Connection do
   end
 
   describe '#build_url' do
-    let(:url) { 'http://sushi.com/nigiri' }
+    let(:url) { 'http://httpbingo.org/nigiri' }
 
     it 'uses params' do
       conn.params = { a: 1, b: 1 }
-      expect(conn.build_url.to_s).to eq('http://sushi.com/nigiri?a=1&b=1')
+      expect(conn.build_url.to_s).to eq('http://httpbingo.org/nigiri?a=1&b=1')
     end
 
     it 'merges params' do
       conn.params = { a: 1, b: 1 }
       url = conn.build_url(nil, b: 2, c: 3)
-      expect(url.to_s).to eq('http://sushi.com/nigiri?a=1&b=2&c=3')
+      expect(url.to_s).to eq('http://httpbingo.org/nigiri?a=1&b=2&c=3')
     end
   end
 
   describe '#build_request' do
-    let(:url) { 'https://asushi.com/sake.html' }
+    let(:url) { 'https://ahttpbingo.org/sake.html' }
     let(:request) { conn.build_request(:get) }
 
     before do
@@ -339,7 +339,7 @@ RSpec.describe Faraday::Connection do
   describe '#to_env' do
     subject { conn.build_request(:get).to_env(conn).url }
 
-    let(:url) { 'http://sushi.com/sake.html' }
+    let(:url) { 'http://httpbingo.org/sake.html' }
     let(:options) { { params: @params } }
 
     it 'parses url params into query' do
@@ -592,7 +592,7 @@ RSpec.describe Faraday::Connection do
   describe '#dup' do
     subject { conn.dup }
 
-    let(:url) { 'http://sushi.com/foo' }
+    let(:url) { 'http://httpbingo.org/foo' }
     let(:options) do
       {
         ssl: { verify: :none },
