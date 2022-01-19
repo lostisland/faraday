@@ -10,11 +10,6 @@ adapters (such as Net::HTTP) and embraces the concept of Rack middleware when pr
 You probably don't want to use Faraday directly in your project, as it will lack an actual client library to perform
 requests. Instead, you probably want to have a look at [Awesome Faraday][awesome] for a list of available adapters.
 
-## FARADAY 2.0
-
-You're reading the README and looking at the code of our upcoming v2.0 release (the `main` branch, currently in alpha).
-If you're here to read about our latest v1.x release, then please head over to the [1.x branch](https://github.com/lostisland/faraday/tree/1.x).
-
 ## Getting Started
 
 The best starting point is the [Faraday Website][website], with its introduction and explanation.
