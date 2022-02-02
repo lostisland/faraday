@@ -39,7 +39,7 @@ We did our best to make this transition as painless as possible for you, so here
   # Gemfile
   gem 'faraday'
   gem 'faraday-net_http_persistent'
-  
+
   # Code
   require 'faraday'
   require 'faraday/net_http_persistent'
@@ -101,6 +101,10 @@ This change should not affect you directly, but if you're registering middleware
 # This method can also be called on `Faraday::Adapter`, `Faraday::Request` and `Faraday::Response`
 Faraday::Middleware.register_middleware(name: klass)
 ```
+
+The `register_middleware` method also previously allowed to provide a symbol, string, proc, or array
+but this has been removed from the v2.0 release to simplify the interface.
+(EDIT: symbol/string/proc have subsequently been reintroduced in v2.2, but not the array).
 
 ### Authentication helper methods in Connection have been removed
 
