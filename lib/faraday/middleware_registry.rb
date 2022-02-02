@@ -53,13 +53,31 @@ module Faraday
     #   Faraday::Middleware.lookup_middleware(:foo)
     #   # => Faraday::Whatever
     def lookup_middleware(key)
-      registered_middleware[key] ||
+      load_middleware(key) ||
         raise(Faraday::Error, "#{key.inspect} is not registered on #{self}")
     end
+
+    private
 
     def middleware_mutex(&block)
       @middleware_mutex ||= Monitor.new
       @middleware_mutex.synchronize(&block)
+    end
+
+    def load_middleware(key)
+      value = registered_middleware[key]
+      case value
+      when Module
+        value
+      when Symbol, String
+        middleware_mutex do
+          @registered_middleware[key] = const_get(value)
+        end
+      when Proc
+        middleware_mutex do
+          @registered_middleware[key] = value.call
+        end
+      end
     end
   end
 end
