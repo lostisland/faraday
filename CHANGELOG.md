@@ -4,6 +4,10 @@
 
 This file is not being updated anymore. Instead, please check the [Releases](https://github.com/lostisland/faraday/releases) page.
 
+## [2.2.0](https://github.com/lostisland/faraday/compare/v2.1.0...v2.2.0) (2022-02-03)
+
+* Reintroduce the possibility to register middleware with symbols, strings or procs in [#1391](https://github.com/lostisland/faraday/pull/1391)
+
 ## [2.1.0](https://github.com/lostisland/faraday/compare/v2.0.1...v2.1.0) (2022-01-15)
 
 * Fix test adapter thread safety by @iMacTia in [#1380](https://github.com/lostisland/faraday/pull/1380)
