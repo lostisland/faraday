@@ -113,6 +113,12 @@ Instead, you should be using the equivalent middleware, as explained in [this pa
 
 For more details, see https://github.com/lostisland/faraday/pull/1306
 
+### The `dependency` method in middlewares has been removed
+
+In Faraday 1, a deferred require was used with the `dependency` method.
+
+In Faraday 2, that method has been removed. In your middlware gems, use a regular `require` at the top of the file, 
+
 ### Others
 
 * Rename `Faraday::Request#method` to `#http_method`.
