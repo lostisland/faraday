@@ -110,18 +110,6 @@ RSpec.describe Faraday::RackBuilder do
     end
   end
 
-  context 'with custom registered middleware' do
-    let(:conn) { Faraday::Connection.new {} }
-
-    after { Faraday::Middleware.unregister_middleware(:apple) }
-
-    it 'allows to register with constant' do
-      Faraday::Middleware.register_middleware(apple: Apple)
-      subject.use(:apple)
-      expect(subject.handlers).to eq([Apple])
-    end
-  end
-
   context 'when having two handlers' do
     let(:conn) { Faraday::Connection.new {} }
 
