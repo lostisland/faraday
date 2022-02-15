@@ -102,6 +102,14 @@ RSpec.describe Faraday::NestedParamsEncoder do
     Faraday::NestedParamsEncoder.sort_params = true
   end
 
+  it 'encodes arrays indices when asked' do
+    params = { a: [0, 1, 2] }
+    expect(subject.encode(params)).to eq('a%5B%5D=0&a%5B%5D=1&a%5B%5D=2')
+    Faraday::NestedParamsEncoder.array_indices = true
+    expect(subject.encode(params)).to eq('a%5B0%5D=0&a%5B1%5D=1&a%5B2%5D=2')
+    Faraday::NestedParamsEncoder.array_indices = false
+  end
+
   shared_examples 'a wrong decoding' do
     it do
       expect { subject.decode(query) }.to raise_error(TypeError) do |e|
