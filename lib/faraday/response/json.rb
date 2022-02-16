@@ -6,11 +6,11 @@ module Faraday
   class Response
     # Parse response bodies as JSON.
     class Json < Middleware
-      def initialize(app = nil, parser_options: nil, content_type: /\bjson$/, preserve_raw: false)
+      def initialize(app = nil, options = {})
         super(app)
-        @parser_options = parser_options
-        @content_types = Array(content_type)
-        @preserve_raw = preserve_raw
+        @parser_options = options[:parser_options]
+        @content_types = Array(options[:content_type] || /\bjson$/)
+        @preserve_raw = options[:preserve_raw]
       end
 
       def on_complete(env)
