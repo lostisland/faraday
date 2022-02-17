@@ -44,7 +44,8 @@ module Faraday
                           :TokenAuthentication,
                           'token_authentication'
                         ],
-                        instrumentation: [:Instrumentation, 'instrumentation']
+                        instrumentation: [:Instrumentation, 'instrumentation'],
+                        json: [:Json, 'json']
 
     # @param request_method [String]
     # @yield [request] for block customization, if block given
@@ -138,11 +139,11 @@ module Faraday
     # @param serialised [Hash] the serialised object.
     def marshal_load(serialised)
       self.http_method = serialised[:http_method]
-      self.body        = serialised[:body]
-      self.headers     = serialised[:headers]
-      self.path        = serialised[:path]
-      self.params      = serialised[:params]
-      self.options     = serialised[:options]
+      self.body = serialised[:body]
+      self.headers = serialised[:headers]
+      self.path = serialised[:path]
+      self.params = serialised[:params]
+      self.options = serialised[:options]
     end
 
     # @return [Env] the Env for this Request

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'forwardable'
+require 'logger'
 require 'faraday/logging/formatter'
 
 module Faraday
@@ -11,10 +12,7 @@ module Faraday
     class Logger < Middleware
       def initialize(app, logger = nil, options = {})
         super(app)
-        logger ||= begin
-          require 'logger'
-          ::Logger.new($stdout)
-        end
+        logger ||= ::Logger.new($stdout)
         formatter_class = options.delete(:formatter) || Logging::Formatter
         @formatter = formatter_class.new(logger: logger, options: options)
         yield @formatter if block_given?

@@ -57,6 +57,8 @@ require 'faraday/rack'
 #   conn.get '/'
 #
 module Faraday
+  CONTENT_TYPE = 'Content-Type'
+
   class << self
     # The root path that Faraday is being loaded from.
     #
