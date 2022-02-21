@@ -12,6 +12,8 @@ module Faraday
   class Request < Struct.new(:method, :path, :params, :headers, :body, :options)
     extend MiddlewareRegistry
 
+    alias_method :http_method, :method
+
     register_middleware File.expand_path('../request', __FILE__),
       :url_encoded => [:UrlEncoded, 'url_encoded'],
       :multipart => [:Multipart, 'multipart'],
