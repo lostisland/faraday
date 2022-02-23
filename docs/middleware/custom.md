@@ -57,3 +57,7 @@ For the majority of middleware, it's not necessary to override the `#call` metho
 
 However, in some cases you may need to wrap the call in a block, or work around it somehow (think of a begin-rescue, for example).
 When that happens, then you can override `#call`. When you do so, remember to call either `app.call(env)` or `super` to avoid breaking the middleware stack call!
+
+### Can I find a middleware template somewhere?
+
+Yes, you can! Look at the [`faraday-middleware-template`](https://github.com/lostisland/faraday-middleware-template) repository.
