@@ -6,6 +6,9 @@ With this release, we've officially moved all adapters, except for the `net_http
 What that means, is that they won't be available out-of-the-box anymore,
 and you'll instead need to add them to your Gemfile.
 
+**NOTE: the `net_http` adapter was originally removed as well in version `2.0`, but quickly reintroduced in version `2.0.1`.
+We strongly suggest you to skip version `2.0` and instead use version `2.0.1` or greater.**
+
 #### Why was this decision made?
 
 We've taken this decision for the following technical reasons:
