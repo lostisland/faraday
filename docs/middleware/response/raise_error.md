@@ -14,7 +14,7 @@ response returns with a 4xx or 5xx status code. All exceptions are initialized
 providing the response `status`, `headers`, and `body`.
 
 ```ruby
-conn = Faraday.new(url: 'http://sushi.com') do |faraday|
+conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
   faraday.response :raise_error # raise Faraday::Error on status code 4xx or 5xx
 end
 
