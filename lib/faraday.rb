@@ -47,7 +47,7 @@ module Faraday
 
     # @overload default_adapter
     #   Gets the Symbol key identifying a default Adapter to use
-    #   for the default {Faraday::Connection}. Defaults to `:test`.
+    #   for the default {Faraday::Connection}. Defaults to `:net_http`.
     #   @return [Symbol] the default adapter
     # @overload default_adapter=(adapter)
     #   Updates default adapter while resetting {.default_connection}.
