@@ -31,7 +31,9 @@ module Faraday
         return unless process_request?(env)
 
         env.request_headers[CONTENT_TYPE] ||= self.class.mime_type
-        yield(env.body) unless env.body.respond_to?(:to_str)
+        return if env.body.respond_to?(:to_str) || env.body.respond_to?(:read)
+
+        yield(env.body)
       end
 
       # @param env [Faraday::Env]

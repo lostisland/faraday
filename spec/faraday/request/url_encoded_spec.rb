@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'stringio'
+
 RSpec.describe Faraday::Request::UrlEncoded do
   let(:conn) do
     Faraday.new do |b|
@@ -7,7 +9,11 @@ RSpec.describe Faraday::Request::UrlEncoded do
       b.adapter :test do |stub|
         stub.post('/echo') do |env|
           posted_as = env[:request_headers]['Content-Type']
-          [200, { 'Content-Type' => posted_as }, env[:body]]
+          body = env[:body]
+          if body.respond_to?(:read)
+            body = body.read
+          end
+          [200, { 'Content-Type' => posted_as }, body]
         end
       end
     end
@@ -65,6 +71,11 @@ RSpec.describe Faraday::Request::UrlEncoded do
   it 'works with nested keys' do
     response = conn.post('/echo', 'a' => { 'b' => { 'c' => ['d'] } })
     expect(response.body).to eq('a%5Bb%5D%5Bc%5D%5B%5D=d')
+  end
+
+  it 'works with files' do
+    response = conn.post('/echo', StringIO.new('str=apple'))
+    expect(response.body).to eq('str=apple')
   end
 
   context 'customising default_space_encoding' do
