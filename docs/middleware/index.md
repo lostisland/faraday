@@ -19,19 +19,16 @@ Here are some of the features that middleware can provide:
 - following redirects
 - JSON encoding/decoding
 - logging
-- retrying
 
 To use these great features, create a `Faraday::Connection` with `Faraday.new`
 and add the correct middleware in a block. For example:
 
 ```ruby
 require 'faraday'
-require 'faraday/net_http'
-require 'faraday/retry'
 
 conn = Faraday.new do |f|
   f.request :json # encode req bodies as JSON
-  f.request :retry # retry transient failures
+  f.request :logger # logs request and responses
   f.response :json # decode response bodies as JSON
   f.adapter :net_http # Use the Net::HTTP adapter
 end
@@ -67,7 +64,7 @@ For example, the `Faraday::Request::UrlEncoded` middleware registers itself in
 conn = Faraday.new do |f|
   f.request :url_encoded
   f.response :logger
-  f.adapter :httpclient
+  f.adapter :net_http
 end
 ```
 
@@ -78,7 +75,7 @@ or:
 conn = Faraday.new do |f|
   f.use Faraday::Request::UrlEncoded
   f.use Faraday::Response::Logger
-  f.use Faraday::Adapter::HTTPClient
+  f.use Faraday::Adapter::NetHttp
 end
 ```
 
@@ -113,7 +110,7 @@ Faraday.new(...) do |conn|
   conn.response :logger
 
   # Last middleware must be the adapter
-  conn.adapter :typhoeus
+  conn.adapter :net_http
 end
 ```
 
@@ -121,7 +118,7 @@ This request middleware setup affects POST/PUT requests in the following way:
 
 1. `Request::UrlEncoded` encodes as "application/x-www-form-urlencoded" if not
   already encoded or of another type.
-2. `Response::Logger' logs request and response headers, can be configured to log bodies as well.
+2. `Response::Logger` logs request and response headers, can be configured to log bodies as well.
 
 Swapping middleware means giving the other priority. Specifying the
 "Content-Type" for the request is explicitly stating which middleware should
