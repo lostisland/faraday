@@ -27,6 +27,12 @@ RSpec.describe Faraday::Env do
     expect(ssl.fetch(:verify, true)).to be_falsey
   end
 
+  it 'handle verify_hostname when fetching' do
+    ssl = Faraday::SSLOptions.new
+    ssl.verify_hostname = true
+    expect(ssl.fetch(:verify_hostname, false)).to be_truthy
+  end
+
   it 'retains custom members' do
     env[:foo] = 'custom 1'
     env[:bar] = :custom2
