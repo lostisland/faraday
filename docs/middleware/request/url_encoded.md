@@ -39,4 +39,4 @@ conn.post('/', { a: [1, 3], b: { c: 2, d: 4} })
 # Body: a%5B%5D=1&a%5B%5D=3&b%5Bc%5D=2&b%5Bd%5D=4
 ```
 
-[customize]: ../usage/customize/#changing-how-parameters-are-serialized
+[customize]: ../usage/customize#changing-how-parameters-are-serialized
