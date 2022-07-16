@@ -6,6 +6,10 @@ module Faraday
   # @!attribute verify
   #   @return [Boolean] whether to verify SSL certificates or not
   #
+  # @!attribute verify_hostname
+  #   @return [Boolean] whether to enable hostname verification on server certificates
+  #           during the handshake or not (see https://github.com/ruby/openssl/pull/60)
+  #
   # @!attribute ca_file
   #   @return [String] CA file
   #
@@ -41,7 +45,8 @@ module Faraday
   #
   # @!attribute max_version
   #   @return [String, Symbol] maximum SSL version (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL/SSLContext.html#method-i-max_version-3D)
-  class SSLOptions < Options.new(:verify, :ca_file, :ca_path, :verify_mode,
+  class SSLOptions < Options.new(:verify, :verify_hostname,
+                                 :ca_file, :ca_path, :verify_mode,
                                  :cert_store, :client_cert, :client_key,
                                  :certificate, :private_key, :verify_depth,
                                  :version, :min_version, :max_version)
@@ -54,6 +59,11 @@ module Faraday
     # @return [Boolean] true if should not verify
     def disable?
       !verify?
+    end
+
+    # @return [Boolean] true if should verify_hostname
+    def verify_hostname?
+      verify_hostname != false
     end
   end
 end

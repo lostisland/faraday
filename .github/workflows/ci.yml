@@ -19,7 +19,7 @@ jobs:
       BUNDLE_WITHOUT: development:test
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Ruby 2.7
         uses: ruby/setup-ruby@v1
@@ -43,7 +43,7 @@ jobs:
         ruby: [ '2.6', '2.7', '3.0', '3.1', truffleruby-head ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}

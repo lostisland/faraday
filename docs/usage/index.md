@@ -20,6 +20,7 @@ You might want to use Faraday with the `Net::HTTP` adapter, for example.
 Remember you'll need to install the corresponding adapter gem before you'll be able to use it.
 
 ```ruby
+require 'faraday'
 require 'faraday/net_http'
 Faraday.default_adapter = :net_http
 ```

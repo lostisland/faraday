@@ -62,11 +62,17 @@ module Faraday
     end
 
     def encode_array(parent, value)
-      new_parent = "#{parent}%5B%5D"
-      return new_parent if value.empty?
+      return "#{parent}%5B%5D" if value.empty?
 
       buffer = +''
-      value.each { |val| buffer << "#{encode_pair(new_parent, val)}&" }
+      value.each_with_index do |val, index|
+        new_parent = if @array_indices
+                       "#{parent}%5B#{index}%5D"
+                     else
+                       "#{parent}%5B%5D"
+                     end
+        buffer << "#{encode_pair(new_parent, val)}&"
+      end
       buffer.chop
     end
   end
@@ -161,7 +167,7 @@ module Faraday
   # for your requests.
   module NestedParamsEncoder
     class << self
-      attr_accessor :sort_params
+      attr_accessor :sort_params, :array_indices
 
       extend Forwardable
       def_delegators :'Faraday::Utils', :escape, :unescape
@@ -169,6 +175,7 @@ module Faraday
 
     # Useful default for OAuth and caching.
     @sort_params = true
+    @array_indices = false
 
     extend EncodeMethods
     extend DecodeMethods
