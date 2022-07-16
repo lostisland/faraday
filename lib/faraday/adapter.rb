@@ -39,6 +39,8 @@ module Faraday
     # @return The return value of the given block, or the HTTP connection object
     #         if no block is given.
     def connection(env)
+      raise 'Invalid url, an url should start with https://' unless env.url.host
+
       conn = build_connection(env)
       return conn unless block_given?
 
