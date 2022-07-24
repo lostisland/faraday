@@ -26,7 +26,6 @@ base64 representation.
 * [`TokenAuthentication`][authentication] sets the `Authorization` header to the specified token.
 * [`UrlEncoded`][url_encoded] converts a `Faraday::Request#body` hash of key/value pairs into a url-encoded request body.
 * [`Json Request`][json-request] converts a `Faraday::Request#body` hash of key/value pairs into a JSON request body.
-* [`Json Response`][json-response] parses response body into a hash of key/value pairs.
 * [`Instrumentation`][instrumentation] allows to instrument requests using different tools.
 
 
@@ -35,6 +34,7 @@ base64 representation.
 **Response middleware** receives the response from the adapter and can modify its details
 before returning it.
 
+* [`Json Response`][json-response] parses response body into a hash of key/value pairs.
 * [`Logger`][logger] logs both the request and the response body and headers.
 * [`RaiseError`][raise_error] checks the response HTTP code and raises an exception if it is a 4xx or 5xx code.
 
