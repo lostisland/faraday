@@ -182,6 +182,6 @@ middleware used for the default connection is `:url_encoded`, which encodes
 those form hashes, and the `default_adapter`.
 
 Note that if you create your own connection with middleware, it won't encode
-form bodies unless you too include the [`:url_encoded`](encoding) middleware!
+form bodies unless you too include the [`:url_encoded`][encoding] middleware!
 
 [encoding]:   ../middleware/url-encoded
