@@ -64,6 +64,14 @@ initialized. This is useful for testing.
 stubs.get('/uni') { |env| [ 200, {}, 'urchin' ]}
 ```
 
+You can also stub the request body with a string or a proc.
+It would be useful to pass a proc if it's OK only to check the parts of the request body are passed.
+
+```ruby
+stubs.post('/kohada', 'where=sea&temperature=24') { |env| [ 200, {}, 'spotted gizzard shad' ]}
+stubs.post('/anago', -> (request_body) { JSON.parse(request_body).slice('name') == { 'name' => 'Wakamoto' } }) { |env| [200, {}, 'conger eel'] }
+```
+
 If you want to stub requests that exactly match a path, parameters, and headers,
 `strict_mode` would be useful.
 

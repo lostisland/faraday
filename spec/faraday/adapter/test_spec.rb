@@ -373,5 +373,41 @@ RSpec.describe Faraday::Adapter::Test do
       it_behaves_like 'does not raise NotFound even when headers do not satisfy the strict check', '/with_user_agent', { authorization: 'Bearer m_ck', user_agent: 'My Agent' }
       it_behaves_like 'does not raise NotFound even when headers do not satisfy the strict check', '/with_user_agent', { authorization: 'Bearer m_ck', user_agent: 'My Agent', x_special: 'special' }
     end
+
+    describe 'body_match?' do
+      let(:stubs) do
+        described_class::Stubs.new do |stubs|
+          stubs.post('/no_check') { [200, {}, 'ok'] }
+          stubs.post('/with_string', 'abc') { [200, {}, 'ok'] }
+          stubs.post(
+            '/with_proc',
+            -> (request_body) { JSON.parse(request_body, symbolize_names: true) == { x: '!', a: [{ m: [{ a: true }], n: 123 }] } },
+            { content_type: 'application/json' },
+          ) do
+            [200, {}, 'ok']
+          end
+        end
+      end
+
+      context 'when trying without any args for body' do
+        subject(:without_body) { connection.post('/no_check') }
+
+        it { expect(without_body.status).to eq 200 }
+      end
+
+      context 'when trying with string body stubs' do
+        subject(:with_string) { connection.post('/with_string', 'abc') }
+
+        it { expect(with_string.status).to eq 200 }
+      end
+
+      context 'when trying with proc body stubs' do
+        subject(:with_proc) do
+          connection.post('/with_proc', JSON.dump(a: [{ n: 123, m: [{ a: true }] }], x: '!'), { 'Content-Type' => 'application/json' })
+        end
+
+        it { expect(with_proc.status).to eq 200 }
+      end
+    end
   end
 end

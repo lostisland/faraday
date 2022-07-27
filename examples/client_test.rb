@@ -18,6 +18,11 @@ class Client
     data = JSON.parse(res.body)
     data['origin']
   end
+
+  def foo!(params)
+    res = @conn.post('/foo', JSON.dump(params))
+    res.status
+  end
 end
 
 # Example API client test
@@ -106,6 +111,27 @@ class ClientTest < Test::Unit::TestCase
 
     # uncomment to raise Stubs::NotFound
     # assert_equal '127.0.0.1', cli.httpbingo('api', params: { a: %w[x y] })
+    stubs.verify_stubbed_calls
+  end
+
+  def test_with_string_body
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      stub.post('/foo', '{"name":"YK"}') { [200, {}, ''] }
+    end
+    cli = client(stubs)
+    assert_equal 200, cli.foo!(name: 'YK')
+
+    stubs.verify_stubbed_calls
+  end
+
+  def test_with_proc_body
+    stubs = Faraday::Adapter::Test::Stubs.new do |stub|
+      check = -> (request_body) { JSON.parse(request_body).slice('name') == { 'name' => 'YK' } }
+      stub.post('/foo', check) { [200, {}, ''] }
+    end
+    cli = client(stubs)
+    assert_equal 200, cli.foo!(name: 'YK', created_at: Time.now)
+
     stubs.verify_stubbed_calls
   end
 

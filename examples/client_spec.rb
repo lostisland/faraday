@@ -17,6 +17,11 @@ class Client
     data = JSON.parse(res.body)
     data['origin']
   end
+
+  def foo!(params)
+    res = @conn.post('/foo', JSON.dump(params))
+    res.status
+  end
 end
 
 RSpec.describe Client do
@@ -91,6 +96,23 @@ RSpec.describe Client do
       # uncomment to raise Stubs::NotFound
       # expect(client.httpbingo('api', params: { a: %w[x y] })).to eq('127.0.0.1')
       expect(client.httpbingo('api', params: { a: %w[x y z] })).to eq('127.0.0.1')
+      stubs.verify_stubbed_calls
+    end
+  end
+
+  context 'When you want to test the body, you can use a proc as well as string' do
+    it 'tests with a string' do
+      stubs.post('/foo', '{"name":"YK"}') { [200, {}, ''] }
+
+      expect(client.foo!(name: 'YK')).to eq 200
+      stubs.verify_stubbed_calls
+    end
+
+    it 'tests with a proc' do
+      check = -> (request_body) { JSON.parse(request_body).slice('name') == { 'name' => 'YK' } }
+      stubs.post('/foo', check) { [200, {}, ''] }
+
+      expect(client.foo!(name: 'YK', created_at: Time.now)).to eq 200
       stubs.verify_stubbed_calls
     end
   end
