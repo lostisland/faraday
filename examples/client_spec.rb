@@ -18,7 +18,7 @@ class Client
     data['origin']
   end
 
-  def foo!(params)
+  def foo(params)
     res = @conn.post('/foo', JSON.dump(params))
     res.status
   end
@@ -104,7 +104,7 @@ RSpec.describe Client do
     it 'tests with a string' do
       stubs.post('/foo', '{"name":"YK"}') { [200, {}, ''] }
 
-      expect(client.foo!(name: 'YK')).to eq 200
+      expect(client.foo(name: 'YK')).to eq 200
       stubs.verify_stubbed_calls
     end
 
@@ -112,7 +112,7 @@ RSpec.describe Client do
       check = -> (request_body) { JSON.parse(request_body).slice('name') == { 'name' => 'YK' } }
       stubs.post('/foo', check) { [200, {}, ''] }
 
-      expect(client.foo!(name: 'YK', created_at: Time.now)).to eq 200
+      expect(client.foo(name: 'YK', created_at: Time.now)).to eq 200
       stubs.verify_stubbed_calls
     end
   end

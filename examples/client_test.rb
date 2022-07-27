@@ -19,7 +19,7 @@ class Client
     data['origin']
   end
 
-  def foo!(params)
+  def foo(params)
     res = @conn.post('/foo', JSON.dump(params))
     res.status
   end
@@ -119,7 +119,7 @@ class ClientTest < Test::Unit::TestCase
       stub.post('/foo', '{"name":"YK"}') { [200, {}, ''] }
     end
     cli = client(stubs)
-    assert_equal 200, cli.foo!(name: 'YK')
+    assert_equal 200, cli.foo(name: 'YK')
 
     stubs.verify_stubbed_calls
   end
@@ -130,7 +130,7 @@ class ClientTest < Test::Unit::TestCase
       stub.post('/foo', check) { [200, {}, ''] }
     end
     cli = client(stubs)
-    assert_equal 200, cli.foo!(name: 'YK', created_at: Time.now)
+    assert_equal 200, cli.foo(name: 'YK', created_at: Time.now)
 
     stubs.verify_stubbed_calls
   end
