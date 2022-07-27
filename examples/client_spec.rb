@@ -109,7 +109,7 @@ RSpec.describe Client do
     end
 
     it 'tests with a proc' do
-      check = -> (request_body) { JSON.parse(request_body).slice('name') == { 'name' => 'YK' } }
+      check = ->(request_body) { JSON.parse(request_body).slice('name') == { 'name' => 'YK' } }
       stubs.post('/foo', check) { [200, {}, ''] }
 
       expect(client.foo(name: 'YK', created_at: Time.now)).to eq 200

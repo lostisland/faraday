@@ -31,7 +31,9 @@ module Faraday
     #
     #      # You can pass a proc as a stubbed body and check the request body in your way.
     #      # In this case, the proc should return true or false.
-    #      stub.post('/foo', -> (request_body) { JSON.parse(request_body).slice('name') == { 'name' => 'YK' } }) { [200, {}, ''] }
+    #      stub.post('/foo', ->(request_body) do
+    #        JSON.parse(request_body).slice('name') == { 'name' => 'YK' } }) { [200, {}, '']
+    #      end
     #
     #       # You can set strict_mode to exactly match the stubbed requests.
     #       stub.strict_mode = true

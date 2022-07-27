@@ -381,8 +381,8 @@ RSpec.describe Faraday::Adapter::Test do
           stubs.post('/with_string', 'abc') { [200, {}, 'ok'] }
           stubs.post(
             '/with_proc',
-            -> (request_body) { JSON.parse(request_body, symbolize_names: true) == { x: '!', a: [{ m: [{ a: true }], n: 123 }] } },
-            { content_type: 'application/json' },
+            ->(request_body) { JSON.parse(request_body, symbolize_names: true) == { x: '!', a: [{ m: [{ a: true }], n: 123 }] } },
+            { content_type: 'application/json' }
           ) do
             [200, {}, 'ok']
           end

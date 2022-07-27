@@ -126,7 +126,7 @@ class ClientTest < Test::Unit::TestCase
 
   def test_with_proc_body
     stubs = Faraday::Adapter::Test::Stubs.new do |stub|
-      check = -> (request_body) { JSON.parse(request_body).slice('name') == { 'name' => 'YK' } }
+      check = ->(request_body) { JSON.parse(request_body).slice('name') == { 'name' => 'YK' } }
       stub.post('/foo', check) { [200, {}, ''] }
     end
     cli = client(stubs)
