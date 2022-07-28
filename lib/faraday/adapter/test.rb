@@ -26,6 +26,15 @@ module Faraday
     #         ]
     #       end
     #
+    #      # Test the request body is the same as the stubbed body
+    #      stub.post('/bar', 'name=YK&word=call') { [200, {}, ''] }
+    #
+    #      # You can pass a proc as a stubbed body and check the request body in your way.
+    #      # In this case, the proc should return true or false.
+    #      stub.post('/foo', ->(request_body) do
+    #        JSON.parse(request_body).slice('name') == { 'name' => 'YK' } }) { [200, {}, '']
+    #      end
+    #
     #       # You can set strict_mode to exactly match the stubbed requests.
     #       stub.strict_mode = true
     #     end
@@ -42,6 +51,12 @@ module Faraday
     #
     #   resp = test.get '/items/2'
     #   resp.body # => 'showing item: 2'
+    #
+    #   resp = test.post '/bar', 'name=YK&word=call'
+    #   resp.status # => 200
+    #
+    #   resp = test.post '/foo', JSON.dump(name: 'YK', created_at: Time.now)
+    #   resp.status # => 200
     class Test < Faraday::Adapter
       attr_accessor :stubs
 
@@ -181,7 +196,7 @@ module Faraday
           [(host.nil? || host == request_host) &&
             path_match?(request_path, meta) &&
             params_match?(env) &&
-            (body.to_s.size.zero? || request_body == body) &&
+            body_match?(request_body) &&
             headers_match?(request_headers), meta]
         end
 
@@ -219,6 +234,17 @@ module Faraday
 
           headers.keys.all? do |key|
             request_headers[key] == headers[key]
+          end
+        end
+
+        def body_match?(request_body)
+          return true if body.to_s.size.zero?
+
+          case body
+          when Proc
+            body.call(request_body)
+          else
+            request_body == body
           end
         end
 
