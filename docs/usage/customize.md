@@ -77,6 +77,20 @@ serializes POST bodies.
 
 The default encoder is `Faraday::NestedParamsEncoder`.
 
+### Order of parameters
+
+By default, paramters are sorted by name while being serialized.
+Since this is really useful to provide better cache management and most servers don't really care about parameters order, this is the default behaviour.
+However you might find yourself dealing with a server that requires parameters to be in a specific order.
+When that happens, you can configure the encoder to skip sorting them.
+This configuration is supported by both the default `Faraday::NestedParamsEncoder` and `Faraday::FlatParamsEncoder`:
+
+```ruby
+Faraday::NestedParamsEncoder.sort_params = false
+# or
+Faraday::FlatParamsEncoder.sort_params = false
+```
+
 ## Proxy
 
 Faraday will try to automatically infer the proxy settings from your system using [`URI#find_proxy`][ruby-find-proxy].
