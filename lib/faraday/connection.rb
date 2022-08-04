@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'faraday/deprecate'
+
 module Faraday
   # Connection objects manage the default properties and the middleware
   # stack for fulfilling an HTTP request.
@@ -297,13 +299,11 @@ module Faraday
     #
     # @return [void]
     def basic_auth(login, pass)
-      warn <<~TEXT
-        WARNING: `Faraday::Connection#basic_auth` is deprecated; it will be removed in version 2.0.
-        While initializing your connection, use `#request(:basic_auth, ...)` instead.
-        See https://lostisland.github.io/faraday/middleware/authentication for more usage info.
-      TEXT
       set_authorization_header(:basic_auth, login, pass)
     end
+
+    extend Faraday::Deprecate
+    deprecate :basic_auth, '#request(:basic_auth, ...)', '2.0'
 
     # Sets up the Authorization header with the given token.
     #
