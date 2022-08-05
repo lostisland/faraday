@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'faraday/deprecate'
-
 # Faraday namespace.
 module Faraday
   # Faraday error base class.
