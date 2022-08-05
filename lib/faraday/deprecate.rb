@@ -54,7 +54,6 @@ module Faraday
         else :skip
         end
       end
-      @skip = :warn
       @skip == :skip
     end
 
@@ -65,7 +64,7 @@ module Faraday
     # Temporarily turn off warnings. Intended for tests only.
     def skip_during
       original = Faraday::Deprecate.skip
-      Faraday::Deprecate.skip, = true
+      Faraday::Deprecate.skip = true
       yield
     ensure
       Faraday::Deprecate.skip = original
