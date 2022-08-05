@@ -145,12 +145,4 @@ module Faraday
   # Raised by FaradayMiddleware::ResponseMiddleware
   class ParsingError < Error
   end
-
-  %i[ClientError ConnectionFailed ResourceNotFound
-     ParsingError TimeoutError SSLError].each do |const|
-    Error.const_set(
-      const,
-      DeprecatedClass.proxy_class(Faraday.const_get(const))
-    )
-  end
 end
