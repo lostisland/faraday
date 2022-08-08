@@ -153,12 +153,19 @@ shared_examples 'a request method' do |http_method|
       let(:streamed) { [] }
 
       context 'when response is empty' do
-        it do
+        it 'handles streaming' do
+          env = nil
           conn.public_send(http_method, '/') do |req|
-            req.options.on_data = proc { |*args| streamed << args }
+            req.options.on_data = proc do |chunk, size, block_env|
+              streamed << [chunk, size]
+              env ||= block_env
+            end
           end
 
           expect(streamed).to eq([['', 0]])
+          # TODO: enable this after updating all existing adapters to the new streaming API
+          # expect(env).to be_a(Faraday::Env)
+          # expect(env.status).to eq(200)
         end
       end
 
@@ -166,12 +173,19 @@ shared_examples 'a request method' do |http_method|
         before { request_stub.to_return(body: big_string) }
 
         it 'handles streaming' do
+          env = nil
           response = conn.public_send(http_method, '/') do |req|
-            req.options.on_data = proc { |*args| streamed << args }
+            req.options.on_data = proc do |chunk, size, block_env|
+              streamed << [chunk, size]
+              env ||= block_env
+            end
           end
 
           expect(response.body).to eq('')
           check_streaming_response(streamed, chunk_size: 16 * 1024)
+          # TODO: enable this after updating all existing adapters to the new streaming API
+          # expect(env).to be_a(Faraday::Env)
+          # expect(env.status).to eq(200)
         end
       end
     end

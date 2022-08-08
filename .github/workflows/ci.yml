@@ -40,7 +40,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ '2.6', '2.7', '3.0', '3.1', truffleruby-head ]
+        ruby: [ '2.6', '2.7', '3.0', '3.1' ]
+        experimental: [false]
+        include:
+          - ruby: head
+            experimental: true
+          - ruby: truffleruby-head
+            experimental: true
 
     steps:
       - uses: actions/checkout@v3
@@ -49,7 +55,13 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
 
-      - name: Test
+      - name: RSpec
         continue-on-error: ${{ matrix.experimental }}
         run: bundle exec rake
+
+      - name: Test External Adapters
+        if: ${{ matrix.ruby != '2.6' }}
+        continue-on-error: ${{ matrix.experimental }}
+        run: bundle exec bake test:external
+
 

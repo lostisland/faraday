@@ -7,6 +7,7 @@ source 'https://rubygems.org'
 gem 'jruby-openssl', '~> 0.11.0', platforms: :jruby
 
 group :development, :test do
+  gem 'bake-test-external'
   gem 'coveralls_reborn', require: false
   gem 'pry'
   gem 'rack', '~> 2.2'
@@ -19,7 +20,7 @@ end
 
 group :development, :lint do
   gem 'rubocop'
-  gem 'rubocop-packaging', '~> 0.5'
+  gem 'rubocop-packaging', github: 'utkarsh2102/rubocop-packaging' # '~> 0.5'
   gem 'rubocop-performance', '~> 1.0'
   gem 'yard-junk'
 end

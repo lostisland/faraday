@@ -14,6 +14,7 @@ tmp
 .bundle
 Gemfile.lock
 vendor/bundle
+external
 
 ## PROJECT::SPECIFIC
 .rbx

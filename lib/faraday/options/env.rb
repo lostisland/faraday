@@ -157,6 +157,24 @@ module Faraday
       %(#<#{self.class}#{attrs.join(' ')}>)
     end
 
+    def stream_response?
+      request.stream_response?
+    end
+
+    def stream_response(&block)
+      size = 0
+      yielded = false
+      block_result = block.call do |chunk| # rubocop:disable Performance/RedundantBlockCall
+        if chunk.bytesize.positive? || size.positive?
+          yielded = true
+          size += chunk.bytesize
+          request.on_data.call(chunk, size, self)
+        end
+      end
+      request.on_data.call(+'', 0, self) unless yielded
+      block_result
+    end
+
     # @private
     def custom_members
       @custom_members ||= {}
