@@ -79,7 +79,7 @@ The default encoder is `Faraday::NestedParamsEncoder`.
 
 ### Order of parameters
 
-By default, paramters are sorted by name while being serialized.
+By default, parameters are sorted by name while being serialized.
 Since this is really useful to provide better cache management and most servers don't really care about parameters order, this is the default behaviour.
 However you might find yourself dealing with a server that requires parameters to be in a specific order.
 When that happens, you can configure the encoder to skip sorting them.
