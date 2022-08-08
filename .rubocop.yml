@@ -9,196 +9,188 @@ AllCops:
   DisplayStyleGuide: true
   TargetRubyVersion: 2.6
 
-Metrics/BlockLength:
-  Exclude:
-    - spec/**/*.rb
-    - examples/**/*.rb
-
-Metrics/ParameterLists:
-  Max: 6
-
-Layout/EmptyLinesAroundAttributeAccessor: # (0.83)
-  Enabled: true
-
+# Custom config
+Gemspec/RequireMFA: # we don't know if this works with auto-deployments yet
+  Enabled: false
 Layout/LineLength:
   Exclude:
     - spec/**/*.rb
     - examples/**/*.rb
-
-Layout/SpaceAroundMethodCallOperator:
-  Enabled: true
-
-Lint/DeprecatedOpenSSLConstant: # (0.84)
-  Enabled: true
-
-Lint/RaiseException:
-  Enabled: true
-
-Lint/StructNewOverride:
-  Enabled: true
-
-Style/DoubleNegation:
-  Enabled: false
-
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*.rb
+    - examples/**/*.rb
 Style/Documentation:
   Exclude:
     - 'spec/**/*'
     - 'examples/**/*'
-
-Style/ExponentialNotation:
-  Enabled: true
-Style/HashEachMethods:
-  Enabled: true
-Style/HashTransformKeys:
-  Enabled: true
-Style/HashTransformValues:
-  Enabled: true
+Style/DoubleNegation:
+  Enabled: false
 Style/IfUnlessModifier:
   Enabled: false
 
-Style/SlicingWithRange: # (0.83)
+# New cops
+Gemspec/DeprecatedAttributeAssignment: # new in 1.30
   Enabled: true
-
-Layout/BeginEndAlignment: # (new in 0.91)
+Layout/LineContinuationLeadingSpace: # new in 1.31
   Enabled: true
-Lint/BinaryOperatorWithIdenticalOperands: # (new in 0.89)
+Layout/LineContinuationSpacing: # new in 1.31
   Enabled: true
-Lint/ConstantDefinitionInBlock: # (new in 0.91)
+Layout/LineEndStringConcatenationIndentation: # new in 1.18
   Enabled: true
-Lint/DuplicateElsifCondition: # (new in 0.88)
+Layout/SpaceBeforeBrackets: # new in 1.7
   Enabled: true
-Lint/DuplicateRequire: # (new in 0.90)
+Lint/AmbiguousAssignment: # new in 1.7
   Enabled: true
-Lint/DuplicateRescueException: # (new in 0.89)
+Lint/AmbiguousOperatorPrecedence: # new in 1.21
   Enabled: true
-Lint/EmptyConditionalBody: # (new in 0.89)
+Lint/AmbiguousRange: # new in 1.19
   Enabled: true
-Lint/EmptyFile: # (new in 0.90)
+Lint/ConstantOverwrittenInRescue: # new in 1.31
   Enabled: true
-Lint/FloatComparison: # (new in 0.89)
+Lint/DeprecatedConstants: # new in 1.8
   Enabled: true
-Lint/HashCompareByIdentity: # (new in 0.93)
+Lint/DuplicateBranch: # new in 1.3
   Enabled: true
-Lint/IdentityComparison: # (new in 0.91)
+Lint/DuplicateRegexpCharacterClassElement: # new in 1.1
   Enabled: true
-Lint/MissingSuper: # (new in 0.89)
+Lint/EmptyBlock: # new in 1.1
   Enabled: true
-Lint/MixedRegexpCaptureTypes: # (new in 0.85)
+Lint/EmptyClass: # new in 1.3
   Enabled: true
-Lint/OutOfRangeRegexpRef: # (new in 0.89)
+Lint/EmptyInPattern: # new in 1.16
   Enabled: true
-Lint/RedundantSafeNavigation: # (new in 0.93)
+Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
   Enabled: true
-Lint/SelfAssignment: # (new in 0.89)
+Lint/LambdaWithoutLiteralBlock: # new in 1.8
   Enabled: true
-Lint/TopLevelReturnWithArgument: # (new in 0.89)
+Lint/NoReturnInBeginEndBlocks: # new in 1.2
   Enabled: true
-Lint/TrailingCommaInAttributeDeclaration: # (new in 0.90)
+Lint/NonAtomicFileOperation: # new in 1.31
   Enabled: true
-Performance/BlockGivenWithExplicitBlock: # (new in 1.9)
+Lint/NumberedParameterAssignment: # new in 1.9
   Enabled: true
-Performance/CollectionLiteralInLoop: # (new in 1.8)
+Lint/OrAssignmentToConstant: # new in 1.9
   Enabled: true
-Performance/ConstantRegexp: # (new in 1.9)
+Lint/RedundantDirGlobSort: # new in 1.8
   Enabled: true
-Performance/MethodObjectAsBlock: # (new in 1.9)
+Lint/RefinementImportMethods: # new in 1.27
   Enabled: true
-Performance/RedundantEqualityComparisonBlock: # (new in 1.10)
+Lint/RequireRangeParentheses: # new in 1.32
   Enabled: true
-Performance/RedundantSortBlock: # (new in 1.7)
+Lint/RequireRelativeSelfPath: # new in 1.22
   Enabled: true
-Performance/RedundantSplitRegexpArgument: # (new in 1.10)
+Lint/SymbolConversion: # new in 1.9
   Enabled: true
-Performance/RedundantStringChars: # (new in 1.7)
+Lint/ToEnumArguments: # new in 1.1
   Enabled: true
-Performance/ReverseFirst: # (new in 1.7)
+Lint/TripleQuotes: # new in 1.9
   Enabled: true
-Performance/SortReverse: # (new in 1.7)
+Lint/UnexpectedBlockArity: # new in 1.5
   Enabled: true
-Performance/Squeeze: # (new in 1.7)
+Lint/UnmodifiedReduceAccumulator: # new in 1.1
   Enabled: true
-Performance/StringInclude: # (new in 1.7)
+Lint/UselessRuby2Keywords: # new in 1.23
   Enabled: true
-Performance/Sum: # (new in 1.8)
+Naming/BlockForwarding: # new in 1.24
   Enabled: true
-
-Gemspec/DeprecatedAttributeAssignment:
+Security/CompoundHash: # new in 1.28
   Enabled: true
-Layout/LineEndStringConcatenationIndentation: # (new in 1.18)
+Security/IoMethods: # new in 1.22
   Enabled: true
-Layout/SpaceBeforeBrackets: # (new in 1.7)
+Style/ArgumentsForwarding: # new in 1.1
   Enabled: true
-Lint/AmbiguousAssignment: # (new in 1.7)
+Style/CollectionCompact: # new in 1.2
   Enabled: true
-Lint/AmbiguousRange: # (new in 1.19)
+Style/DocumentDynamicEvalDefinition: # new in 1.1
   Enabled: true
-Lint/DeprecatedConstants: # (new in 1.8)
+Style/EmptyHeredoc: # new in 1.32
   Enabled: true
-Lint/DuplicateBranch: # (new in 1.3)
+Style/EndlessMethod: # new in 1.8
   Enabled: true
-Lint/DuplicateRegexpCharacterClassElement: # (new in 1.1)
+Style/EnvHome: # new in 1.29
   Enabled: true
-Lint/EmptyBlock: # (new in 1.1)
+Style/FetchEnvVar: # new in 1.28
   Enabled: true
-Lint/EmptyClass: # (new in 1.3)
+Style/FileRead: # new in 1.24
   Enabled: true
-Lint/EmptyInPattern: # (new in 1.16)
+Style/FileWrite: # new in 1.24
   Enabled: true
-Lint/LambdaWithoutLiteralBlock: # (new in 1.8)
+Style/HashConversion: # new in 1.10
   Enabled: true
-Lint/NoReturnInBeginEndBlocks: # (new in 1.2)
+Style/HashExcept: # new in 1.7
   Enabled: true
-Lint/NumberedParameterAssignment: # (new in 1.9)
+Style/IfWithBooleanLiteralBranches: # new in 1.9
   Enabled: true
-Lint/OrAssignmentToConstant: # (new in 1.9)
+Style/InPatternThen: # new in 1.16
   Enabled: true
-Lint/RedundantDirGlobSort: # (new in 1.8)
+Style/MapCompactWithConditionalBlock: # new in 1.30
   Enabled: true
-Lint/SymbolConversion: # (new in 1.9)
+Style/MapToHash: # new in 1.24
   Enabled: true
-Lint/ToEnumArguments: # (new in 1.1)
+Style/MultilineInPatternThen: # new in 1.16
   Enabled: true
-Lint/TripleQuotes: # (new in 1.9)
+Style/NegatedIfElseCondition: # new in 1.2
   Enabled: true
-Lint/UnexpectedBlockArity: # (new in 1.5)
+Style/NestedFileDirname: # new in 1.26
   Enabled: true
-Lint/UnmodifiedReduceAccumulator: # (new in 1.1)
+Style/NilLambda: # new in 1.3
   Enabled: true
-Naming/InclusiveLanguage: # (new in 1.18)
+Style/NumberedParameters: # new in 1.22
   Enabled: true
-Style/ArgumentsForwarding: # (new in 1.1)
+Style/NumberedParametersLimit: # new in 1.22
   Enabled: true
-Style/CollectionCompact: # (new in 1.2)
+Style/ObjectThen: # new in 1.28
   Enabled: true
-Style/DocumentDynamicEvalDefinition: # (new in 1.1)
+Style/OpenStructUse: # new in 1.23
   Enabled: true
-Style/EndlessMethod: # (new in 1.8)
+Style/QuotedSymbols: # new in 1.16
   Enabled: true
-Style/HashConversion: # (new in 1.10)
+Style/RedundantArgument: # new in 1.4
   Enabled: true
-Style/HashExcept: # (new in 1.7)
+Style/RedundantInitialize: # new in 1.27
   Enabled: true
-Style/IfWithBooleanLiteralBranches: # (new in 1.9)
+Style/RedundantSelfAssignmentBranch: # new in 1.19
   Enabled: true
-Style/InPatternThen: # (new in 1.16)
+Style/SelectByRegexp: # new in 1.22
   Enabled: true
-Style/MultilineInPatternThen: # (new in 1.16)
+Style/StringChars: # new in 1.12
   Enabled: true
-Style/NegatedIfElseCondition: # (new in 1.2)
+Style/SwapValues: # new in 1.1
   Enabled: true
-Style/NilLambda: # (new in 1.3)
+Performance/AncestorsInclude: # new in 1.7
   Enabled: true
-Style/QuotedSymbols: # (new in 1.16)
+Performance/BigDecimalWithNumericArgument: # new in 1.7
   Enabled: true
-Style/RedundantArgument: # (new in 1.4)
+Performance/BlockGivenWithExplicitBlock: # new in 1.9
   Enabled: true
-Style/RedundantSelfAssignmentBranch: # (new in 1.19)
+Performance/CollectionLiteralInLoop: # new in 1.8
   Enabled: true
-Style/StringChars: # (new in 1.12)
+Performance/ConcurrentMonotonicTime: # new in 1.12
   Enabled: true
-Style/SwapValues: # (new in 1.1)
+Performance/ConstantRegexp: # new in 1.9
   Enabled: true
-Performance/AncestorsInclude: # (new in 1.7)
+Performance/MapCompact: # new in 1.11
   Enabled: true
-Performance/BigDecimalWithNumericArgument: # (new in 1.7)
+Performance/MethodObjectAsBlock: # new in 1.9
+  Enabled: true
+Performance/RedundantEqualityComparisonBlock: # new in 1.10
+  Enabled: true
+Performance/RedundantSortBlock: # new in 1.7
+  Enabled: true
+Performance/RedundantSplitRegexpArgument: # new in 1.10
+  Enabled: true
+Performance/RedundantStringChars: # new in 1.7
+  Enabled: true
+Performance/ReverseFirst: # new in 1.7
+  Enabled: true
+Performance/SortReverse: # new in 1.7
+  Enabled: true
+Performance/Squeeze: # new in 1.7
+  Enabled: true
+Performance/StringIdentifierArgument: # new in 1.13
+  Enabled: true
+Performance/StringInclude: # new in 1.7
+  Enabled: true
+Performance/Sum: # new in 1.8
   Enabled: true

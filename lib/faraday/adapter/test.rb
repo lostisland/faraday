@@ -272,7 +272,7 @@ module Faraday
         stub, meta = stubs.match(env)
 
         unless stub
-          raise Stubs::NotFound, "no stubbed request for #{env[:method]} "\
+          raise Stubs::NotFound, "no stubbed request for #{env[:method]} " \
                                  "#{env[:url]} #{env[:body]}"
         end
 

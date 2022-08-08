@@ -6,7 +6,7 @@ class CustomEncoder
   end
 
   def decode(params)
-    params.split(',').map { |pair| pair.split('-') }.to_h
+    params.split(',').to_h { |pair| pair.split('-') }
   end
 end
 
@@ -511,7 +511,7 @@ RSpec.describe Faraday::Connection do
     it 'uses env http_proxy' do
       with_env 'http_proxy' => 'http://proxy.com' do
         conn = Faraday.new
-        expect(conn.instance_variable_get('@manual_proxy')).to be_falsey
+        expect(conn.instance_variable_get(:@manual_proxy)).to be_falsey
         expect(conn.proxy_for_request('http://google.co.uk').host).to eq('proxy.com')
       end
     end
@@ -519,7 +519,7 @@ RSpec.describe Faraday::Connection do
     it 'uses processes no_proxy before http_proxy' do
       with_env 'http_proxy' => 'http://proxy.com', 'no_proxy' => 'google.co.uk' do
         conn = Faraday.new
-        expect(conn.instance_variable_get('@manual_proxy')).to be_falsey
+        expect(conn.instance_variable_get(:@manual_proxy)).to be_falsey
         expect(conn.proxy_for_request('http://google.co.uk')).to be_nil
       end
     end
@@ -527,7 +527,7 @@ RSpec.describe Faraday::Connection do
     it 'uses env https_proxy' do
       with_env 'https_proxy' => 'https://proxy.com' do
         conn = Faraday.new
-        expect(conn.instance_variable_get('@manual_proxy')).to be_falsey
+        expect(conn.instance_variable_get(:@manual_proxy)).to be_falsey
         expect(conn.proxy_for_request('https://google.co.uk').host).to eq('proxy.com')
       end
     end
@@ -535,7 +535,7 @@ RSpec.describe Faraday::Connection do
     it 'uses processes no_proxy before https_proxy' do
       with_env 'https_proxy' => 'https://proxy.com', 'no_proxy' => 'google.co.uk' do
         conn = Faraday.new
-        expect(conn.instance_variable_get('@manual_proxy')).to be_falsey
+        expect(conn.instance_variable_get(:@manual_proxy)).to be_falsey
         expect(conn.proxy_for_request('https://google.co.uk')).to be_nil
       end
     end
@@ -545,7 +545,7 @@ RSpec.describe Faraday::Connection do
         conn = Faraday.new
         conn.proxy = 'http://proxy2.com'
 
-        expect(conn.instance_variable_get('@manual_proxy')).to be_truthy
+        expect(conn.instance_variable_get(:@manual_proxy)).to be_truthy
         expect(conn.proxy_for_request('https://google.co.uk').host).to eq('proxy2.com')
       end
     end
@@ -580,7 +580,7 @@ RSpec.describe Faraday::Connection do
         end
 
         conn.get(url)
-        expect(conn.instance_variable_get('@temp_proxy')).to be_nil
+        expect(conn.instance_variable_get(:@temp_proxy)).to be_nil
       end
 
       it 'dynamically check no proxy' do
