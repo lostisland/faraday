@@ -76,7 +76,7 @@ module Faraday
     # semver that it is planned to go away.
     # @param name [Symbol] the method symbol to deprecate
     # @param repl [#to_s, :none] the replacement to use, when `:none` it will
-    #   alert the user that no replacemtent is present.
+    #   alert the user that no replacement is present.
     # @param ver [String] the semver the method will be removed.
     def deprecate(name, repl, ver)
       class_eval do
