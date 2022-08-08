@@ -1,0 +1,3 @@
+faraday-net_http:
+  url: https://github.com/lostisland/faraday-net_http.git
+  command: bundle exec rspec
