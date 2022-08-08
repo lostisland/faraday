@@ -12,6 +12,8 @@ AllCops:
 
 Inclusivity/Race:
   Enabled: true
+  Exclude:
+    - 'lib/faraday/adapter/typhoeus.rb'
 
 Metrics/BlockLength:
   Exclude:
@@ -59,4 +61,3 @@ Style/IfUnlessModifier:
 
 Style/SlicingWithRange: # (0.83)
   Enabled: true
-
