@@ -537,7 +537,7 @@ module Faraday
     end
 
     def find_default_proxy
-      uri = ENV['http_proxy']
+      uri = ENV.fetch('http_proxy', nil)
       return unless uri && !uri.empty?
 
       uri = "http://#{uri}" unless uri.match?(/^http/i)

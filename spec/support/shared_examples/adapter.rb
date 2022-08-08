@@ -37,7 +37,7 @@ shared_examples 'adapter examples' do |**options|
 
   let(:conn) do
     conn_options[:ssl] ||= {}
-    conn_options[:ssl][:ca_file] ||= ENV['SSL_FILE']
+    conn_options[:ssl][:ca_file] ||= ENV.fetch('SSL_FILE', nil)
     conn_options[:ssl][:verify_hostname] ||= ENV['SSL_VERIFY_HOSTNAME'] == 'yes'
 
     Faraday.new(remote, conn_options) do |conn|
