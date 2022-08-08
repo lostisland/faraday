@@ -7,6 +7,7 @@ source 'https://rubygems.org'
 gem 'jruby-openssl', '~> 0.11.0', platforms: :jruby
 
 group :development, :test do
+  gem 'bake-test-external'
   gem 'coveralls_reborn', require: false
   gem 'pry'
   gem 'rack', '~> 2.2'

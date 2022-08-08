@@ -49,7 +49,13 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
 
-      - name: Test
+      - name: RSpec
         continue-on-error: ${{ matrix.experimental }}
         run: bundle exec rake
+
+      - name: Test External Adapters
+        if: ${{ matrix.ruby != '2.6' }}
+        continue-on-error: ${{ matrix.experimental }}
+        run: bundle exec bake test:external
+
 
