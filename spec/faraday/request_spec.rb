@@ -25,7 +25,7 @@ RSpec.describe Faraday::Request do
   describe 'deprecate method for HTTP method' do
     let(:http_method) { :post }
     let(:expected_warning) do
-      %r{WARNING: `Faraday::Request#method` is deprecated; use `#http_method` instead. It will be removed in or after version 2.0.\n`Faraday::Request#method` called from .+/spec/faraday/request_spec.rb:\d+.}
+      %r{NOTE: Faraday::Request#method is deprecated; use http_method instead\. It will be removed in or after version 2.0\nFaraday::Request#method called from .+/spec/faraday/request_spec.rb:\d+.}
     end
 
     it { expect(subject.method).to eq(:post) }
