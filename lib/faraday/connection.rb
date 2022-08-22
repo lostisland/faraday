@@ -322,7 +322,10 @@ module Faraday
       set_authorization_header(:token_auth, token, options)
     end
 
-    deprecate :token_auth, '#request(:token_auth, ...)', '2.0'
+    deprecate :token_auth,
+              '#request(:token_auth, ...)',
+              '2.0',
+              'See https://lostisland.github.io/faraday/middleware/authentication for more usage info.'
 
     # Sets up a custom Authorization header.
     #
@@ -346,7 +349,10 @@ module Faraday
       set_authorization_header(:authorization, type, token)
     end
 
-    deprecate :authorization, '#request(:authorization, ...)', '2.0'
+    deprecate :authorization,
+              '#request(:authorization, ...)',
+              '2.0',
+              'See https://lostisland.github.io/faraday/middleware/authentication for more usage info.'
 
     # Check if the adapter is parallel-capable.
     #
