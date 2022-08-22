@@ -58,12 +58,11 @@ module Faraday
     end
 
     def method
-      warn <<~TEXT
-        WARNING: `Faraday::Request##{__method__}` is deprecated; use `#http_method` instead. It will be removed in or after version 2.0.
-        `Faraday::Request##{__method__}` called from #{caller_locations(1..1).first}
-      TEXT
       http_method
     end
+
+    extend Faraday::Deprecate
+    deprecate :method, :http_method, '2.0'
 
     # Replace params, preserving the existing hash type.
     #

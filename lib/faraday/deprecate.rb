@@ -78,7 +78,7 @@ module Faraday
     # @param repl [#to_s, :none] the replacement to use, when `:none` it will
     #   alert the user that no replacement is present.
     # @param ver [String] the semver the method will be removed.
-    def deprecate(name, repl, ver)
+    def deprecate(name, repl, ver, custom_message = nil)
       class_eval do
         gem_ver = Gem::Version.new(ver)
         old = "_deprecated_#{name}"
@@ -95,7 +95,8 @@ module Faraday
           msg = [
             "NOTE: #{target_message} is deprecated",
             repl == :none ? ' with no replacement' : "; use #{repl} instead. ",
-            "It will be removed in or after version #{gem_ver}",
+            "It will be removed in or after version #{gem_ver} ",
+            custom_message,
             "\n#{target}#{name} called from #{Gem.location_of_caller.join(':')}"
           ]
           warn "#{msg.join}." unless Faraday::Deprecate.skip
