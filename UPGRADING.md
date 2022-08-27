@@ -120,7 +120,7 @@ For more details, see https://github.com/lostisland/faraday/pull/1306
 
 In Faraday 1, a deferred require was used with the `dependency` method.
 
-In Faraday 2, that method has been removed. In your middlware gems, use a regular `require` at the top of the file, 
+In Faraday 2, that method has been removed. In your middleware gems, use a regular `require` at the top of the file, 
 
 ### Others
 
