@@ -10,22 +10,7 @@ order: 1
 Let's fetch the home page for the wonderful
 [httpbingo.org](https://httpbingo.org) service.
 
-First of all, you need to tell Faraday which [`adapter`](../adapters) you wish to use.
-Adapters are responsible for actually executing HTTP requests.
-There are many different adapters you can choose from.
-Just pick the one you like and install it, or add it to your project Gemfile.
-You might want to use Faraday with the `Net::HTTP` adapter, for example.
-[Learn more about Adapters](../adapters).
-
-Remember you'll need to install the corresponding adapter gem before you'll be able to use it.
-
-```ruby
-require 'faraday'
-require 'faraday/net_http'
-Faraday.default_adapter = :net_http
-```
-
-Next, you can make a simple `GET` request using `Faraday.get`:
+You can make a simple `GET` request using `Faraday.get`:
 
 ```ruby
 response = Faraday.get('http://httpbingo.org')
@@ -134,6 +119,13 @@ response = conn.post('post') do |req|
 end
 # => POST http://httpbingo.org/post?limit=100
 ```
+
+### Adapters
+
+Adapters are responsible for actually executing HTTP requests. The default
+adapter uses Ruby's `Net::HTTP`, but there are many different adapters
+available. You might want to use Faraday with the Typhoeus adapter, for example.
+[Learn more about Adapters](../adapters).
 
 ### Middleware
 

@@ -10,6 +10,28 @@ a Faraday response object. Adapters are typically implemented with common Ruby
 HTTP clients, but can have custom implementations. Adapters can be configured
 either globally or per Faraday Connection through the configuration block.
 
+For example, consider using `httpclient` as an adapter. Note that [faraday-httpclient](https://github.com/lostisland/faraday-httpclient) must be installed beforehand.
+
+If you wants to configure it globally, do the following:
+
+```ruby
+require 'faraday'
+require 'faraday/httpclient'
+
+Faraday.default_adapter = :httpclient
+```
+
+If you want to configure it per Faraday Connection, do the following:
+
+```ruby
+require 'faraday'
+require 'faraday/httpclient'
+
+conn = Faraday.new do |f|
+  f.adapter :httpclient
+end
+```
+
 {: .mt-60}
 ## Fantastic adapters and where to find them
 
