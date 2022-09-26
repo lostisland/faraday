@@ -23,22 +23,27 @@ module Faraday
       def on_request(env)
         return if env.request_headers[KEY]
 
-        env.request_headers[KEY] = header_from(@type, *@params)
+        env.request_headers[KEY] = header_from(@type, env, *@params)
       end
 
       private
 
       # @param type [String, Symbol]
+      # @param env [Faraday::Env]
       # @param params [Array]
       # @return [String] a header value
-      def header_from(type, *params)
+      def header_from(type, env, *params)
         if type.to_s.casecmp('basic').zero? && params.size == 2
           Utils.basic_header_from(*params)
         elsif params.size != 1
           raise ArgumentError, "Unexpected params received (got #{params.size} instead of 1)"
         else
           value = params.first
-          value = value.call if value.is_a?(Proc) || value.respond_to?(:call)
+          if (value.is_a?(Proc) && value.arity == 1) || (value.respond_to?(:call) && value.method(:call).arity == 1)
+            value = value.call(env)
+          elsif value.is_a?(Proc) || value.respond_to?(:call)
+            value = value.call
+          end
           "#{type} #{value}"
         end
       end

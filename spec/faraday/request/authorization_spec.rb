@@ -72,6 +72,41 @@ RSpec.describe Faraday::Request::Authorization do
       include_examples 'does not interfere with existing authentication'
     end
 
+    context 'with an argument' do
+      let(:response) { conn.get('/auth-echo', nil, 'middle' => 'crunchy surprise') }
+
+      context 'when passed a proc' do
+        let(:auth_config) { [proc { |env| "proc #{env.request_headers['middle']}" }] }
+
+        it { expect(response.body).to eq('Bearer proc crunchy surprise') }
+
+        include_examples 'does not interfere with existing authentication'
+      end
+
+      context 'when passed a lambda' do
+        let(:auth_config) { [->(env) { "lambda #{env.request_headers['middle']}" }] }
+
+        it { expect(response.body).to eq('Bearer lambda crunchy surprise') }
+
+        include_examples 'does not interfere with existing authentication'
+      end
+
+      context 'when passed a callable with an argument' do
+        let(:callable) do
+          Class.new do
+            def call(env)
+              "callable #{env.request_headers['middle']}"
+            end
+          end.new
+        end
+        let(:auth_config) { [callable] }
+
+        it { expect(response.body).to eq('Bearer callable crunchy surprise') }
+
+        include_examples 'does not interfere with existing authentication'
+      end
+    end
+
     context 'when passed too many arguments' do
       let(:auth_config) { %w[baz foo] }
 
