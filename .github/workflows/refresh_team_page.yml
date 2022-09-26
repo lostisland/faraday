@@ -4,6 +4,7 @@ on:
   push:
     branches: [ main ]
 
+permissions: {}
 jobs:
   build:
     name: Refresh Contributors Stats
