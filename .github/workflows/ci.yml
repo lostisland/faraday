@@ -11,6 +11,9 @@ env:
   GIT_BRANCH: ${{ github.ref }}
   COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
 jobs:
   linting:
     runs-on: ubuntu-latest
