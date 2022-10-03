@@ -21,7 +21,7 @@ module Faraday
   # @!attribute headers
   #   @return [Faraday::Utils::Headers] headers
   # @!attribute body
-  #   @return [Hash] body
+  #   @return [String] body
   # @!attribute options
   #   @return [RequestOptions] options
   #

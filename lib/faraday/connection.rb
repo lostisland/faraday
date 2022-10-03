@@ -130,10 +130,10 @@ module Faraday
     # Makes a GET HTTP request without a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for
+    # @param url [String, URI, nil] The optional String base URL to use as a prefix for
     #            all requests.  Can also be the options Hash.
-    # @param params [Hash] Hash of URI query unencoded key/value pairs.
-    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    # @param params [Hash, nil] Hash of URI query unencoded key/value pairs.
+    # @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
     # @example
     #   conn.get '/items', { page: 1 }, :accept => 'application/json'
@@ -152,10 +152,10 @@ module Faraday
     # Makes a HEAD HTTP request without a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for
+    # @param url [String, URI, nil] The optional String base URL to use as a prefix for
     #            all requests.  Can also be the options Hash.
-    # @param params [Hash] Hash of URI query unencoded key/value pairs.
-    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    # @param params [Hash, nil] Hash of URI query unencoded key/value pairs.
+    # @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
     # @example
     #   conn.head '/items/1'
@@ -167,10 +167,10 @@ module Faraday
     # Makes a DELETE HTTP request without a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for
+    # @param url [String, URI, nil] The optional String base URL to use as a prefix for
     #            all requests.  Can also be the options Hash.
-    # @param params [Hash] Hash of URI query unencoded key/value pairs.
-    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    # @param params [Hash, nil] Hash of URI query unencoded key/value pairs.
+    # @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
     # @example
     #   conn.delete '/items/1'
@@ -182,10 +182,10 @@ module Faraday
     # Makes a TRACE HTTP request without a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for
+    # @param url [String, URI, nil] The optional String base URL to use as a prefix for
     #            all requests.  Can also be the options Hash.
-    # @param params [Hash] Hash of URI query unencoded key/value pairs.
-    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    # @param params [Hash, nil] Hash of URI query unencoded key/value pairs.
+    # @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
     # @example
     #   conn.connect '/items/1'
@@ -210,9 +210,9 @@ module Faraday
     #
     # @overload options(url, params = nil, headers = nil)
     #   Makes an OPTIONS HTTP request to the given URL.
-    #   @param url [String] String base URL to sue as a prefix for all requests.
-    #   @param params [Hash] Hash of URI query unencoded key/value pairs.
-    #   @param headers [Hash] unencoded HTTP header key/value pairs.
+    #   @param url [String, URI, nil] String base URL to sue as a prefix for all requests.
+    #   @param params [Hash, nil] Hash of URI query unencoded key/value pairs.
+    #   @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
     # @example
     #   conn.options '/items/1'
@@ -233,10 +233,10 @@ module Faraday
     # Makes a POST HTTP request with a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for
+    # @param url [String, URI, nil] The optional String base URL to use as a prefix for
     #            all requests.  Can also be the options Hash.
-    # @param body [String] body for the request.
-    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    # @param body [String, nil] body for the request.
+    # @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
     # @example
     #   conn.post '/items', data, content_type: 'application/json'
@@ -255,10 +255,10 @@ module Faraday
     # Makes a PUT HTTP request with a body.
     # @!scope class
     #
-    # @param url [String] The optional String base URL to use as a prefix for
+    # @param url [String, URI, nil] The optional String base URL to use as a prefix for
     #            all requests.  Can also be the options Hash.
-    # @param body [String] body for the request.
-    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    # @param body [String, nil] body for the request.
+    # @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
     # @example
     #   # TODO: Make it a PUT example
@@ -390,7 +390,7 @@ module Faraday
     # Takes a relative url for a request and combines it with the defaults
     # set on the connection instance.
     #
-    # @param url [String]
+    # @param url [String, URI, nil]
     # @param extra_params [Hash]
     #
     # @example
@@ -423,10 +423,10 @@ module Faraday
     # Builds and runs the Faraday::Request.
     #
     # @param method [Symbol] HTTP method.
-    # @param url [String, URI] String or URI to access.
-    # @param body [Object] The request body that will eventually be converted to
+    # @param url [String, URI, nil] String or URI to access.
+    # @param body [String, nil] The request body that will eventually be converted to
     #             a string.
-    # @param headers [Hash] unencoded HTTP header key/value pairs.
+    # @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
     # @return [Faraday::Response]
     def run_request(method, url, body, headers)
@@ -462,7 +462,7 @@ module Faraday
 
     # Build an absolute URL based on url_prefix.
     #
-    # @param url [String, URI]
+    # @param url [String, URI, nil]
     # @param params [Faraday::Utils::ParamsHash] A Faraday::Utils::ParamsHash to
     #               replace the query values
     #          of the resulting url (default: nil).
