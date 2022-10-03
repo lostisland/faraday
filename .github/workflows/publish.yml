@@ -4,7 +4,8 @@ on:
   release:
     types: [published]
 
-permissions: {}
+permissions:
+  contents: read  # to checkout the code (actions/checkout)
 jobs:
   build:
     name: Publish to Rubygems
