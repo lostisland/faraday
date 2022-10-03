@@ -30,6 +30,14 @@ Faraday.new(...) do |conn|
 end
 ```
 
+If the proc takes an argument, it will receive the forwarded `env`
+
+```ruby
+Faraday.new(...) do |conn|
+  conn.request :authorization, 'Bearer', ->(env) { MyAuthStorage.get_auth_token(env) }
+end
+```
+
 ### Basic Authentication
 
 The middleware will automatically Base64 encode your Basic username and password:
