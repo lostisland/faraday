@@ -1,6 +1,5 @@
 begin
-  require 'composite_io'
-  require 'parts'
+  require 'multipart/post'
   require 'stringio'
 rescue LoadError
   $stderr.puts "Install the multipart-post gem."
@@ -62,6 +61,6 @@ module Faraday
     end
   end
 
-  UploadIO = ::UploadIO
-  Parts = ::Parts
+  UploadIO = ::Multipart::Post::UploadIO
+  Parts = ::Multipart::Post::Parts
 end
