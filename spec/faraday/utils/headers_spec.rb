@@ -23,6 +23,28 @@ RSpec.describe Faraday::Utils::Headers do
     it { is_expected.to include('content-type') }
   end
 
+  describe '#[]=' do
+    it 'returns the string value' do
+      h = subject.tap { |s| s['Foo'] = '!' }
+      expect(h[:foo]).to eq('!')
+    end
+
+    it 'returns the string value if an integer is passed' do
+      h = subject.tap { |s| s['Foo'] = 123 }
+      expect(h[:foo]).to eq('123')
+    end
+
+    it 'returns the string value if a symbol is passed' do
+      h = subject.tap { |s| s['Foo'] = :test }
+      expect(h[:foo]).to eq('test')
+    end
+
+    it 'returns the string value if an array is passed' do
+      h = subject.tap { |s| s['Foo'] = [1, 2, 3, :h] }
+      expect(h[:foo]).to eq('1, 2, 3, h')
+    end
+  end
+
   describe '#fetch' do
     before { subject['Content-Type'] = 'application/json' }
 

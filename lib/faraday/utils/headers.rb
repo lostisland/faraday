@@ -59,7 +59,7 @@ module Faraday
         key = (@names[key.downcase] ||= key)
         # join multiple values with a comma
         val = val.to_ary.join(', ') if val.respond_to?(:to_ary)
-        super(key, val)
+        super(key, val.to_s)
       end
 
       def fetch(key, *args, &block)
