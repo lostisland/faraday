@@ -132,7 +132,12 @@ module Faraday
 
       # Join multiple values with a comma.
       def add_parsed(key, value)
-        self[key] ? self[key] << ', ' << value : self[key] = value
+        if key?(key)
+          self[key] = self[key].to_s
+          self[key] << ', ' << value
+        else
+          self[key] = value
+        end
       end
     end
   end
