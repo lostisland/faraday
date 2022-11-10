@@ -57,10 +57,10 @@ RSpec.describe Faraday::Utils::Headers do
   end
 
   describe '#parse' do
-    before { subject.parse(headers) }
-
     context 'when response headers leave http status line out' do
       let(:headers) { "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" }
+
+      before { subject.parse(headers) }
 
       it { expect(subject.keys).to eq(%w[Content-Type]) }
       it { expect(subject['Content-Type']).to eq('text/html') }
@@ -70,13 +70,31 @@ RSpec.describe Faraday::Utils::Headers do
     context 'when response headers values include a colon' do
       let(:headers) { "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nLocation: http://httpbingo.org/\r\n\r\n" }
 
+      before { subject.parse(headers) }
+
       it { expect(subject['location']).to eq('http://httpbingo.org/') }
     end
 
     context 'when response headers include a blank line' do
       let(:headers) { "HTTP/1.1 200 OK\r\n\r\nContent-Type: text/html\r\n\r\n" }
 
+      before { subject.parse(headers) }
+
       it { expect(subject['content-type']).to eq('text/html') }
+    end
+
+    context 'when response headers include already stored keys' do
+      let(:headers) { "HTTP/1.1 200 OK\r\nX-Numbers: 123\r\n\r\n" }
+
+      before do
+        h = subject
+        h[:x_numbers] = 8
+        h.parse(headers)
+      end
+
+      it do
+        expect(subject[:x_numbers]).to eq('8, 123')
+      end
     end
   end
 end
