@@ -17,6 +17,9 @@ module Faraday
       app.call(env).on_complete do |environment|
         on_complete(environment) if respond_to?(:on_complete)
       end
+    rescue StandardError => e
+      on_error(e) if respond_to?(:on_error)
+      raise
     end
 
     def close

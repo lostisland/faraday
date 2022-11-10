@@ -64,6 +64,15 @@ RSpec.describe Faraday::Response::Logger do
       expect(formatter).to receive(:response).with(an_instance_of(Faraday::Env))
       conn.get '/hello'
     end
+
+    context 'when no route' do
+      it 'delegates logging to the formatter' do
+        expect(formatter).to receive(:request).with(an_instance_of(Faraday::Env))
+        expect(formatter).to receive(:error).with(an_instance_of(Faraday::Adapter::Test::Stubs::NotFound))
+
+        expect { conn.get '/noroute' }.to raise_error(Faraday::Adapter::Test::Stubs::NotFound)
+      end
+    end
   end
 
   context 'with custom formatter' do
