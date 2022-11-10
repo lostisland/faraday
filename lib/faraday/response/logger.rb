@@ -26,6 +26,10 @@ module Faraday
       def on_complete(env)
         @formatter.response(env)
       end
+
+      def on_error(error)
+        @formatter.error(error) if @formatter.respond_to?(:error)
+      end
     end
   end
 end

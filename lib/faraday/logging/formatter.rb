@@ -35,6 +35,14 @@ module Faraday
         log_body('response', env[:body]) if env[:body] && log_body?(:response)
       end
 
+      def error(error)
+        error_log = proc { error.full_message }
+        public_send(log_level, 'error', &error_log)
+
+        log_headers('error', error.response_headers) if log_headers?(:error)
+        log_body('error', error.response_body) if error.response_body && log_body?(:error)
+      end
+
       def filter(filter_word, filter_replacement)
         @filter.push([filter_word, filter_replacement])
       end

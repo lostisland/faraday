@@ -33,6 +33,24 @@ RSpec.describe Faraday::Middleware do
     end
   end
 
+  describe '#on_error' do
+    subject do
+      Class.new(described_class) do
+        def on_error(error)
+          # do nothing
+        end
+      end.new(app)
+    end
+
+    it 'is called by #call' do
+      expect(app).to receive(:call).and_raise(Faraday::ConnectionFailed)
+      is_expected.to receive(:call).and_call_original
+      is_expected.to receive(:on_error)
+
+      expect { subject.call(double) }.to raise_error(Faraday::ConnectionFailed)
+    end
+  end
+
   describe '#close' do
     context "with app that doesn't support \#close" do
       it 'should issue warning' do
