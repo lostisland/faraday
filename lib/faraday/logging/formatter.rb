@@ -39,8 +39,10 @@ module Faraday
         error_log = proc { error.full_message }
         public_send(log_level, 'error', &error_log)
 
-        log_headers('error', error.response_headers) if log_headers?(:error)
-        log_body('error', error.response_body) if error.response_body && log_body?(:error)
+        log_headers('error', error.response_headers) if error.respond_to?(:response_headers) && log_headers?(:error)
+        return unless error.respond_to?(:response_body) && error.response_body && log_body?(:error)
+
+        log_body('error', error.response_body)
       end
 
       def filter(filter_word, filter_replacement)
