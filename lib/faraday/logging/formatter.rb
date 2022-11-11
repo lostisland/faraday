@@ -6,7 +6,7 @@ module Faraday
     class Formatter
       extend Forwardable
 
-      DEFAULT_OPTIONS = { headers: true, bodies: false,
+      DEFAULT_OPTIONS = { headers: true, bodies: false, errors: false,
                           log_level: :info }.freeze
 
       def initialize(logger:, options:)
@@ -36,6 +36,8 @@ module Faraday
       end
 
       def error(error)
+        return unless log_errors?
+
         error_log = proc { error.full_message }
         public_send(log_level, 'error', &error_log)
 
@@ -83,6 +85,10 @@ module Faraday
         else
           @options[:bodies]
         end
+      end
+
+      def log_errors?
+        @options[:errors]
       end
 
       def apply_filters(output)
