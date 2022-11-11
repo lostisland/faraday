@@ -103,6 +103,16 @@ RSpec.describe Faraday::Response::Logger do
     expect(string_io.string).to match('GET http:/hello')
   end
 
+  it 'logs status' do
+    conn.get '/hello', nil, accept: 'text/html'
+    expect(string_io.string).to match('Status 200')
+  end
+
+  it 'does not log error message by default' do
+    expect { conn.get '/noroute' }.to raise_error(Faraday::Adapter::Test::Stubs::NotFound)
+    expect(string_io.string).not_to match(%(no stubbed request for get http:/noroute))
+  end
+
   it 'logs request headers by default' do
     conn.get '/hello', nil, accept: 'text/html'
     expect(string_io.string).to match(%(Accept: "text/html))
@@ -194,6 +204,15 @@ RSpec.describe Faraday::Response::Logger do
       expect(string_io.string).to match(%(soylent green is))
       expect(string_io.string).to match(%(tasty))
       expect(string_io.string).not_to match(%(people))
+    end
+  end
+
+  context 'when logging errors' do
+    let(:logger_options) { { errors: true } }
+
+    it 'logs error message' do
+      expect { conn.get '/noroute' }.to raise_error(Faraday::Adapter::Test::Stubs::NotFound)
+      expect(string_io.string).to match(%(no stubbed request for get http:/noroute))
     end
   end
 
