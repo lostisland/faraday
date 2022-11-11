@@ -42,12 +42,21 @@ end
 ### Include and exclude headers/bodies
 
 By default, the `logger` middleware logs only headers for security reasons, however, you can configure it
-to log bodies as well, or disable headers logging if you need to. To do so, simply provide a configuration hash
-when you add the middleware to the stack:
+to log bodies and errors as well, or disable headers logging if you need to.
+To do so, simply provide a configuration hash when you add the middleware to the stack:
 
 ```ruby
 conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
-  faraday.response :logger, nil, { headers: true, bodies: true }
+  faraday.response :logger, nil, { headers: true, bodies: true, errors: true }
+end
+```
+
+You can also configure the `logger` middleware with a little more complex settings
+like "do not log the request bodies, but log the response bodies".
+
+```ruby
+conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
+  faraday.response :logger, nil, { bodies: { request: false, response: true } }
 end
 ```
 
