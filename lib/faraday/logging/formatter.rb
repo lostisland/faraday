@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'pp' # rubocop:disable Lint/RedundantRequireStatement
+
 module Faraday
   module Logging
     # Serves as an integration point to customize logging
