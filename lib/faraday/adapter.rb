@@ -78,8 +78,7 @@ module Faraday
     # @param type [Symbol] Describes which timeout setting to get: :read,
     #                      :write, or :open.
     # @param options [Hash] Hash containing Symbol keys like :timeout,
-    #                       :read_timeout, :write_timeout, :open_timeout, or
-    #                       :timeout
+    #                       :read_timeout, :write_timeout, or :open_timeout
     #
     # @return [Integer, nil] Timeout duration in seconds, or nil if no timeout
     #                        has been set.
