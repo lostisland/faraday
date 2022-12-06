@@ -410,4 +410,33 @@ RSpec.describe Faraday::Adapter::Test do
       end
     end
   end
+
+  describe 'request timeout' do
+    subject(:request) do
+      connection.get('/sleep') do |req|
+        req.options.timeout = timeout
+      end
+    end
+
+    before do
+      stubs.get('/sleep') do
+        sleep(0.01)
+        [200, {}, '']
+      end
+    end
+
+    context 'when request is within timeout' do
+      let(:timeout) { 1 }
+
+      it { expect(request.status).to eq 200 }
+    end
+
+    context 'when request is too slow' do
+      let(:timeout) { 0.001 }
+
+      it 'raises an exception' do
+        expect { request }.to raise_error(Faraday::TimeoutError)
+      end
+    end
+  end
 end
