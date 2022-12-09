@@ -280,10 +280,10 @@ module Faraday
 
         block_arity = stub.block.arity
         params = if block_arity >= 0
-          [env, meta].take(block_arity)
-        else
-          [env, meta]
-        end
+                   [env, meta].take(block_arity)
+                 else
+                   [env, meta]
+                 end
 
         timeout = request_timeout(:open, env[:request])
         timeout ||= request_timeout(:read, env[:request])
@@ -296,7 +296,6 @@ module Faraday
           else
             stub.block.call(*params)
           end
-
 
         # We need to explicitly pass `reason_phrase = nil` here to avoid keyword args conflicts.
         #   See https://github.com/lostisland/faraday/issues/1444
