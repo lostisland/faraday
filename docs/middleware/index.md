@@ -49,6 +49,40 @@ therefore be last.
 
 ![Middleware](../assets/img/middleware.png)
 
+This is what makes things like the "retry middleware" possible.
+It doesn't really matter if the middleware was registered as a request or a response one, the only thing that matter is how they're added to the stack.
+
+Say you have the following:
+
+```ruby
+Faraday.new(...) do |conn|
+  conn.request :authorization
+  conn.response :json
+  conn.response :parse_dates
+end
+```
+
+This will result into a middleware stack like this:
+
+```ruby
+authorization do
+  # authorization request hook
+  json do
+    # json request hook
+    parse_dates do
+      # parse_dates request hook
+      response = adapter.perform(request)
+      # parse_dates response hook
+    end
+    # json response hook
+  end
+  # authorization response hook
+end
+```
+
+In this example, you can see that `parse_dates` is the LAST middleware processing the request, and the FIRST middleware processing the response.
+This is why it's important for the adapter to always be at the end of the middleware list.
+
 ### Using Middleware
 
 Calling `use` is the most basic way to add middleware to your stack, but most
