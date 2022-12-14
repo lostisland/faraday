@@ -27,8 +27,8 @@ module Faraday
         @formatter.response(env)
       end
 
-      def on_error(error)
-        @formatter.error(error) if @formatter.respond_to?(:error)
+      def on_error(exc)
+        @formatter.exception(exc) if @formatter.respond_to?(:exception)
       end
     end
   end

@@ -96,7 +96,8 @@ end
 You can also provide a custom formatter to control how requests, responses and errors are logged.
 Any custom formatter MUST implement the `request` and `response` method, with one argument which
 will be passed being the Faraday environment.
-Any custom formatter CAN implement the `error` method, with one argument which will be passed being the Faraday error.
+Any custom formatter CAN implement the `exception` method,
+with one argument which will be passed being the exception (StandardError).
 If you make your formatter inheriting from `Faraday::Logging::Formatter`,
 then the methods `debug`, `info`, `warn`, `error` and `fatal` are automatically delegated to the logger.
 
@@ -112,8 +113,8 @@ class MyFormatter < Faraday::Logging::Formatter
     info('Response') { 'Response Received' }
   end
 
-  def error(error)
-    # Build a custom message using `error`
+  def exception(exc)
+    # Build a custom message using `exc`
     info('Error') { 'Error Raised' }
   end
 end
