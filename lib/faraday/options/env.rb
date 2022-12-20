@@ -15,8 +15,14 @@ module Faraday
   #   @return [Hash] options for configuring the request.
   #   Options for configuring the request.
   #
-  #   - `:timeout`      - total timeout for both the connection-opening phase and the reading phase after it added together (Integer in seconds)
-  #   - `:open_timeout` - timeout for only the connection-opening phase (Integer in seconds)
+  #   - `:timeout`      - generic timeout (Integer in seconds) that represents
+  #   different things depending on which Faraday adapter is used. For instance,
+  #   it may represent the timeout for the entire request including both
+  #   time to establish the connection and time to read data from server or it
+  #   may represent the default timeout value for various timeouts like timeout
+  #   for establishing connection and timeout for reading data from server
+  #   - `:open_timeout` - timeout (Integer in seconds) for establishing the
+  #   connection between the client and the server
   #   - `:on_data`      - Proc for streaming
   #   - `:proxy`        - Hash of proxy options
   #       - `:uri`        - Proxy Server URI
