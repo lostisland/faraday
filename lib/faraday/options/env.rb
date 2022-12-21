@@ -15,19 +15,19 @@ module Faraday
   #   @return [Hash] options for configuring the request.
   #   Options for configuring the request.
   #
-  #   - `:timeout`      - generic timeout (Integer in seconds) that represents
-  #   different things depending on which Faraday adapter is used. For instance,
-  #   it may represent the timeout for the entire request including both
-  #   time to establish the connection and time to read data from server or it
-  #   may represent the default timeout value for various timeouts like timeout
-  #   for establishing connection and timeout for reading data from server
-  #   - `:open_timeout` - timeout (Integer in seconds) for establishing the
-  #   connection between the client and the server
-  #   - `:on_data`      - Proc for streaming
-  #   - `:proxy`        - Hash of proxy options
-  #       - `:uri`        - Proxy Server URI
-  #       - `:user`       - Proxy server username
-  #       - `:password`   - Proxy server password
+  #   - `:timeout`       - time limit for the entire request (Integer in
+  #                        seconds)
+  #   - `:open_timeout`  - time limit for just the connection phase (e.g.
+  #                        handshake) (Integer in seconds)
+  #   - `:read_timeout`  - time limit for the first response byte received from
+  #                        the server (Integer in seconds)
+  #   - `:write_timeout` - time limit for the client to send the request to the
+  #                        server (Integer in seconds)
+  #   - `:on_data`       - Proc for streaming
+  #   - `:proxy`         - Hash of proxy options
+  #       - `:uri`         - Proxy Server URI
+  #       - `:user`        - Proxy server username
+  #       - `:password`    - Proxy server password
   #
   # @!attribute request_headers
   #   @return [Hash] HTTP Headers to be sent to the server.
