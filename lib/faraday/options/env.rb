@@ -15,13 +15,19 @@ module Faraday
   #   @return [Hash] options for configuring the request.
   #   Options for configuring the request.
   #
-  #   - `:timeout`  open/read timeout Integer in seconds
-  #   - `:open_timeout` - read timeout Integer in seconds
-  #   - `:on_data`      - Proc for streaming
-  #   - `:proxy`        - Hash of proxy options
-  #       - `:uri`        - Proxy Server URI
-  #       - `:user`       - Proxy server username
-  #       - `:password`   - Proxy server password
+  #   - `:timeout`       - time limit for the entire request (Integer in
+  #                        seconds)
+  #   - `:open_timeout`  - time limit for just the connection phase (e.g.
+  #                        handshake) (Integer in seconds)
+  #   - `:read_timeout`  - time limit for the first response byte received from
+  #                        the server (Integer in seconds)
+  #   - `:write_timeout` - time limit for the client to send the request to the
+  #                        server (Integer in seconds)
+  #   - `:on_data`       - Proc for streaming
+  #   - `:proxy`         - Hash of proxy options
+  #       - `:uri`         - Proxy server URI
+  #       - `:user`        - Proxy server username
+  #       - `:password`    - Proxy server password
   #
   # @!attribute request_headers
   #   @return [Hash] HTTP Headers to be sent to the server.
