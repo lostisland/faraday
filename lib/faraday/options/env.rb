@@ -25,7 +25,7 @@ module Faraday
   #                        server (Integer in seconds)
   #   - `:on_data`       - Proc for streaming
   #   - `:proxy`         - Hash of proxy options
-  #       - `:uri`         - Proxy Server URI
+  #       - `:uri`         - Proxy server URI
   #       - `:user`        - Proxy server username
   #       - `:password`    - Proxy server password
   #
