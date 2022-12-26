@@ -12,7 +12,7 @@ either globally or per Faraday Connection through the configuration block.
 
 For example, consider using `httpclient` as an adapter. Note that [faraday-httpclient](https://github.com/lostisland/faraday-httpclient) must be installed beforehand.
 
-If you wants to configure it globally, do the following:
+If you want to configure it globally, do the following:
 
 ```ruby
 require 'faraday'
