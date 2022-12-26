@@ -61,7 +61,8 @@ module Faraday
     def to_hash
       {
         status: env.status, body: env.body,
-        response_headers: env.response_headers
+        response_headers: env.response_headers,
+        url: env.url
       }
     end
 

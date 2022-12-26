@@ -4,7 +4,7 @@ RSpec.describe Faraday::Response do
   subject { Faraday::Response.new(env) }
 
   let(:env) do
-    Faraday::Env.from(status: 404, body: 'yikes',
+    Faraday::Env.from(status: 404, body: 'yikes', url: Faraday::Utils.URI('https://lostisland.github.io/faraday'),
                       response_headers: { 'Content-Type' => 'text/plain' })
   end
 
@@ -30,6 +30,7 @@ RSpec.describe Faraday::Response do
     it { expect(hash[:status]).to eq(subject.status) }
     it { expect(hash[:response_headers]).to eq(subject.headers) }
     it { expect(hash[:body]).to eq(subject.body) }
+    it { expect(hash[:url]).to eq(subject.env.url) }
   end
 
   describe 'marshal serialization support' do
@@ -45,6 +46,7 @@ RSpec.describe Faraday::Response do
     it { expect(loaded.env[:body]).to eq(env[:body]) }
     it { expect(loaded.env[:response_headers]).to eq(env[:response_headers]) }
     it { expect(loaded.env[:status]).to eq(env[:status]) }
+    it { expect(loaded.env[:url]).to eq(env[:url]) }
   end
 
   describe '#on_complete' do
