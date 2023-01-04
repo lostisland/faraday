@@ -11,7 +11,7 @@ theme_settings:
   # email: your-email@example.com
   description: >-
     Simple, but flexible HTTP client library, with support for multiple backends
-  footer_text: "&copy; 2009 - 2022, the <a class=\"body-link\" href=\"/faraday/team\">Faraday Team</a>. Website and branding design by <a href=\"https://elelopic.design\" target=\"_blank\">Elena Lo Piccolo</a>."
+  footer_text: "&copy; 2009 - 2023, the <a class=\"body-link\" href=\"/faraday/team\">Faraday Team</a>. Website and branding design by <a href=\"https://elelopic.design\" target=\"_blank\">Elena Lo Piccolo</a>."
 
   # Icons
   github: 'lostisland/faraday'
