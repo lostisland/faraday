@@ -1,4 +1,4 @@
-Copyright (c) 2009-2022 Rick Olson, Zack Hobson
+Copyright (c) 2009-2023 Rick Olson, Zack Hobson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
