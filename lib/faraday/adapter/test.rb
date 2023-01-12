@@ -240,7 +240,7 @@ module Faraday
         end
 
         def body_match?(request_body)
-          return true if body.to_s.size.zero?
+          return true if body.to_s.empty?
 
           case body
           when Proc
