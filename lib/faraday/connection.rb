@@ -220,7 +220,7 @@ module Faraday
     # @yield [Faraday::Request] for further request customizations
     # @return [Faraday::Response]
     def options(*args)
-      return @options if args.size.zero?
+      return @options if args.empty?
 
       url, params, headers = *args
       run_request(:options, url, nil, headers) do |request|
