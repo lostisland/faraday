@@ -220,7 +220,7 @@ module Faraday
     # @yield [Faraday::Request] for further request customizations
     # @return [Faraday::Response]
     def options(*args)
-      return @options if args.size.zero?
+      return @options if args.empty?
 
       url, params, headers = *args
       run_request(:options, url, nil, headers) do |request|
@@ -471,10 +471,10 @@ module Faraday
     def build_exclusive_url(url = nil, params = nil, params_encoder = nil)
       url = nil if url.respond_to?(:empty?) && url.empty?
       base = url_prefix.dup
-      if url && base.path && base.path !~ %r{/$}
+      if url && !base.path.end_with?('/')
         base.path = "#{base.path}/" # ensure trailing slash
       end
-      url = url.to_s.gsub(':', '%3A') if url && URI.parse(url.to_s).opaque
+      url = url.to_s.gsub(':', '%3A') if Utils.URI(url.to_s).opaque
       uri = url ? base + url : base
       if params
         uri.query = params.to_query(params_encoder || options.params_encoder)
