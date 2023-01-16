@@ -261,14 +261,13 @@ module Faraday
     # @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
     # @example
-    #   # TODO: Make it a PUT example
-    #   conn.post '/items', data, content_type: 'application/json'
+    #   conn.put '/products/123', data, content_type: 'application/json'
     #
-    #   # Simple ElasticSearch indexing sample.
-    #   conn.post '/twitter/tweet' do |req|
-    #     req.headers[:content_type] = 'application/json'
-    #     req.params[:routing] = 'kimchy'
-    #     req.body = JSON.generate(user: 'kimchy', ...)
+    #   # Star a gist.
+    #   conn.put 'https://api.github.com/gists/GIST_ID/star' do |req|
+    #     req.headers['Accept'] = 'application/vnd.github+json'
+    #     req.headers['Authorization'] = 'Bearer <YOUR-TOKEN>'
+    #     req.headers['X-GitHub-Api-Version'] = '2022-11-28'
     #   end
     #
     # @yield [Faraday::Request] for further request customizations
