@@ -15,7 +15,7 @@ jobs:
       - name: Set up Ruby 2.7
         uses: actions/setup-ruby@v1
         with:
-          ruby-version: 2.7.x
+          ruby-version: 2.7
 
       - name: Publish to RubyGems
         run: |
