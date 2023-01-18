@@ -30,6 +30,7 @@ group :test, :development do
   options = (RUBY_VERSION.start_with?('3') ? { github: 'grosser/net-http-persistent', branch: 'grosser/spec' } : {})
   gem 'net-http-persistent', '>= 3.0', **options
   gem 'patron', '>= 0.4.2', platforms: :ruby
+  gem 'rack', '< 3'
   gem 'rack-test', '>= 0.6', require: 'rack/test'
   gem 'rspec', '~> 3.7'
   gem 'rspec_junit_formatter', '~> 0.4'
