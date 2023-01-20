@@ -473,7 +473,7 @@ module Faraday
       if url && !base.path.end_with?('/')
         base.path = "#{base.path}/" # ensure trailing slash
       end
-      url = url.to_s.gsub(':', '%3A') if Utils.URI(url.to_s).opaque
+      url = url.to_s.gsub(':', '%3A') if URI.parse(url.to_s).opaque
       uri = url ? base + url : base
       if params
         uri.query = params.to_query(params_encoder || options.params_encoder)

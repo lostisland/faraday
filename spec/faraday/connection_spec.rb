@@ -310,6 +310,21 @@ RSpec.describe Faraday::Connection do
         expect(uri.to_s).to eq('http://service.com/api/service%3Asearch?limit=400')
       end
     end
+
+    context 'with a custom `default_uri_parser`' do
+      let(:url) { 'http://httpbingo.org' }
+      let(:parser) { Addressable::URI }
+
+      around do |example|
+        with_default_uri_parser(parser) do
+          example.run
+        end
+      end
+
+      it 'does not raise error' do
+        expect { conn.build_exclusive_url('/nigiri') }.not_to raise_error
+      end
+    end
   end
 
   describe '#build_url' do
