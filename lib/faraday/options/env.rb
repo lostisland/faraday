@@ -1,71 +1,70 @@
 # frozen_string_literal: true
 
 module Faraday
-  # @!attribute method
-  #   @return [Symbol] HTTP method (`:get`, `:post`)
-  #
-  # @!attribute body
-  #   @return [String] The request body that will eventually be converted to a
-  #   string.
-  #
-  # @!attribute url
-  #   @return [URI] URI instance for the current request.
-  #
-  # @!attribute request
-  #   @return [Hash] options for configuring the request.
-  #   Options for configuring the request.
-  #
-  #   - `:timeout`       - time limit for the entire request (Integer in
-  #                        seconds)
-  #   - `:open_timeout`  - time limit for just the connection phase (e.g.
-  #                        handshake) (Integer in seconds)
-  #   - `:read_timeout`  - time limit for the first response byte received from
-  #                        the server (Integer in seconds)
-  #   - `:write_timeout` - time limit for the client to send the request to the
-  #                        server (Integer in seconds)
-  #   - `:on_data`       - Proc for streaming
-  #   - `:proxy`         - Hash of proxy options
-  #       - `:uri`         - Proxy server URI
-  #       - `:user`        - Proxy server username
-  #       - `:password`    - Proxy server password
-  #
-  # @!attribute request_headers
-  #   @return [Hash] HTTP Headers to be sent to the server.
-  #
-  # @!attribute ssl
-  #   @return [Hash] options for configuring SSL requests
-  #
-  # @!attribute parallel_manager
-  #   @return [Object] sent if the connection is in parallel mode
-  #
-  # @!attribute params
-  #   @return [Hash]
-  #
-  # @!attribute response
-  #   @return [Response]
-  #
-  # @!attribute response_headers
-  #   @return [Hash] HTTP headers from the server
-  #
-  # @!attribute status
-  #   @return [Integer] HTTP response status code
-  #
-  # @!attribute reason_phrase
-  #   @return [String]
-  class Env < Options.new(:method, :request_body, :url, :request,
-                          :request_headers, :ssl, :parallel_manager, :params,
-                          :response, :response_headers, :status,
-                          :reason_phrase, :response_body)
-
-    # rubocop:disable Naming/ConstantName
-    ContentLength = 'Content-Length'
-    StatusesWithoutBody = Set.new [204, 304]
-    SuccessfulStatuses = (200..299).freeze
-    # rubocop:enable Naming/ConstantName
+  # @!parse
+  #   # @!attribute method
+  #   #   @return [Symbol] HTTP method (`:get`, `:post`)
+  #   #
+  #   # @!attribute body
+  #   #   @return [String] The request body that will eventually be converted to a
+  #   #   string.
+  #   #
+  #   # @!attribute url
+  #   #   @return [URI] URI instance for the current request.
+  #   #
+  #   # @!attribute request
+  #   #   @return [Hash] options for configuring the request.
+  #   #   Options for configuring the request.
+  #   #
+  #   #   - `:timeout`       - time limit for the entire request (Integer in
+  #   #                        seconds)
+  #   #   - `:open_timeout`  - time limit for just the connection phase (e.g.
+  #   #                        handshake) (Integer in seconds)
+  #   #   - `:read_timeout`  - time limit for the first response byte received from
+  #   #                        the server (Integer in seconds)
+  #   #   - `:write_timeout` - time limit for the client to send the request to the
+  #   #                        server (Integer in seconds)
+  #   #   - `:on_data`       - Proc for streaming
+  #   #   - `:proxy`         - Hash of proxy options
+  #   #       - `:uri`         - Proxy server URI
+  #   #       - `:user`        - Proxy server username
+  #   #       - `:password`    - Proxy server password
+  #   #
+  #   # @!attribute request_headers
+  #   #   @return [Hash] HTTP Headers to be sent to the server.
+  #   #
+  #   # @!attribute ssl
+  #   #   @return [Hash] options for configuring SSL requests
+  #   #
+  #   # @!attribute parallel_manager
+  #   #   @return [Object] sent if the connection is in parallel mode
+  #   #
+  #   # @!attribute params
+  #   #   @return [Hash]
+  #   #
+  #   # @!attribute response
+  #   #   @return [Response]
+  #   #
+  #   # @!attribute response_headers
+  #   #   @return [Hash] HTTP headers from the server
+  #   #
+  #   # @!attribute status
+  #   #   @return [Integer] HTTP response status code
+  #   #
+  #   # @!attribute reason_phrase
+  #   #   @return [String]
+  #   class Env < Options; end
+  Env = Options.new(:method, :request_body, :url, :request,
+                    :request_headers, :ssl, :parallel_manager, :params,
+                    :response, :response_headers, :status,
+                    :reason_phrase, :response_body) do
+    const_set(:ContentLength, 'Content-Length')
+    const_set(:StatusesWithoutBody, Set.new([204, 304]))
+    const_set(:SuccessfulStatuses, (200..299).freeze)
 
     # A Set of HTTP verbs that typically send a body.  If no body is set for
     # these requests, the Content-Length header is set to 0.
-    MethodsWithBodies = Set.new(Faraday::METHODS_WITH_BODY.map(&:to_sym))
+    const_set(:MethodsWithBodies, Set.new(Faraday::METHODS_WITH_BODY.map(&:to_sym)))
 
     options request: RequestOptions,
             request_headers: Utils::Headers, response_headers: Utils::Headers
@@ -126,25 +125,25 @@ module Faraday
 
     # @return [Boolean] true if status is in the set of {SuccessfulStatuses}.
     def success?
-      SuccessfulStatuses.include?(status)
+      Env::SuccessfulStatuses.include?(status)
     end
 
     # @return [Boolean] true if there's no body yet, and the method is in the
-    # set of {MethodsWithBodies}.
+    # set of {Env::MethodsWithBodies}.
     def needs_body?
-      !body && MethodsWithBodies.include?(method)
+      !body && Env::MethodsWithBodies.include?(method)
     end
 
     # Sets content length to zero and the body to the empty string.
     def clear_body
-      request_headers[ContentLength] = '0'
+      request_headers[Env::ContentLength] = '0'
       self.body = +''
     end
 
     # @return [Boolean] true if the status isn't in the set of
-    # {StatusesWithoutBody}.
+    # {Env::StatusesWithoutBody}.
     def parse_body?
-      !StatusesWithoutBody.include?(status)
+      !Env::StatusesWithoutBody.include?(status)
     end
 
     # @return [Boolean] true if there is a parallel_manager

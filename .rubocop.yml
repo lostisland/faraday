@@ -18,8 +18,12 @@ Layout/LineLength:
     - examples/**/*.rb
 Metrics/BlockLength:
   Exclude:
+    - lib/faraday/options/env.rb
     - spec/**/*.rb
     - examples/**/*.rb
+Metrics/ModuleLength:
+  Exclude:
+    - lib/faraday/options/env.rb
 Style/Documentation:
   Exclude:
     - 'spec/**/*'
