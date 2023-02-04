@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 module Faraday
-  # ConnectionOptions contains the configurable properties for a Faraday
-  # connection object.
-  class ConnectionOptions < Options.new(:request, :proxy, :ssl, :builder, :url,
-                                        :parallel_manager, :params, :headers,
-                                        :builder_class)
-
+  # @!parse
+  #   # ConnectionOptions contains the configurable properties for a Faraday
+  #   # connection object.
+  #   class ConnectionOptions < Options; end
+  ConnectionOptions = Options.new(:request, :proxy, :ssl, :builder, :url,
+                                  :parallel_manager, :params, :headers,
+                                  :builder_class) do
     options request: RequestOptions, ssl: SSLOptions
 
     memoized(:request) { self.class.options_for(:request).new }

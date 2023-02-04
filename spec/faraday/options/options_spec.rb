@@ -2,7 +2,7 @@
 
 RSpec.describe Faraday::Options do
   SubOptions = Class.new(Faraday::Options.new(:sub_a, :sub_b))
-  class ParentOptions < Faraday::Options.new(:a, :b, :c)
+  ParentOptions = Faraday::Options.new(:a, :b, :c) do
     options c: SubOptions
   end
 
