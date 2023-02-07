@@ -24,12 +24,13 @@ module Faraday
   #   @return [String] body
   # @!attribute options
   #   @return [RequestOptions] options
-  #
-  # rubocop:disable Style/StructInheritance
-  class Request < Struct.new(:http_method, :path, :params, :headers, :body, :options)
-    # rubocop:enable Style/StructInheritance
-
+  Request = Struct.new(:http_method, :path, :params, :headers, :body, :options) do
     extend MiddlewareRegistry
+
+    alias_method :member_get, :[]
+    private :member_get
+    alias_method :member_set, :[]=
+    private :member_set
 
     # @param request_method [String]
     # @yield [request] for block customization, if block given
@@ -48,7 +49,7 @@ module Faraday
       if params
         params.replace hash
       else
-        super
+        member_set(:params, hash)
       end
     end
 
@@ -59,7 +60,7 @@ module Faraday
       if headers
         headers.replace hash
       else
-        super
+        member_set(:headers, hash)
       end
     end
 
