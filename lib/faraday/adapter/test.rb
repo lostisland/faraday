@@ -184,7 +184,7 @@ module Faraday
       end
 
       # Stub request
-      class Stub < Struct.new(:host, :path, :query, :headers, :body, :strict_mode, :block) # rubocop:disable Style/StructInheritance
+      Stub = Struct.new(:host, :path, :query, :headers, :body, :strict_mode, :block) do
         # @param env [Faraday::Env]
         def matches?(env)
           request_host = env[:url].host
