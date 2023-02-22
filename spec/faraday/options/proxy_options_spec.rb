@@ -32,6 +32,12 @@ RSpec.describe Faraday::ProxyOptions do
       expect(proxy.user).to be_nil
       expect(proxy.password).to be_nil
     end
+
+    it 'treats empty string as nil' do
+      options = Faraday::ProxyOptions.from ''
+      expect(options).to be_a_kind_of(Faraday::ProxyOptions)
+      expect(options.inspect).to eq('#<Faraday::ProxyOptions (empty)>')
+    end
   end
 
   it 'allows hash access' do
