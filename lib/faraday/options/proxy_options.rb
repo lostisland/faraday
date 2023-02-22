@@ -12,6 +12,8 @@ module Faraday
 
     def self.from(value)
       case value
+      when ''
+        value = nil
       when String
         # URIs without a scheme should default to http (like 'example:123').
         # This fixes #1282 and prevents a silent failure in some adapters.
