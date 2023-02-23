@@ -35,7 +35,7 @@ RSpec.describe Faraday::ProxyOptions do
 
     it 'treats empty string as nil' do
       proxy = nil
-      proxy_string = "#{proxy}" # => empty string
+      proxy_string = proxy.to_s # => empty string
       options = Faraday::ProxyOptions.from proxy_string
       expect(options).to be_a_kind_of(Faraday::ProxyOptions)
       expect(options.inspect).to eq('#<Faraday::ProxyOptions (empty)>')
