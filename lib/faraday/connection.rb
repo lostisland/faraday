@@ -514,22 +514,17 @@ module Faraday
       return if Faraday.ignore_env_proxy
 
       uri = nil
-      if URI.parse('').respond_to?(:find_proxy)
-        case url
-        when String
-          uri = Utils.URI(url)
-          uri = if uri.host.nil?
-                  find_default_proxy
-                else
-                  URI.parse("#{uri.scheme}://#{uri.host}").find_proxy
-                end
-        when URI
-          uri = url.find_proxy
-        when nil
-          uri = find_default_proxy
-        end
-      else
-        warn 'no_proxy is unsupported' if ENV['no_proxy'] || ENV['NO_PROXY']
+      case url
+      when String
+        uri = Utils.URI(url)
+        uri = if uri.host.nil?
+                find_default_proxy
+              else
+                URI.parse("#{uri.scheme}://#{uri.host}").find_proxy
+              end
+      when URI
+        uri = url.find_proxy
+      when nil
         uri = find_default_proxy
       end
       ProxyOptions.from(uri) if uri
