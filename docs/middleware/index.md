@@ -28,7 +28,7 @@ require 'faraday'
 
 conn = Faraday.new do |f|
   f.request :json # encode req bodies as JSON
-  f.request :logger # logs request and responses
+  f.response :logger # logs request and responses
   f.response :json # decode response bodies as JSON
   f.adapter :net_http # Use the Net::HTTP adapter
 end

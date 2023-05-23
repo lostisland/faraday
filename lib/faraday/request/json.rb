@@ -40,7 +40,16 @@ module Faraday
       end
 
       def body?(env)
-        (body = env[:body]) && !(body.respond_to?(:to_str) && body.empty?)
+        body = env[:body]
+        case body
+        when true, false
+          true
+        when nil
+          # NOTE: nil can be converted to `"null"`, but this middleware doesn't process `nil` for the compatibility.
+          false
+        else
+          !(body.respond_to?(:to_str) && body.empty?)
+        end
       end
 
       def request_type(env)
