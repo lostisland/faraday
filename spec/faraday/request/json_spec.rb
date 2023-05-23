@@ -73,6 +73,30 @@ RSpec.describe Faraday::Request::Json do
     end
   end
 
+  context 'true body' do
+    let(:result) { process(true) }
+
+    it 'encodes body' do
+      expect(result_body).to eq('true')
+    end
+
+    it 'adds content type' do
+      expect(result_type).to eq('application/json')
+    end
+  end
+
+  context 'false body' do
+    let(:result) { process(false) }
+
+    it 'encodes body' do
+      expect(result_body).to eq('false')
+    end
+
+    it 'adds content type' do
+      expect(result_type).to eq('application/json')
+    end
+  end
+
   context 'object body with json type' do
     let(:result) { process({ a: 1 }, 'application/json; charset=utf-8') }
 
