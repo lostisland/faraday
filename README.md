@@ -12,7 +12,8 @@ requests. Instead, you probably want to have a look at [Awesome Faraday][awesome
 ## Getting Started
 
 The best starting point is the [Faraday Website][website], with its introduction and explanation.
-Need more details? See the [Faraday API Documentation][apidoc] to see how it works internally.
+
+Need more details? See the [Faraday API Documentation][apidoc] to see how it works internally, or take a look at [Advanced techniques for calling HTTP APIs in Ruby](https://mattbrictson.com/blog/advanced-http-techniques-in-ruby) blog post from @mattbrictson 🚀
 
 ## Supported Ruby versions
 
