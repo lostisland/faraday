@@ -6,11 +6,13 @@ module Faraday
     class Instrumentation < Faraday::Middleware
       # Options class used in Request::Instrumentation class.
       Options = Faraday::Options.new(:name, :instrumenter) do
+        remove_method :name
         # @return [String]
         def name
           self[:name] ||= 'request.faraday'
         end
 
+        remove_method :instrumenter
         # @return [Class]
         def instrumenter
           self[:instrumenter] ||= ActiveSupport::Notifications

@@ -42,6 +42,7 @@ module Faraday
       end
     end
 
+    remove_method :params=
     # Replace params, preserving the existing hash type.
     #
     # @param hash [Hash] new params
@@ -53,6 +54,7 @@ module Faraday
       end
     end
 
+    remove_method :headers=
     # Replace request headers, preserving the existing hash type.
     #
     # @param hash [Hash] new headers
