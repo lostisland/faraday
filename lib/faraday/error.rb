@@ -29,15 +29,21 @@ module Faraday
     end
 
     def response_status
-      @response[:status] if @response
+      return unless @response
+
+      @response.is_a?(Faraday::Response) ? @response.status : @response[:status]
     end
 
     def response_headers
-      @response[:headers] if @response
+      return unless @response
+
+      @response.is_a?(Faraday::Response) ? @response.headers : @response[:headers]
     end
 
     def response_body
-      @response[:body] if @response
+      return unless @response
+
+      @response.is_a?(Faraday::Response) ? @response.body : @response[:body]
     end
 
     protected
