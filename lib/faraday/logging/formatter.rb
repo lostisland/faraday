@@ -56,6 +56,8 @@ module Faraday
       private
 
       def dump_headers(headers)
+        return if headers.nil?
+
         headers.map { |k, v| "#{k}: #{v.inspect}" }.join("\n")
       end
 
