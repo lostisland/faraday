@@ -25,6 +25,7 @@ RSpec.describe Faraday::Response::Logger do
         stubs.get('/filtered_headers') { [200, { 'Content-Type' => 'text/html' }, 'headers response'] }
         stubs.get('/filtered_params') { [200, { 'Content-Type' => 'text/html' }, 'params response'] }
         stubs.get('/filtered_url') { [200, { 'Content-Type' => 'text/html' }, 'url response'] }
+        stubs.get('/connection_failed') { raise Faraday::ConnectionFailed.new('Failed to open TCP connection') }
       end
     end
   end
@@ -213,6 +214,15 @@ RSpec.describe Faraday::Response::Logger do
     it 'logs error message' do
       expect { conn.get '/noroute' }.to raise_error(Faraday::Adapter::Test::Stubs::NotFound)
       expect(string_io.string).to match(%(no stubbed request for get http:/noroute))
+    end
+  end
+
+  context 'when logging headers and errors' do
+    let(:logger_options) { { headers: true, errors: true } }
+
+    it 'logs error message' do
+      expect { conn.get '/connection_failed' }.to raise_error(Faraday::ConnectionFailed)
+      expect(string_io.string).to match(%(Failed to open TCP connection))
     end
   end
 
