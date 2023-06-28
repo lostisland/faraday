@@ -25,7 +25,7 @@ RSpec.describe Faraday::Response::Logger do
         stubs.get('/filtered_headers') { [200, { 'Content-Type' => 'text/html' }, 'headers response'] }
         stubs.get('/filtered_params') { [200, { 'Content-Type' => 'text/html' }, 'params response'] }
         stubs.get('/filtered_url') { [200, { 'Content-Type' => 'text/html' }, 'url response'] }
-        stubs.get('/connection_failed') { raise Faraday::ConnectionFailed.new('Failed to open TCP connection') }
+        stubs.get('/connection_failed') { raise Faraday::ConnectionFailed, 'Failed to open TCP connection' }
       end
     end
   end
