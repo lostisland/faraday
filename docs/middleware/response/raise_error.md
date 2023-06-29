@@ -32,13 +32,14 @@ Specific exceptions are raised based on the HTTP Status code, according to the l
 An HTTP status in the 400-499 range typically represents an error
 by the client. They raise error classes inheriting from `Faraday::ClientError`.
 
-* 400 => `Faraday::BadRequestError`
-* 401 => `Faraday::UnauthorizedError`
-* 403 => `Faraday::ForbiddenError`
-* 404 => `Faraday::ResourceNotFound`
-* 407 => `Faraday::ProxyAuthError`
-* 409 => `Faraday::ConflictError`
-* 422 => `Faraday::UnprocessableEntityError`
+* [400](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) => `Faraday::BadRequestError`
+* [401](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401) => `Faraday::UnauthorizedError`
+* [403](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403) => `Faraday::ForbiddenError`
+* [404](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404) => `Faraday::ResourceNotFound`
+* [407](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/407) => `Faraday::ProxyAuthError`
+* [408](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/408) => `Faraday::RequestTimeoutError`
+* [409](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409) => `Faraday::ConflictError`
+* [422](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) => `Faraday::UnprocessableEntityError`
 * 4xx => `Faraday::ClientError`
 
 An HTTP status in the 500-599 range represents a server error, and raises a
