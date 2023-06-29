@@ -112,6 +112,10 @@ module Faraday
   class ProxyAuthError < ClientError
   end
 
+  # Raised by Faraday::Response::RaiseError in case of a 408 response.
+  class RequestTimeoutError < ClientError
+  end
+
   # Raised by Faraday::Response::RaiseError in case of a 409 response.
   class ConflictError < ClientError
   end

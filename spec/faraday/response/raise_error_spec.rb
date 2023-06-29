@@ -11,6 +11,7 @@ RSpec.describe Faraday::Response::RaiseError do
         stub.get('forbidden') { [403, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('not-found') { [404, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('proxy-error') { [407, { 'X-Reason' => 'because' }, 'keep looking'] }
+        stub.get('request-timeout') { [408, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('conflict') { [409, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('unprocessable-entity') { [422, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('4xx') { [499, { 'X-Reason' => 'because' }, 'keep looking'] }
@@ -74,6 +75,17 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(407)
       expect(ex.response_status).to eq(407)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
+    end
+  end
+
+  it 'raises Faraday::RequestTimeoutError for 408 responses' do
+    expect { conn.get('request-timeout') }.to raise_error(Faraday::RequestTimeoutError) do |ex|
+      expect(ex.message).to eq('the server responded with status 408')
+      expect(ex.response[:headers]['X-Reason']).to eq('because')
+      expect(ex.response[:status]).to eq(408)
+      expect(ex.response_status).to eq(408)
       expect(ex.response_body).to eq('keep looking')
       expect(ex.response_headers['X-Reason']).to eq('because')
     end

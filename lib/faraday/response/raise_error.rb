@@ -24,6 +24,8 @@ module Faraday
           # mimic the behavior that we get with proxy requests with HTTPS
           msg = %(407 "Proxy Authentication Required")
           raise Faraday::ProxyAuthError.new(msg, response_values(env))
+        when 408
+          raise Faraday::RequestTimeoutError, response_values(env)
         when 409
           raise Faraday::ConflictError, response_values(env)
         when 422
