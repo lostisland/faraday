@@ -275,7 +275,7 @@ module Faraday
 
         unless stub
           raise Stubs::NotFound, "no stubbed request for #{env[:method]} " \
-                                 "#{env[:url]} #{env[:body]}"
+                                 "#{env[:url]} #{env[:body]} #{env[:headers]}"
         end
 
         block_arity = stub.block.arity
