@@ -1,4 +1,4 @@
-# [![Faraday](./docs/assets/img/repo-card-slim.png)][website]
+# [![Faraday](./docs-new/_media/home-logo.svg)][website]
 
 [![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
 [![GitHub Actions CI](https://github.com/lostisland/faraday/workflows/CI/badge.svg)](https://github.com/lostisland/faraday/actions?query=workflow%3ACI)
@@ -6,14 +6,13 @@
 
 Faraday is an HTTP client library abstraction layer that provides a common interface over many
 adapters (such as Net::HTTP) and embraces the concept of Rack middleware when processing the request/response cycle.
-You probably don't want to use Faraday directly in your project, as it will lack an actual client library to perform
-requests. Instead, you probably want to have a look at [Awesome Faraday][awesome] for a list of available adapters.
+Take a look at [Awesome Faraday][awesome] for a list of available adapters and middleware.
 
 ## Getting Started
 
 The best starting point is the [Faraday Website][website], with its introduction and explanation.
 
-Need more details? See the [Faraday API Documentation][apidoc] to see how it works internally, or take a look at [Advanced techniques for calling HTTP APIs in Ruby](https://mattbrictson.com/blog/advanced-http-techniques-in-ruby) blog post from @mattbrictson 🚀
+Need more details? See the [Faraday API Documentation][apidoc] to see how it works internally, or take a look at [Advanced techniques for calling HTTP APIs in Ruby](https://mattbrictson.com/blog/advanced-http-techniques-in-ruby) blog post from [@mattbrictson](https://github.com/mattbrictson) 🚀
 
 ## Supported Ruby versions
 
@@ -51,6 +50,3 @@ But before you start coding, please read our [Contributing Guide][contributing]
 [contributing]: https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md
 [apidoc]: https://www.rubydoc.info/github/lostisland/faraday
 [actions]: https://github.com/lostisland/faraday/actions
-[jruby]: http://jruby.org/
-[rubinius]: http://rubini.us/
-[license]: LICENSE.md
