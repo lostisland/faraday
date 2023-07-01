@@ -21,6 +21,10 @@
 </head>
 <body>
   <div id="app"></div>
+  <!-- Docsify plugins -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
+
+  <!-- Docsify config -->
   <script>
     window.$docsify = {
       name: 'Faraday',
@@ -40,6 +44,11 @@
         }
       },
       plugins: [
+        EditOnGithubPlugin.create(
+          'https://github.com/lostisland/faraday/blob/main/docs/',
+          null,
+          'Edit this page on GitHub'
+        ),
         function pageFooter(hook, _vm) {
           var footer = [
             '<hr/>',
