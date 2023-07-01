@@ -1,15 +1,4 @@
----
-layout: documentation
-title: "Logger Middleware"
-permalink: /middleware/logger
-hide: true
-prev_name: JSON Response Middleware
-prev_link: ./json-response
-next_name: RaiseError Middleware
-next_link: ./raise-error
-top_name: Back to Middleware
-top_link: ./list
----
+# Logging
 
 The `Logger` middleware logs both the request and the response body and headers.
 It is highly customizable and allows to mask confidential information if necessary.

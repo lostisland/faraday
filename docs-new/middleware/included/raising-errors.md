@@ -1,17 +1,12 @@
----
-layout: documentation
-title: "Raise Error Middleware"
-permalink: /middleware/raise-error
-hide: true
-prev_name: Logger Middleware
-prev_link: ./logger
-top_name: Back to Middleware
-top_link: ./list
----
+# Raising Errors
 
 The `RaiseError` middleware raises a `Faraday::Error` exception if an HTTP
-response returns with a 4xx or 5xx status code. All exceptions are initialized
-providing the response `status`, `headers`, and `body`.
+response returns with a 4xx or 5xx status code.
+This greatly increases the ease of use of Faraday, as you don't have to check
+the response status code manually.
+These errors add to the list of default errors [raised by Faraday](getting-started/errors.md).
+
+All exceptions are initialized providing the response `status`, `headers`, and `body`.
 
 ```ruby
 conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
@@ -21,9 +16,9 @@ end
 begin
   conn.get('/wrong-url') # => Assume this raises a 404 response
 rescue Faraday::ResourceNotFound => e
-  e.response[:status]   #=> 404
-  e.response[:headers]  #=> { ... }
-  e.response[:body]     #=> "..."
+  e.response_status   #=> 404
+  e.response_headers  #=> { ... }
+  e.response_body     #=> "..."
 end
 ```
 

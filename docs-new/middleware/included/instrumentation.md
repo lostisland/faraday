@@ -1,15 +1,4 @@
----
-layout: documentation
-title: "Instrumentation Middleware"
-permalink: /middleware/instrumentation
-hide: true
-prev_name: JSON Request Middleware
-prev_link: ./json-request
-next_name: JSON Response Middleware
-next_link: ./json-response
-top_name: Back to Middleware
-top_link: ./list
----
+# Instrumentation
 
 The `Instrumentation` middleware allows to instrument requests using different tools.
 Options for this middleware include the instrumentation `name` and the `instrumenter` you want to use.

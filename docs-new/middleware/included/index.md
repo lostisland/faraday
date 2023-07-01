@@ -1,13 +1,4 @@
----
-layout: documentation
-title: "Available Middleware"
-permalink: /middleware/list
-hide: true
-top_name: Middleware
-top_link: ./
-next_name: Writing Middleware
-next_link: ./custom
----
+# Included middleware
 
 Faraday ships with some useful middleware that you can use to customize your request/response lifecycle.
 Middleware are separated into two macro-categories: **Request Middleware** and **Response Middleware**.
@@ -21,9 +12,7 @@ parsing the response body, logging useful info or checking the response status.
 middleware set Header values or transform the request body based on the
 content type.
 
-* [`BasicAuthentication`][authentication] sets the `Authorization` header to the `user:password`
-base64 representation.
-* [`TokenAuthentication`][authentication] sets the `Authorization` header to the specified token.
+* [`Authorization`][authentication] allows you to automatically add an Authorization header to your requests.
 * [`UrlEncoded`][url_encoded] converts a `Faraday::Request#body` hash of key/value pairs into a url-encoded request body.
 * [`Json Request`][json-request] converts a `Faraday::Request#body` hash of key/value pairs into a JSON request body.
 * [`Instrumentation`][instrumentation] allows to instrument requests using different tools.
@@ -39,10 +28,10 @@ before returning it.
 * [`RaiseError`][raise_error] checks the response HTTP code and raises an exception if it is a 4xx or 5xx code.
 
 
-[authentication]:       ./authentication
-[url_encoded]:          ./url-encoded
-[json-request]:         ./json-request
-[instrumentation]:      ./instrumentation
-[json-response]:        ./json-response
-[logger]:               ./logger
-[raise_error]:          ./raise-error
+[authentication]:       middleware/included/authentication.md
+[url_encoded]:          middleware/included/url-encoding
+[json-request]:         middleware/included/json#json-requests
+[instrumentation]:      middleware/included/instrumentation
+[json-response]:        middleware/included/json#json-responses
+[logger]:               middleware/included/logging
+[raise_error]:          middleware/included/raising-errors

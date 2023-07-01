@@ -1,19 +1,8 @@
----
-layout: documentation
-title: "UrlEncoded Middleware"
-permalink: /middleware/url-encoded
-hide: true
-prev_name: Authentication Middleware
-prev_link: ./authentication
-next_name: JSON Request Middleware
-next_link: ./json-request
-top_name: Back to Middleware
-top_link: ./list
----
+# URL Encoding
 
 The `UrlEncoded` middleware converts a `Faraday::Request#body` hash of key/value pairs into a url-encoded request body.
 The middleware also automatically sets the `Content-Type` header to `application/x-www-form-urlencoded`.
-The way parameters are serialized can be [customized][customize].
+The way parameters are serialized can be customized in the [Request Options](customization/request-options.md).
 
 
 ### Example Usage

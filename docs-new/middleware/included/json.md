@@ -1,15 +1,27 @@
----
-layout: documentation
-title: "JSON Response Middleware"
-permalink: /middleware/json-response
-hide: true
-prev_name: Instrumentation Middleware
-prev_link: ./instrumentation
-next_name: Logger Middleware
-next_link: ./logger
-top_name: Back to Middleware
-top_link: ./list
----
+# JSON Encoding/Decoding
+
+## JSON Requests
+
+The `JSON` request middleware converts a `Faraday::Request#body` hash of key/value pairs into a JSON request body.
+The middleware also automatically sets the `Content-Type` header to `application/json`,
+processes only requests with matching Content-Type or those without a type and
+doesn't try to encode bodies that already are in string form.
+
+### Example Usage
+
+```ruby
+conn = Faraday.new(...) do |f|
+  f.request :json
+  ...
+end
+
+conn.post('/', { a: 1, b: 2 })
+# POST with
+# Content-Type: application/json
+# Body: {"a":1,"b":2}
+```
+
+## JSON Responses
 
 The `JSON` response middleware parses response body into a hash of key/value pairs.
 The behaviour can be customized with the following options:

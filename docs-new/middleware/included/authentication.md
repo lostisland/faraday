@@ -1,13 +1,4 @@
----
-layout: documentation
-title: "Authentication Middleware"
-permalink: /middleware/authentication
-hide: true
-next_name: UrlEncoded Middleware
-next_link: ./url-encoded
-top_name: Back to Middleware
-top_link: ./list
----
+# Authentication
 
 The `Faraday::Request::Authorization` middleware allows you to automatically add an `Authorization` header
 to your requests. It also features a handy helper to manage Basic authentication.
@@ -30,7 +21,7 @@ Faraday.new(...) do |conn|
 end
 ```
 
-If the proc takes an argument, it will receive the forwarded `env`
+If the proc takes an argument, it will receive the forwarded `env` (see [The Env Object](getting-started/env-object.md)):
 
 ```ruby
 Faraday.new(...) do |conn|
