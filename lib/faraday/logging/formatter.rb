@@ -23,18 +23,16 @@ module Faraday
       def_delegators :@logger, :debug, :info, :warn, :error, :fatal
 
       def request(env)
-        request_log = proc do
+        public_send(log_level, 'request') do
           "#{env.method.upcase} #{apply_filters(env.url.to_s)}"
         end
-        public_send(log_level, 'request', &request_log)
 
         log_headers('request', env.request_headers) if log_headers?(:request)
         log_body('request', env[:body]) if env[:body] && log_body?(:request)
       end
 
       def response(env)
-        status = proc { "Status #{env.status}" }
-        public_send(log_level, 'response', &status)
+        public_send(log_level, 'response') { "Status #{env.status}" }
 
         log_headers('response', env.response_headers) if log_headers?(:response)
         log_body('response', env[:body]) if env[:body] && log_body?(:response)
@@ -43,8 +41,7 @@ module Faraday
       def exception(exc)
         return unless log_errors?
 
-        error_log = proc { exc.full_message }
-        public_send(log_level, 'error', &error_log)
+        public_send(log_level, 'error') { exc.full_message }
 
         log_headers('error', exc.response_headers) if exc.respond_to?(:response_headers) && log_headers?(:error)
         return unless exc.respond_to?(:response_body) && exc.response_body && log_body?(:error)
@@ -110,13 +107,11 @@ module Faraday
       end
 
       def log_headers(type, headers)
-        headers_log = proc { apply_filters(dump_headers(headers)) }
-        public_send(log_level, type, &headers_log)
+        public_send(log_level, type) { apply_filters(dump_headers(headers)) }
       end
 
       def log_body(type, body)
-        body_log = proc { apply_filters(dump_body(body)) }
-        public_send(log_level, type, &body_log)
+        public_send(log_level, type) { apply_filters(dump_body(body)) }
       end
     end
   end
