@@ -13,11 +13,11 @@ module Faraday
 
       def initialize(logger:, options:)
         @logger = logger
-        @filter = []
         @options = DEFAULT_OPTIONS.merge(options)
         unless %i[debug info warn error fatal].include?(@options[:log_level])
           @options[:log_level] = :info
         end
+        @filter = []
       end
 
       def_delegators :@logger, :debug, :info, :warn, :error, :fatal
