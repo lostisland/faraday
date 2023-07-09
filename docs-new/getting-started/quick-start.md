@@ -72,6 +72,70 @@ end
 # => POST http://httpbingo.org/post?param=1&limit=100
 ```
 
+### GET, HEAD, DELETE, TRACE
+
+Faraday supports the following HTTP verbs that typically don't include a request body:
+
+- `get(url, params = nil, headers = nil)`
+- `head(url, params = nil, headers = nil)`
+- `delete(url, params = nil, headers = nil)`
+- `trace(url, params = nil, headers = nil)`
+
+You can specify URI query parameters and HTTP headers when making a request.
+
+```ruby
+response = conn.get('get', { boom: 'zap' }, { 'User-Agent' => 'myapp' })
+# => GET http://httpbingo.org/get?boom=zap
+```
+
+### POST, PUT, PATCH
+
+Faraday also supports HTTP verbs with bodies. Instead of query parameters, these
+accept a request body:
+
+- `post(url, body = nil, headers = nil)`
+- `put(url, body = nil, headers = nil)`
+- `patch(url, body = nil, headers = nil)`
+
+```ruby
+# POST 'application/x-www-form-urlencoded' content
+response = conn.post('post', 'boom=zap')
+
+# POST JSON content
+response = conn.post('post', '{"boom": "zap"}',
+  "Content-Type" => "application/json")
+```
+
+#### Posting Forms
+
+Faraday will automatically convert key/value hashes into proper form bodies
+thanks to the `url_encoded` middleware included in the default connection.
+
+```ruby
+# POST 'application/x-www-form-urlencoded' content
+response = conn.post('post', boom: 'zap')
+# => POST 'boom=zap' to http://httpbingo.org/post
+```
+
+### Detailed HTTP Requests
+
+Faraday supports a longer style for making requests. This is handy if you need
+to change many of the defaults, or if the details of the HTTP request change
+according to method arguments. Each of the HTTP verb helpers can yield a
+`Faraday::Request` that can be modified before being sent.
+
+This example shows a hypothetical search endpoint that accepts a JSON request
+body as the actual search query.
+
+```ruby
+response = conn.post('post') do |req|
+  req.params['limit'] = 100
+  req.headers['Content-Type'] = 'application/json'
+  req.body = {query: 'chunky bacon'}.to_json
+end
+# => POST http://httpbingo.org/post?limit=100
+```
+
 ### Using Middleware
 
 Configuring your connection or request with predefined headers and parameters is a good start,
@@ -175,6 +239,28 @@ end
 
 To learn more about adapters, including how to write your own, please check the [Adapters] section.
 
+### Default Connection, Default Adapter
+
+Remember how we said that Faraday will automatically encode key/value hash
+bodies into form bodies? Internally, the top level shortcut methods
+`Faraday.get`, `post`, etc. use a simple default `Faraday::Connection`. The only
+middleware used for the default connection is `:url_encoded`, which encodes
+those form hashes, and the `default_adapter`.
+
+You can change the default adapter or connection. Be careful because they're set globally.
+
+```ruby
+Faraday.default_adapter = :async_http # defaults to :net_http
+
+# The default connection has only `:url_encoded` middleware.
+# Note that if you create your own connection with middleware, it won't encode
+# form bodies unless you too include the :url_encoded middleware!
+Faraday.default_connection = Faraday.new do |conn|
+  conn.request :url_encoded
+  conn.response :logger
+  conn.adapter Faraday.default_adapter
+end
+```
 
 [Adapters]: /adapters/index.md
 [Middleware]: /middleware/index.md
