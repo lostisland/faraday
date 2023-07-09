@@ -1,47 +1,28 @@
----
-# You don't need to edit this file, it's empty on purpose.
-# Edit theme's home layout instead if you wanna make some changes
-# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
-layout: page
-title: Homepage
-feature-title: <img src="assets/img/home-logo.svg">
-feature-img: "assets/img/featured-bg.svg"
-hide: true
----
+# ![Faraday](_media/home-logo.svg)
 
-Faraday is an HTTP client library that provides a common interface over many adapters (such as Net::HTTP)
-and embraces the concept of Rack middleware when processing the request/response cycle.
+Faraday is an HTTP client library abstraction layer that provides a common interface over many
+adapters (such as Net::HTTP) and embraces the concept of Rack middleware when processing the request/response cycle.
 
-{: .text-center}
-[<i class="fab fa-fw fa-github"> </i> Fork on GitHub][github]{: .btn}
-[<i class="fab fa-fw fa-gitter"> </i> Chat with us][gitter]{: .btn}
+## Why use Faraday?
 
-{: .mt-60}
-## Installation
+Faraday gives you the power of Rack middleware for manipulating HTTP requests and responses,
+making it easier to build sophisticated API clients or web service libraries that abstract away
+the details of how HTTP requests are made.
 
-Add this line to your application's Gemfile:
+Faraday comes with a lot of features out of the box, such as:
+* Support for multiple adapters (Net::HTTP, Typhoeus, Patron, Excon, HTTPClient, and more)
+* Persistent connections (keep-alive)
+* Parallel requests
+* Automatic response parsing (JSON, XML, YAML)
+* Customization of the request/response cycle with middleware
+* Support for streaming responses
+* Support for uploading files
+* And much more!
 
-```ruby
-gem 'faraday'
-```
+## Who uses Faraday?
 
-And then execute:
-
-```bash
-$ bundle
-```
-
-Or install it yourself as:
-
-```bash
-$ gem install faraday
-```
-
-{: .mt-60}
-
-{: .text-center}
-[<i class="fas fa-fw fa-book-open"> </i> Read the docs][usage]{: .btn}
-
-[github]:                   https://github.com/lostisland/faraday
-[gitter]:                   https://gitter.im/lostisland/faraday
-[usage]:                    ./usage
+Faraday is used by many popular Ruby libraries, such as:
+* [Signet](https://github.com/googleapis/signet)
+* [Octokit](https://github.com/octokit/octokit.rb)
+* [Oauth2](https://bestgems.org/gems/oauth2)
+* [ElasticSearch](https://github.com/elastic/elasticsearch-ruby)

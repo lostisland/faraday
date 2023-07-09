@@ -1,4 +1,4 @@
-# [![Faraday](./docs-new/_media/home-logo.svg)][website]
+# [![Faraday](./docs/_media/home-logo.svg)][website]
 
 [![Gem Version](https://badge.fury.io/rb/faraday.svg)](https://rubygems.org/gems/faraday)
 [![GitHub Actions CI](https://github.com/lostisland/faraday/workflows/CI/badge.svg)](https://github.com/lostisland/faraday/actions?query=workflow%3ACI)

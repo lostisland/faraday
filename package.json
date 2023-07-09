@@ -9,7 +9,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "docs": "docsify serve ./docs-new"
+    "docs": "docsify serve ./docs"
   },
   "repository": {
     "type": "git",

@@ -75,5 +75,5 @@ You can find more information in the [Faraday Docs README][docs], including how 
 [changelog]:            https://github.com/lostisland/faraday/releases
 [faraday_middleware]:   https://github.com/lostisland/faraday_middleware
 [website]:              https://lostisland.github.io/faraday
-[docs]:                 ../docs-new/README.md
+[docs]:                 ../docs/README.md
 [Code of Conduct]:      ./CODE_OF_CONDUCT.md
