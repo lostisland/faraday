@@ -21,7 +21,13 @@
   * [Writing custom middleware](middleware/custom-middleware.md)
 * Adapters
   * [Overview](adapters/index.md)
-  * [Writing custom adapters](adapters/custom-adapters.md)
+  * [Net::HTTP](adapters/net-http.md)
+  * [Test Adapter](adapters/test-adapter.md)
+  * Writing custom adapters
+    * [Overview](adapters/custom/index.md)
+    * [Parallel Requests](adapters/custom/parallel-requests.md)
+    * [Streaming Responses](adapters/custom/streaming.md)
+    * [Test your adapter](adapters/custom/testing.md)
 * Advanced Features
   * [Parallel Requests](advanced/parallel-requests.md)
   * [Streaming Responses](advanced/streaming-responses.md)
