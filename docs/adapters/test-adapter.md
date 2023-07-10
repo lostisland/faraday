@@ -113,5 +113,5 @@ Faraday.default_connection = nil
 Working [RSpec] and [test/unit] examples for a fictional JSON API client are
 available.
 
-[RSpec]: https://github.com/lostisland/faraday/blob/master/examples/client_spec.rb
-[test/unit]: https://github.com/lostisland/faraday/blob/master/examples/client_test.rb
+[RSpec]: https://github.com/lostisland/faraday/blob/main/examples/client_spec.rb
+[test/unit]: https://github.com/lostisland/faraday/blob/main/examples/client_test.rb
