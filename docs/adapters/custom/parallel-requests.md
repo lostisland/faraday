@@ -2,7 +2,7 @@
 
 !> This is slightly more involved, and this section is not fully formed.
 
-Vague example, excerpted from [the test suite about parallel requests](https://github.com/lostisland/faraday/blob/master/spec/support/shared_examples/request_method.rb#L179)
+Vague example, excerpted from [the test suite about parallel requests](https://github.com/lostisland/faraday/blob/main/spec/support/shared_examples/request_method.rb#L179)
 
 ```ruby
 response_1 = nil
