@@ -46,13 +46,15 @@ end
 
 ### Available features
 
-* `:trace method`: tests your adapter against the `TRACE` HTTP method.
-* `:local_socket_binding`: tests that your adapter supports binding to a local socket via the `:bind` request option.
-* `:request_body_on_query_methods`: tests that your adapter supports sending a request body on `GET`, `HEAD`, `DELETE` and `TRACE` requests.
-* `:reason_phrase_parse`: tests that your adapter supports parsing the reason_phrase from the response.
-* `:compression`: tests that your adapter can handle `gzip` and `defalte` compressions.
-* `:streaming`: tests that your adapter supports streaming responses. See [Streaming][streaming] for more details.
-* `:parallel`: tests that your adapter supports parallel requests. See [Parallel requests][parallel] for more details.
+| Feature                          | Description                                                                                              |
+|----------------------------------|----------------------------------------------------------------------------------------------------------|
+| `:trace_method`                  | Tests your adapter against the `TRACE` HTTP method.                                                      |
+| `:local_socket_binding`          | Tests that your adapter supports binding to a local socket via the `:bind` request option.               |
+| `:request_body_on_query_methods` | Tests that your adapter supports sending a request body on `GET`, `HEAD`, `DELETE` and `TRACE` requests. |
+| `:reason_phrase_parse`           | Tests that your adapter supports parsing the `reason_phrase` from the response.                          |
+| `:compression`                   | Tests that your adapter can handle `gzip` and `defalte` compressions.                                    |
+| `:streaming`                     | Tests that your adapter supports streaming responses. See [Streaming][streaming] for more details.       |
+| `:parallel`                      | Tests that your adapter supports parallel requests. See [Parallel requests][parallel] for more details.  |
 
 [streaming]: /adapters/custom/streaming.md
 [parallel]: /adapters/custom/parallel-requests.md
