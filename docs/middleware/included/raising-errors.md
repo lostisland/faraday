@@ -22,28 +22,38 @@ rescue Faraday::ResourceNotFound => e
 end
 ```
 
-Specific exceptions are raised based on the HTTP Status code, according to the list below:
+Specific exceptions are raised based on the HTTP Status code of the response.
+
+## 4xx Errors
 
 An HTTP status in the 400-499 range typically represents an error
 by the client. They raise error classes inheriting from `Faraday::ClientError`.
 
-* [400](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) => `Faraday::BadRequestError`
-* [401](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401) => `Faraday::UnauthorizedError`
-* [403](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403) => `Faraday::ForbiddenError`
-* [404](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404) => `Faraday::ResourceNotFound`
-* [407](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/407) => `Faraday::ProxyAuthError`
-* [408](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/408) => `Faraday::RequestTimeoutError`
-* [409](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409) => `Faraday::ConflictError`
-* [422](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) => `Faraday::UnprocessableEntityError`
-* 4xx => `Faraday::ClientError`
+| Status Code                                                         | Exception Class                     |
+|---------------------------------------------------------------------|-------------------------------------|
+| [400](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) | `Faraday::BadRequestError`          |
+| [401](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401) | `Faraday::UnauthorizedError`        |
+| [403](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403) | `Faraday::ForbiddenError`           |
+| [404](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404) | `Faraday::ResourceNotFound`         |
+| [407](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/407) | `Faraday::ProxyAuthError`           |
+| [408](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/408) | `Faraday::RequestTimeoutError`      |
+| [409](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409) | `Faraday::ConflictError`            |
+| [422](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) | `Faraday::UnprocessableEntityError` |
+| 4xx (any other)                                                     | `Faraday::ClientError`              |
+
+## 5xx Errors
 
 An HTTP status in the 500-599 range represents a server error, and raises a
 `Faraday::ServerError` exception.
 
-* 5xx => `Faraday::ServerError`
+It's important to note that this exception is only returned if we receive a response and the
+HTTP status in such response is in the 500-599 range.
+Other kind of errors normally attributed to errors in the 5xx range (such as timeouts, failure to connect, etc...)
+are raised as specific exceptions inheriting from `Faraday::Error`.
+See [Faraday Errors](getting-started/errors.md) for more information on these.
+
+### Missing HTTP status
 
 The HTTP response status may be nil due to a malformed HTTP response from the
-server, or a bug in the underlying HTTP library. It inherits from
-`Faraday::ServerError`.
-
-* nil => `Faraday::NilStatusError`
+server, or a bug in the underlying HTTP library. This is considered a server error
+and raised as `Faraday::NilStatusError`, which inherits from `Faraday::ServerError`.
