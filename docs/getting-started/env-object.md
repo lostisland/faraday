@@ -46,6 +46,6 @@ The `env` object also provides some helper methods to make it easier to work wit
 | `#parse_body?`          | Returns `true` unless the status indicates otherwise (e.g. 204, 304).                            |
 | `#parallel?`            | Returns `true` if a parallel manager is available.                                               |
 | `#stream_response?`     | Returns `true` if the `on_data` streaming callback has been provided.                            |
-| `#stream_response`      | Helper method to implement streaming in adapters. See [Support streaming in your adapter]        |
+| `#stream_response`      | Helper method to implement streaming in adapters. See [Support streaming in your adapter].       |
 
 [Support streaming in your adapter]: /adapters/custom/streaming.md

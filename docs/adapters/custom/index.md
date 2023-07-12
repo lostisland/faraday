@@ -97,7 +97,7 @@ end
 
 The most important helper method and the only one you're expected to call from your `#call` method.
 This method is responsible for, among other things, the following:
-* Take the `env` object and saves the response into it.
+* Take the `env` object and save the response into it.
 * Set the `:response` key in the `env` object.
 * Parse headers using `Utils::Headers` and set the `:response_headers` key in the `env` object.
 * Call `#finish` on the `Response` object, triggering the `#on_complete` callbacks in the middleware stack.
