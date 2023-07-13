@@ -47,6 +47,6 @@ But before you start coding, please read our [Contributing Guide][contributing]
 [awesome]: https://github.com/lostisland/awesome-faraday/#adapters
 [website]: https://lostisland.github.io/faraday
 [faraday_team]: https://lostisland.github.io/faraday/team
-[contributing]: https://github.com/lostisland/faraday/blob/master/.github/CONTRIBUTING.md
+[contributing]: https://github.com/lostisland/faraday/blob/main/.github/CONTRIBUTING.md
 [apidoc]: https://www.rubydoc.info/github/lostisland/faraday
 [actions]: https://github.com/lostisland/faraday/actions
