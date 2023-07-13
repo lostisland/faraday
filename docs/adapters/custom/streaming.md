@@ -64,7 +64,7 @@ conn.get('/stream/100') do |req|
   # Set a callback which will receive tuples of chunk Strings,
   # the sum of characters received so far, and the response environment.
   # The latter will allow access to the response status, headers and reason, as well as the request info.
-  req.options.on_data = Proc.new do |chunk, overall_received_bytes, env|
+  req.options.on_data = proc do |chunk, overall_received_bytes, env|
     puts "Received #{overall_received_bytes} characters"
     streamed << chunk
   end

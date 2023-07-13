@@ -25,7 +25,8 @@ puts "Time taken: #{Time.now - now}"
 ## A note on Async
 
 You might have heard about [Async] and its native integration with Ruby 3.0.
-The good news is that you can already use Async with Faraday and this does not require the use of `#in_parallel` to run parallel requests.
+The good news is that you can already use Async with Faraday (thanks to the [async-http-faraday] gem)
+and this does not require the use of `#in_parallel` to run parallel requests.
 Instead, you only need to wrap your Faraday code into an Async block:
 
 ```ruby
@@ -54,3 +55,4 @@ The big advantage of using Async is that you can now run parallel requests *span
 whereas the `#in_parallel` method only works for requests that are made through the same connection.
 
 [Async]: https://github.com/socketry/async
+[async-http-faraday]: https://github.com/socketry/async-http-faraday
