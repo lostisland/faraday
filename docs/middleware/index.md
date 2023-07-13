@@ -1,11 +1,4 @@
----
-layout: documentation
-title: "Middleware"
-permalink: /middleware/
-next_name: Available Middleware
-next_link: ./list
-order: 3
----
+# Middleware
 
 Under the hood, Faraday uses a Rack-inspired middleware stack for making
 requests. Much of Faraday's power is unlocked with custom middleware. Some
@@ -44,10 +37,10 @@ run, Faraday will return a `Faraday::Response` to the end user.
 
 The order in which middleware is stacked is important. Like with Rack, the first
 middleware on the list wraps all others, while the last middleware is the
-innermost one. If you want to use a custom [adapter](../adapters), it must
+innermost one. If you want to use a custom [adapter](adapters/index.md), it must
 therefore be last.
 
-![Middleware](../assets/img/middleware.png)
+![Middleware](../_media/middleware.png)
 
 This is what makes things like the "retry middleware" possible.
 It doesn't really matter if the middleware was registered as a request or a response one, the only thing that matter is how they're added to the stack.
@@ -123,13 +116,18 @@ end
 
 ### Available Middleware
 
+The following pages provide detailed configuration for the middleware that ships with Faraday:
+* [Authentication](middleware/authentication.md)
+* [URL Encoding](middleware/url-encoding.md)
+* [JSON Encoding/Decoding](middleware/json.md)
+* [Instrumentation](middleware/instrumentation.md)
+* [Logging](middleware/logging.md)
+* [Raising Errors](middleware/raising-errors.md)
+
 The [Awesome Faraday](https://github.com/lostisland/awesome-faraday/) project
 has a complete list of useful, well-maintained Faraday middleware. Middleware is
 often provided by external gems, like the
 [faraday-retry](https://github.com/lostisland/faraday-retry) gem.
-
-We also have [great documentation](list) for the middleware that ships with
-Faraday.
 
 ### Detailed Example
 
@@ -151,7 +149,7 @@ end
 This request middleware setup affects POST/PUT requests in the following way:
 
 1. `Request::UrlEncoded` encodes as "application/x-www-form-urlencoded" if not
-  already encoded or of another type.
+   already encoded or of another type.
 2. `Response::Logger` logs request and response headers, can be configured to log bodies as well.
 
 Swapping middleware means giving the other priority. Specifying the

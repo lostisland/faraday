@@ -1,29 +1,21 @@
-# Faraday Website
+# Faraday Docs
 
-This is the root directory of the [Faraday Website][website].
-If you want to apply changes to it, please test it locally using `Jekyll`.
+Faraday Docs are powered by [Docsify](https://docsify.js.org/#/).
 
-Here is how:
+## Development
 
-```bash
-# Navigate into the /docs folder
-$ cd docs
+### Setup
 
-# Install Jekyll dependencies, this bundle is different from Faraday's one.
-$ bundle install
-
-# Run the Jekyll server with the Faraday website
-$ bundle exec jekyll serve
-
-# The site will now be reachable at http://127.0.0.1:4000/faraday/
-```
-
-On newer Ruby versions (>= 3.0) `eventmachine` needs a little help to find OpenSSL 1.1 to get compiled (see <https://github.com/eventmachine/eventmachine/issues/936>). If you're using homebrew on macOS, you can do this:
+From the Faraday project root, run the following:
 
 ```bash
-brew install openssl@1.1
-bundle config build.eventmachine --with-openssl-dir=$(brew --prefix openssl@1.1)
-bundle install
+npm install # this will install the necessary dependencies
 ```
 
-[website]: https://lostisland.github.io/faraday
+### Running the Docs Locally
+
+To preview your changes locally, run the following:
+
+```bash
+npm run docs
+```

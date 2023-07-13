@@ -64,50 +64,16 @@ We encourage adapters that:
 1. have features not present in included adapters.
 
 
-### Changes to the Faraday Website
+### Changes to the Faraday Docs
 
-The [Faraday Website][website] is included in the Faraday repository, under the `/docs` folder.
+The Faraday Docs are included in the Faraday repository, under the `/docs` folder and deployed to [GitHub Pages][website].
 If you want to apply changes to it, please test it locally before opening your PR.
+You can find more information in the [Faraday Docs README][docs], including how to preview changes locally.
 
-
-#### Test website changes using Docker
-
-Start by cloning the repository and navigate to the newly-cloned directory on your computer. Then run the following:
-
-```bash
-docker container run -p 80:4000 -v $(pwd)/docs:/site bretfisher/jekyll-serve
-```
-
-And that's it! Open your browser and navigate to `http://localhost` to see the website running.
-Any change done to files in the `/docs` folder will be automatically picked up (with the exception of config changes).
-
-
-#### Test website changes using Jekyll
-
-You can test website changes locally, on your machine, too. Here's how:
-
-Navigate into the /docs folder:
-
-```bash
-$ cd docs
-```
-
-Install Jekyll dependencies, this bundle is different from Faraday's one.
-
-```bash
-$ bundle install
-```
-
-Run the Jekyll server with the Faraday website
-
-```bash
-$ bundle exec jekyll serve
-```
-
-Now, navigate to http://127.0.0.1:4000/faraday/ to see the website running.
 
 [semver]:               https://semver.org/
 [changelog]:            https://github.com/lostisland/faraday/releases
 [faraday_middleware]:   https://github.com/lostisland/faraday_middleware
 [website]:              https://lostisland.github.io/faraday
+[docs]:                 ../docs/README.md
 [Code of Conduct]:      ./CODE_OF_CONDUCT.md

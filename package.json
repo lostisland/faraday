@@ -1,0 +1,31 @@
+{
+  "name": "faraday-docs",
+  "version": "0.1.0",
+  "description": "Faraday Docs",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "lib": "lib"
+  },
+  "scripts": {
+    "docs": "docsify serve ./docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lostisland/faraday.git"
+  },
+  "keywords": [
+    "docs",
+    "faraday"
+  ],
+  "author": "Mattia Giuffrida",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lostisland/faraday/issues"
+  },
+  "homepage": "https://github.com/lostisland/faraday#readme",
+  "dependencies": {
+    "docsify-cli": "^4.4.4"
+  }
+}

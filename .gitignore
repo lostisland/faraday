@@ -16,6 +16,9 @@ Gemfile.lock
 vendor/bundle
 external
 
+## NPM
+node_modules
+
 ## PROJECT::SPECIFIC
 .rbx
 
