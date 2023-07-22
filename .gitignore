@@ -8,6 +8,7 @@ tmp
 .rvmrc
 .ruby-version
 .yardoc
+.DS_Store
 
 ## BUNDLER
 *.gem
