@@ -58,11 +58,10 @@ But before you start coding, please read our [Contributing Guide][contributing]
 
 ## Copyright
 
-&copy; 2009 - 2023, the [Faraday Team][faraday_team]. Website and branding design by [Elena Lo Piccolo](https://elelopic.design).
+&copy; 2009 - 2023, the Faraday Team. Website and branding design by [Elena Lo Piccolo](https://elelopic.design).
 
 [awesome]: https://github.com/lostisland/awesome-faraday/#adapters
 [website]: https://lostisland.github.io/faraday
-[faraday_team]: https://lostisland.github.io/faraday/team
 [contributing]: https://github.com/lostisland/faraday/blob/main/.github/CONTRIBUTING.md
 [apidoc]: https://www.rubydoc.info/github/lostisland/faraday
 [actions]: https://github.com/lostisland/faraday/actions
