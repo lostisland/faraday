@@ -112,7 +112,7 @@ but this has been removed from the v2.0 release to simplify the interface.
 ### Authentication helper methods in Connection have been removed
 
 You were previously able to call `authorization`, `basic_auth` and `token_auth` against the `Connection` object, but this helper methods have now been dropped.
-Instead, you should be using the equivalent middleware, as explained in [this page](https://lostisland.github.io/faraday/middleware/authentication).
+Instead, you should be using the equivalent middleware, as explained in [this page](https://lostisland.github.io/faraday/#/middleware/included/authentication).
 
 For more details, see https://github.com/lostisland/faraday/pull/1306
 
