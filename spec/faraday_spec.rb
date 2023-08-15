@@ -18,11 +18,12 @@ RSpec.describe Faraday do
     end
 
     it 'uses method_missing on Faraday if there is no proxyable method' do
-      expected_message = if RUBY_VERSION >= '3.3'
-                           "undefined method `this_method_does_not_exist' for module Faraday"
-                         else
-                           "undefined method `this_method_does_not_exist' for Faraday:Module"
-                         end
+      expected_message =
+        if RUBY_VERSION >= '3.3'
+          "undefined method `this_method_does_not_exist' for module Faraday"
+        else
+          "undefined method `this_method_does_not_exist' for Faraday:Module"
+        end
 
       expect { Faraday.this_method_does_not_exist }.to raise_error(NoMethodError, expected_message)
     end
