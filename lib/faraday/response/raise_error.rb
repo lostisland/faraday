@@ -39,11 +39,26 @@ module Faraday
         end
       end
 
+      # Returns a hash of response data with the following keys:
+      #   - status
+      #   - headers
+      #   - body
+      #   - request
+      #
+      # The `request` key is omitted when the middleware is explicitly
+      # configured with the option `include_request: false`.
       def response_values(env)
-        {
+        response = {
           status: env.status,
           headers: env.response_headers,
-          body: env.body,
+          body: env.body
+        }
+
+        # Include the request data by default. If the middleware was explicitly
+        # configured to _not_ include request data, then omit it.
+        return response unless options.fetch(:include_request, true)
+
+        response.merge(
           request: {
             method: env.method,
             url: env.url,
@@ -52,7 +67,7 @@ module Faraday
             headers: env.request_headers,
             body: env.request_body
           }
-        }
+        )
       end
 
       def query_params(env)

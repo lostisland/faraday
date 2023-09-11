@@ -149,7 +149,7 @@ RSpec.describe Faraday::Response::RaiseError do
   describe 'request info' do
     let(:conn) do
       Faraday.new do |b|
-        b.response :raise_error
+        b.response :raise_error, **middleware_options
         b.adapter :test do |stub|
           stub.post(url, request_body, request_headers) do
             [400, { 'X-Reason' => 'because' }, 'keep looking']
@@ -157,6 +157,7 @@ RSpec.describe Faraday::Response::RaiseError do
         end
       end
     end
+    let(:middleware_options) { {} }
     let(:request_body) { JSON.generate({ 'item' => 'sth' }) }
     let(:request_headers) { { 'Authorization' => 'Basic 123' } }
     let(:url_path) { 'request' }
@@ -178,6 +179,20 @@ RSpec.describe Faraday::Response::RaiseError do
         expect(ex.response[:request][:params]).to eq({ 'full' => 'true' })
         expect(ex.response[:request][:headers]).to match(a_hash_including(request_headers))
         expect(ex.response[:request][:body]).to eq(request_body)
+      end
+    end
+
+    context 'when the include_request option is set to false' do
+      let(:middleware_options) { { include_request: false } }
+
+      it 'does not include request info in the exception' do
+        expect { perform_request }.to raise_error(Faraday::BadRequestError) do |ex|
+          expect(ex.response.keys).to contain_exactly(
+            :status,
+            :headers,
+            :body
+          )
+        end
       end
     end
   end
