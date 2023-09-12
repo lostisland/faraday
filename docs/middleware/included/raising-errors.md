@@ -6,7 +6,7 @@ This greatly increases the ease of use of Faraday, as you don't have to check
 the response status code manually.
 These errors add to the list of default errors [raised by Faraday](getting-started/errors.md).
 
-All exceptions are initialized providing the response `status`, `headers`, and `body`.
+All exceptions are initialized with a hash containing the response `status`, `headers`, and `body`.
 
 ```ruby
 conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
@@ -57,3 +57,28 @@ See [Faraday Errors](getting-started/errors.md) for more information on these.
 The HTTP response status may be nil due to a malformed HTTP response from the
 server, or a bug in the underlying HTTP library. This is considered a server error
 and raised as `Faraday::NilStatusError`, which inherits from `Faraday::ServerError`.
+
+## Middleware Options
+
+The behavior of this middleware can be customized with the following options:
+
+| Option              | Default | Description |
+|---------------------|---------|-------------|
+| **include_request** | true    | When true, exceptions are initialized with request information including `method`, `url`, `url_path`, `params`, `headers`, and `body`. |
+
+### Example Usage
+
+```ruby
+conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
+  faraday.response :raise_error, include_request: true
+end
+
+begin
+  conn.get('/wrong-url') # => Assume this raises a 404 response
+rescue Faraday::ResourceNotFound => e
+  e.response[:status]              #=> 404
+  e.response[:headers]             #=> { ... }
+  e.response[:body]                #=> "..."
+  e.response[:request][:url_path]  #=> "/wrong-url"
+end
+```
