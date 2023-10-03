@@ -5,7 +5,7 @@ This can be achieved using the `#in_parallel` method on the connection object.
 
 ```ruby
 # Install the Typhoeus adapter with `gem install faraday-typhoeus` first.
-require 'faraday/tyhoeus'
+require 'faraday/typhoeus'
 
 conn = Faraday.new('http://httpbingo.org') do |faraday|
   faraday.adapter :typhoeus
