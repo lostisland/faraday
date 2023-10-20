@@ -124,6 +124,10 @@ module Faraday
   class UnprocessableEntityError < ClientError
   end
 
+  # Raised by Faraday::Response::RaiseError in case of a 429 response.
+  class TooManyRequestsError < ClientError
+  end
+
   # Faraday server error class. Represents 5xx status responses.
   class ServerError < Error
   end
