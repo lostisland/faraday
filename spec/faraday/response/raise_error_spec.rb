@@ -14,6 +14,7 @@ RSpec.describe Faraday::Response::RaiseError do
         stub.get('request-timeout') { [408, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('conflict') { [409, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('unprocessable-entity') { [422, { 'X-Reason' => 'because' }, 'keep looking'] }
+        stub.get('too-many-requests') { [429, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('4xx') { [499, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('nil-status') { [nil, { 'X-Reason' => 'nil' }, 'fail'] }
         stub.get('server-error') { [500, { 'X-Error' => 'bailout' }, 'fail'] }
@@ -108,6 +109,17 @@ RSpec.describe Faraday::Response::RaiseError do
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(422)
       expect(ex.response_status).to eq(422)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
+    end
+  end
+
+  it 'raises Faraday::TooManyRequestsError for 429 responses' do
+    expect { conn.get('too-many-requests') }.to raise_error(Faraday::TooManyRequestsError) do |ex|
+      expect(ex.message).to eq('the server responded with status 429')
+      expect(ex.response[:headers]['X-Reason']).to eq('because')
+      expect(ex.response[:status]).to eq(429)
+      expect(ex.response_status).to eq(429)
       expect(ex.response_body).to eq('keep looking')
       expect(ex.response_headers['X-Reason']).to eq('because')
     end
