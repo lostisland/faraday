@@ -2,5 +2,5 @@
 
 module Faraday
   METHODS_WITH_QUERY = %w[get head delete trace].freeze
-  METHODS_WITH_BODY = %w[post put patch].freeze
+  METHODS_WITH_BODY = %w[post put patch delete].freeze
 end
