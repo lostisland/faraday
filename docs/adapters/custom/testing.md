@@ -48,7 +48,7 @@ end
 
 | Feature                          | Description                                                                                              |
 |----------------------------------|----------------------------------------------------------------------------------------------------------|
-| `:compression`                   | Tests that your adapter can handle `gzip` and `defalte` compressions.                                    |
+| `:compression`                   | Tests that your adapter can handle `gzip` and `deflate` compressions.                                    |
 | `:local_socket_binding`          | Tests that your adapter supports binding to a local socket via the `:bind` request option.               |
 | `:parallel`                      | Tests that your adapter supports parallel requests. See [Parallel requests][parallel] for more details.  |
 | `:reason_phrase_parse`           | Tests that your adapter supports parsing the `reason_phrase` from the response.                          |
