@@ -22,7 +22,7 @@ jobs:
       BUNDLE_WITHOUT: development:test
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Ruby 2.7
         uses: ruby/setup-ruby@v1
@@ -52,7 +52,7 @@ jobs:
             experimental: true
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
