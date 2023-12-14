@@ -146,7 +146,7 @@ module Faraday
         # which means that all of a path, parameters, and headers must be the same as an actual request.
         def strict_mode=(value)
           @strict_mode = value
-          @stack.each do |_method, stubs|
+          @stack.each_value do |stubs|
             stubs.each do |stub|
               stub.strict_mode = value
             end
