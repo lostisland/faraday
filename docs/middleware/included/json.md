@@ -21,6 +21,26 @@ conn.post('/', { a: 1, b: 2 })
 # Body: {"a":1,"b":2}
 ```
 
+### Using custom JSON encoders
+
+By default, middleware utilizes Ruby's `json` to generate JSON strings.
+
+Other encoders can be used by specifying `encoder` option for the middleware:
+* a module/class which implements `encode`
+* a module/class-method pair to be used 
+
+```ruby
+require 'oj'
+
+Faraday.new(...) do |f|
+  f.request :json, encoder: Oj
+end
+
+Faraday.new(...) do |f|
+  f.request :json, encoder: [Oj, :encode]
+end
+```
+
 ## JSON Responses
 
 The `JSON` response middleware parses response body into a hash of key/value pairs.
