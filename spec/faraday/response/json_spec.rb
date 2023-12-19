@@ -114,4 +114,76 @@ RSpec.describe Faraday::Response::Json, type: :response do
       expect(response.body).to eq(result)
     end
   end
+
+  context 'with decoder' do
+    let(:decoder) do
+      double('Decoder').tap do |e|
+        allow(e).to receive(:decode) { |s, opts| JSON.parse(s, opts) }
+      end
+    end
+
+    let(:body) { '{"a": 1}' }
+    let(:result) { { a: 1 } }
+
+    context 'when decoder is passed as object' do
+      let(:options) do
+        {
+          parser_options: {
+            decoder: decoder,
+            option: :option_value,
+            symbolize_names: true
+          }
+        }
+      end
+
+      it 'passes relevant options to specified decoder\'s decode method' do
+        expect(decoder).to receive(:decode)
+          .with(body, { option: :option_value, symbolize_names: true })
+          .and_return(result)
+
+        response = process(body)
+        expect(response.body).to eq(result)
+      end
+    end
+
+    context 'when decoder is passed as an object-method pair' do
+      let(:options) do
+        {
+          parser_options: {
+            decoder: [decoder, :decode],
+            option: :option_value,
+            symbolize_names: true
+          }
+        }
+      end
+
+      it 'passes relevant options to specified decoder\'s method' do
+        expect(decoder).to receive(:decode)
+          .with(body, { option: :option_value, symbolize_names: true })
+          .and_return(result)
+
+        response = process(body)
+        expect(response.body).to eq(result)
+      end
+    end
+
+    context 'when decoder is not passed' do
+      let(:options) do
+        {
+          parser_options: {
+            symbolize_names: true
+          }
+        }
+      end
+
+      it 'passes relevant options to JSON parse' do
+        expect(JSON).to receive(:parse)
+          .with(body, { symbolize_names: true })
+          .and_return(result)
+
+        response = process(body)
+        expect(response.body).to eq(result)
+      end
+    end
+  end
 end

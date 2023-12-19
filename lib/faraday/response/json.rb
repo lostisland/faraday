@@ -27,7 +27,22 @@ module Faraday
       end
 
       def parse(body)
-        ::JSON.parse(body, @parser_options || {}) unless body.strip.empty?
+        return if body.strip.empty?
+
+        parser_options = @parser_options.dup || {}
+
+        decoder, method_name =
+          if parser_options[:decoder].is_a?(Array) && parser_options[:decoder].size >= 2
+            parser_options[:decoder].slice(0, 2)
+          elsif parser_options[:decoder].respond_to?(:decode)
+            [parser_options[:decoder], :decode]
+          else
+            [::JSON, :parse]
+          end
+
+        parser_options.delete(:decoder)
+
+        decoder.public_send(method_name, body, parser_options)
       end
 
       def parse_response?(env)

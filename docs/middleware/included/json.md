@@ -59,3 +59,23 @@ end
 conn.get('json').body
 # => {"slideshow"=>{"author"=>"Yours Truly", "date"=>"date of publication", "slides"=>[{"title"=>"Wake up to WonderWidgets!", "type"=>"all"}, {"items"=>["Why <em>WonderWidgets</em> are great", "Who <em>buys</em> WonderWidgets"], "title"=>"Overview", "type"=>"all"}], "title"=>"Sample Slide Show"}}
 ```
+
+### Using custom JSON decoders
+
+By default, middleware utilizes Ruby's `json` to parse JSON strings.
+
+Other decoders can be used by specifying `decoder` parser option for the middleware:
+* a module/class which implements `decode`
+* a module/class-method pair to be used 
+
+```ruby
+require 'oj'
+
+Faraday.new(...) do |f|
+  f.response :json, parser_options: { decoder: Oj }
+end
+
+Faraday.new(...) do |f|
+  f.response :json, parser_options: { decoder: [Oj, :encode] }
+end
+```
