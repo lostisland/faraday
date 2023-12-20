@@ -30,7 +30,7 @@ module Faraday
           new_value = value
         end
 
-        send("#{key}=", new_value) unless new_value.nil?
+        send(:"#{key}=", new_value) unless new_value.nil?
       end
       self
     end
@@ -38,7 +38,7 @@ module Faraday
     # Public
     def delete(key)
       value = send(key)
-      send("#{key}=", nil)
+      send(:"#{key}=", nil)
       value
     end
 
@@ -57,7 +57,7 @@ module Faraday
                     else
                       other_value
                     end
-        send("#{key}=", new_value) unless new_value.nil?
+        send(:"#{key}=", new_value) unless new_value.nil?
       end
       self
     end

@@ -21,6 +21,26 @@ conn.post('/', { a: 1, b: 2 })
 # Body: {"a":1,"b":2}
 ```
 
+### Using custom JSON encoders
+
+By default, middleware utilizes Ruby's `json` to generate JSON strings.
+
+Other encoders can be used by specifying `encoder` option for the middleware:
+* a module/class which implements `dump`
+* a module/class-method pair to be used 
+
+```ruby
+require 'oj'
+
+Faraday.new(...) do |f|
+  f.request :json, encoder: Oj
+end
+
+Faraday.new(...) do |f|
+  f.request :json, encoder: [Oj, :dump]
+end
+```
+
 ## JSON Responses
 
 The `JSON` response middleware parses response body into a hash of key/value pairs.
@@ -38,4 +58,24 @@ end
 
 conn.get('json').body
 # => {"slideshow"=>{"author"=>"Yours Truly", "date"=>"date of publication", "slides"=>[{"title"=>"Wake up to WonderWidgets!", "type"=>"all"}, {"items"=>["Why <em>WonderWidgets</em> are great", "Who <em>buys</em> WonderWidgets"], "title"=>"Overview", "type"=>"all"}], "title"=>"Sample Slide Show"}}
+```
+
+### Using custom JSON decoders
+
+By default, middleware utilizes Ruby's `json` to parse JSON strings.
+
+Other decoders can be used by specifying `decoder` parser option for the middleware:
+* a module/class which implements `load`
+* a module/class-method pair to be used 
+
+```ruby
+require 'oj'
+
+Faraday.new(...) do |f|
+  f.response :json, parser_options: { decoder: Oj }
+end
+
+Faraday.new(...) do |f|
+  f.response :json, parser_options: { decoder: [Oj, :load] }
+end
 ```

@@ -132,4 +132,68 @@ RSpec.describe Faraday::Request::Json do
       expect(result_type).to eq('application/xml; charset=utf-8')
     end
   end
+
+  context 'with encoder' do
+    let(:encoder) do
+      double('Encoder').tap do |e|
+        allow(e).to receive(:dump) { |s, opts| JSON.generate(s, opts) }
+      end
+    end
+
+    let(:result) { process(a: 1) }
+
+    context 'when encoder is passed as object' do
+      let(:middleware) { described_class.new(->(env) { Faraday::Response.new(env) }, { encoder: encoder }) }
+
+      it 'calls specified JSON encoder\'s dump method' do
+        expect(encoder).to receive(:dump).with({ a: 1 })
+
+        result
+      end
+
+      it 'encodes body' do
+        expect(result_body).to eq('{"a":1}')
+      end
+
+      it 'adds content type' do
+        expect(result_type).to eq('application/json')
+      end
+    end
+
+    context 'when encoder is passed as an object-method pair' do
+      let(:middleware) { described_class.new(->(env) { Faraday::Response.new(env) }, { encoder: [encoder, :dump] }) }
+
+      it 'calls specified JSON encoder' do
+        expect(encoder).to receive(:dump).with({ a: 1 })
+
+        result
+      end
+
+      it 'encodes body' do
+        expect(result_body).to eq('{"a":1}')
+      end
+
+      it 'adds content type' do
+        expect(result_type).to eq('application/json')
+      end
+    end
+
+    context 'when encoder is not passed' do
+      let(:middleware) { described_class.new(->(env) { Faraday::Response.new(env) }) }
+
+      it 'calls JSON.generate' do
+        expect(JSON).to receive(:generate).with({ a: 1 })
+
+        result
+      end
+
+      it 'encodes body' do
+        expect(result_body).to eq('{"a":1}')
+      end
+
+      it 'adds content type' do
+        expect(result_type).to eq('application/json')
+      end
+    end
+  end
 end
