@@ -29,7 +29,7 @@ module Faraday
         elsif options[:encoder].respond_to?(:encode)
           options[:encoder].encode(data)
         else
-          ::JSON.generate data
+          ::JSON.generate(data)
         end
       end
 
