@@ -33,7 +33,7 @@ module Faraday
 
         decoder, method_name = @decoder_options
 
-        decoder.public_send(method_name, body, @parser_options)
+        decoder.public_send(method_name, body, @parser_options || {})
       end
 
       def parse_response?(env)
