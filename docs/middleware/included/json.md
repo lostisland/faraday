@@ -76,6 +76,6 @@ Faraday.new(...) do |f|
 end
 
 Faraday.new(...) do |f|
-  f.response :json, parser_options: { decoder: [Oj, :encode] }
+  f.response :json, parser_options: { decoder: [Oj, :decode] }
 end
 ```
