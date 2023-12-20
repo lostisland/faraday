@@ -26,7 +26,7 @@ conn.post('/', { a: 1, b: 2 })
 By default, middleware utilizes Ruby's `json` to generate JSON strings.
 
 Other encoders can be used by specifying `encoder` option for the middleware:
-* a module/class which implements `encode`
+* a module/class which implements `dump`
 * a module/class-method pair to be used 
 
 ```ruby
@@ -37,7 +37,7 @@ Faraday.new(...) do |f|
 end
 
 Faraday.new(...) do |f|
-  f.request :json, encoder: [Oj, :encode]
+  f.request :json, encoder: [Oj, :dump]
 end
 ```
 
@@ -65,7 +65,7 @@ conn.get('json').body
 By default, middleware utilizes Ruby's `json` to parse JSON strings.
 
 Other decoders can be used by specifying `decoder` parser option for the middleware:
-* a module/class which implements `decode`
+* a module/class which implements `load`
 * a module/class-method pair to be used 
 
 ```ruby
@@ -76,6 +76,6 @@ Faraday.new(...) do |f|
 end
 
 Faraday.new(...) do |f|
-  f.response :json, parser_options: { decoder: [Oj, :decode] }
+  f.response :json, parser_options: { decoder: [Oj, :load] }
 end
 ```

@@ -118,7 +118,7 @@ RSpec.describe Faraday::Response::Json, type: :response do
   context 'with decoder' do
     let(:decoder) do
       double('Decoder').tap do |e|
-        allow(e).to receive(:decode) { |s, opts| JSON.parse(s, opts) }
+        allow(e).to receive(:load) { |s, opts| JSON.parse(s, opts) }
       end
     end
 
@@ -136,8 +136,8 @@ RSpec.describe Faraday::Response::Json, type: :response do
         }
       end
 
-      it 'passes relevant options to specified decoder\'s decode method' do
-        expect(decoder).to receive(:decode)
+      it 'passes relevant options to specified decoder\'s load method' do
+        expect(decoder).to receive(:load)
           .with(body, { option: :option_value, symbolize_names: true })
           .and_return(result)
 
@@ -150,7 +150,7 @@ RSpec.describe Faraday::Response::Json, type: :response do
       let(:options) do
         {
           parser_options: {
-            decoder: [decoder, :decode],
+            decoder: [decoder, :load],
             option: :option_value,
             symbolize_names: true
           }
@@ -158,7 +158,7 @@ RSpec.describe Faraday::Response::Json, type: :response do
       end
 
       it 'passes relevant options to specified decoder\'s method' do
-        expect(decoder).to receive(:decode)
+        expect(decoder).to receive(:load)
           .with(body, { option: :option_value, symbolize_names: true })
           .and_return(result)
 

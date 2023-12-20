@@ -136,7 +136,7 @@ RSpec.describe Faraday::Request::Json do
   context 'with encoder' do
     let(:encoder) do
       double('Encoder').tap do |e|
-        allow(e).to receive(:encode) { |s, opts| JSON.generate(s, opts) }
+        allow(e).to receive(:dump) { |s, opts| JSON.generate(s, opts) }
       end
     end
 
@@ -145,8 +145,8 @@ RSpec.describe Faraday::Request::Json do
     context 'when encoder is passed as object' do
       let(:middleware) { described_class.new(->(env) { Faraday::Response.new(env) }, { encoder: encoder }) }
 
-      it 'calls specified JSON encoder' do
-        expect(encoder).to receive(:encode).with({ a: 1 })
+      it 'calls specified JSON encoder\'s dump method' do
+        expect(encoder).to receive(:dump).with({ a: 1 })
 
         result
       end
@@ -161,10 +161,10 @@ RSpec.describe Faraday::Request::Json do
     end
 
     context 'when encoder is passed as an object-method pair' do
-      let(:middleware) { described_class.new(->(env) { Faraday::Response.new(env) }, { encoder: [encoder, :encode] }) }
+      let(:middleware) { described_class.new(->(env) { Faraday::Response.new(env) }, { encoder: [encoder, :dump] }) }
 
       it 'calls specified JSON encoder' do
-        expect(encoder).to receive(:encode).with({ a: 1 })
+        expect(encoder).to receive(:dump).with({ a: 1 })
 
         result
       end
