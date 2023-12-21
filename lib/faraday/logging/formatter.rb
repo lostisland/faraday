@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'pp'
+require 'pp' # This require is necessary for Hash#pretty_inspect to work, do not remove it, people rely on it.
 
 module Faraday
   module Logging
