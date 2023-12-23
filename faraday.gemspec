@@ -15,7 +15,6 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.6'
 
-  spec.add_dependency 'base64'
   # faraday-net_http is the "default adapter", but being a Faraday dependency it can't
   # control which version of faraday it will be pulled from.
   # To avoid releasing a major version every time there's a new Faraday API, we should

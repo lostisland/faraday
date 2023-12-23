@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'base64'
 require 'uri'
 require 'faraday/utils/headers'
 require 'faraday/utils/params_hash'
@@ -54,7 +53,7 @@ module Faraday
     end
 
     def basic_header_from(login, pass)
-      value = Base64.encode64("#{login}:#{pass}")
+      value = ["#{login}:#{pass}"].pack('m') # Base64 encoding
       value.delete!("\n")
       "Basic #{value}"
     end
