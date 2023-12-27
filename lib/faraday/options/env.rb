@@ -60,7 +60,7 @@ module Faraday
                     :reason_phrase, :response_body) do
     const_set(:ContentLength, 'Content-Length')
     const_set(:StatusesWithoutBody, Set.new([204, 304]))
-    const_set(:SuccessfulStatuses, (200..299).freeze)
+    const_set(:SuccessfulStatuses, (200..299))
 
     # A Set of HTTP verbs that typically send a body.  If no body is set for
     # these requests, the Content-Length header is set to 0.

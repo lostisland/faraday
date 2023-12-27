@@ -13,7 +13,7 @@ module Faraday
     # Doesn't try to encode bodies that already are in string form.
     class Json < Middleware
       MIME_TYPE = 'application/json'
-      MIME_TYPE_REGEX = %r{^application/(vnd\..+\+)?json$}.freeze
+      MIME_TYPE_REGEX = %r{^application/(vnd\..+\+)?json$}
 
       def on_request(env)
         match_content_type(env) do |data|

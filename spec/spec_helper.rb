@@ -29,14 +29,15 @@ SimpleCov.start do
   minimum_coverage_by_file 26
 end
 
-# Ensure all /lib files are loaded
-# so they will be included in the test coverage report.
-Dir['./lib/**/*.rb'].sort.each { |file| require file }
-
 require 'faraday'
 require 'pry'
 
-Dir['./spec/support/**/*.rb'].sort.each { |f| require f }
+# Ensure all /lib files are loaded
+# so they will be included in the test coverage report.
+Dir['./lib/**/*.rb'].each { |file| require file }
+
+# Load all Rspec support files
+Dir['./spec/support/**/*.rb'].each { |file| require file }
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

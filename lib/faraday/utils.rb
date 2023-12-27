@@ -25,7 +25,7 @@ module Faraday
       attr_writer :default_space_encoding
     end
 
-    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/.freeze
+    ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
 
     def escape(str)
       str.to_s.gsub(ESCAPE_RE) do |match|
@@ -37,7 +37,7 @@ module Faraday
       CGI.unescape str.to_s
     end
 
-    DEFAULT_SEP = /[&;] */n.freeze
+    DEFAULT_SEP = /[&;] */n
 
     # Adapted from Rack
     def parse_query(query)
