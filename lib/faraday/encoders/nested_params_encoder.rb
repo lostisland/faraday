@@ -102,7 +102,7 @@ module Faraday
 
     protected
 
-    SUBKEYS_REGEX = /[^\[\]]+(?:\]?\[\])?/.freeze
+    SUBKEYS_REGEX = /[^\[\]]+(?:\]?\[\])?/
 
     def decode_pair(key, value, context)
       subkeys = key.scan(SUBKEYS_REGEX)
