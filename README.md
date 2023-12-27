@@ -35,7 +35,7 @@ Need more details? See the [Faraday API Documentation][apidoc] to see how it wor
 This library aims to support and is [tested against][actions] the currently officially supported Ruby
 implementations. This means that, even without a major release, we could add or drop support for Ruby versions,
 following their [EOL](https://endoflife.date/ruby).
-Currently that means we support Ruby 2.6+
+Currently that means we support Ruby 3.0+
 
 If something doesn't work on one of these Ruby versions, it's a bug.
 
