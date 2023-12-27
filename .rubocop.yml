@@ -7,7 +7,7 @@ require:
 AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.0
 
 # Custom config
 Gemspec/RequireMFA: # we don't know if this works with auto-deployments yet
