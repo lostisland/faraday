@@ -14,10 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Ruby 3.3
+      - name: Setup Ruby 3.x
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3
+          ruby-version: 3
 
       - name: Publish to RubyGems
         uses: dawidd6/action-publish-gem@v1
