@@ -423,7 +423,7 @@ module Faraday
     #
     # @param method [Symbol] HTTP method.
     # @param url [String, URI, nil] String or URI to access.
-    # @param body [String, nil] The request body that will eventually be converted to
+    # @param body [Object, nil] The request body that will eventually be converted to
     #             a string.
     # @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
