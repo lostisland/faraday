@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   # always fix its required version to the next MINOR version.
   # This way, we can release minor versions of the adapter with "breaking" changes for older versions of Faraday
   # and then bump the version requirement on the next compatible version of faraday.
-  spec.add_dependency 'faraday-net_http', '>= 2.0', '< 3.1'
+  spec.add_dependency 'faraday-net_http', '>= 2.0', '< 3.2'
 
   # Includes `examples` and `spec` to allow external adapter gems to run Faraday unit and integration tests
   spec.files = Dir['CHANGELOG.md', '{examples,lib,spec}/**/*', 'LICENSE.md', 'Rakefile', 'README.md']
