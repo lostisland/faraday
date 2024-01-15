@@ -10,7 +10,7 @@ group :development, :test do
   gem 'bake-test-external'
   gem 'coveralls_reborn', require: false
   gem 'pry'
-  gem 'rack', '~> 2.2'
+  gem 'rack', '~> 3.0'
   gem 'rake'
   gem 'rspec', '~> 3.7'
   gem 'rspec_junit_formatter', '~> 0.4'
