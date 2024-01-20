@@ -62,7 +62,8 @@ RSpec.describe Faraday::NestedParamsEncoder do
   it 'encodes rack compat' do
     params   = { a: [{ one: '1', two: '2' }, '3', ''] }
     result   = Faraday::Utils.unescape(Faraday::NestedParamsEncoder.encode(params)).split('&')
-    expected = Rack::Utils.build_nested_query(params).split('&')
+    escaped = Rack::Utils.build_nested_query(params)
+    expected = Rack::Utils.unescape(escaped).split('&')
     expect(result).to match_array(expected)
   end
 
