@@ -59,9 +59,9 @@ module Faraday
 
     private
 
-    def middleware_mutex(&block) # rubocop:disable Style/ArgumentsForwarding
+    def middleware_mutex(&block)
       @middleware_mutex ||= Monitor.new
-      @middleware_mutex.synchronize(&block) # rubocop:disable Style/ArgumentsForwarding
+      @middleware_mutex.synchronize(&block)
     end
 
     def load_middleware(key)
