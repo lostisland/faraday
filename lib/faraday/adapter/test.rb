@@ -99,32 +99,32 @@ module Faraday
           matches?(consumed, env)
         end
 
-        def get(path, headers = {}, &block) # rubocop:disable Style/ArgumentsForwarding
-          new_stub(:get, path, headers, &block) # rubocop:disable Style/ArgumentsForwarding
+        def get(path, headers = {}, &block)
+          new_stub(:get, path, headers, &block)
         end
 
-        def head(path, headers = {}, &block) # rubocop:disable Style/ArgumentsForwarding
-          new_stub(:head, path, headers, &block) # rubocop:disable Style/ArgumentsForwarding
+        def head(path, headers = {}, &block)
+          new_stub(:head, path, headers, &block)
         end
 
-        def post(path, body = nil, headers = {}, &block) # rubocop:disable Style/ArgumentsForwarding
-          new_stub(:post, path, headers, body, &block) # rubocop:disable Style/ArgumentsForwarding
+        def post(path, body = nil, headers = {}, &block)
+          new_stub(:post, path, headers, body, &block)
         end
 
-        def put(path, body = nil, headers = {}, &block) # rubocop:disable Style/ArgumentsForwarding
-          new_stub(:put, path, headers, body, &block) # rubocop:disable Style/ArgumentsForwarding
+        def put(path, body = nil, headers = {}, &block)
+          new_stub(:put, path, headers, body, &block)
         end
 
-        def patch(path, body = nil, headers = {}, &block) # rubocop:disable Style/ArgumentsForwarding
-          new_stub(:patch, path, headers, body, &block) # rubocop:disable Style/ArgumentsForwarding
+        def patch(path, body = nil, headers = {}, &block)
+          new_stub(:patch, path, headers, body, &block)
         end
 
-        def delete(path, headers = {}, &block) # rubocop:disable Style/ArgumentsForwarding
-          new_stub(:delete, path, headers, &block) # rubocop:disable Style/ArgumentsForwarding
+        def delete(path, headers = {}, &block)
+          new_stub(:delete, path, headers, &block)
         end
 
-        def options(path, headers = {}, &block) # rubocop:disable Style/ArgumentsForwarding
-          new_stub(:options, path, headers, &block) # rubocop:disable Style/ArgumentsForwarding
+        def options(path, headers = {}, &block)
+          new_stub(:options, path, headers, &block)
         end
 
         # Raises an error if any of the stubbed calls have not been made.
