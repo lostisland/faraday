@@ -56,6 +56,15 @@ RSpec.describe Faraday::Utils::Headers do
     it { expect(subject.delete('content-type')).to be_nil }
   end
 
+  describe '#dig' do
+    before { subject['Content-Type'] = 'application/json' }
+
+    it { expect(subject&.dig('Content-Type')).to eq('application/json') }
+    it { expect(subject&.dig('CONTENT-TYPE')).to eq('application/json') }
+    it { expect(subject&.dig(:content_type)).to eq('application/json') }
+    it { expect(subject&.dig('invalid')).to be_nil }
+  end
+
   describe '#parse' do
     context 'when response headers leave http status line out' do
       let(:headers) { "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" }

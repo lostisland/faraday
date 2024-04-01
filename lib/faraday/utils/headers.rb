@@ -77,6 +77,12 @@ module Faraday
         super(key)
       end
 
+      def dig(key, *rest)
+        key = KeyMap[key]
+        key = @names.fetch(key.downcase, key)
+        super(key, *rest)
+      end
+
       def include?(key)
         @names.include? key.downcase
       end
