@@ -169,7 +169,7 @@ module Faraday
     def stream_response(&block)
       size = 0
       yielded = false
-      block_result = block.call do |chunk| # rubocop:disable Performance/RedundantBlockCall
+      block_result = block.call do |chunk|
         if chunk.bytesize.positive? || size.positive?
           yielded = true
           size += chunk.bytesize
