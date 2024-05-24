@@ -62,10 +62,10 @@ module Faraday
         super(key, val)
       end
 
-      def fetch(key, *args, &block)
+      def fetch(key, ...)
         key = KeyMap[key]
         key = @names.fetch(key.downcase, key)
-        super(key, *args, &block)
+        super(key, ...)
       end
 
       def delete(key)
