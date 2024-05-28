@@ -184,6 +184,23 @@ RSpec.describe Faraday::Response::Json, type: :response do
         response = process(body)
         expect(response.body).to eq(result)
       end
+
+      it 'passes relevant options to JSON parse even when nil responds to :load' do
+        original_allow_message_expectations_on_nil = RSpec::Mocks.configuration.allow_message_expectations_on_nil
+        RSpec::Mocks.configuration.allow_message_expectations_on_nil = true
+        allow(nil).to receive(:respond_to?)
+          .with(:load)
+          .and_return(true)
+
+        expect(JSON).to receive(:parse)
+          .with(body, { symbolize_names: true })
+          .and_return(result)
+
+        response = process(body)
+        expect(response.body).to eq(result)
+      ensure 
+        RSpec::Mocks.configuration.allow_message_expectations_on_nil = original_allow_message_expectations_on_nil
+      end
     end
   end
 end
