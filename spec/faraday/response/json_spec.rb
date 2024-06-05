@@ -198,7 +198,7 @@ RSpec.describe Faraday::Response::Json, type: :response do
 
         response = process(body)
         expect(response.body).to eq(result)
-      ensure 
+      ensure
         RSpec::Mocks.configuration.allow_message_expectations_on_nil = original_allow_message_expectations_on_nil
       end
     end
