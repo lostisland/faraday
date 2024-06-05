@@ -60,7 +60,8 @@ module Faraday
         @decoder_options =
           if @decoder_options.is_a?(Array) && @decoder_options.size >= 2
             @decoder_options.slice(0, 2)
-          elsif @decoder_options.respond_to?(:load)
+          elsif @decoder_options&.respond_to?(:load) # rubocop:disable Lint/RedundantSafeNavigation
+            # In some versions of Rails, `nil` responds to `load` - hence the safe navigation check above
             [@decoder_options, :load]
           else
             [::JSON, :parse]
