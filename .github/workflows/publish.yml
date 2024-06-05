@@ -19,6 +19,7 @@ jobs:
       - name: Setup Ruby 3.x
         uses: ruby/setup-ruby@v1
         with:
+          bundler-cache: true
           ruby-version: 3
 
       - name: Publish to RubyGems
