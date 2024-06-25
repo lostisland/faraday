@@ -9,7 +9,20 @@ module Faraday
 
     def initialize(app = nil, options = {})
       @app = app
-      @options = options
+      @options = @@default_options.merge(options)
+    end
+
+    # Faraday::Middleware::default_options= allows user to set default options at the Faraday::Middleware
+    # class level.
+    #
+    # @example Set the Faraday::Response::RaiseError option, `include_request` to `false`
+    # my_app/config/initializers/my_faraday_middleware.rb
+    #
+    # Faraday::Response::RaiseError.default_options = { include_request: false }
+    #
+    def self.default_options=(options = {}) 
+      @@default_options ||= {}
+      @@default_options.merge!(options)
     end
 
     def call(env)

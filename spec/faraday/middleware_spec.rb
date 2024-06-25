@@ -67,4 +67,8 @@ RSpec.describe Faraday::Middleware do
       end
     end
   end
+
+  describe '::default_options' do
+    # TODO
+  end
 end
