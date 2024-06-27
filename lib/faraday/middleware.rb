@@ -25,15 +25,14 @@ module Faraday
       #
       def default_options=(options = {})
         validate_default_options(options)
-        @default_options = default_options.merge!(options)
+        @default_options = default_options.merge(options)
       end
 
       # default_options attr_reader that initializes class instance variable
       # with the values of any Faraday::Middleware defaults, and merges with
       # subclass defaults
       def default_options
-        @default_options ||= {}.merge!(DEFAULT_OPTIONS)
-                               .merge!(self::DEFAULT_OPTIONS)
+        @default_options ||= DEFAULT_OPTIONS.merge(self::DEFAULT_OPTIONS)
       end
 
       private
