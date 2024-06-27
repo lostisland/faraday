@@ -7,22 +7,43 @@ module Faraday
 
     attr_reader :app, :options
 
+    DEFAULT_OPTIONS = {}.freeze
+
     def initialize(app = nil, options = {})
       @app = app
-      @options = @@default_options.merge(options)
+      @options = self.class.default_options.merge(options)
     end
 
-    # Faraday::Middleware::default_options= allows user to set default options at the Faraday::Middleware
-    # class level.
-    #
-    # @example Set the Faraday::Response::RaiseError option, `include_request` to `false`
-    # my_app/config/initializers/my_faraday_middleware.rb
-    #
-    # Faraday::Response::RaiseError.default_options = { include_request: false }
-    #
-    def self.default_options=(options = {}) 
-      @@default_options ||= {}
-      @@default_options.merge!(options)
+    class << self
+      # Faraday::Middleware::default_options= allows user to set default options at the Faraday::Middleware
+      # class level.
+      #
+      # @example Set the Faraday::Response::RaiseError option, `include_request` to `false`
+      # my_app/config/initializers/my_faraday_middleware.rb
+      #
+      # Faraday::Response::RaiseError.default_options = { include_request: false }
+      #
+      def default_options=(options = {})
+        validate_default_options(options)
+        @default_options = default_options.merge!(options)
+      end
+
+      # default_options attr_reader that initializes class instance variable
+      # with the values of any Faraday::Middleware defaults, and merges with
+      # subclass defaults
+      def default_options
+        @default_options ||= {}.merge!(DEFAULT_OPTIONS)
+                               .merge!(self::DEFAULT_OPTIONS)
+      end
+
+      private
+
+      def validate_default_options(options)
+        options.each_key do |opt|
+          self::DEFAULT_OPTIONS.key?(opt) ||
+            raise(Faraday::Error, "#{opt} is not a DEFAULT_OPTION for #{self}")
+        end
+      end
     end
 
     def call(env)
