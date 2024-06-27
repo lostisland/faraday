@@ -10,6 +10,8 @@ module Faraday
       ServerErrorStatuses = (500...600)
       # rubocop:enable Naming/ConstantName
 
+      DEFAULT_OPTIONS = { include_request: true }.freeze
+
       def on_complete(env)
         case env[:status]
         when 400
@@ -58,7 +60,7 @@ module Faraday
 
         # Include the request data by default. If the middleware was explicitly
         # configured to _not_ include request data, then omit it.
-        return response unless options.fetch(:include_request, true)
+        return response unless options[:include_request]
 
         response.merge(
           request: {
