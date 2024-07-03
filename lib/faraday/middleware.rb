@@ -38,10 +38,11 @@ module Faraday
       private
 
       def validate_default_options(options)
-        options.each_key do |opt|
-          self::DEFAULT_OPTIONS.key?(opt) ||
-            raise(Faraday::Error, "#{opt} is not a DEFAULT_OPTION for #{self}")
-        end
+        invalid_keys = options.keys.reject { |opt| self::DEFAULT_OPTIONS.key?(opt) }
+        return unless invalid_keys.any?
+
+        raise(Faraday::Error,
+              "Invalid options provided. Keys not found in #{self}::DEFAULT_OPTIONS: #{invalid_keys.join(', ')}")
       end
     end
 
