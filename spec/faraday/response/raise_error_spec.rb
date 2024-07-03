@@ -194,16 +194,60 @@ RSpec.describe Faraday::Response::RaiseError do
       end
     end
 
-    context 'when the include_request option is set to false' do
-      let(:middleware_options) { { include_request: false } }
+    describe 'DEFAULT_OPTION: include_request' do
+      before(:each) do
+        Faraday::Response::RaiseError.instance_variable_set(:@default_options, nil)
+        Faraday::Middleware.instance_variable_set(:@default_options, nil)
+      end
 
-      it 'does not include request info in the exception' do
-        expect { perform_request }.to raise_error(Faraday::BadRequestError) do |ex|
-          expect(ex.response.keys).to contain_exactly(
-            :status,
-            :headers,
-            :body
-          )
+      after(:all) do
+        Faraday::Response::RaiseError.instance_variable_set(:@default_options, nil)
+        Faraday::Middleware.instance_variable_set(:@default_options, nil)
+      end
+
+      context 'when RaiseError DEFAULT_OPTION (include_request: true) is used' do
+        it 'includes request info in the exception' do
+          expect { perform_request }.to raise_error(Faraday::BadRequestError) do |ex|
+            expect(ex.response.keys).to contain_exactly(
+              :status,
+              :headers,
+              :body,
+              :request
+            )
+          end
+        end
+      end
+
+      context 'when application sets default_options `include_request: false`' do
+        before(:each) do
+          Faraday::Response::RaiseError.default_options = { include_request: false }
+        end
+
+        context 'and when include_request option is omitted' do
+          it 'does not include request info in the exception' do
+            expect { perform_request }.to raise_error(Faraday::BadRequestError) do |ex|
+              expect(ex.response.keys).to contain_exactly(
+                :status,
+                :headers,
+                :body
+              )
+            end
+          end
+        end
+
+        context 'and when include_request option is explicitly set for instance' do
+          let(:middleware_options) { { include_request: true } }
+
+          it 'includes request info in the exception' do
+            expect { perform_request }.to raise_error(Faraday::BadRequestError) do |ex|
+              expect(ex.response.keys).to contain_exactly(
+                :status,
+                :headers,
+                :body,
+                :request
+              )
+            end
+          end
         end
       end
     end

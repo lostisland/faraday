@@ -91,6 +91,13 @@ RSpec.describe Faraday::Middleware do
       end
     end
 
+    after(:all) do
+      FaradayMiddlewareSubclasses::SubclassNoOptions.instance_variable_set(:@default_options, nil)
+      FaradayMiddlewareSubclasses::SubclassOneOption.instance_variable_set(:@default_options, nil)
+      FaradayMiddlewareSubclasses::SubclassTwoOptions.instance_variable_set(:@default_options, nil)
+      Faraday::Middleware.instance_variable_set(:@default_options, nil)
+    end
+
     context 'with subclass DEFAULT_OPTIONS defined' do
       include_context 'reset @default_options'
 
