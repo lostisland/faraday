@@ -73,17 +73,11 @@ RSpec.describe Faraday::Middleware do
     let(:subclass_one_option) { FaradayMiddlewareSubclasses::SubclassOneOption }
     let(:subclass_two_options) { FaradayMiddlewareSubclasses::SubclassTwoOptions }
 
-    let(:stubs) do
-      Faraday::Adapter::Test::Stubs.new do |stub|
-        stub.get('/success') do
-          [200, {}, 'ok']
-        end
-      end
-    end
-
     def build_conn(resp_middleware)
       Faraday.new do |c|
-        c.adapter :test, stubs
+        c.adapter :test do |stub|
+          stub.get('/success') { [200, {}, 'ok'] }
+        end
         c.response resp_middleware
       end
     end
@@ -104,6 +98,7 @@ RSpec.describe Faraday::Middleware do
         let(:resp1) { build_conn(:one_option).get('/success') }
 
         it 'has only subclass defaults' do
+          expect(Faraday::Middleware.default_options).to eq(Faraday::Middleware::DEFAULT_OPTIONS)
           expect(subclass_no_options.default_options).to eq(subclass_no_options::DEFAULT_OPTIONS)
           expect(subclass_one_option.default_options).to eq(subclass_one_option::DEFAULT_OPTIONS)
           expect(subclass_two_options.default_options).to eq(subclass_two_options::DEFAULT_OPTIONS)
@@ -120,10 +115,10 @@ RSpec.describe Faraday::Middleware do
         end
 
         it 'only updates default options of target subclass' do
+          expect(Faraday::Middleware.default_options).to eq(Faraday::Middleware::DEFAULT_OPTIONS)
           expect(subclass_no_options.default_options).to eq(subclass_no_options::DEFAULT_OPTIONS)
           expect(subclass_one_option.default_options).to eq(subclass_one_option::DEFAULT_OPTIONS)
           expect(subclass_two_options.default_options).to eq({ some_option: false, some_other_option: false })
-          expect(Faraday::Middleware.default_options).to eq(Faraday::Middleware::DEFAULT_OPTIONS)
         end
 
         it { expect(resp2.body).to eq('ok') }
@@ -139,10 +134,10 @@ RSpec.describe Faraday::Middleware do
         end
 
         it 'updates subclasses and parent independent of each other' do
+          expect(Faraday::Middleware.default_options).to eq(Faraday::Middleware::DEFAULT_OPTIONS)
           expect(subclass_no_options.default_options).to eq(subclass_no_options::DEFAULT_OPTIONS)
           expect(subclass_one_option.default_options).to eq({ some_other_option: true })
           expect(subclass_two_options.default_options).to eq({ some_option: false, some_other_option: false })
-          expect(Faraday::Middleware.default_options).to eq(Faraday::Middleware::DEFAULT_OPTIONS)
         end
 
         it { expect(resp1.body).to eq('ok') }
@@ -162,10 +157,10 @@ RSpec.describe Faraday::Middleware do
         let(:resp1) { build_conn(:one_option).get('/success') }
 
         it 'has only subclass defaults' do
+          expect(Faraday::Middleware.default_options).to eq(Faraday::Middleware::DEFAULT_OPTIONS)
           expect(FaradayMiddlewareSubclasses::SubclassNoOptions.default_options).to eq({ its_magic: false })
           expect(FaradayMiddlewareSubclasses::SubclassOneOption.default_options).to eq({ its_magic: false, some_other_option: false })
           expect(FaradayMiddlewareSubclasses::SubclassTwoOptions.default_options).to eq({ its_magic: false, some_option: true, some_other_option: false })
-          expect(Faraday::Middleware.default_options).to eq(Faraday::Middleware::DEFAULT_OPTIONS)
         end
 
         it { expect(resp1.body).to eq('ok') }
@@ -181,10 +176,10 @@ RSpec.describe Faraday::Middleware do
         end
 
         it 'updates subclasses and parent independent of each other' do
+          expect(Faraday::Middleware.default_options).to eq(Faraday::Middleware::DEFAULT_OPTIONS)
           expect(FaradayMiddlewareSubclasses::SubclassNoOptions.default_options).to eq({ its_magic: false })
           expect(FaradayMiddlewareSubclasses::SubclassOneOption.default_options).to eq({ its_magic: false, some_other_option: true })
           expect(FaradayMiddlewareSubclasses::SubclassTwoOptions.default_options).to eq({ its_magic: false, some_option: false, some_other_option: false })
-          expect(Faraday::Middleware.default_options).to eq(Faraday::Middleware::DEFAULT_OPTIONS)
         end
 
         it { expect(resp1.body).to eq('ok') }
