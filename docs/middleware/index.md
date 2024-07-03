@@ -126,11 +126,13 @@ Using `RaiseError` as an example, you can see that `DEFAULT_OPTIONS` have been d
   DEFAULT_OPTIONS = { include_request: true }.freeze
 ```
 
-These options will be set at the class level upon instantiation and referenced as needed within the class. Using our same example:
+These options will be set at the class level upon instantiation and referenced as needed within the class. From our same example:
 
 ```ruby
+  def response_values(env)
   ...
-  return response unless options[:include_request]
+    return response unless options[:include_request]
+  ...
 ```
 
 If the default value provides the desired functionality, no further consideration is needed.
