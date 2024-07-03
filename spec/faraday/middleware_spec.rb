@@ -193,5 +193,21 @@ RSpec.describe Faraday::Middleware do
         it { expect(resp2.body).to eq('ok') }
       end
     end
+
+    describe 'default_options input validation' do
+      include_context 'reset @default_options'
+
+      it 'raises error if Faraday::Middleware option does not exist' do
+        expect { Faraday::Middleware.default_options = { something_special: true } }.to raise_error(Faraday::InitializationError) do |e|
+          expect(e.message).to eq('Invalid options provided. Keys not found in Faraday::Middleware::DEFAULT_OPTIONS: something_special')
+        end
+      end
+
+      it 'raises error if subclass option does not exist' do
+        expect { subclass_one_option.default_options = { this_is_a_typo: true } }.to raise_error(Faraday::InitializationError) do |e|
+          expect(e.message).to eq('Invalid options provided. Keys not found in FaradayMiddlewareSubclasses::SubclassOneOption::DEFAULT_OPTIONS: this_is_a_typo')
+        end
+      end
+    end
   end
 end

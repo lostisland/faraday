@@ -41,7 +41,7 @@ module Faraday
         invalid_keys = options.keys.reject { |opt| self::DEFAULT_OPTIONS.key?(opt) }
         return unless invalid_keys.any?
 
-        raise(Faraday::Error,
+        raise(Faraday::InitializationError,
               "Invalid options provided. Keys not found in #{self}::DEFAULT_OPTIONS: #{invalid_keys.join(', ')}")
       end
     end

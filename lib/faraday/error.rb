@@ -158,4 +158,8 @@ module Faraday
   # Raised by middlewares that parse the response, like the JSON response middleware.
   class ParsingError < Error
   end
+
+  # Raised by Faraday::Middleware and subclasses when invalid default_options are used
+  class InitializationError < Error
+  end
 end
