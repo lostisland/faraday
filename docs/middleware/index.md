@@ -139,7 +139,7 @@ If the default value provides the desired functionality, no further consideratio
 
 #### Setting Alternative Options per Application
 
-In the case where it is desirable to change the default option for all instances within an applcation, it can be done by configuring the options in a `/config/initializers` file. For example:
+In the case where it is desirable to change the default option for all instances within an application, it can be done by configuring the options in a `/config/initializers` file. For example:
 
 ```ruby
 # config/initializers/faraday_config.rb
