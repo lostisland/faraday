@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'monitor'
+
 module Faraday
   # Middleware is the basic base class of any Faraday middleware.
   class Middleware
@@ -25,7 +27,9 @@ module Faraday
       #
       def default_options=(options = {})
         validate_default_options(options)
-        @default_options = default_options.merge(options)
+        lock.synchronize do
+          @default_options = default_options.merge(options)
+        end
       end
 
       # default_options attr_reader that initializes class instance variable
@@ -36,6 +40,10 @@ module Faraday
       end
 
       private
+
+      def lock
+        @lock ||= Monitor.new
+      end
 
       def validate_default_options(options)
         invalid_keys = options.keys.reject { |opt| self::DEFAULT_OPTIONS.key?(opt) }
