@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'monitor'
+
 module Faraday
   # Middleware is the basic base class of any Faraday middleware.
   class Middleware
@@ -7,9 +9,49 @@ module Faraday
 
     attr_reader :app, :options
 
+    DEFAULT_OPTIONS = {}.freeze
+
     def initialize(app = nil, options = {})
       @app = app
-      @options = options
+      @options = self.class.default_options.merge(options)
+    end
+
+    class << self
+      # Faraday::Middleware::default_options= allows user to set default options at the Faraday::Middleware
+      # class level.
+      #
+      # @example Set the Faraday::Response::RaiseError option, `include_request` to `false`
+      # my_app/config/initializers/my_faraday_middleware.rb
+      #
+      # Faraday::Response::RaiseError.default_options = { include_request: false }
+      #
+      def default_options=(options = {})
+        validate_default_options(options)
+        lock.synchronize do
+          @default_options = default_options.merge(options)
+        end
+      end
+
+      # default_options attr_reader that initializes class instance variable
+      # with the values of any Faraday::Middleware defaults, and merges with
+      # subclass defaults
+      def default_options
+        @default_options ||= DEFAULT_OPTIONS.merge(self::DEFAULT_OPTIONS)
+      end
+
+      private
+
+      def lock
+        @lock ||= Monitor.new
+      end
+
+      def validate_default_options(options)
+        invalid_keys = options.keys.reject { |opt| self::DEFAULT_OPTIONS.key?(opt) }
+        return unless invalid_keys.any?
+
+        raise(Faraday::InitializationError,
+              "Invalid options provided. Keys not found in #{self}::DEFAULT_OPTIONS: #{invalid_keys.join(', ')}")
+      end
     end
 
     def call(env)

@@ -114,6 +114,49 @@ conn = Faraday.new do |f|
 end
 ```
 
+### DEFAULT_OPTIONS
+
+`DEFAULT_OPTIONS` improve the flexibility and customizability of new and existing middleware. Class-level `DEFAULT_OPTIONS` and the ability to set these defaults at the application level compliment existing functionality in which options can be passed into middleware on a per-instance basis.
+
+#### Using DEFAULT_OPTIONS
+
+Using `RaiseError` as an example, you can see that `DEFAULT_OPTIONS` have been defined at the top of the class:
+
+```ruby
+  DEFAULT_OPTIONS = { include_request: true }.freeze
+```
+
+These options will be set at the class level upon instantiation and referenced as needed within the class. From our same example:
+
+```ruby
+  def response_values(env)
+  ...
+    return response unless options[:include_request]
+  ...
+```
+
+If the default value provides the desired functionality, no further consideration is needed.
+
+#### Setting Alternative Options per Application
+
+In the case where it is desirable to change the default option for all instances within an application, it can be done by configuring the options in a `/config/initializers` file. For example:
+
+```ruby
+# config/initializers/faraday_config.rb
+
+Faraday::Response::RaiseError.default_options = { include_request: false }
+```
+
+After app initialization, all instances of the middleware will have the newly configured option(s). They can still be overriden on a per-instance bases (if handled in the middleware), like this:
+
+```ruby
+  Faraday.new do |f|
+    ...
+    f.response :raise_error, include_request: true 
+    ...
+  end
+```
+
 ### Available Middleware
 
 The following pages provide detailed configuration for the middleware that ships with Faraday:
