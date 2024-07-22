@@ -26,8 +26,4 @@ group :development, :lint do
   gem 'yard-junk'
 end
 
-group :deployment do
-  gem 'rubygems-await', github: 'segiddins/rubygems-await', ref: 'f5e2b0413ec6f17e35d9bb7902dcb28b31804701'
-end
-
 gemspec
