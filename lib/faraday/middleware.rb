@@ -10,6 +10,7 @@ module Faraday
     attr_reader :app, :options
 
     DEFAULT_OPTIONS = {}.freeze
+    LOCK = Mutex.new
 
     def initialize(app = nil, options = {})
       @app = app
@@ -27,7 +28,7 @@ module Faraday
       #
       def default_options=(options = {})
         validate_default_options(options)
-        lock.synchronize do
+        LOCK.synchronize do
           @default_options = default_options.merge(options)
         end
       end
@@ -40,10 +41,6 @@ module Faraday
       end
 
       private
-
-      def lock
-        @lock ||= Monitor.new
-      end
 
       def validate_default_options(options)
         invalid_keys = options.keys.reject { |opt| self::DEFAULT_OPTIONS.key?(opt) }
