@@ -10,7 +10,7 @@ module Faraday
     attr_reader :app, :options
 
     DEFAULT_OPTIONS = {}.freeze
-    LOCK = Monitor.new
+    LOCK = Mutex.new
 
     def initialize(app = nil, options = {})
       @app = app
