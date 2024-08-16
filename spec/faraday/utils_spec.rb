@@ -103,7 +103,8 @@ RSpec.describe Faraday::Utils do
           version: '2',
           min_version: nil,
           max_version: nil,
-          verify_hostname: nil
+          verify_hostname: nil,
+          ciphers: nil
         }
       end
 
