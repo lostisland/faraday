@@ -314,15 +314,23 @@ module Faraday
     #
     # @yield a block to execute multiple requests.
     # @return [void]
-    def in_parallel(manager = nil)
+    def in_parallel(manager = nil, &block)
       @parallel_manager = manager || default_parallel_manager do
         warn 'Warning: `in_parallel` called but no parallel-capable adapter ' \
              'on Faraday stack'
         warn caller[2, 10].join("\n")
         nil
       end
-      yield
-      @parallel_manager&.run
+      return yield unless @parallel_manager
+
+      if @parallel_manager.respond_to?(:execute)
+        # Execute is the new method that is responsible for executing the block.
+        @parallel_manager.execute(&block)
+      else
+        # TODO: Old behaviour, deprecate and remove in 3.0
+        yield
+        @parallel_manager.run
+      end
     ensure
       @parallel_manager = nil
     end
