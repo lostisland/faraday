@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
     'changelog_uri' =>
       "https://github.com/lostisland/faraday/releases/tag/v#{spec.version}",
     'source_code_uri' => 'https://github.com/lostisland/faraday',
-    'bug_tracker_uri' => 'https://github.com/lostisland/faraday/issues'
+    'bug_tracker_uri' => 'https://github.com/lostisland/faraday/issues',
+    'rubygems_mfa_required' => 'true'
   }
 end
