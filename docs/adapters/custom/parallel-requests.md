@@ -65,7 +65,7 @@ end
 Prior to the introduction of the `execute` method, the `ParallelManager` was expected to implement a `run` method
 and the execution of the block was done by the Faraday connection BEFORE calling that method.
 
-This approach made the `ParallelManager` implementation harder and keeping the state required.
+This approach made the `ParallelManager` implementation harder and forced you to keep state around.
 The new `execute` implementation allows to avoid this shortfall and support different flows.
 
 As of Faraday 2.0, `run` is still supported in case `execute` is not implemented by the `ParallelManager`,
