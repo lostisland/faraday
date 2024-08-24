@@ -517,7 +517,7 @@ Breaking changes:
 - Drop support for Ruby 1.8
 
 Features:
-- Include wrapped exception/reponse in ClientErrors
+- Include wrapped exception/response in ClientErrors
 - Add `response.reason_phrase`
 - Provide option to selectively skip logging request/response headers
 - Add regex support for pattern matching in `test` adapter

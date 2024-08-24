@@ -147,7 +147,7 @@ In the case where it is desirable to change the default option for all instances
 Faraday::Response::RaiseError.default_options = { include_request: false }
 ```
 
-After app initialization, all instances of the middleware will have the newly configured option(s). They can still be overriden on a per-instance bases (if handled in the middleware), like this:
+After app initialization, all instances of the middleware will have the newly configured option(s). They can still be overridden on a per-instance bases (if handled in the middleware), like this:
 
 ```ruby
   Faraday.new do |f|
