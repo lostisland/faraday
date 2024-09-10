@@ -63,23 +63,28 @@ and raised as `Faraday::NilStatusError`, which inherits from `Faraday::ServerErr
 
 The behavior of this middleware can be customized with the following options:
 
-| Option              | Default | Description |
-|---------------------|---------|-------------|
-| **include_request** | true    | When true, exceptions are initialized with request information including `method`, `url`, `url_path`, `params`, `headers`, and `body`. |
+| Option               | Default | Description |
+|----------------------|---------|-------------|
+| **include_request**  | true    | When true, exceptions are initialized with request information including `method`, `url`, `url_path`, `params`, `headers`, and `body`. |
+| **allowed_statuses** | []      | An array of status codes that should not raise an error. |
 
 ### Example Usage
 
 ```ruby
 conn = Faraday.new(url: 'http://httpbingo.org') do |faraday|
-  faraday.response :raise_error, include_request: true
+  faraday.response :raise_error, include_request: true, allowed_statuses: [404]
 end
 
 begin
-  conn.get('/wrong-url') # => Assume this raises a 404 response
-rescue Faraday::ResourceNotFound => e
-  e.response[:status]              #=> 404
-  e.response[:headers]             #=> { ... }
-  e.response[:body]                #=> "..."
-  e.response[:request][:url_path]  #=> "/wrong-url"
+  conn.get('/wrong-url')           # => Assume this raises a 404 response
+  conn.get('/protected-url')       # => Assume this raises a 401 response
+rescue Faraday::UnauthorizedError => e
+  e.response[:status]              # => 401
+  e.response[:headers]             # => { ... }
+  e.response[:body]                # => "..."
+  e.response[:request][:url_path]  # => "/protected-url"
 end
 ```
+
+In this example, a `Faraday::UnauthorizedError` exception is raised for the `/protected-url` request, while the
+`/wrong-url` request does not raise an error because the status code `404` is in the `allowed_statuses` array.

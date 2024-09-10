@@ -10,9 +10,11 @@ module Faraday
       ServerErrorStatuses = (500...600)
       # rubocop:enable Naming/ConstantName
 
-      DEFAULT_OPTIONS = { include_request: true }.freeze
+      DEFAULT_OPTIONS = { include_request: true, allowed_statuses: [] }.freeze
 
       def on_complete(env)
+        return if Array(options[:allowed_statuses]).include?(env[:status])
+
         case env[:status]
         when 400
           raise Faraday::BadRequestError, response_values(env)
