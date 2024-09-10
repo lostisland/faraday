@@ -19,7 +19,7 @@ We've taken this decision for the following technical reasons:
   focused on the Faraday API more quickly, without having to push it on all adapters immediately.
 * With the community creating more and more adapters, we wanted to avoid having first and second-class adapters
   by having some of them included with the gem and others available externally.
-* Moving adapters into separate gems allow to solve the dependency issues once and for all.
+* Moving adapters into separate gems solve the dependency issues once and for all.
   Faraday will remain a dependency-free gem, while adapter gems will be able to automatically pull
   any necessary dependency, without having to rely on the developer to do so.
 
