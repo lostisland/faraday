@@ -8,6 +8,16 @@ module Faraday
       # rubocop:disable Naming/ConstantName
       ClientErrorStatuses = (400...500)
       ServerErrorStatuses = (500...600)
+      ClientErrorStatusesWithCustomExceptions = {
+        400 => Faraday::BadRequestError,
+        401 => Faraday::UnauthorizedError,
+        403 => Faraday::ForbiddenError,
+        404 => Faraday::ResourceNotFound,
+        408 => Faraday::RequestTimeoutError,
+        409 => Faraday::ConflictError,
+        422 => Faraday::UnprocessableEntityError,
+        429 => Faraday::TooManyRequestsError
+      }.freeze
       # rubocop:enable Naming/ConstantName
 
       DEFAULT_OPTIONS = { include_request: true, allowed_statuses: [] }.freeze
@@ -16,26 +26,12 @@ module Faraday
         return if Array(options[:allowed_statuses]).include?(env[:status])
 
         case env[:status]
-        when 400
-          raise Faraday::BadRequestError, response_values(env)
-        when 401
-          raise Faraday::UnauthorizedError, response_values(env)
-        when 403
-          raise Faraday::ForbiddenError, response_values(env)
-        when 404
-          raise Faraday::ResourceNotFound, response_values(env)
+        when *ClientErrorStatusesWithCustomExceptions.keys
+          raise ClientErrorStatusesWithCustomExceptions[env[:status]], response_values(env)
         when 407
           # mimic the behavior that we get with proxy requests with HTTPS
           msg = %(407 "Proxy Authentication Required")
           raise Faraday::ProxyAuthError.new(msg, response_values(env))
-        when 408
-          raise Faraday::RequestTimeoutError, response_values(env)
-        when 409
-          raise Faraday::ConflictError, response_values(env)
-        when 422
-          raise Faraday::UnprocessableEntityError, response_values(env)
-        when 429
-          raise Faraday::TooManyRequestsError, response_values(env)
         when ClientErrorStatuses
           raise Faraday::ClientError, response_values(env)
         when ServerErrorStatuses
