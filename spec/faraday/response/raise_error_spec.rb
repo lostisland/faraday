@@ -252,4 +252,24 @@ RSpec.describe Faraday::Response::RaiseError do
       end
     end
   end
+
+  describe 'allowing certain status codes' do
+    let(:conn) do
+      Faraday.new do |b|
+        b.response :raise_error, allowed_statuses: [404]
+        b.adapter :test do |stub|
+          stub.get('bad-request') { [400, { 'X-Reason' => 'because' }, 'keep looking'] }
+          stub.get('not-found') { [404, { 'X-Reason' => 'because' }, 'keep looking'] }
+        end
+      end
+    end
+
+    it 'raises an error for status codes that are not explicitly allowed' do
+      expect { conn.get('bad-request') }.to raise_error(Faraday::BadRequestError)
+    end
+
+    it 'does not raise an error for allowed status codes' do
+      expect { conn.get('not-found') }.not_to raise_error
+    end
+  end
 end
