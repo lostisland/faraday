@@ -67,13 +67,14 @@ module Faraday
   class Request
     extend AutoloadHelper
     autoload_all 'faraday/request',
-                 UrlEncoded: 'url_encoded',
-                 Multipart: 'multipart',
-                 Retry: 'retry',
                  Authorization: 'authorization',
                  BasicAuthentication: 'basic_authentication',
+                 Instrumentation: 'instrumentation',
+                 Json: 'json',
+                 Multipart: 'multipart',
+                 Retry: 'retry',
                  TokenAuthentication: 'token_authentication',
-                 Instrumentation: 'instrumentation'
+                 UrlEncoded: 'url_encoded'
   end
 
   # Response represents the returned value of a sent Faraday request.
@@ -81,7 +82,8 @@ module Faraday
   class Response
     extend AutoloadHelper
     autoload_all 'faraday/response',
-                 RaiseError: 'raise_error',
-                 Logger: 'logger'
+                 Json: 'json',
+                 Logger: 'logger',
+                 RaiseError: 'raise_error'
   end
 end
