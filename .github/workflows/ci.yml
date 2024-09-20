@@ -17,14 +17,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Ruby 3.0
+    - name: Set up Ruby 2.7
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.0
+        ruby-version: 2.7
 
     - name: Rubocop
       run: |
-        gem install bundler
+        gem install bundler -v 2.4.22
         bundle config set without 'development test'
         bundle config set with 'lint'
         bundle install
@@ -57,7 +57,7 @@ jobs:
 
     - name: Build
       run: |
-        gem install bundler -v '<2'
+        gem install bundler -v 2.4.22
         bundle install --jobs 4 --retry 3
 
     - name: Test
