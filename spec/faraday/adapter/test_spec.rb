@@ -41,6 +41,14 @@ RSpec.describe Faraday::Adapter::Test do
 
   let(:response) { connection.get('/hello') }
 
+  it 'can receive stubs as a positional argument' do
+    expect(described_class.new(dummy_rack_app, stubs).stubs).to be stubs
+  end
+
+  it 'can receive stubs as a keyword argument' do
+    expect(described_class.new(dummy_rack_app, stubs: stubs).stubs).to be stubs
+  end
+
   context 'with simple path sets status' do
     subject { response.status }
 

@@ -255,8 +255,9 @@ module Faraday
         end
       end
 
-      def initialize(app, stubs = nil, &block)
+      def initialize(app, stubs_or_options = nil, &block)
         super(app)
+        stubs = stubs_or_options.is_a?(Hash) ? stubs_or_options[:stubs] : stubs_or_options
         @stubs = stubs || Stubs.new
         configure(&block) if block
       end
