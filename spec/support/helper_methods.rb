@@ -92,5 +92,9 @@ module Faraday
       kb = 1024
       (32..126).map(&:chr).cycle.take(50 * kb).join
     end
+
+    def dummy_rack_app
+      ->(_env) { [200, { 'content-type' => 'text/plain' }, ['Hello World']] }
+    end
   end
 end
