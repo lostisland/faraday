@@ -88,22 +88,22 @@ module Faraday
       @handlers.frozen?
     end
 
-    ruby2_keywords def use(klass, *args, &block)
+    def use(klass, ...)
       if klass.is_a? Symbol
-        use_symbol(Faraday::Middleware, klass, *args, &block)
+        use_symbol(Faraday::Middleware, klass, ...)
       else
         raise_if_locked
         raise_if_adapter(klass)
-        @handlers << self.class::Handler.new(klass, *args, &block)
+        @handlers << self.class::Handler.new(klass, ...)
       end
     end
 
-    ruby2_keywords def request(key, *args, &block)
-      use_symbol(Faraday::Request, key, *args, &block)
+    def request(key, ...)
+      use_symbol(Faraday::Request, key, ...)
     end
 
-    ruby2_keywords def response(key, *args, &block)
-      use_symbol(Faraday::Response, key, *args, &block)
+    def response(...)
+      use_symbol(Faraday::Response, ...)
     end
 
     ruby2_keywords def adapter(klass = NO_ARGUMENT, *args, &block)
@@ -115,25 +115,25 @@ module Faraday
 
     ## methods to push onto the various positions in the stack:
 
-    ruby2_keywords def insert(index, *args, &block)
+    def insert(index, ...)
       raise_if_locked
       index = assert_index(index)
-      handler = self.class::Handler.new(*args, &block)
+      handler = self.class::Handler.new(...)
       @handlers.insert(index, handler)
     end
 
     alias insert_before insert
 
-    ruby2_keywords def insert_after(index, *args, &block)
+    def insert_after(index, ...)
       index = assert_index(index)
-      insert(index + 1, *args, &block)
+      insert(index + 1, ...)
     end
 
-    ruby2_keywords def swap(index, *args, &block)
+    def swap(index, ...)
       raise_if_locked
       index = assert_index(index)
       @handlers.delete_at(index)
-      insert(index, *args, &block)
+      insert(index, ...)
     end
 
     def delete(handler)
@@ -237,8 +237,8 @@ module Faraday
       klass <= Faraday::Adapter
     end
 
-    ruby2_keywords def use_symbol(mod, key, *args, &block)
-      use(mod.lookup_middleware(key), *args, &block)
+    def use_symbol(mod, key, ...)
+      use(mod.lookup_middleware(key), ...)
     end
 
     def assert_index(index)
