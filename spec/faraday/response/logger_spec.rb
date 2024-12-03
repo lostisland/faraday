@@ -55,6 +55,26 @@ RSpec.describe Faraday::Response::Logger do
     end
   end
 
+  context 'when logger with program name' do
+    let(:logger) { Logger.new(string_io, progname: 'my_best_program') }
+
+    it 'logs with program name' do
+      conn.get '/hello'
+
+      expect(string_io.string).to match('-- my_best_program: request:')
+      expect(string_io.string).to match('-- my_best_program: response:')
+    end
+  end
+
+  context 'when logger without program name' do
+    it 'logs without program name' do
+      conn.get '/hello'
+
+      expect(string_io.string).to match('-- : request:')
+      expect(string_io.string).to match('-- : response:')
+    end
+  end
+
   context 'with default formatter' do
     let(:formatter) { instance_double(Faraday::Logging::Formatter, request: true, response: true, filter: []) }
 
