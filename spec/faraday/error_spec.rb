@@ -24,7 +24,11 @@ RSpec.describe Faraday::Error do
       it { expect(subject.wrapped_exception).to be_nil }
       it { expect(subject.response).to eq(exception) }
       it { expect(subject.message).to eq('the server responded with status 400') }
-      it { expect(subject.inspect).to eq('#<Faraday::Error response={:status=>400}>') }
+      if RUBY_VERSION >= '3.4'
+        it { expect(subject.inspect).to eq('#<Faraday::Error response={status: 400}>') }
+      else
+        it { expect(subject.inspect).to eq('#<Faraday::Error response={:status=>400}>') }
+      end
       it { expect(subject.response_status).to eq(400) }
       it { expect(subject.response_headers).to be_nil }
       it { expect(subject.response_body).to be_nil }
@@ -61,7 +65,11 @@ RSpec.describe Faraday::Error do
       it { expect(subject.wrapped_exception).to be_nil }
       it { expect(subject.response).to eq(response) }
       it { expect(subject.message).to eq('custom message') }
-      it { expect(subject.inspect).to eq('#<Faraday::Error response={:status=>400}>') }
+      if RUBY_VERSION >= '3.4'
+        it { expect(subject.inspect).to eq('#<Faraday::Error response={status: 400}>') }
+      else
+        it { expect(subject.inspect).to eq('#<Faraday::Error response={:status=>400}>') }
+      end
       it { expect(subject.response_status).to eq(400) }
       it { expect(subject.response_headers).to be_nil }
       it { expect(subject.response_body).to be_nil }
