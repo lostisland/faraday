@@ -27,10 +27,11 @@ module Faraday
 
       attr_reader :name
 
-      ruby2_keywords def initialize(klass, *args, &block)
+      def initialize(klass, *args, **kwargs, &block)
         @name = klass.to_s
         REGISTRY.set(klass) if klass.respond_to?(:name)
         @args = args
+        @kwargs = kwargs
         @block = block
       end
 
@@ -53,7 +54,7 @@ module Faraday
       end
 
       def build(app = nil)
-        klass.new(app, *@args, &@block)
+        klass.new(app, *@args, **@kwargs, &@block)
       end
     end
 
@@ -106,11 +107,11 @@ module Faraday
       use_symbol(Faraday::Response, ...)
     end
 
-    ruby2_keywords def adapter(klass = NO_ARGUMENT, *args, &block)
+    def adapter(klass = NO_ARGUMENT, *args, **kwargs, &block)
       return @adapter if klass == NO_ARGUMENT || klass.nil?
 
       klass = Faraday::Adapter.lookup_middleware(klass) if klass.is_a?(Symbol)
-      @adapter = self.class::Handler.new(klass, *args, &block)
+      @adapter = self.class::Handler.new(klass, *args, **kwargs, &block)
     end
 
     ## methods to push onto the various positions in the stack:
