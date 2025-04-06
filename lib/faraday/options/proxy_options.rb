@@ -22,7 +22,7 @@ module Faraday
       when URI
         value = { uri: value }
       when Hash, Options
-        if (uri = value.delete(:uri))
+        if (uri = value[:uri])
           value[:uri] = Utils.URI(uri)
         end
       end
