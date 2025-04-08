@@ -11,6 +11,9 @@ module Faraday
   #   #   @return [Boolean] whether to enable hostname verification on server certificates
   #   #           during the handshake or not (see https://github.com/ruby/openssl/pull/60)
   #   #
+  #   # @!attribute hostname
+  #   #   @return [String] Server hostname used for SNI (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL/SSLSocket.html#method-i-hostname-3D)
+  #   #
   #   # @!attribute ca_file
   #   #   @return [String] CA file
   #   #
@@ -50,7 +53,7 @@ module Faraday
   #   # @!attribute ciphers
   #   #   @return [String] cipher list in OpenSSL format (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL/SSLContext.html#method-i-ciphers-3D)
   #   class SSLOptions < Options; end
-  SSLOptions = Options.new(:verify, :verify_hostname,
+  SSLOptions = Options.new(:verify, :verify_hostname, :hostname,
                            :ca_file, :ca_path, :verify_mode,
                            :cert_store, :client_cert, :client_key,
                            :certificate, :private_key, :verify_depth,

@@ -6,6 +6,7 @@ Faraday supports a number of SSL options, which can be provided while initializi
 |--------------------|----------------------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------|
 | `:verify`          | Boolean                                | true    | Verify SSL certificate. Defaults to `true`.                                                                                        |
 | `:verify_hostname` | Boolean                                | true    | Verify SSL certificate hostname. Defaults to `true`.                                                                               |
+| `:hostname`        | String                                 | nil     | Server hostname for SNI (see [SSL docs](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/SSL/SSLSocket.html#method-i-hostname-3D)). |
 | `:ca_file`         | String                                 | nil     | Path to a CA file in PEM format.                                                                                                   |
 | `:ca_path`         | String                                 | nil     | Path to a CA directory.                                                                                                            |
 | `:verify_mode`     | Integer                                | nil     | Any `OpenSSL::SSL::` constant (see [SSL docs](https://ruby-doc.org/3.2.2/exts/openssl/OpenSSL/SSL.html)).                          |
