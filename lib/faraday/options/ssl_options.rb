@@ -12,7 +12,7 @@ module Faraday
   #   #           during the handshake or not (see https://github.com/ruby/openssl/pull/60)
   #   #
   #   # @!attribute hostname
-  #   #   @return [String] SNI hostname (see https://ruby.github.io/openssl/OpenSSL/SSL/SSLSocket.html#method-i-hostname-3D)
+  #   #   @return [String] Server hostname used for SNI (see https://ruby-doc.org/stdlib-2.5.1/libdoc/openssl/rdoc/OpenSSL/SSL/SSLSocket.html#method-i-hostname-3D)
   #   #
   #   # @!attribute ca_file
   #   #   @return [String] CA file
