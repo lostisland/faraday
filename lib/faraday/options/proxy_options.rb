@@ -22,8 +22,10 @@ module Faraday
       when URI
         value = { uri: value }
       when Hash, Options
-        if (uri = value.delete(:uri))
-          value[:uri] = Utils.URI(uri)
+        if value[:uri]
+          value = value.dup.tap do |duped|
+            duped[:uri] = Utils.URI(duped[:uri])
+          end
         end
       end
 
