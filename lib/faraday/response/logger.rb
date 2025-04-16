@@ -10,11 +10,13 @@ module Faraday
     # lifecycle to a given Logger object. By default, this logs to STDOUT. See
     # Faraday::Logging::Formatter to see specifically what is logged.
     class Logger < Middleware
+      DEFAULT_OPTIONS = { formatter: Logging::Formatter }.merge(Logging::Formatter::DEFAULT_OPTIONS).freeze
+
       def initialize(app, logger = nil, options = {})
-        super(app)
+        super(app, options)
         logger ||= ::Logger.new($stdout)
-        formatter_class = options.delete(:formatter) || Logging::Formatter
-        @formatter = formatter_class.new(logger: logger, options: options)
+        formatter_class = @options.delete(:formatter)
+        @formatter = formatter_class.new(logger: logger, options: @options)
         yield @formatter if block_given?
       end
 

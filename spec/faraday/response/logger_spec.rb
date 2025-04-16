@@ -189,7 +189,7 @@ RSpec.describe Faraday::Response::Logger do
   context 'when logging request body' do
     let(:logger_options) { { bodies: { request: true } } }
 
-    it 'log only request body' do
+    it 'logs only request body' do
       conn.post '/ohyes', 'name=Tamago', accept: 'text/html'
       expect(string_io.string).to match(%(name=Tamago))
       expect(string_io.string).not_to match(%(pebbles))
@@ -199,7 +199,7 @@ RSpec.describe Faraday::Response::Logger do
   context 'when logging response body' do
     let(:logger_options) { { bodies: { response: true } } }
 
-    it 'log only response body' do
+    it 'logs only response body' do
       conn.post '/ohyes', 'name=Hamachi', accept: 'text/html'
       expect(string_io.string).to match(%(pebbles))
       expect(string_io.string).not_to match(%(name=Hamachi))
@@ -209,13 +209,13 @@ RSpec.describe Faraday::Response::Logger do
   context 'when logging request and response bodies' do
     let(:logger_options) { { bodies: true } }
 
-    it 'log request and response body' do
+    it 'logs request and response body' do
       conn.post '/ohyes', 'name=Ebi', accept: 'text/html'
       expect(string_io.string).to match(%(name=Ebi))
       expect(string_io.string).to match(%(pebbles))
     end
 
-    it 'log response body object' do
+    it 'logs response body object' do
       conn.get '/rubbles', nil, accept: 'text/html'
       expect(string_io.string).to match(%([\"Barney\", \"Betty\", \"Bam Bam\"]\n))
     end
@@ -225,6 +225,21 @@ RSpec.describe Faraday::Response::Logger do
       expect(string_io.string).to match(%(soylent green is))
       expect(string_io.string).to match(%(tasty))
       expect(string_io.string).not_to match(%(people))
+    end
+  end
+
+  context 'when bodies are logged by default' do
+    before do
+      described_class.default_options = { bodies: true }
+    end
+
+    it 'logs response body' do
+      conn.post '/ohai'
+      expect(string_io.string).to match(%(fred))
+    end
+
+    after do
+      described_class.default_options = { bodies: false }
     end
   end
 
