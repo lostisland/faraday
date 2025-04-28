@@ -805,4 +805,22 @@ RSpec.describe Faraday::Connection do
       end
     end
   end
+
+  describe '#middlewares' do
+    it 'returns the list of registered middlewares' do
+      expect(conn.middlewares).to eq(%w[Faraday::Request::UrlEncoded])
+    end
+
+    it 'returns the same as handlers' do
+      expect(conn.middlewares).to eq(%w[Faraday::Request::UrlEncoded])
+
+      # Add a new middleware
+      conn.request(:json)
+      conn.response(:logger)
+      expect(conn.middlewares).to eq(%w[Faraday::Request::UrlEncoded Faraday::Request::Json Faraday::Response::Logger])
+
+      # Simply verify that the middlewares method returns the same as handlers
+      expect(conn.middlewares).to eq(conn.builder.handlers)
+    end
+  end
 end

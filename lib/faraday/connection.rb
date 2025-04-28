@@ -560,5 +560,12 @@ module Faraday
     def support_parallel?(adapter)
       adapter.respond_to?(:supports_parallel?) && adapter&.supports_parallel?
     end
+
+    # Returns the list of registered middlewares.
+    #
+    # @return [Array<Faraday::RackBuilder::Handler>]
+    def middlewares
+      builder.handlers
+    end
   end
 end
