@@ -221,7 +221,7 @@ module Faraday
     end
 
     def raise_if_adapter(klass)
-      return unless is_adapter?(klass)
+      return unless (klass <= Faraday::Adapter)
 
       raise 'Adapter should be set using the `adapter` method, not `use`'
     end
@@ -232,10 +232,6 @@ module Faraday
 
     def adapter_set?
       !@adapter.nil?
-    end
-
-    def is_adapter?(klass) # rubocop:disable Naming/PredicateName
-      klass <= Faraday::Adapter
     end
 
     def use_symbol(mod, key, ...)
