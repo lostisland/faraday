@@ -2,6 +2,7 @@
   * [Quick Start](getting-started/quick-start.md)
   * [The Env Object](getting-started/env-object.md)
   * [Dealing with Errors](getting-started/errors.md)
+  * [Migrating from rest-client](getting-started/rest-client-migration.md)
 * Customization
   * [Configuration](customization/index.md)
   * [Connection Options](customization/connection-options.md)
