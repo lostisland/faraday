@@ -221,7 +221,7 @@ module Faraday
     end
 
     def raise_if_adapter(klass)
-      return unless (klass <= Faraday::Adapter)
+      return unless klass <= Faraday::Adapter
 
       raise 'Adapter should be set using the `adapter` method, not `use`'
     end
