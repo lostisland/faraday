@@ -79,12 +79,23 @@ module Faraday
 
     # Pulls out potential parent exception and response hash.
     def exc_msg_and_response(exc, response = nil)
-      return [exc, exc.message, response] if exc.respond_to?(:backtrace)
+      if exc.is_a?(Exception)
+        [exc, exc.message, response]
+      elsif exc.is_a?(Hash)
+        http_status = exc.fetch(:status)
 
-      return [nil, "the server responded with status #{exc[:status]}", exc] \
-        if exc.respond_to?(:each_key)
+        request = exc.fetch(:request, nil)
 
-      [nil, exc.to_s, response]
+        exception_message = if request.nil?
+          "the server responded with status #{http_status} - method and url are not available due to include_request: false on Faraday::Response::RaiseError middleware"
+        else
+          "the server responded with status #{http_status} for #{request.fetch(:method).upcase} #{request.fetch(:url)}"
+        end
+
+        [nil, exception_message, exc]
+      else
+        [nil, exc.to_s, response]
+      end
     end
   end
 
