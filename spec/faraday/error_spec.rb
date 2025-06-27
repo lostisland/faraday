@@ -23,7 +23,7 @@ RSpec.describe Faraday::Error do
 
       it { expect(subject.wrapped_exception).to be_nil }
       it { expect(subject.response).to eq(exception) }
-      it { expect(subject.message).to eq('the server responded with status 400') }
+      it { expect(subject.message).to eq('the server responded with status 400 - method and url are not available due to include_request: false on Faraday::Response::RaiseError middleware') }
       if RUBY_VERSION >= '3.4'
         it { expect(subject.inspect).to eq('#<Faraday::Error response={status: 400}>') }
       else

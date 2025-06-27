@@ -28,7 +28,7 @@ RSpec.describe Faraday::Response::RaiseError do
 
   it 'raises Faraday::BadRequestError for 400 responses' do
     expect { conn.get('bad-request') }.to raise_error(Faraday::BadRequestError) do |ex|
-      expect(ex.message).to eq('the server responded with status 400')
+      expect(ex.message).to eq('the server responded with status 400 for GET http:/bad-request')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(400)
       expect(ex.response_status).to eq(400)
@@ -39,7 +39,7 @@ RSpec.describe Faraday::Response::RaiseError do
 
   it 'raises Faraday::UnauthorizedError for 401 responses' do
     expect { conn.get('unauthorized') }.to raise_error(Faraday::UnauthorizedError) do |ex|
-      expect(ex.message).to eq('the server responded with status 401')
+      expect(ex.message).to eq('the server responded with status 401 for GET http:/unauthorized')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(401)
       expect(ex.response_status).to eq(401)
@@ -50,7 +50,7 @@ RSpec.describe Faraday::Response::RaiseError do
 
   it 'raises Faraday::ForbiddenError for 403 responses' do
     expect { conn.get('forbidden') }.to raise_error(Faraday::ForbiddenError) do |ex|
-      expect(ex.message).to eq('the server responded with status 403')
+      expect(ex.message).to eq('the server responded with status 403 for GET http:/forbidden')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(403)
       expect(ex.response_status).to eq(403)
@@ -61,7 +61,7 @@ RSpec.describe Faraday::Response::RaiseError do
 
   it 'raises Faraday::ResourceNotFound for 404 responses' do
     expect { conn.get('not-found') }.to raise_error(Faraday::ResourceNotFound) do |ex|
-      expect(ex.message).to eq('the server responded with status 404')
+      expect(ex.message).to eq('the server responded with status 404 for GET http:/not-found')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(404)
       expect(ex.response_status).to eq(404)
@@ -83,7 +83,7 @@ RSpec.describe Faraday::Response::RaiseError do
 
   it 'raises Faraday::RequestTimeoutError for 408 responses' do
     expect { conn.get('request-timeout') }.to raise_error(Faraday::RequestTimeoutError) do |ex|
-      expect(ex.message).to eq('the server responded with status 408')
+      expect(ex.message).to eq('the server responded with status 408 for GET http:/request-timeout')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(408)
       expect(ex.response_status).to eq(408)
@@ -94,7 +94,7 @@ RSpec.describe Faraday::Response::RaiseError do
 
   it 'raises Faraday::ConflictError for 409 responses' do
     expect { conn.get('conflict') }.to raise_error(Faraday::ConflictError) do |ex|
-      expect(ex.message).to eq('the server responded with status 409')
+      expect(ex.message).to eq('the server responded with status 409 for GET http:/conflict')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(409)
       expect(ex.response_status).to eq(409)
@@ -105,7 +105,7 @@ RSpec.describe Faraday::Response::RaiseError do
 
   it 'raises Faraday::UnprocessableEntityError for 422 responses' do
     expect { conn.get('unprocessable-entity') }.to raise_error(Faraday::UnprocessableEntityError) do |ex|
-      expect(ex.message).to eq('the server responded with status 422')
+      expect(ex.message).to eq('the server responded with status 422 for GET http:/unprocessable-entity')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(422)
       expect(ex.response_status).to eq(422)
@@ -116,7 +116,7 @@ RSpec.describe Faraday::Response::RaiseError do
 
   it 'raises Faraday::TooManyRequestsError for 429 responses' do
     expect { conn.get('too-many-requests') }.to raise_error(Faraday::TooManyRequestsError) do |ex|
-      expect(ex.message).to eq('the server responded with status 429')
+      expect(ex.message).to eq('the server responded with status 429 for GET http:/too-many-requests')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(429)
       expect(ex.response_status).to eq(429)
@@ -138,7 +138,7 @@ RSpec.describe Faraday::Response::RaiseError do
 
   it 'raises Faraday::ClientError for other 4xx responses' do
     expect { conn.get('4xx') }.to raise_error(Faraday::ClientError) do |ex|
-      expect(ex.message).to eq('the server responded with status 499')
+      expect(ex.message).to eq('the server responded with status 499 for GET http:/4xx')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(499)
       expect(ex.response_status).to eq(499)
@@ -149,7 +149,7 @@ RSpec.describe Faraday::Response::RaiseError do
 
   it 'raises Faraday::ServerError for 500 responses' do
     expect { conn.get('server-error') }.to raise_error(Faraday::ServerError) do |ex|
-      expect(ex.message).to eq('the server responded with status 500')
+      expect(ex.message).to eq('the server responded with status 500 for GET http:/server-error')
       expect(ex.response[:headers]['X-Error']).to eq('bailout')
       expect(ex.response[:status]).to eq(500)
       expect(ex.response_status).to eq(500)
