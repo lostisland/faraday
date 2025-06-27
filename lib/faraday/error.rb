@@ -86,10 +86,12 @@ module Faraday
 
         request = exc.fetch(:request, nil)
 
-        exception_message = if request.nil?
-          "the server responded with status #{http_status} - method and url are not available due to include_request: false on Faraday::Response::RaiseError middleware"
+        if request.nil?
+          exception_message = "the server responded with status #{http_status} - method and url are not available " \
+                              'due to include_request: false on Faraday::Response::RaiseError middleware'
         else
-          "the server responded with status #{http_status} for #{request.fetch(:method).upcase} #{request.fetch(:url)}"
+          exception_message = "the server responded with status #{http_status} for #{request.fetch(:method).upcase} " \
+                              "#{request.fetch(:url)}"
         end
 
         [nil, exception_message, exc]
