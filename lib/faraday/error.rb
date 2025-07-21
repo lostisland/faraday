@@ -81,7 +81,7 @@ module Faraday
     def exc_msg_and_response(exc, response = nil)
       if exc.is_a?(Exception)
         [exc, exc.message, response]
-      elsif exc.is_a?(Hash)
+      elsif exc.is_a?(Hash) || exc.is_a?(Faraday::Env)
         http_status = exc.fetch(:status)
 
         request = exc.fetch(:request, nil)
