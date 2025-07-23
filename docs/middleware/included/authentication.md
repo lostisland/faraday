@@ -21,7 +21,7 @@ Faraday.new(...) do |conn|
 end
 ```
 
-If the proc takes an argument, it will receive the forwarded `env` (see [The Env Object](getting-started/env-object.md)):
+If the proc takes an argument, it will receive the forwarded `env` (see [The Env Object](../../getting-started/env-object.md)):
 
 ```ruby
 Faraday.new(...) do |conn|
