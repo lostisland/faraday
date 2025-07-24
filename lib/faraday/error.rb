@@ -79,25 +79,46 @@ module Faraday
 
     # Pulls out potential parent exception and response hash.
     def exc_msg_and_response(exc, response = nil)
-      if exc.is_a?(Exception)
+      case exc
+      when Exception
         [exc, exc.message, response]
-      elsif exc.is_a?(Hash) || exc.is_a?(Faraday::Env)
-        http_status = exc.fetch(:status)
-
-        request = exc.fetch(:request, nil)
-
-        if request.nil?
-          exception_message = "the server responded with status #{http_status} - method and url are not available " \
-                              'due to include_request: false on Faraday::Response::RaiseError middleware'
-        else
-          exception_message = "the server responded with status #{http_status} for #{request.fetch(:method).upcase} " \
-                              "#{request.fetch(:url)}"
-        end
-
-        [nil, exception_message, exc]
+      when Hash
+        [nil, build_error_message_from_hash(exc), exc]
+      when Faraday::Env
+        [nil, build_error_message_from_env(exc), exc]
       else
         [nil, exc.to_s, response]
       end
+    end
+
+    private
+
+    def build_error_message_from_hash(hash)
+      # Be defensive with external Hash objects - they might be missing keys
+      status = hash.fetch(:status, nil)
+      request = hash.fetch(:request, nil)
+
+      return fallback_error_message(status) if request.nil?
+
+      method = request.fetch(:method, nil)
+      url = request.fetch(:url, nil)
+      build_status_error_message(status, method, url)
+    end
+
+    def build_error_message_from_env(env)
+      # Faraday::Env is internal - we can make reasonable assumptions about its structure
+      build_status_error_message(env.status, env.method, env.url)
+    end
+
+    def build_status_error_message(status, method, url)
+      method_str = method ? method.to_s.upcase : ''
+      url_str = url ? url.to_s : ''
+      "the server responded with status #{status} for #{method_str} #{url_str}"
+    end
+
+    def fallback_error_message(status)
+      "the server responded with status #{status} - method and url are not available " \
+        'due to include_request: false on Faraday::Response::RaiseError middleware'
     end
   end
 
