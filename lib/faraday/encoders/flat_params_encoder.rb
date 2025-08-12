@@ -76,9 +76,9 @@ module Faraday
 
       empty_accumulator = {}
 
-      split_query = (query.split('&').map do |pair|
+      split_query = query.split('&').filter_map do |pair|
         pair.split('=', 2) if pair && !pair.empty?
-      end).compact
+      end
       split_query.each_with_object(empty_accumulator.dup) do |pair, accu|
         pair[0] = unescape(pair[0])
         pair[1] = true if pair[1].nil?
