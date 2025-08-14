@@ -154,8 +154,13 @@ module Faraday
   class ConflictError < ClientError
   end
 
+  # Used to provide compatibility with legacy error name.
+  module UnprocessableEntityError
+  end
+
   # Raised by Faraday::Response::RaiseError in case of a 422 response.
-  class UnprocessableEntityError < ClientError
+  class UnprocessableContentError < ClientError
+    include UnprocessableEntityError
   end
 
   # Raised by Faraday::Response::RaiseError in case of a 429 response.

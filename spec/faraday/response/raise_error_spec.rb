@@ -13,7 +13,7 @@ RSpec.describe Faraday::Response::RaiseError do
         stub.get('proxy-error') { [407, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('request-timeout') { [408, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('conflict') { [409, { 'X-Reason' => 'because' }, 'keep looking'] }
-        stub.get('unprocessable-entity') { [422, { 'X-Reason' => 'because' }, 'keep looking'] }
+        stub.get('unprocessable-content') { [422, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('too-many-requests') { [429, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('4xx') { [499, { 'X-Reason' => 'because' }, 'keep looking'] }
         stub.get('nil-status') { [nil, { 'X-Reason' => 'nil' }, 'fail'] }
@@ -103,9 +103,20 @@ RSpec.describe Faraday::Response::RaiseError do
     end
   end
 
-  it 'raises Faraday::UnprocessableEntityError for 422 responses' do
-    expect { conn.get('unprocessable-entity') }.to raise_error(Faraday::UnprocessableEntityError) do |ex|
-      expect(ex.message).to eq('the server responded with status 422 for GET http:/unprocessable-entity')
+  it 'raises legacy Faraday::UnprocessableEntityError for 422 responses' do
+    expect { conn.get('unprocessable-content') }.to raise_error(Faraday::UnprocessableEntityError) do |ex|
+      expect(ex.message).to eq('the server responded with status 422 for GET http:/unprocessable-content')
+      expect(ex.response[:headers]['X-Reason']).to eq('because')
+      expect(ex.response[:status]).to eq(422)
+      expect(ex.response_status).to eq(422)
+      expect(ex.response_body).to eq('keep looking')
+      expect(ex.response_headers['X-Reason']).to eq('because')
+    end
+  end
+
+  it 'raises Faraday::UnprocessableContentError for 422 responses' do
+    expect { conn.get('unprocessable-content') }.to raise_error(Faraday::UnprocessableContentError) do |ex|
+      expect(ex.message).to eq('the server responded with status 422 for GET http:/unprocessable-content')
       expect(ex.response[:headers]['X-Reason']).to eq('because')
       expect(ex.response[:status]).to eq(422)
       expect(ex.response_status).to eq(422)
