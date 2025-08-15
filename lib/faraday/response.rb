@@ -59,6 +59,8 @@ module Faraday
     end
 
     def to_hash
+      return {} unless finished?
+
       {
         status: env.status, body: env.body,
         response_headers: env.response_headers,
