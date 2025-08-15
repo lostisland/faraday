@@ -31,6 +31,12 @@ RSpec.describe Faraday::Response do
     it { expect(hash[:response_headers]).to eq(subject.headers) }
     it { expect(hash[:body]).to eq(subject.body) }
     it { expect(hash[:url]).to eq(subject.env.url) }
+
+    context 'when response is not finished' do
+      subject { Faraday::Response.new.to_hash }
+
+      it { is_expected.to eq({}) }
+    end
   end
 
   describe 'marshal serialization support' do
