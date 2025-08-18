@@ -160,12 +160,12 @@ After app initialization, all instances of the middleware will have the newly co
 ### Available Middleware
 
 The following pages provide detailed configuration for the middleware that ships with Faraday:
-* [Authentication](middleware/included/authentication.md)
-* [URL Encoding](middleware/included/url-encoding.md)
-* [JSON Encoding/Decoding](middleware/included/json.md)
-* [Instrumentation](middleware/included/instrumentation.md)
-* [Logging](middleware/included/logging.md)
-* [Raising Errors](middleware/included/raising-errors.md)
+* [Authentication](included/authentication.md)
+* [URL Encoding](included/url-encoding.md)
+* [JSON Encoding/Decoding](included/json.md)
+* [Instrumentation](included/instrumentation.md)
+* [Logging](included/logging.md)
+* [Raising Errors](included/raising-errors.md)
 
 The [Awesome Faraday](https://github.com/lostisland/awesome-faraday/) project
 has a complete list of useful, well-maintained Faraday middleware. Middleware is
