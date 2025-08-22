@@ -33,6 +33,10 @@ module Faraday
       finished? ? env.body : nil
     end
 
+    def url
+      finished? ? env.url : nil
+    end
+
     def finished?
       !!env
     end
@@ -60,9 +64,9 @@ module Faraday
 
     def to_hash
       {
-        status: env.status, body: env.body,
-        response_headers: env.response_headers,
-        url: env.url
+        status: status, body: body,
+        response_headers: headers,
+        url: url
       }
     end
 
