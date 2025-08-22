@@ -13,6 +13,7 @@ RSpec.describe Faraday::Response do
   it { expect(subject.success?).to be_falsey }
   it { expect(subject.status).to eq(404) }
   it { expect(subject.body).to eq('yikes') }
+  it { expect(subject.url).to eq(URI('https://lostisland.github.io/faraday')) }
   it { expect(subject.headers['Content-Type']).to eq('text/plain') }
   it { expect(subject['content-type']).to eq('text/plain') }
 
@@ -35,7 +36,7 @@ RSpec.describe Faraday::Response do
     context 'when response is not finished' do
       subject { Faraday::Response.new.to_hash }
 
-      it { is_expected.to eq({}) }
+      it { is_expected.to eq({ status: nil, body: nil, response_headers: {}, url: nil }) }
     end
   end
 
