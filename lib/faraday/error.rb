@@ -79,12 +79,46 @@ module Faraday
 
     # Pulls out potential parent exception and response hash.
     def exc_msg_and_response(exc, response = nil)
-      return [exc, exc.message, response] if exc.respond_to?(:backtrace)
+      case exc
+      when Exception
+        [exc, exc.message, response]
+      when Hash
+        [nil, build_error_message_from_hash(exc), exc]
+      when Faraday::Env
+        [nil, build_error_message_from_env(exc), exc]
+      else
+        [nil, exc.to_s, response]
+      end
+    end
 
-      return [nil, "the server responded with status #{exc[:status]}", exc] \
-        if exc.respond_to?(:each_key)
+    private
 
-      [nil, exc.to_s, response]
+    def build_error_message_from_hash(hash)
+      # Be defensive with external Hash objects - they might be missing keys
+      status = hash.fetch(:status, nil)
+      request = hash.fetch(:request, nil)
+
+      return fallback_error_message(status) if request.nil?
+
+      method = request.fetch(:method, nil)
+      url = request.fetch(:url, nil)
+      build_status_error_message(status, method, url)
+    end
+
+    def build_error_message_from_env(env)
+      # Faraday::Env is internal - we can make reasonable assumptions about its structure
+      build_status_error_message(env.status, env.method, env.url)
+    end
+
+    def build_status_error_message(status, method, url)
+      method_str = method ? method.to_s.upcase : ''
+      url_str = url ? url.to_s : ''
+      "the server responded with status #{status} for #{method_str} #{url_str}"
+    end
+
+    def fallback_error_message(status)
+      "the server responded with status #{status} - method and url are not available " \
+        'due to include_request: false on Faraday::Response::RaiseError middleware'
     end
   end
 

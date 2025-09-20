@@ -24,7 +24,7 @@ These resources can help:
 
 This project attempts to improve in these areas. Join us in doing that important work.
 
-If you want to privately raise any breach to this policy with the Faraday team, feel free to reach out to [@iMacTia](https://twitter.com/iMacTia) and [@olleolleolle](https://twitter.com/olleolleolle) on Twitter.
+If you want to privately raise any breach to this policy with the Faraday team, feel free to reach out to [@iMacTia](https://ruby.social/@iMacTia) and [@olleolleolle](https://ruby.social/@olleolleolle) on the Mastodon instance ruby.social.
 
 
 ### Required Checks
