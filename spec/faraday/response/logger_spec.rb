@@ -21,6 +21,7 @@ RSpec.describe Faraday::Response::Logger do
         stubs.post('/ohai') { [200, { 'Content-Type' => 'text/html' }, 'fred'] }
         stubs.post('/ohyes') { [200, { 'Content-Type' => 'text/html' }, 'pebbles'] }
         stubs.get('/rubbles') { [200, { 'Content-Type' => 'application/json' }, rubbles] }
+        stubs.get('/8bit') { [200, { 'Content-Type' => 'text/html' }, (+'café!').force_encoding(Encoding::ASCII_8BIT)] }
         stubs.get('/filtered_body') { [200, { 'Content-Type' => 'text/html' }, 'soylent green is people'] }
         stubs.get('/filtered_headers') { [200, { 'Content-Type' => 'text/html' }, 'headers response'] }
         stubs.get('/filtered_params') { [200, { 'Content-Type' => 'text/html' }, 'params response'] }
@@ -236,6 +237,11 @@ RSpec.describe Faraday::Response::Logger do
     it 'logs response body' do
       conn.post '/ohai'
       expect(string_io.string).to match(%(fred))
+    end
+
+    it 'converts to UTF-8' do
+      conn.get '/8bit'
+      expect(string_io.string).to match(%(caf��!))
     end
 
     after do
