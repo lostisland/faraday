@@ -15,7 +15,7 @@ module Faraday
         404 => Faraday::ResourceNotFound,
         408 => Faraday::RequestTimeoutError,
         409 => Faraday::ConflictError,
-        422 => Faraday::UnprocessableEntityError,
+        422 => Faraday::UnprocessableContentError,
         429 => Faraday::TooManyRequestsError
       }.freeze
       # rubocop:enable Naming/ConstantName
