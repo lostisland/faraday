@@ -1,6 +1,6 @@
 # Writing custom adapters
 
-!> A template for writing your own middleware is available in the [faraday-adapter-template](https://github.com/lostisland/faraday-adapter-template) repository.
+!> A template for writing your own custom adapter is available in the [faraday-adapter-template](https://github.com/lostisland/faraday-adapter-template) repository.
 
 Adapters have methods that can help you implement support for a new backend.
 

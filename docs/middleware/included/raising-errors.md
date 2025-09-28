@@ -38,7 +38,7 @@ by the client. They raise error classes inheriting from `Faraday::ClientError`.
 | [407](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/407) | `Faraday::ProxyAuthError`           |
 | [408](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/408) | `Faraday::RequestTimeoutError`      |
 | [409](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409) | `Faraday::ConflictError`            |
-| [422](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) | `Faraday::UnprocessableEntityError` |
+| [422](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422) | `Faraday::UnprocessableContentError` |
 | [429](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429) | `Faraday::TooManyRequestsError` |
 | 4xx (any other)                                                     | `Faraday::ClientError`              |
 
