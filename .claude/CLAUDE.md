@@ -1,46 +1,30 @@
 # Claude AI Agent Instructions for Faraday
 
-## Overview
-You are working on the **Faraday** repository, a Ruby HTTP client library with a middleware-based architecture. Before making any code changes or suggestions, you **must** read and follow the comprehensive guidelines in `.ai/guidelines.md`.
+## About Faraday
+Faraday is a Ruby HTTP client library with a middleware-based architecture (similar to Rack). It provides a common interface over various HTTP adapters and uses middleware for request/response processing.
 
 ## Primary Directive
-**Always reference `.ai/guidelines.md`** for:
-- Code style and structure conventions
-- Middleware implementation patterns
-- Adapter development guidelines
-- Testing requirements with RSpec
-- Documentation standards (YARD)
-- Contribution workflow
+**Before making any code changes or suggestions**, you **must** read and follow the comprehensive guidelines in `.ai/guidelines.md`.
 
-## Self-Maintaining Responsibility
-As a Claude AI agent, you are responsible for:
-1. **Reading** `.ai/guidelines.md` before every contribution
-2. **Following** all Faraday-specific conventions outlined there
-3. **Proposing updates** to `.ai/guidelines.md` when you identify:
+## Your Responsibilities
+1. **Read** `.ai/guidelines.md` for all Faraday-specific conventions and patterns
+2. **Follow** the established conventions documented there
+3. **Propose updates** to `.ai/guidelines.md` when you identify:
    - New code patterns not yet documented
    - Changes to existing conventions
-   - Improved practices that should become standard
-   - Inconsistencies between the guidelines and actual codebase
+   - Inconsistencies between guidelines and actual codebase
 
-## Key Faraday Concepts
-- **Middleware Architecture**: All middleware inherit from `Faraday::Middleware` and use hooks (`on_request`, `on_complete`, `on_error`)
-- **Adapter Pattern**: Adapters extend `Faraday::MiddlewareRegistry` and implement `call`, `build_connection`, etc.
-- **Registry System**: Both middleware and adapters register themselves with unique keys
-- **Testing**: Use RSpec with shared examples, stubs instead of real network calls
-- **Documentation**: YARD comments for all public APIs
+## Important Context
+- **New middleware and adapters** should be created as separate gems, NOT added to the base Faraday repository (with rare exceptions for widely-used core middleware)
+- See [faraday-net_http](https://github.com/lostisland/faraday-net_http) as an example adapter in its own repository
+- Focus on Faraday-specific patterns, not generic Ruby/RSpec advice
 
-## What NOT to Do
-- Do not provide generic Ruby or RSpec advice—focus on Faraday-specific patterns
-- Do not suggest changes that violate established conventions without first proposing guideline updates
-- Do not implement middleware or adapters without checking existing patterns in the codebase
-
-## Quick Reference
-- Main guidelines: `.ai/guidelines.md`
-- Contributing guide: `.github/CONTRIBUTING.md`
-- Example middleware: `lib/faraday/request/json.rb`
-- Example adapter: `lib/faraday/adapter/test.rb`
-- Middleware base: `lib/faraday/middleware.rb`
+## Reference Files
+- **`.ai/guidelines.md`** - Complete Faraday conventions (PRIMARY REFERENCE)
+- `.github/CONTRIBUTING.md` - Contribution process and policies
+- `lib/faraday/middleware.rb` - Middleware base class
+- `lib/faraday/request/json.rb` - Example middleware implementation
 
 ---
 
-**Remember**: Keep `.ai/guidelines.md` current. If you notice any drift between documentation and reality, propose updates to maintain accuracy.
+**Keep `.ai/guidelines.md` current.** Propose updates when you notice any drift between documentation and reality.

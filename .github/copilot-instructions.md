@@ -12,109 +12,36 @@ Faraday is a Ruby HTTP client library that provides:
 ## Your Responsibilities
 As GitHub Copilot working on Faraday, you must:
 
-1. **Read & Follow**: Always reference `.ai/guidelines.md` for Faraday conventions
+1. **Read & Follow**: Always reference `.ai/guidelines.md` for all Faraday conventions and implementation details
 2. **Stay Current**: Suggest updates to `.ai/guidelines.md` when you notice:
    - New patterns not yet documented
    - Changes to existing conventions
    - Discrepancies between guidelines and actual code
 3. **Focus on Faraday**: Provide Faraday-specific guidance, not generic Ruby/RSpec tips
 
-## Core Architecture Patterns
+## Critical Context
 
-### Middleware System
-All middleware must:
-- Inherit from `Faraday::Middleware`
-- Define `DEFAULT_OPTIONS` constant if configurable
-- Implement only required hooks: `on_request`, `on_complete`, or `on_error`
-- Register with a unique key via `Faraday::Middleware.register_middleware`
-- Remain stateless (store state in `env` hash only)
+### Middleware and Adapters
+- **New middleware and adapters should be separate gems**, NOT added to the base Faraday repository
+- Only middleware expected to be used by the vast majority of projects can be considered for the base repo
+- See [faraday-net_http](https://github.com/lostisland/faraday-net_http) as an example of an adapter in its own repository
+- Consult `.ai/guidelines.md` for detailed implementation patterns
 
-Example structure:
-```ruby
-module Faraday
-  class Request
-    class MyMiddleware < Middleware
-      DEFAULT_OPTIONS = { option: 'value' }.freeze
-
-      def on_request(env)
-        # Modify request
-      end
-    end
-  end
-end
-
-Faraday::Request.register_middleware(my_middleware: Faraday::Request::MyMiddleware)
-```
-
-### Adapter System
-All adapters must:
-- Extend `Faraday::MiddlewareRegistry`
-- Implement `call(env)` method
-- Implement `build_connection(env)` for connection setup
-- Implement `close` for cleanup
-- Be placed in `lib/faraday/adapter/`
-- Register via `Faraday::Adapter.register_middleware`
-
-For parallel support:
-- Include `Parallelism` module
-- Set `supports_parallel = true`
-
-### Testing Conventions
-- Use RSpec for all tests
-- Leverage shared examples for adapters and middleware (see `spec/support`)
-- Mock HTTP calls; never make real network requests
-- Follow test organization: `spec/faraday/` mirrors `lib/faraday/`
-- Test middleware: use doubles for `app` and verify hook invocations
-
-### Documentation Standards
-- Add YARD comments to all public APIs
-- Update `docs/` for user-facing features
-- Keep README.md and CHANGELOG.md current
-- Document new middleware/adapters in `docs/` folder
-
-## Project Structure
-```
-lib/faraday/
-├── adapter/              # HTTP backend adapters
-│   └── test.rb          # Test adapter (example)
-├── request/             # Request middleware
-│   ├── json.rb         # JSON encoding (example)
-│   └── authorization.rb
-├── response/            # Response middleware
-├── middleware.rb        # Base middleware class
-└── adapter.rb          # Base adapter class
-
-spec/faraday/
-└── (mirrors lib structure)
-```
-
-## Code Quality Requirements
+### Code Quality
 - Follow RuboCop style guide (`.rubocop.yml`)
-- Ensure all code passes: `bundle exec rubocop`
-- All features need tests: `bundle exec rspec`
+- Run tests: `bundle exec rspec`
+- Check style: `bundle exec rubocop`
 - Use inclusive language (see `.github/CONTRIBUTING.md`)
 
-## Contribution Process
-1. Check `.github/CONTRIBUTING.md` for workflow
-2. New features require tests and documentation
-3. Adapters/middleware should be separate gems (link from this project)
-4. Follow semantic versioning for breaking changes
-
 ## Self-Maintaining Guidelines
-You are responsible for keeping `.ai/guidelines.md` accurate and current. When you identify:
-- Code patterns not reflected in guidelines
-- Convention changes
-- Better practices
-
-Propose updates to `.ai/guidelines.md` to maintain alignment with the actual codebase.
+Keep `.ai/guidelines.md` accurate and current. When you identify code patterns not reflected in guidelines, convention changes, or better practices, propose updates to maintain alignment with the actual codebase.
 
 ## Reference Files
-- **Complete Guidelines**: `.ai/guidelines.md` (PRIMARY REFERENCE)
-- **Contribution Guide**: `.github/CONTRIBUTING.md`
-- **Middleware Base**: `lib/faraday/middleware.rb`
-- **Middleware Example**: `lib/faraday/request/json.rb`
-- **Adapter Example**: `lib/faraday/adapter/test.rb`
-- **Style Guide**: `.rubocop.yml`
+- **`.ai/guidelines.md`** - Complete conventions and patterns (PRIMARY REFERENCE)
+- `.github/CONTRIBUTING.md` - Contribution process and workflow
+- `lib/faraday/middleware.rb` - Middleware base class
+- `lib/faraday/request/json.rb` - Example middleware implementation
+- `.rubocop.yml` - Code style guide
 
 ---
 

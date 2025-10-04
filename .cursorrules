@@ -7,78 +7,23 @@
 Faraday is a Ruby HTTP client library with a middleware-based architecture similar to Rack. It provides a common interface over many HTTP adapters and uses middleware for request/response processing.
 
 ## Core Responsibilities
-1. **Read First**: Always consult `.ai/guidelines.md` before contributing
-2. **Follow Conventions**: Adhere to all Faraday-specific patterns documented in guidelines
-3. **Maintain Guidelines**: Propose updates to `.ai/guidelines.md` when:
-   - You identify undocumented patterns in the codebase
-   - Existing conventions change
-   - Better practices emerge
+1. **Read** `.ai/guidelines.md` for all implementation details, patterns, and conventions
+2. **Follow** the Faraday-specific patterns documented in the guidelines
+3. **Propose updates** to `.ai/guidelines.md` when conventions change or new patterns emerge
 
-## Faraday-Specific Patterns
+## Important Context
+- **New middleware and adapters** belong in separate repositories and gems, NOT in the base Faraday repo
+  - Only middleware used by the vast majority of projects can be considered for the base repo
+  - See [faraday-net_http](https://github.com/lostisland/faraday-net_http) for an example adapter in its own repository
+- Focus on Faraday-specific patterns, not generic Ruby/RSpec knowledge
+- Run tests with `bundle exec rspec` and check style with `bundle exec rubocop`
 
-### Middleware (See `.ai/guidelines.md` for details)
-- Inherit from `Faraday::Middleware`
-- Use `DEFAULT_OPTIONS` constant
-- Implement only needed hooks: `on_request`, `on_complete`, `on_error`
-- Register via `Faraday::Middleware.register_middleware`
-- Keep stateless; use `env` hash for state
-
-### Adapters (See `.ai/guidelines.md` for details)
-- Extend `Faraday::MiddlewareRegistry`
-- Implement `call`, `build_connection`, `close`
-- Place in `lib/faraday/adapter/`
-- Register via `Faraday::Adapter.register_middleware`
-- Support parallel requests if possible
-
-### Testing with RSpec
-- Use shared examples for adapters/middleware
-- Mock network calls; never make real HTTP requests
-- Test organization mirrors `lib/` structure
-- See `spec/support` for test helpers
-
-### Documentation
-- YARD-style comments for all public APIs
-- Update docs/ for user-facing features
-- Keep README and CHANGELOG current
-
-## Code Organization
-```
-lib/faraday/
-  ├── adapter/          # HTTP adapters
-  ├── request/          # Request middleware
-  ├── response/         # Response middleware
-  └── middleware.rb     # Base middleware class
-
-spec/faraday/
-  └── (mirrors lib structure)
-```
-
-## Quick Start Examples
-
-**Middleware Registration**:
-```ruby
-Faraday::Request.register_middleware(my_middleware: MyMiddleware)
-```
-
-**Adapter Registration**:
-```ruby
-Faraday::Adapter.register_middleware(my_adapter: MyAdapter)
-```
-
-## Contribution Workflow
-- Follow `.github/CONTRIBUTING.md`
-- Run tests: `bundle exec rspec`
-- Check style: `bundle exec rubocop`
-- Use inclusive language
-
-## Self-Maintaining Principle
-This file and `.ai/guidelines.md` must stay current with the codebase. When you detect any divergence between documentation and implementation, propose updates to keep them aligned.
+## Reference Files
+- **`.ai/guidelines.md`** - Complete conventions and patterns (READ THIS FIRST)
+- `.github/CONTRIBUTING.md` - Contribution process and workflow
+- `lib/faraday/middleware.rb` - Middleware base class
+- `lib/faraday/request/json.rb` - Example middleware
 
 ---
 
-**Key Files**:
-- `.ai/guidelines.md` - Complete conventions (READ THIS FIRST)
-- `.github/CONTRIBUTING.md` - Contribution process
-- `lib/faraday/middleware.rb` - Middleware base class
-- Example: `lib/faraday/request/json.rb` (middleware)
-- Example: `lib/faraday/adapter/test.rb` (adapter)
+**Self-Maintaining**: Keep `.ai/guidelines.md` aligned with the actual codebase. Propose updates when you detect any divergence.
