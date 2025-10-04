@@ -1,27 +1,52 @@
-# AI Agent Guidelines for Faraday
+# Faraday-Specific AI Agent Guidelines
 
-## Introduction
-AI agents must read these guidelines before any work and suggest updates to keep them current. This document focuses on Faraday-specific conventions to ensure consistency and quality in our projects.
+## Purpose
+These guidelines ensure all AI agents (Copilot, Claude, Cursor, etc.) contribute code that is consistent with the conventions and patterns used in the Faraday codebase. Agents must:
+- Read these guidelines before any work.
+- Suggest updates whenever conventions change or new patterns emerge, keeping this document up to date.
 
-## Middleware Patterns
-- **Definition**: Middleware in Faraday acts as a bridge between the request and response, allowing for pre-processing or post-processing of data.
-- **Implementation**: Use named functions for middleware logic to enhance readability and testability.
-- **Order of Execution**: Ensure middleware is applied in the correct sequence, as defined in the application settings.
+## Code Style & Structure
+- **Do not include basic Ruby or RSpec tips**—assume agents know the language, RuboCop, and test basics.
+- Use the established Faraday directory structure (`lib/faraday/` for main code, `spec/faraday/` for tests).
+- Classes and files must use descriptive, conventional Ruby names (e.g., `Faraday::MyAdapter` in `lib/faraday/my_adapter.rb`).
 
-## Adapter Implementation
-- **Purpose**: Adapters are used to translate data formats or protocols, ensuring compatibility between different systems.
-- **Structure**: Implement adapters as classes with clearly defined interfaces. Each adapter should handle one specific type of transformation.
-- **Testing**: Write unit tests for each adapter to verify that input and output formats align with expectations.
+## Middleware Implementation
+- All middleware must inherit from `Faraday::Middleware`.
+- Use a `DEFAULT_OPTIONS` constant for configuration defaults. Validate options via `validate_default_options` if needed.
+- Middleware should implement any of: `on_request`, `on_complete`, and `on_error` as needed. Only add hooks required for your logic.
+- Register middleware via `Faraday::Middleware.register_middleware your_key: YourClass`. Use clear, unique keys.
+- Prefer stateless middleware. Store state only in the `env` hash or local variables.
 
-## Testing Approaches
-- **Unit Testing**: Focus on testing individual components in isolation. Use mocking to simulate external dependencies.
-- **Integration Testing**: Ensure that different components work together as intended. This includes testing middleware and adapters in conjunction.
-- **End-to-End Testing**: Validate the entire workflow from start to finish, ensuring that the AI agent behaves as expected in real-world scenarios.
+## Adapter Patterns
+- Adapters must extend `Faraday::MiddlewareRegistry` and register themselves.
+- If providing parallel support, include the `Parallelism` module and set `supports_parallel = true`.
+- Implement required methods (`build_connection`, `close`, etc.) as seen in existing adapters.
+- Keep each adapter in its own file under `lib/faraday/adapter/`.
 
-## Code Organization
-- **Directory Structure**: Follow the established directory structure in the existing codebase. Place all middleware in the `middleware` directory and adapters in the `adapters` directory.
-- **File Naming**: Use descriptive names for files and classes. For middleware, consider using the format `middlewareName.middleware.js`. For adapters, use `adapterName.adapter.js`.
-- **Documentation**: Maintain clear documentation for each component, including purpose, usage, and examples. All public methods should be documented with JSDoc comments to facilitate understanding.
+## Testing
+- All code must be tested with RSpec. Use shared examples for adapters/middleware where applicable (see `spec/support`).
+- When testing middleware, use doubles for `app` and verify correct invocation of hooks.
+- Use HTTP test helpers and stubs, not real network calls.
+- Follow the project's test organization and naming conventions.
 
-## Conclusion
-These guidelines are designed to facilitate the effective and efficient use of AI agents in the Faraday project. Regularly review and update these guidelines to reflect changes in best practices and project evolution.
+## Documentation
+- All new public APIs must be documented with YARD-style comments.
+- Update README, changelog, or docs/ as needed for significant features or user-facing changes.
+- Document any new middleware or adapter in the docs folder if it is a user-facing extension.
+
+## Contribution Workflow
+- Follow branch naming and PR guidelines from CONTRIBUTING.md.
+- All new features and bugfixes must include relevant tests and documentation.
+- Ensure inclusive language.
+
+---
+
+## Self-Maintaining Guidelines
+AI agents are responsible for:
+- Reading these guidelines before suggesting or making changes.
+- Updating this document whenever code conventions change.
+- Proposing improvements if they identify code patterns not reflected here.
+
+---
+
+*Keep this file current and aligned with the real conventions and architecture of the Faraday codebase.*
