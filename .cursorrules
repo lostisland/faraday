@@ -1,0 +1,29 @@
+# Cursor AI Rules for Faraday Repository
+
+## Primary Guidelines Reference
+**CRITICAL**: Before making any code changes, read `.ai/guidelines.md` for comprehensive Faraday-specific conventions.
+
+## About Faraday
+Faraday is a Ruby HTTP client library with a middleware-based architecture similar to Rack. It provides a common interface over many HTTP adapters and uses middleware for request/response processing.
+
+## Core Responsibilities
+1. **Read** `.ai/guidelines.md` for all implementation details, patterns, and conventions
+2. **Follow** the Faraday-specific patterns documented in the guidelines
+3. **Propose updates** to `.ai/guidelines.md` when conventions change or new patterns emerge
+
+## Important Context
+- **New middleware and adapters** belong in separate repositories and gems, NOT in the base Faraday repo
+  - Only middleware used by the vast majority of projects can be considered for the base repo
+  - See [faraday-net_http](https://github.com/lostisland/faraday-net_http) for an example adapter in its own repository
+- Focus on Faraday-specific patterns, not generic Ruby/RSpec knowledge
+- Run tests with `bundle exec rspec` and check style with `bundle exec rubocop`
+
+## Reference Files
+- **`.ai/guidelines.md`** - Complete conventions and patterns (READ THIS FIRST)
+- `.github/CONTRIBUTING.md` - Contribution process and workflow
+- `lib/faraday/middleware.rb` - Middleware base class
+- `lib/faraday/request/json.rb` - Example middleware
+
+---
+
+**Self-Maintaining**: Keep `.ai/guidelines.md` aligned with the actual codebase. Propose updates when you detect any divergence.
