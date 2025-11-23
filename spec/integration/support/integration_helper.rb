@@ -13,8 +13,7 @@ module Faraday
     # Service URLs for GitHub Actions service containers
     # These are accessed by service name when running in container jobs
     HTTPBIN_URL = ENV.fetch('HTTPBIN_URL', 'http://httpbin:8080')
-    HTTPS_SERVER_URL = ENV.fetch('HTTPS_SERVER_URL', 'https://https-server:8443')
-    PROXY_URL = ENV.fetch('PROXY_URL', 'http://proxy:3128')
+    PROXY_URL = ENV.fetch('PROXY_URL', 'http://proxy:3128') # Future: for proxy tests
 
     # Helper to create a Faraday connection for integration tests
     #

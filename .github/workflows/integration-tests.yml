@@ -1,0 +1,70 @@
+name: Integration Tests
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+
+    # Run job in container for simplified networking with service containers
+    container:
+      image: ruby:3.4
+      options: --user root
+
+    # Service containers to run alongside the job
+    services:
+      httpbin:
+        image: mccutchen/go-httpbin:latest
+        options: >-
+          --health-cmd "wget --no-verbose --tries=1 --spider http://localhost:8080/get || exit 1"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+          --health-start-period 5s
+
+      # Future: Proxy server for proxy tests
+      # Uncomment when implementing ProxyOptions integration tests (Task 5)
+      # proxy:
+      #   image: ubuntu/squid:latest
+      #   options: >-
+      #     --health-cmd "nc -z localhost 3128 || exit 1"
+      #     --health-interval 5s
+      #     --health-timeout 3s
+      #     --health-retries 10
+      #     --health-start-period 5s
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Container jobs need git installed for checkout to work properly
+      - name: Install system dependencies
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends git
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4
+          bundler-cache: true
+
+      # Optional: Verify services are accessible
+      - name: Verify services
+        run: |
+          echo "Testing httpbin connectivity..."
+          curl -f http://httpbin:8080/get || (echo "httpbin not ready" && exit 1)
+          echo "✓ httpbin is ready"
+
+      - name: Run integration tests
+        run: bundle exec rspec --tag integration --format documentation
+        env:
+          # Service URLs for integration tests
+          HTTPBIN_URL: http://httpbin:8080
+          # PROXY_URL: http://proxy:3128  # Uncomment when proxy tests are added
