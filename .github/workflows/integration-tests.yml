@@ -21,13 +21,7 @@ jobs:
     # Service containers to run alongside the job
     services:
       httpbin:
-        image: mccutchen/go-httpbin:latest
-        options: >-
-          --health-cmd "wget --no-verbose --tries=1 --spider http://localhost:8080/get || exit 1"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 10
-          --health-start-period 5s
+        image: kennethreitz/httpbin:latest
 
       # Future: Proxy server for proxy tests
       # Uncomment when implementing ProxyOptions integration tests (Task 5)
@@ -49,22 +43,39 @@ jobs:
           apt-get update -qq
           apt-get install -y --no-install-recommends git
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.4
-          bundler-cache: true
+      # Install dependencies
+      # Note: ruby:3.4 container already has Ruby and bundler installed
+      # We skip ruby/setup-ruby because it requires Node.js (not in ruby image)
+      # and is unnecessary when running in a Ruby container
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
 
-      # Optional: Verify services are accessible
+      # Verify services are accessible
       - name: Verify services
         run: |
-          echo "Testing httpbin connectivity..."
-          curl -f http://httpbin:8080/get || (echo "httpbin not ready" && exit 1)
-          echo "✓ httpbin is ready"
+          echo "Waiting for httpbin to be ready..."
+          # Give httpbin a moment to start up (Python app takes longer than Go)
+          attempt=1
+          max_attempts=30
+          while [ $attempt -le $max_attempts ]; do
+            if curl -sf http://httpbin/get > /dev/null 2>&1; then
+              echo "✓ httpbin is ready (attempt $attempt/$max_attempts)"
+              exit 0
+            fi
+            echo "Attempt $attempt/$max_attempts: httpbin not ready yet, waiting..."
+            sleep 2
+            attempt=$((attempt + 1))
+          done
+          echo "✗ httpbin failed to become ready after $max_attempts attempts"
+          exit 1
 
       - name: Run integration tests
-        run: bundle exec rspec --tag integration --format documentation
+        run: bundle exec rspec spec/integration --format documentation
         env:
           # Service URLs for integration tests
-          HTTPBIN_URL: http://httpbin:8080
+          # Note: kennethreitz/httpbin runs on port 80 (default HTTP)
+          HTTPBIN_URL: http://httpbin
           # PROXY_URL: http://proxy:3128  # Uncomment when proxy tests are added
+          # Disable SimpleCov for integration tests
+          # Integration tests exercise real HTTP behavior, not lib/ code coverage
+          COVERAGE: 'false'
