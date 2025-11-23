@@ -12,10 +12,31 @@ module Faraday
   module IntegrationHelpers
     # Service URLs for GitHub Actions service containers
     # These are accessed by service name when running in container jobs
-    HTTPBIN_URL = ENV.fetch('HTTPBIN_URL', 'http://httpbin:8080')
+    HTTPBIN_URL = ENV.fetch('HTTPBIN_URL', 'http://httpbin')
     PROXY_URL = ENV.fetch('PROXY_URL', 'http://proxy:3128') # Future: for proxy tests
 
-    # Helper to create a Faraday connection for integration tests
+    # Create a direct Faraday connection to httpbin (no proxy)
+    #
+    # @param options [Hash] Connection options (merged with defaults)
+    # @yield [builder] Middleware stack configuration
+    # @return [Faraday::Connection]
+    def httpbin_connection(options = {}, &block)
+      Faraday.new(HTTPBIN_URL, options, &block)
+    end
+
+    # Create a proxied Faraday connection to httpbin (via proxy service)
+    # Future: for proxy integration tests
+    #
+    # @param options [Hash] Connection options (merged with proxy config)
+    # @yield [builder] Middleware stack configuration
+    # @return [Faraday::Connection]
+    def proxied_httpbin_connection(options = {}, &block)
+      proxy_options = { proxy: PROXY_URL }
+      merged_options = proxy_options.merge(options)
+      Faraday.new(HTTPBIN_URL, merged_options, &block)
+    end
+
+    # Generic helper to create a Faraday connection for integration tests
     #
     # @param url [String] Base URL for the connection
     # @param options [Hash] Connection options
@@ -42,9 +63,19 @@ RSpec.configure do |config|
 
   # Integration tests may take longer than unit tests
   config.around(:each, type: :integration) do |example|
-    # Set a reasonable timeout for integration tests (30 seconds)
-    Timeout.timeout(30) do
-      example.run
+    # Completely disable WebMock for integration tests
+    # (WebMock can interfere with streaming even when "allowed")
+    WebMock.disable!
+
+    begin
+      # Set a reasonable timeout for integration tests (30 seconds)
+      Timeout.timeout(30) do
+        example.run
+      end
+    ensure
+      # Re-enable WebMock for unit tests
+      WebMock.enable!
+      WebMock.disable_net_connect!(allow_localhost: true)
     end
   end
 end
