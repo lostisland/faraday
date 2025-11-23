@@ -3,8 +3,9 @@
 ## About Faraday
 Faraday is a Ruby HTTP client library with a middleware-based architecture (similar to Rack). It provides a common interface over various HTTP adapters and uses middleware for request/response processing.
 
-## Primary Directive
+## Primary Directive – IMPORTANT: DO NOT SKIP
 **Before making any code changes or suggestions**, you **must** read and follow the comprehensive guidelines in `.ai/guidelines.md`.
+After you've done so, provide a confirmation message to the user, then proceed with the task at hand.
 
 ## Your Responsibilities
 1. **Read** `.ai/guidelines.md` for all Faraday-specific conventions and patterns
