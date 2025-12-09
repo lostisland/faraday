@@ -63,7 +63,7 @@ module Faraday
 
       def dump_body(body)
         if body.respond_to?(:to_str)
-          body.to_str.encode(Encoding::UTF_8, undef: :replace, invalid: :replace)
+          body.to_str.encode(::Encoding::UTF_8, undef: :replace, invalid: :replace)
         else
           pretty_inspect(body)
         end
