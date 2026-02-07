@@ -481,8 +481,9 @@ module Faraday
       if url && !base.path.end_with?('/')
         base.path = "#{base.path}/" # ensure trailing slash
       end
-      # Ensure relative url will be parsed correctly (such as `service:search` )
-      url = "./#{url}" if url.respond_to?(:start_with?) && !url.start_with?('http://', 'https://', '/', './', '../')
+      # Ensure relative url will be parsed correctly (such as `service:search` or `//evil.com`)
+      url = "./#{url}" if url.respond_to?(:start_with?) &&
+                          (!url.start_with?('http://', 'https://', '/', './', '../') || url.start_with?('//'))
       uri = url ? base + url : base
       if params
         uri.query = params.to_query(params_encoder || options.params_encoder)
