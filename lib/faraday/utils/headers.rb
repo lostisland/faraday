@@ -51,7 +51,7 @@ module Faraday
 
       def [](key)
         key = KeyMap[key]
-        super(key) || super(@names[key.downcase])
+        super || super(@names[key.downcase])
       end
 
       def []=(key, val)
@@ -59,13 +59,13 @@ module Faraday
         key = (@names[key.downcase] ||= key)
         # join multiple values with a comma
         val = val.to_ary.join(', ') if val.respond_to?(:to_ary)
-        super(key, val)
+        super
       end
 
       def fetch(key, ...)
         key = KeyMap[key]
         key = @names.fetch(key.downcase, key)
-        super(key, ...)
+        super
       end
 
       def delete(key)
@@ -74,13 +74,13 @@ module Faraday
         return unless key
 
         @names.delete key.downcase
-        super(key)
+        super
       end
 
       def dig(key, *rest)
         key = KeyMap[key]
         key = @names.fetch(key.downcase, key)
-        super(key, *rest)
+        super
       end
 
       def include?(key)

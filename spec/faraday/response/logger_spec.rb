@@ -218,7 +218,7 @@ RSpec.describe Faraday::Response::Logger do
 
     it 'logs response body object' do
       conn.get '/rubbles', nil, accept: 'text/html'
-      expect(string_io.string).to match(%([\"Barney\", \"Betty\", \"Bam Bam\"]\n))
+      expect(string_io.string).to match(%(["Barney", "Betty", "Bam Bam"]\n))
     end
 
     it 'logs filter body' do

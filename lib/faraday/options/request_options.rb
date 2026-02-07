@@ -12,7 +12,7 @@ module Faraday
       if key && key.to_sym == :proxy
         super(key, value ? ProxyOptions.from(value) : nil)
       else
-        super(key, value)
+        super
       end
     end
 

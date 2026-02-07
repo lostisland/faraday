@@ -52,14 +52,14 @@ RSpec.describe Faraday::Middleware do
   end
 
   describe '#close' do
-    context "with app that doesn't support \#close" do
+    context "with app that doesn't support #close" do
       it 'should issue warning' do
         is_expected.to receive(:warn)
         subject.close
       end
     end
 
-    context "with app that supports \#close" do
+    context 'with app that supports #close' do
       it 'should issue warning' do
         expect(app).to receive(:close)
         is_expected.to_not receive(:warn)

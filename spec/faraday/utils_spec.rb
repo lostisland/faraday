@@ -33,7 +33,7 @@ RSpec.describe Faraday::Utils do
     end
 
     it 'parses with URI' do
-      with_default_uri_parser(::URI) do
+      with_default_uri_parser(URI) do
         uri = normalize(url)
         expect(uri.host).to eq('example.com')
       end

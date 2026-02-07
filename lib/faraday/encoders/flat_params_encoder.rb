@@ -6,6 +6,7 @@ module Faraday
   module FlatParamsEncoder
     class << self
       extend Forwardable
+
       def_delegators :'Faraday::Utils', :escape, :unescape
     end
 

@@ -106,7 +106,7 @@ RSpec.describe Faraday::Response::Json, type: :response do
     end
 
     it 'passes relevant options to JSON parse' do
-      expect(::JSON).to receive(:parse)
+      expect(JSON).to receive(:parse)
         .with(body, options[:parser_options])
         .and_return(result)
 

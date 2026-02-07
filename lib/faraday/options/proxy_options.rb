@@ -7,6 +7,7 @@ module Faraday
   #   class ProxyOptions < Options; end
   ProxyOptions = Options.new(:uri, :user, :password) do
     extend Forwardable
+
     def_delegators :uri, :scheme, :scheme=, :host, :host=, :port, :port=,
                    :path, :path=
 
@@ -29,7 +30,7 @@ module Faraday
         end
       end
 
-      super(value)
+      super
     end
 
     memoized(:user) { uri&.user && Utils.unescape(uri.user) }

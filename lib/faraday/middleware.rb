@@ -65,7 +65,7 @@ module Faraday
       if app.respond_to?(:close)
         app.close
       else
-        warn "#{app} does not implement \#close!"
+        warn "#{app} does not implement #close!"
       end
     end
   end

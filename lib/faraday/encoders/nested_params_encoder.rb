@@ -170,6 +170,7 @@ module Faraday
       attr_accessor :sort_params, :array_indices
 
       extend Forwardable
+
       def_delegators :'Faraday::Utils', :escape, :unescape
     end
 

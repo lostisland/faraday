@@ -78,7 +78,7 @@ module Faraday
     # @param value [Object] a value fitting Option.from(v).
     # @return [Env] from given value
     def self.from(value)
-      env = super(value)
+      env = super
       if value.respond_to?(:custom_members)
         env.custom_members.update(value.custom_members)
       end
@@ -90,7 +90,7 @@ module Faraday
       return self[current_body] if key == :body
 
       if in_member_set?(key)
-        super(key)
+        super
       else
         custom_members[key]
       end
@@ -105,7 +105,7 @@ module Faraday
       end
 
       if in_member_set?(key)
-        super(key, value)
+        super
       else
         custom_members[key] = value
       end

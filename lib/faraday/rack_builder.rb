@@ -15,6 +15,11 @@ module Faraday
     # Used to detect missing arguments
     NO_ARGUMENT = Object.new
 
+    LOCK_ERR = "can't modify middleware stack after making a request"
+    MISSING_ADAPTER_ERROR = "An attempt to run a request with a Faraday::Connection without adapter has been made.\n" \
+                            "Please set Faraday.default_adapter or provide one when initializing the connection.\n" \
+                            'For more info, check https://lostisland.github.io/faraday/usage/.'
+
     attr_accessor :handlers
 
     # Error raised when trying to modify the stack after calling `lock!`
@@ -210,11 +215,6 @@ module Faraday
     end
 
     private
-
-    LOCK_ERR = "can't modify middleware stack after making a request"
-    MISSING_ADAPTER_ERROR = "An attempt to run a request with a Faraday::Connection without adapter has been made.\n" \
-                            "Please set Faraday.default_adapter or provide one when initializing the connection.\n" \
-                            'For more info, check https://lostisland.github.io/faraday/usage/.'
 
     def raise_if_locked
       raise StackLocked, LOCK_ERR if locked?

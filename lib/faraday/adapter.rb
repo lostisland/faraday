@@ -8,6 +8,12 @@ module Faraday
 
     CONTENT_LENGTH = 'Content-Length'
 
+    TIMEOUT_KEYS = {
+      read: :read_timeout,
+      open: :open_timeout,
+      write: :write_timeout
+    }.freeze
+
     # This module marks an Adapter as supporting parallel requests.
     module Parallelism
       attr_writer :supports_parallel
@@ -23,6 +29,7 @@ module Faraday
     end
 
     extend Parallelism
+
     self.supports_parallel = false
 
     def initialize(_app = nil, opts = {}, &block)
@@ -89,12 +96,6 @@ module Faraday
       end
       options[key] || options[:timeout]
     end
-
-    TIMEOUT_KEYS = {
-      read: :read_timeout,
-      open: :open_timeout,
-      write: :write_timeout
-    }.freeze
   end
 end
 

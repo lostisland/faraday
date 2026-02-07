@@ -172,7 +172,7 @@ module Faraday
   # A unified client error for timeouts.
   class TimeoutError < ServerError
     def initialize(exc = 'timeout', response = nil)
-      super(exc, response)
+      super
     end
   end
 
