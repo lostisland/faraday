@@ -100,18 +100,48 @@ module Faraday
     # Recursive hash update
     def deep_merge!(target, hash)
       hash.each do |key, value|
-        target[key] = if value.is_a?(Hash) && (target[key].is_a?(Hash) || target[key].is_a?(Options))
-                        deep_merge(target[key], value)
-                      else
-                        value
-                      end
+        target_value = target[key]
+        mergeable = value.is_a?(Hash) &&
+                    (target_value.is_a?(Hash) || target_value.is_a?(Options) || target_value.is_a?(OptionsLike))
+        target[key] = mergeable ? deep_merge(target_value, value) : value
       end
       target
     end
 
+    # Deep duplication of values
+    #
+    # @param value [Object] the value to duplicate
+    # @return [Object] a deep copy of the value
+    def deep_dup(value)
+      case value
+      when Hash
+        value.transform_values do |v|
+          deep_dup(v)
+        end
+      when Array
+        value.map { |v| deep_dup(v) }
+      when OptionsLike
+        value.deep_dup
+      else
+        # For primitive types and objects without special dup needs
+        begin
+          value.dup
+        rescue TypeError
+          # Some objects like true, false, nil, numbers can't be duped
+          value
+        end
+      end
+    end
+
     # Recursive hash merge
     def deep_merge(source, hash)
-      deep_merge!(source.dup, hash)
+      # For OptionsLike objects (but not Options which is a Struct),
+      # we need to convert to hash, merge, and convert back
+      if source.is_a?(OptionsLike) && !source.is_a?(Options)
+        source.class.from(deep_merge!(source.to_hash, hash))
+      else
+        deep_merge!(source.dup, hash)
+      end
     end
 
     def sort_query_params(query)
