@@ -21,8 +21,9 @@ end
 group :development, :lint do
   gem 'racc', '~> 1.7' # for RuboCop, on Ruby 3.3
   gem 'rubocop'
-  gem 'rubocop-packaging', '~> 0.5'
-  gem 'rubocop-performance', '~> 1.0'
+  gem 'rubocop-packaging'
+  gem 'rubocop-performance'
+  gem 'rubocop-rake'
   gem 'yard-junk'
 end
 
