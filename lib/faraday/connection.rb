@@ -545,6 +545,8 @@ module Faraday
       if url && base.path && base.path !~ %r{/$}
         base.path = "#{base.path}/" # ensure trailing slash
       end
+      # Ensure protocol-relative URLs are handled correctly (CVE-2026-25765)
+      url = "./#{url}" if url.respond_to?(:start_with?) && url.start_with?('//')
       url = url && URI.parse(url.to_s).opaque ? url.to_s.gsub(':', '%3A') : url
       uri = url ? base + url : base
       if params

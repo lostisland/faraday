@@ -307,6 +307,39 @@ RSpec.describe Faraday::Connection do
         expect(uri.to_s).to eq('http://service.com/api/service%3Asearch?limit=400')
       end
     end
+
+    context 'with protocol-relative URL (CVE-2026-25765)' do
+      it 'does not allow host override with //evil.com/path' do
+        conn.url_prefix = 'http://httpbingo.org/api'
+        uri = conn.build_exclusive_url('//evil.com/path')
+        expect(uri.host).to eq('httpbingo.org')
+      end
+
+      it 'does not allow host override with //evil.com:8080/path' do
+        conn.url_prefix = 'http://httpbingo.org/api'
+        uri = conn.build_exclusive_url('//evil.com:8080/path')
+        expect(uri.host).to eq('httpbingo.org')
+      end
+
+      it 'does not allow host override with //user:pass@evil.com/path' do
+        conn.url_prefix = 'http://httpbingo.org/api'
+        uri = conn.build_exclusive_url('//user:pass@evil.com/path')
+        expect(uri.host).to eq('httpbingo.org')
+      end
+
+      it 'does not allow host override with ///evil.com' do
+        conn.url_prefix = 'http://httpbingo.org/api'
+        uri = conn.build_exclusive_url('///evil.com')
+        expect(uri.host).to eq('httpbingo.org')
+      end
+
+      it 'still allows single-slash absolute paths' do
+        conn.url_prefix = 'http://httpbingo.org/api'
+        uri = conn.build_exclusive_url('/safe/path')
+        expect(uri.host).to eq('httpbingo.org')
+        expect(uri.path).to eq('/safe/path')
+      end
+    end
   end
 
   describe '#build_url' do
