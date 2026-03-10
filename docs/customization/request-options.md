@@ -36,4 +36,4 @@ end
 ```
 
 [ProxyOptions]: /customization/proxy-options.md
-[SSLOptions]: /advanced/streaming-responses.md
+[Streaming]: /advanced/streaming-responses.md
