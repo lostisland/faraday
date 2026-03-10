@@ -26,7 +26,7 @@ class Client
 end
 
 # Example API client test
-class ClientTest < Test::Unit::TestCase
+class ClientTest < Test::Unit::TestCase # rubocop:disable Style/OneClassPerFile
   def test_httpbingo_name
     stubs = Faraday::Adapter::Test::Stubs.new
     stubs.get('/api') do |env|
