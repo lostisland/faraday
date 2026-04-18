@@ -24,3 +24,4 @@ jobs:
 
       - name: Publish to RubyGems
         uses: rubygems/release-gem@v1
+a43cceedc1e39d188f4d2cdd360a8aaa6a11da0c407052e426ba8d3fb42ef61c
