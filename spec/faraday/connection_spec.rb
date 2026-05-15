@@ -318,6 +318,13 @@ RSpec.describe Faraday::Connection do
         expect(uri.host).to eq('httpbingo.org')
       end
 
+      it 'does not allow host override with URI("//evil.com/path")' do
+        conn.url_prefix = 'http://httpbingo.org/api'
+        uri = conn.build_exclusive_url(URI('//evil.com/path?token=1'))
+        expect(uri.host).to eq('httpbingo.org')
+        expect(uri.query).to eq('token=1')
+      end
+
       it 'does not allow host override with //evil.com:8080/path' do
         conn.url_prefix = 'http://httpbingo.org/api'
         uri = conn.build_exclusive_url('//evil.com:8080/path')
