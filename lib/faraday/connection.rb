@@ -210,7 +210,7 @@ module Faraday
     #
     # @overload options(url, params = nil, headers = nil)
     #   Makes an OPTIONS HTTP request to the given URL.
-    #   @param url [String, URI, nil] String base URL to sue as a prefix for all requests.
+    #   @param url [String, URI, nil] String base URL to use as a prefix for all requests.
     #   @param params [Hash, nil] Hash of URI query unencoded key/value pairs.
     #   @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
