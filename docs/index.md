@@ -26,3 +26,4 @@ Faraday is used by many popular Ruby libraries, such as:
 * [Octokit](https://github.com/octokit/octokit.rb)
 * [Oauth2](https://bestgems.org/gems/oauth2)
 * [Elasticsearch](https://github.com/elastic/elasticsearch-ruby)
+
