@@ -439,4 +439,22 @@ RSpec.describe Faraday::Adapter::Test do
       end
     end
   end
+
+  describe '#clear' do
+    it 'removes pending stubs' do
+      stubs.clear
+      expect { connection.get('/hello') }.to raise_error(described_class::Stubs::NotFound)
+    end
+
+    it 'removes already consumed stubs' do
+      expect(connection.get('/hello').body).to eq('hello')
+      stubs.clear
+      expect { connection.get('/hello') }.to raise_error(described_class::Stubs::NotFound)
+    end
+
+    it 'leaves the stubs empty' do
+      stubs.clear
+      expect(stubs).to be_empty
+    end
+  end
 end

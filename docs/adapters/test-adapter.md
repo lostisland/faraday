@@ -100,9 +100,16 @@ verify the order or count of any stub.
 stubs.verify_stubbed_calls
 ```
 
-After the test case is completed (possibly in an `after` hook), you should clear
-the default connection to prevent it from being cached between different tests.
-This allows for each test to have its own set of stubs
+After the test case is completed (possibly in an `after` hook), you should reset
+the stubs so each test starts with its own set. When you hold a reference to the
+`Stubs` instance, call `clear` to remove every stub, including consumed ones.
+
+```ruby
+stubs.clear
+```
+
+Alternatively, if you rely on the default connection, you can clear it to prevent
+it from being cached between different tests.
 
 ```ruby
 Faraday.default_connection = nil

@@ -127,6 +127,14 @@ module Faraday
           new_stub(:options, path, headers, &block)
         end
 
+        # Removes all stubs, including the ones that have already been consumed.
+        def clear
+          @stubs_mutex.synchronize do
+            @stack.clear
+            @consumed.clear
+          end
+        end
+
         # Raises an error if any of the stubbed calls have not been made.
         def verify_stubbed_calls
           failed_stubs = []
