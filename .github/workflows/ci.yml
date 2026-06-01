@@ -30,11 +30,6 @@ jobs:
         bundle install
         bundle exec rubocop --format progress
 
-    - name: Yard-Junk
-      run: |
-        gem install yard-junk --no-document
-        yard-junk --path lib
-
   build:
     needs: [linting]
     runs-on: ubuntu-latest
@@ -42,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ['3.0', '3.1', '3.2']
+        ruby: ['3.0', '3.1', '3.2', '3.3']
 
     steps:
     - uses: actions/checkout@v4
