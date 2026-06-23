@@ -100,6 +100,8 @@ module Faraday
 
     def decode_pair(key, value, context)
       subkeys = key.scan(SUBKEYS_REGEX)
+      validate_params_depth!(subkeys.length)
+
       subkeys.each_with_index do |subkey, i|
         is_array = subkey =~ /[\[\]]+\Z/
         subkey = $` if is_array
@@ -139,6 +141,12 @@ module Faraday
       is_array ? context << value : context[subkey] = value
     end
 
+    def validate_params_depth!(depth)
+      return unless @param_depth_limit && depth > @param_depth_limit
+
+      raise Faraday::Error, "exceeded nested parameter depth limit of #{@param_depth_limit}"
+    end
+
     # Internal: convert a nested hash with purely numeric keys into an array.
     # FIXME: this is not compatible with Rack::Utils.parse_nested_query
     # @!visibility private
@@ -161,7 +169,7 @@ module Faraday
   # for your requests.
   module NestedParamsEncoder
     class << self
-      attr_accessor :sort_params
+      attr_accessor :sort_params, :param_depth_limit
 
       extend Forwardable
       def_delegators :'Faraday::Utils', :escape, :unescape
@@ -169,6 +177,7 @@ module Faraday
 
     # Useful default for OAuth and caching.
     @sort_params = true
+    @param_depth_limit = 100
 
     extend EncodeMethods
     extend DecodeMethods
