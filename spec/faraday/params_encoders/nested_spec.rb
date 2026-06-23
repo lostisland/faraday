@@ -7,9 +7,11 @@ RSpec.describe Faraday::NestedParamsEncoder do
 
   around do |example|
     original_param_depth_limit = described_class.param_depth_limit
-    example.run
-  ensure
-    described_class.param_depth_limit = original_param_depth_limit
+    begin
+      example.run
+    ensure
+      described_class.param_depth_limit = original_param_depth_limit
+    end
   end
 
   it 'decodes arrays' do

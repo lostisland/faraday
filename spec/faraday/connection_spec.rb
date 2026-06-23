@@ -358,14 +358,15 @@ RSpec.describe Faraday::Connection do
 
     it 'raises a controlled error when URL query params exceed the nested depth limit' do
       original_param_depth_limit = Faraday::NestedParamsEncoder.param_depth_limit
-      Faraday::NestedParamsEncoder.param_depth_limit = 2
-
-      expect { conn.build_url('/nigiri?a[b][c]=1') }.to raise_error(
-        Faraday::Error,
-        'exceeded nested parameter depth limit of 2'
-      )
-    ensure
-      Faraday::NestedParamsEncoder.param_depth_limit = original_param_depth_limit
+      begin
+        Faraday::NestedParamsEncoder.param_depth_limit = 2
+        expect { conn.build_url('/nigiri?a[b][c]=1') }.to raise_error(
+          Faraday::Error,
+          'exceeded nested parameter depth limit of 2'
+        )
+      ensure
+        Faraday::NestedParamsEncoder.param_depth_limit = original_param_depth_limit
+      end
     end
   end
 
