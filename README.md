@@ -58,7 +58,7 @@ But before you start coding, please read our [Contributing Guide][contributing]
 
 ## Copyright
 
-&copy; 2009 - 2023, the Faraday Team. Website and branding design by [Elena Lo Piccolo](https://elelopic.design).
+&copy; 2009 - 2026, the Faraday Team. Website and branding design by [Elena Lo Piccolo](https://elelopic.design).
 
 [awesome]: https://github.com/lostisland/awesome-faraday/#adapters
 [website]: https://lostisland.github.io/faraday
