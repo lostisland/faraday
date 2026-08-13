@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/lostisland/faraday#readme",
   "dependencies": {
-    "docsify-cli": "^4.4.4"
+    "docsify-cli": "^5.0.0-rc.4"
   }
 }
