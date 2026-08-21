@@ -362,7 +362,12 @@ module Faraday
     #
     #   conn.get("nigiri?page=2") # accesses https://httpbingo.org/api/nigiri
     def url_prefix=(url, encoder = nil)
-      uri = @url_prefix = Utils.URI(url)
+      # Coerce to a String first so that Utils.URI always parses a brand new
+      # URI instance. Otherwise, when passed an existing URI, Utils.URI returns
+      # it untouched and the in-place mutations below (`path=`, `query=`,
+      # `user=`/`password=`) would either raise a FrozenError on a frozen URI
+      # or unexpectedly modify the caller's object.
+      uri = @url_prefix = Utils.URI(url.to_s)
       self.path_prefix = uri.path
 
       params.merge_query(uri.query, encoder)

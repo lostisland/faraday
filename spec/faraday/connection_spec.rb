@@ -125,6 +125,18 @@ RSpec.describe Faraday::Connection do
       it { expect(subject.headers['User-agent']).to eq('Faraday') }
     end
 
+    context 'with a frozen URI as url' do
+      # Regression test for https://github.com/lostisland/faraday/issues/1349
+      # A frozen (or otherwise shared) URI must not be mutated in place while
+      # setting up the connection, otherwise it raises a FrozenError.
+      let(:url) { URI('http://Aladdin:open%20sesame@httpbingo.org/fish?a=1').freeze }
+
+      it { expect { subject }.not_to raise_error }
+      it { expect(subject.url_prefix.to_s).to eq('http://httpbingo.org/fish') }
+      it { expect(subject.params).to eq('a' => '1') }
+      it { expect(subject.headers['Authorization']).to eq('Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==') }
+    end
+
     context 'with ssl false' do
       let(:options) { { ssl: { verify: false } } }
 
