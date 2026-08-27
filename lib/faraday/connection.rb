@@ -505,7 +505,7 @@ module Faraday
                      params: params.dup,
                      builder: builder.dup,
                      ssl: ssl.dup,
-                     request: options.dup)
+                     request: options.dup).tap { |copy| copy.proxy = proxy if @manual_proxy }
     end
 
     # Yields username and password extracted from a URI if they both exist.
