@@ -73,6 +73,7 @@ module Faraday
       super
       @adapter = original.adapter
       @handlers = original.handlers.dup
+      @app = nil
     end
 
     def build
