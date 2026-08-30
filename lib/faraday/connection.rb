@@ -315,13 +315,13 @@ module Faraday
     # @yield a block to execute multiple requests.
     # @return [void]
     def in_parallel(manager = nil, &block)
-      @parallel_manager = manager || default_parallel_manager do
-        warn 'Warning: `in_parallel` called but no parallel-capable adapter ' \
-             'on Faraday stack'
-        warn caller[2, 10].join("\n")
+      previous_manager = @parallel_manager
+      @parallel_manager = manager || previous_manager || default_parallel_manager do
+        warn('Warning: `in_parallel` called but no parallel-capable adapter ' \
+             'on Faraday stack', caller[2, 10].join("\n"))
         nil
       end
-      return yield unless @parallel_manager
+      return yield unless @parallel_manager && !@parallel_manager.equal?(previous_manager)
 
       if @parallel_manager.respond_to?(:execute)
         # Execute is the new method that is responsible for executing the block.
@@ -332,7 +332,7 @@ module Faraday
         @parallel_manager.run
       end
     ensure
-      @parallel_manager = nil
+      @parallel_manager = previous_manager
     end
 
     # Sets the Hash proxy options.
