@@ -54,7 +54,9 @@ module Faraday
       raise 'response already finished' if finished?
 
       @env = env.is_a?(Env) ? env : Env.from(env)
-      @on_complete_callbacks.each { |callback| callback.call(@env) }
+      callbacks = @on_complete_callbacks
+      @on_complete_callbacks = []
+      callbacks.each { |callback| callback.call(@env) }
       self
     end
 
@@ -76,7 +78,8 @@ module Faraday
     end
 
     def marshal_load(env)
-      @env = Env.from(env)
+      @env = Env.from(env) if env
+      @on_complete_callbacks = []
     end
 
     # Expand the env with more properties, without overriding existing ones.
