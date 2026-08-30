@@ -532,7 +532,7 @@ module Faraday
         uri = if uri.host.nil?
                 find_default_proxy
               else
-                URI.parse("#{uri.scheme}://#{uri.host}").find_proxy
+                URI.parse(uri.to_s).find_proxy
               end
       when URI
         uri = url.find_proxy
