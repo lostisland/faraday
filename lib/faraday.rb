@@ -137,6 +137,38 @@ module Faraday
       @default_connection_options = ConnectionOptions.from(options)
     end
 
+    # HTTP verb methods, forwarded to {.default_connection}.
+    #
+    # They take the same arguments as their {Faraday::Connection} counterparts,
+    # see {Faraday::Connection#get} and {Faraday::Connection#post}.
+    # Defining them here rather than relying on {method_missing} keeps them
+    # visible to `Faraday.methods`, `pry`'s `ls`, documentation tools and
+    # editor autocomplete.
+
+    # @!visibility private
+    METHODS_WITH_QUERY.each do |method|
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        # def get(url = nil, params = nil, headers = nil, &block)
+        #   default_connection.get(url, params, headers, &block)
+        # end
+        def #{method}(url = nil, params = nil, headers = nil, &block)
+          default_connection.#{method}(url, params, headers, &block)
+        end
+      RUBY
+    end
+
+    # @!visibility private
+    METHODS_WITH_BODY.each do |method|
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
+        # def post(url = nil, body = nil, headers = nil, &block)
+        #   default_connection.post(url, body, headers, &block)
+        # end
+        def #{method}(url = nil, body = nil, headers = nil, &block)
+          default_connection.#{method}(url, body, headers, &block)
+        end
+      RUBY
+    end
+
     private
 
     # Internal: Proxies method calls on the Faraday constant to
