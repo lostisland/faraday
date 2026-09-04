@@ -4,6 +4,15 @@ module Faraday
   # @!parse
   #   # ProxyOptions contains the configurable properties for the proxy
   #   # configuration used when making an HTTP request.
+  #   #
+  #   # @!attribute uri
+  #   #   @return [URI] the proxy server URI
+  #   #
+  #   # @!attribute user
+  #   #   @return [String] the proxy server username
+  #   #
+  #   # @!attribute password
+  #   #   @return [String] the proxy server password
   #   class ProxyOptions < Options; end
   ProxyOptions = Options.new(:uri, :user, :password) do
     extend Forwardable
