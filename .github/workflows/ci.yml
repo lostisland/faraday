@@ -9,7 +9,6 @@ on:
 env:
   GIT_COMMIT_SHA: ${{ github.sha }}
   GIT_BRANCH: ${{ github.ref }}
-  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
 permissions:
   contents: read # to fetch code (actions/checkout)
@@ -61,9 +60,10 @@ jobs:
       - name: RSpec
         continue-on-error: ${{ matrix.experimental }}
         run: bundle exec rake
+        env:
+          COVERALLS_REPO_TOKEN: ${{ github.event_name == 'push' && secrets.COVERALLS_REPO_TOKEN || '' }}
 
       - name: Test External Adapters
         continue-on-error: ${{ matrix.experimental }}
         run: bundle exec bake test:external
-
 
