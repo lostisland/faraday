@@ -41,7 +41,7 @@ module Faraday
       def exception(exc)
         return unless log_errors?
 
-        public_send(log_level) { "error: #{exc.full_message}" }
+        public_send(log_level) { "error: #{apply_filters(exc.full_message)}" }
 
         log_headers('error', exc.response_headers) if exc.respond_to?(:response_headers) && log_headers?(:error)
         return unless exc.respond_to?(:response_body) && exc.response_body && log_body?(:error)
