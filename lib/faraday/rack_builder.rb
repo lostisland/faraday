@@ -115,6 +115,7 @@ module Faraday
     def adapter(klass = NO_ARGUMENT, *args, **kwargs, &block)
       return @adapter if klass == NO_ARGUMENT || klass.nil?
 
+      raise_if_locked
       klass = Faraday::Adapter.lookup_middleware(klass) if klass.is_a?(Symbol)
       @adapter = self.class::Handler.new(klass, *args, **kwargs, &block)
     end
