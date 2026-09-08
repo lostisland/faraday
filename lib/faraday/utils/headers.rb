@@ -62,6 +62,8 @@ module Faraday
         super
       end
 
+      alias store []=
+
       def fetch(key, ...)
         key = KeyMap[key]
         key = @names.fetch(key.downcase, key)
@@ -75,6 +77,69 @@ module Faraday
 
         @names.delete key.downcase
         super
+      end
+
+      def clear
+        @names.clear
+        super
+      end
+
+      def shift
+        super
+      ensure
+        rebuild_names
+      end
+
+      def compact!
+        super
+      ensure
+        rebuild_names
+      end
+
+      def delete_if
+        return enum_for(__method__) unless block_given?
+
+        super
+      ensure
+        rebuild_names
+      end
+
+      def keep_if
+        return enum_for(__method__) unless block_given?
+
+        super
+      ensure
+        rebuild_names
+      end
+
+      def reject!
+        return enum_for(__method__) unless block_given?
+
+        super
+      ensure
+        rebuild_names
+      end
+
+      def select!
+        return enum_for(__method__) unless block_given?
+
+        super
+      ensure
+        rebuild_names
+      end
+
+      alias filter! select!
+
+      def transform_keys!(...)
+        super
+      ensure
+        rebuild_names
+      end
+
+      def rehash
+        super
+      ensure
+        rebuild_names
       end
 
       def dig(key, *rest)
@@ -135,6 +200,10 @@ module Faraday
       attr_reader :names
 
       private
+
+      def rebuild_names
+        @names = each_key.to_h { |key| [KeyMap[key].downcase, key] }
+      end
 
       # Join multiple values with a comma.
       def add_parsed(key, value)
