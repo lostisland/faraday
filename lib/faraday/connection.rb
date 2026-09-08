@@ -519,7 +519,7 @@ module Faraday
     def with_uri_credentials(uri)
       return unless uri.user && uri.password
 
-      yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
+      yield(URI::DEFAULT_PARSER.unescape(uri.user), URI::DEFAULT_PARSER.unescape(uri.password))
     end
 
     def proxy_from_env(url)

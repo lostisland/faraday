@@ -33,7 +33,7 @@ module Faraday
       super
     end
 
-    memoized(:user) { uri&.user && Utils.unescape(uri.user) }
-    memoized(:password) { uri&.password && Utils.unescape(uri.password) }
+    memoized(:user) { uri&.user && URI::DEFAULT_PARSER.unescape(uri.user) }
+    memoized(:password) { uri&.password && URI::DEFAULT_PARSER.unescape(uri.password) }
   end
 end
