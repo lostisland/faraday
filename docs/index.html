@@ -27,13 +27,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link
     rel="stylesheet"
-    href="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/style.min.css"
+    href="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3.2.0/dist/style.min.css"
+    integrity="sha384-8UgVH/UVTe7r3Lidxa5o+UOdPR98CbqYVTYMwQ88K7JgANe1AZOq4AUIhrh5ipyI"
+    crossorigin="anonymous"
     title="docsify-darklight-theme"
     type="text/css"
   />
   <link
     rel="stylesheet"
-    href="//cdn.jsdelivr.net/npm/prism-themes/themes/prism-material-light.min.css"
+    href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-one-light.min.css"
+    integrity="sha384-wfpYO27rpeJ2ZOVwfG6TuU4ahxLdxLmGXK/BiSH98jJye0CNNWTOM+kA8rP8Yg4p"
+    crossorigin="anonymous"
     id="prism-theme"
     type="text/css"
   />
@@ -41,7 +45,11 @@
 <body>
   <div id="app"></div>
   <!-- Docsify plugins -->
-  <script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/docsify-edit-on-github@1.0.3/index.js"
+    integrity="sha384-Ogj2j37/GYQ910jiWc156XK1kUoZ8G5Tk2FYk1rA9wwYRnozI9Em5LU9fjzgJyPS"
+    crossorigin="anonymous">
+  </script>
 
   <!-- Docsify config -->
   <script>
@@ -57,11 +65,13 @@
       darklightTheme: {
         dark: {
           accent: '#EE4266',
-          prismTheme: 'prism-material-dark'
+          prismTheme: 'prism-one-dark',
+          toogleImage: 'url(https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3.2.0/icons/sun.svg)'
         },
         light: {
           accent: '#EE4266',
-          prismTheme: 'prism-material-light'
+          prismTheme: 'prism-one-light',
+          toogleImage: 'url(https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3.2.0/icons/moon.svg)'
         }
       },
       plugins: [
@@ -85,14 +95,24 @@
         },
         function prismThemeSwitcher(hook, _vm) {
           // Switch Prism theme based on docsify-darklight-theme setting
-          let lightTheme = '//cdn.jsdelivr.net/npm/prism-themes/themes/prism-one-light.min.css';
-          let darkTheme = '//cdn.jsdelivr.net/npm/prism-themes/themes/prism-one-dark.min.css';
+          let themes = {
+            light: {
+              href: 'https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-one-light.min.css',
+              integrity: 'sha384-wfpYO27rpeJ2ZOVwfG6TuU4ahxLdxLmGXK/BiSH98jJye0CNNWTOM+kA8rP8Yg4p'
+            },
+            dark: {
+              href: 'https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-one-dark.min.css',
+              integrity: 'sha384-v9GL8Hq3ahE75oFR1DFNlW6Um5pHhFd4zZ1GhlseYYdm7vQJnxZo27sXBkHLcv3O'
+            }
+          };
 
           let switchTheme = () => {
             console.log('Theme changed');
             let theme = localStorage.getItem('DARK_LIGHT_THEME')
             let link = document.getElementById('prism-theme');
-            link.setAttribute('href', theme === 'dark' ? darkTheme : lightTheme);
+            let selectedTheme = theme === 'dark' ? themes.dark : themes.light;
+            link.setAttribute('integrity', selectedTheme.integrity);
+            link.setAttribute('href', selectedTheme.href);
           }
 
           hook.ready(() => {
@@ -104,18 +124,40 @@
     }
   </script>
   <!-- Docsify v4 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/docsify.min.js"
+    integrity="sha384-KaHhgnx/OTLoJ4J33SSJsF4x1pk4I7q3s5ZOfIDHJYl6IG7Oyn2vNDsHiWJe46fD"
+    crossorigin="anonymous">
+  </script>
   <!-- Docsify Darklight Theme -->
   <script
-    src="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js"
+    src="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3.2.0/dist/index.min.js"
+    integrity="sha384-P4geLkdzz6Hc6jp+0sQB8fyDUZsv9rBMvV19RuUCoutEbOP13irUpZvAkcVzMYBJ"
+    crossorigin="anonymous"
     type="text/javascript">
   </script>
   <!-- Prism Ruby highlight -->
-  <script src="//cdn.jsdelivr.net/npm/prismjs@v1.x/components/prism-ruby.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-ruby.min.js"
+    integrity="sha384-xVcnao4LK2LGPWtbEMXzbqrmtM8Ycfrz6nH7gthLCLwCrQGhNFScUV7UGjDotjVu"
+    crossorigin="anonymous">
+  </script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-bash.min.js"
+    integrity="sha384-9WmlN8ABpoFSSHvBGGjhvB3E/D8UkNB9HpLJjBQFC2VSQsM1odiQDv4NbEo+7l15"
+    crossorigin="anonymous">
+  </script>
 
   <!-- Other Plugins -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/plugins/search.min.js"
+    integrity="sha384-LthJPBJ4RGco78kBY+EmKz5rmISZ5vrtAu3+l2ALQ2mrZHOe6Wyf6knyKjeC4cL6"
+    crossorigin="anonymous">
+  </script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/docsify-copy-code@3.0.2/dist/docsify-copy-code.min.js"
+    integrity="sha384-xvU4Qmx14Fe/3hDKuOUUQ8eOzoa7OVTL0vp3amTSv2KY8lCjlrga7DoqecFFOT7j"
+    crossorigin="anonymous">
+  </script>
 </body>
 </html>
