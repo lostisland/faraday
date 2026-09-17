@@ -445,7 +445,7 @@ module Faraday
         req.options.proxy = proxy_for_request(url)
         req.url(url)                if url
         req.headers.update(headers) if headers
-        req.body = body             if body
+        req.body = body             unless body.nil?
         yield(req) if block_given?
       end
 
