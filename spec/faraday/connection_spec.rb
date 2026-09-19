@@ -154,6 +154,26 @@ RSpec.describe Faraday::Connection do
       it { expect(conn.builder.handlers.size).to eq(0) }
       it { expect(conn.path_prefix).to eq('/omnom') }
     end
+
+    context 'with a frozen URI param' do
+      let(:frozen_uri) { URI('http://httpbingo.org/api').freeze }
+      let(:conn) { Faraday::Connection.new(frozen_uri) }
+
+      it { expect { conn }.not_to raise_error }
+      it { expect(conn.host).to eq('httpbingo.org') }
+      it { expect(conn.path_prefix).to eq('/api') }
+      it { expect(frozen_uri).to be_frozen }
+    end
+
+    context 'with a non-frozen URI param' do
+      let(:uri) { URI('http://httpbingo.org') }
+      let(:conn) { Faraday::Connection.new(uri) }
+
+      it "does not mutate the caller's URI object" do
+        conn
+        expect(uri.path).to eq('')
+      end
+    end
   end
 
   describe '#close' do
