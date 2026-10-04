@@ -230,10 +230,6 @@ module Faraday
       raise MISSING_ADAPTER_ERROR unless @adapter
     end
 
-    def adapter_set?
-      !@adapter.nil?
-    end
-
     def use_symbol(mod, key, ...)
       use(mod.lookup_middleware(key), ...)
     end
