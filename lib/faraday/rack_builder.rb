@@ -73,6 +73,9 @@ module Faraday
       super
       @adapter = original.adapter
       @handlers = original.handlers.dup
+      # @app is memoized on the first request. Drop it so the duplicate
+      # rebuilds from the copied handlers and middleware added after dup runs.
+      @app = nil
     end
 
     def build

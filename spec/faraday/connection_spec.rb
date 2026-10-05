@@ -693,6 +693,35 @@ RSpec.describe Faraday::Connection do
       it { expect(subject.options[:timeout]).to eq(5) }
       it { expect(conn.options[:open_timeout]).to be_nil }
     end
+
+    context 'after a request' do
+      let(:conn) do
+        Faraday::Connection.new('http://example.com') do |builder|
+          builder.adapter :test do |stub|
+            stub.get('/') { |_env| [200, {}, 'ok'] }
+          end
+        end
+      end
+
+      it 'rebuilds the stack so middleware added on the duplicate runs' do
+        conn.get('/')
+        calls = []
+        middleware = Class.new(Faraday::Middleware) do
+          define_method(:on_request) { |_env| calls << :ran }
+        end
+
+        duplicate = conn.dup
+        expect(duplicate.builder.locked?).to be_falsey
+        duplicate.use(middleware)
+        expect(duplicate.builder.app).not_to equal(conn.builder.app)
+
+        duplicate.get('/')
+        expect(calls).to eq([:ran])
+
+        conn.get('/')
+        expect(calls).to eq([:ran])
+      end
+    end
   end
 
   describe '#respond_to?' do
