@@ -5,6 +5,13 @@ require 'rack/utils'
 RSpec.describe Faraday::NestedParamsEncoder do
   it_behaves_like 'a params encoder'
 
+  around do |example|
+    original_param_depth_limit = described_class.param_depth_limit
+    example.run
+  ensure
+    described_class.param_depth_limit = original_param_depth_limit
+  end
+
   it 'decodes arrays' do
     query    = 'a[1]=one&a[2]=two&a[3]=three'
     expected = { 'a' => %w[one two three] }
@@ -51,6 +58,27 @@ RSpec.describe Faraday::NestedParamsEncoder do
     query    = 'a[b]c[d]e=1'
     expected = { 'a' => { 'b' => { 'c' => { 'd' => { 'e' => '1' } } } } }
     expect(subject.decode(query)).to eq(expected)
+  end
+
+  it 'allows nested params within the configured depth limit' do
+    described_class.param_depth_limit = 3
+
+    expect(subject.decode('a[b][c]=1')).to eq({ 'a' => { 'b' => { 'c' => '1' } } })
+  end
+
+  it 'raises a controlled error when nested params exceed the depth limit' do
+    described_class.param_depth_limit = 2
+
+    expect { subject.decode('a[b][c]=1') }.to raise_error(
+      Faraday::Error,
+      'exceeded nested parameter depth limit of 2'
+    )
+  end
+
+  it 'allows disabling the nested params depth limit' do
+    described_class.param_depth_limit = nil
+
+    expect(subject.decode('a[b][c][d]=1')).to eq({ 'a' => { 'b' => { 'c' => { 'd' => '1' } } } })
   end
 
   it 'decodes nested final value overrides any type' do
