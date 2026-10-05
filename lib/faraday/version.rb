@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Faraday
-  VERSION = '2.14.3'
+  VERSION = '2.14.4'
 end
