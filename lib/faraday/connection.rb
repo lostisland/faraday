@@ -210,7 +210,7 @@ module Faraday
     #
     # @overload options(url, params = nil, headers = nil)
     #   Makes an OPTIONS HTTP request to the given URL.
-    #   @param url [String, URI, nil] String base URL to sue as a prefix for all requests.
+    #   @param url [String, URI, nil] String base URL to use as a prefix for all requests.
     #   @param params [Hash, nil] Hash of URI query unencoded key/value pairs.
     #   @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
@@ -532,7 +532,7 @@ module Faraday
         uri = if uri.host.nil?
                 find_default_proxy
               else
-                URI.parse("#{uri.scheme}://#{uri.host}").find_proxy
+                URI.parse(uri.to_s).find_proxy
               end
       when URI
         uri = url.find_proxy
