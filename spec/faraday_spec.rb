@@ -40,4 +40,30 @@ RSpec.describe Faraday do
       Faraday.default_connection = nil
     end
   end
+
+  context 'HTTP verb methods' do
+    let(:mock_connection) { double('Connection') }
+
+    before do
+      Faraday.default_connection = mock_connection
+    end
+
+    (Faraday::METHODS_WITH_QUERY + Faraday::METHODS_WITH_BODY).each do |http_method|
+      it "defines .#{http_method} and forwards it to the default_connection" do
+        expect(Faraday.singleton_class.instance_methods(false)).to include(http_method.to_sym)
+
+        block = proc { |request| request }
+        expect(mock_connection).to receive(http_method) do |*args, &blk|
+          expect(args).to eq(['/foo', { page: 1 }, { 'X-Custom' => 'yes' }])
+          expect(blk).to be(block)
+        end
+
+        Faraday.public_send(http_method, '/foo', { page: 1 }, { 'X-Custom' => 'yes' }, &block)
+      end
+    end
+
+    after do
+      Faraday.default_connection = nil
+    end
+  end
 end
