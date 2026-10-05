@@ -8,7 +8,7 @@ module Faraday
     class Json < Middleware
       def initialize(app = nil, parser_options: nil, content_type: /\bjson$/, preserve_raw: false)
         super(app)
-        @parser_options = parser_options
+        @parser_options = parser_options&.dup
         @content_types = Array(content_type)
         @preserve_raw = preserve_raw
 
@@ -33,7 +33,7 @@ module Faraday
 
         decoder, method_name = @decoder_options
 
-        decoder.public_send(method_name, body, @parser_options || {})
+        decoder.public_send(method_name, body, **(@parser_options || {}))
       end
 
       def parse_response?(env)

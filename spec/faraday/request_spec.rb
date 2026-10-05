@@ -31,6 +31,15 @@ RSpec.describe Faraday::Request do
     it { expect(subject.to_env(conn).url.to_s).to eq('http://httpbingo.org/api/foo.json?a=1') }
   end
 
+  context 'when setting the url on setup with a protocol-relative URI' do
+    let(:block) { proc { |req| req.url URI.parse('//evil.com/path?token=1') } }
+    let(:url) { subject.to_env(conn).url }
+
+    it { expect(url.host).to eq('httpbingo.org') }
+    it { expect(url.path).to eq('/api///evil.com/path') }
+    it { expect(url.query).to eq('token=1') }
+  end
+
   context 'when setting the url on setup with a string path and params' do
     let(:block) { proc { |req| req.url 'foo.json', 'a' => 1 } }
 

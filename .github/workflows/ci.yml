@@ -9,7 +9,6 @@ on:
 env:
   GIT_COMMIT_SHA: ${{ github.sha }}
   GIT_BRANCH: ${{ github.ref }}
-  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
 permissions:
   contents: read # to fetch code (actions/checkout)
@@ -22,12 +21,12 @@ jobs:
       BUNDLE_WITHOUT: development:test
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - name: Setup Ruby 3.x
+      - name: Setup Ruby 4.x
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3
+          ruby-version: 4
           bundler-cache: true
 
       - name: Rubocop
@@ -52,7 +51,7 @@ jobs:
             experimental: true
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
@@ -61,9 +60,10 @@ jobs:
       - name: RSpec
         continue-on-error: ${{ matrix.experimental }}
         run: bundle exec rake
+        env:
+          COVERALLS_REPO_TOKEN: ${{ github.event_name == 'push' && secrets.COVERALLS_REPO_TOKEN || '' }}
 
       - name: Test External Adapters
         continue-on-error: ${{ matrix.experimental }}
         run: bundle exec bake test:external
-
 
