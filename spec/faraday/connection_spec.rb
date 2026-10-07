@@ -119,6 +119,15 @@ RSpec.describe Faraday::Connection do
       it { expect(subject.headers['Authorization']).to eq('Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==') }
     end
 
+    context 'with basic_auth in url containing literal plus signs' do
+      let(:url) { 'http://Ala+ddin:open+sesame%2B@httpbingo.org/fish' }
+
+      it 'does not decode plus signs as spaces' do
+        expected = Faraday::Utils.basic_header_from('Ala+ddin', 'open+sesame+')
+        expect(subject.headers['Authorization']).to eq(expected)
+      end
+    end
+
     context 'with custom headers' do
       let(:options) { { headers: { user_agent: 'Faraday' } } }
 
