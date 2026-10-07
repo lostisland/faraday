@@ -702,6 +702,34 @@ RSpec.describe Faraday::Connection do
       it { expect(subject.options[:timeout]).to eq(5) }
       it { expect(conn.options[:open_timeout]).to be_nil }
     end
+
+    context 'with a manually set proxy' do
+      it 'preserves the proxy over env http_proxy' do
+        with_env 'http_proxy' => 'http://env-proxy.com' do
+          conn.proxy = 'http://manual-proxy.com'
+
+          expect(subject.proxy.host).to eq('manual-proxy.com')
+          expect(subject.proxy_for_request(url).host).to eq('manual-proxy.com')
+        end
+      end
+
+      it 'preserves an explicitly disabled proxy' do
+        with_env 'http_proxy' => 'http://env-proxy.com' do
+          conn.proxy = nil
+
+          expect(subject.proxy).to be_nil
+          expect(subject.proxy_for_request(url)).to be_nil
+        end
+      end
+    end
+
+    context 'without a manually set proxy' do
+      it 'uses env http_proxy' do
+        with_env 'http_proxy' => 'http://env-proxy.com' do
+          expect(subject.proxy_for_request(url).host).to eq('env-proxy.com')
+        end
+      end
+    end
   end
 
   describe '#respond_to?' do
