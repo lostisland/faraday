@@ -18,21 +18,13 @@ jobs:
       image: ruby:3.4
       options: --user root
 
-    # Service containers to run alongside the job
+    # Service containers to run alongside the job.
+    # The HTTPS server and proxy used by the SSLOptions and ProxyOptions specs
+    # run inside the rspec process (see spec/support/integration/), because
+    # service containers cannot be built from the repository or take custom config.
     services:
       httpbin:
         image: kennethreitz/httpbin:latest
-
-      # Future: Proxy server for proxy tests
-      # Uncomment when implementing ProxyOptions integration tests (Task 5)
-      # proxy:
-      #   image: ubuntu/squid:latest
-      #   options: >-
-      #     --health-cmd "nc -z localhost 3128 || exit 1"
-      #     --health-interval 5s
-      #     --health-timeout 3s
-      #     --health-retries 10
-      #     --health-start-period 5s
 
     steps:
       - uses: actions/checkout@v5
@@ -75,7 +67,6 @@ jobs:
           # Service URLs for integration tests
           # Note: kennethreitz/httpbin runs on port 80 (default HTTP)
           HTTPBIN_URL: http://httpbin
-          # PROXY_URL: http://proxy:3128  # Uncomment when proxy tests are added
           # Disable SimpleCov for integration tests
           # Integration tests exercise real HTTP behavior, not lib/ code coverage
           COVERAGE: 'false'

@@ -13,7 +13,6 @@ module Faraday
     # Service URLs for GitHub Actions service containers
     # These are accessed by service name when running in container jobs
     HTTPBIN_URL = ENV.fetch('HTTPBIN_URL', 'http://httpbin')
-    PROXY_URL = ENV.fetch('PROXY_URL', 'http://proxy:3128') # Future: for proxy tests
 
     # Create a direct Faraday connection to httpbin (no proxy)
     #
@@ -22,18 +21,6 @@ module Faraday
     # @return [Faraday::Connection]
     def httpbin_connection(options = {}, &block)
       Faraday.new(HTTPBIN_URL, options, &block)
-    end
-
-    # Create a proxied Faraday connection to httpbin (via proxy service)
-    # Future: for proxy integration tests
-    #
-    # @param options [Hash] Connection options (merged with proxy config)
-    # @yield [builder] Middleware stack configuration
-    # @return [Faraday::Connection]
-    def proxied_httpbin_connection(options = {}, &block)
-      proxy_options = { proxy: PROXY_URL }
-      merged_options = proxy_options.merge(options)
-      Faraday.new(HTTPBIN_URL, merged_options, &block)
     end
 
     # Generic helper to create a Faraday connection for integration tests
