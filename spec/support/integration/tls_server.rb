@@ -7,18 +7,20 @@ require 'socket'
 module Faraday
   module IntegrationHelpers
     # Minimal HTTPS server running in a background thread, used to exercise
-    # SSLOptions against real TLS handshakes.
+    # SSLOptions and ProxyOptions against real TLS handshakes.
     #
     # Every request is answered with a JSON document describing what the server
-    # saw, e.g. `{"path":"/","client_cert_subject":"/CN=Faraday Test Client"}`.
+    # saw, e.g. `{"path":"/","client_cert_subject":null,"remote_ip":"127.0.0.1"}`.
     class TLSServer
       attr_reader :port
 
       # @param credentials [TestPKI::Credentials] server certificate and key
       # @param client_ca [TestPKI, nil] when given, clients must present a
       #   certificate signed by this CA (mutual TLS)
-      def initialize(credentials, client_ca: nil)
-        @tcp_server = TCPServer.new('127.0.0.1', 0)
+      # @param host [String] address to listen on; '0.0.0.0' makes the server
+      #   reachable from service containers, such as the proxies
+      def initialize(credentials, client_ca: nil, host: '127.0.0.1')
+        @tcp_server = TCPServer.new(host, 0)
         @port = @tcp_server.addr[1]
         @ssl_server = OpenSSL::SSL::SSLServer.new(@tcp_server, ssl_context(credentials, client_ca))
         @ssl_server.start_immediately = false
@@ -78,7 +80,8 @@ module Faraday
       end
 
       def respond(socket, path)
-        body = JSON.generate(path: path, client_cert_subject: socket.peer_cert&.subject&.to_s)
+        body = JSON.generate(path: path, client_cert_subject: socket.peer_cert&.subject&.to_s,
+                             remote_ip: socket.io.remote_address.ip_address)
         socket.write("HTTP/1.1 200 OK\r\n" \
                      "Content-Type: application/json\r\n" \
                      "Content-Length: #{body.bytesize}\r\n" \
