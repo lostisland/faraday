@@ -8,6 +8,8 @@ jobs:
   build:
     name: Publish to Rubygems
     runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: Gemfile.release
 
     permissions:
       contents: write

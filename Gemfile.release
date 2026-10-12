@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+# Rakefile loads both libraries before defining Bundler::GemHelper's release task.
+gem 'rake', '~> 13.4'
+gem 'rspec', '~> 3.13'
+
+gemspec
