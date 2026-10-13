@@ -186,7 +186,8 @@ module Faraday
     def [](key)
       key = key.to_sym
       if (method = self.class.memoized_attributes[key])
-        super || (self[key] = instance_eval(&method))
+        value = super
+        value.nil? ? (self[key] = instance_eval(&method)) : value
       else
         super
       end
