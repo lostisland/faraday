@@ -163,6 +163,26 @@ RSpec.describe Faraday::Connection do
       it { expect(conn.builder.handlers.size).to eq(0) }
       it { expect(conn.path_prefix).to eq('/omnom') }
     end
+
+    context 'with a frozen URI param' do
+      let(:frozen_uri) { URI('http://httpbingo.org/api').freeze }
+      let(:conn) { Faraday::Connection.new(frozen_uri) }
+
+      it { expect { conn }.not_to raise_error }
+      it { expect(conn.host).to eq('httpbingo.org') }
+      it { expect(conn.path_prefix).to eq('/api') }
+      it { expect(frozen_uri).to be_frozen }
+    end
+
+    context 'with a non-frozen URI param' do
+      let(:uri) { URI('http://httpbingo.org') }
+      let(:conn) { Faraday::Connection.new(uri) }
+
+      it "does not mutate the caller's URI object" do
+        conn
+        expect(uri.path).to eq('')
+      end
+    end
   end
 
   describe '#close' do
@@ -728,6 +748,35 @@ RSpec.describe Faraday::Connection do
         with_env 'http_proxy' => 'http://env-proxy.com' do
           expect(subject.proxy_for_request(url).host).to eq('env-proxy.com')
         end
+      end
+    end
+
+    context 'after a request' do
+      let(:conn) do
+        Faraday::Connection.new('http://example.com') do |builder|
+          builder.adapter :test do |stub|
+            stub.get('/') { |_env| [200, {}, 'ok'] }
+          end
+        end
+      end
+
+      it 'rebuilds the stack so middleware added on the duplicate runs' do
+        conn.get('/')
+        calls = []
+        middleware = Class.new(Faraday::Middleware) do
+          define_method(:on_request) { |_env| calls << :ran }
+        end
+
+        duplicate = conn.dup
+        expect(duplicate.builder.locked?).to be_falsey
+        duplicate.use(middleware)
+        expect(duplicate.builder.app).not_to equal(conn.builder.app)
+
+        duplicate.get('/')
+        expect(calls).to eq([:ran])
+
+        conn.get('/')
+        expect(calls).to eq([:ran])
       end
     end
   end

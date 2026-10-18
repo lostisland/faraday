@@ -73,6 +73,9 @@ module Faraday
       super
       @adapter = original.adapter
       @handlers = original.handlers.dup
+      # @app is memoized on the first request. Drop it so the duplicate
+      # rebuilds from the copied handlers and middleware added after dup runs.
+      @app = nil
     end
 
     def build
@@ -229,10 +232,6 @@ module Faraday
 
     def ensure_adapter!
       raise MISSING_ADAPTER_ERROR unless @adapter
-    end
-
-    def adapter_set?
-      !@adapter.nil?
     end
 
     def use_symbol(mod, key, ...)

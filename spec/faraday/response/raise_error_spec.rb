@@ -264,6 +264,25 @@ RSpec.describe Faraday::Response::RaiseError do
     end
   end
 
+  describe 'default allowed_statuses' do
+    it 'cannot be mutated through a middleware instance' do
+      middleware = described_class.new(->(env) { env })
+
+      expect { middleware.options[:allowed_statuses] << 404 }.to raise_error(FrozenError)
+    end
+
+    it 'still raises errors when the default is used' do
+      conn = Faraday.new do |b|
+        b.response :raise_error
+        b.adapter :test do |stub|
+          stub.get('not-found') { [404, {}, 'nope'] }
+        end
+      end
+
+      expect { conn.get('not-found') }.to raise_error(Faraday::ResourceNotFound)
+    end
+  end
+
   describe 'allowing certain status codes' do
     let(:conn) do
       Faraday.new do |b|
