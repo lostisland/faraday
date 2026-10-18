@@ -67,6 +67,12 @@ RSpec.describe Faraday::RackBuilder do
       expect { subject.use(Orange) }.to raise_error(Faraday::RackBuilder::StackLocked)
     end
 
+    it 'rejects adapter changes after locking the stack' do
+      conn.get('/')
+      expect { subject.adapter(:net_http) }.to raise_error(Faraday::RackBuilder::StackLocked)
+      expect(subject.adapter).to eq(Faraday::Adapter.lookup_middleware(:test))
+    end
+
     it 'dup stack is unlocked' do
       expect(subject.locked?).to be_falsey
       subject.lock!

@@ -362,7 +362,7 @@ module Faraday
     #
     #   conn.get("nigiri?page=2") # accesses https://httpbingo.org/api/nigiri
     def url_prefix=(url, encoder = nil)
-      uri = @url_prefix = Utils.URI(url)
+      uri = @url_prefix = Utils.URI(url.to_s)
       self.path_prefix = uri.path
 
       params.merge_query(uri.query, encoder)
@@ -496,8 +496,6 @@ module Faraday
 
     # Creates a duplicate of this Faraday::Connection.
     #
-    # @api private
-    #
     # @return [Faraday::Connection]
     def dup
       self.class.new(build_exclusive_url,
@@ -505,7 +503,7 @@ module Faraday
                      params: params.dup,
                      builder: builder.dup,
                      ssl: ssl.dup,
-                     request: options.dup)
+                     request: options.dup).tap { |copy| copy.proxy = proxy if @manual_proxy }
     end
 
     # Yields username and password extracted from a URI if they both exist.
@@ -519,7 +517,7 @@ module Faraday
     def with_uri_credentials(uri)
       return unless uri.user && uri.password
 
-      yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
+      yield(URI::DEFAULT_PARSER.unescape(uri.user), URI::DEFAULT_PARSER.unescape(uri.password))
     end
 
     def proxy_from_env(url)
