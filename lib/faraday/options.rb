@@ -74,7 +74,7 @@ module Faraday
 
     # Public
     def fetch(key, *args)
-      unless symbolized_key_set.include?(key.to_sym)
+      unless members.include?(key.to_sym) && !send(key).nil?
         key_setter = "#{key}="
         if !args.empty?
           send(key_setter, args.first)
@@ -193,7 +193,7 @@ module Faraday
     end
 
     def symbolized_key_set
-      @symbolized_key_set ||= Set.new(keys.map(&:to_sym))
+      Set.new(keys.map(&:to_sym))
     end
 
     def self.inherited(subclass)
