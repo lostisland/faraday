@@ -264,13 +264,11 @@ RSpec.describe Faraday::Response::RaiseError do
     end
   end
 
-  describe 'DEFAULT_OPTIONS: allowed_statuses' do
-    it 'is frozen so it cannot be mutated across connections' do
-      expect(described_class::DEFAULT_OPTIONS[:allowed_statuses]).to be_frozen
-    end
+  describe 'default allowed_statuses' do
+    it 'cannot be mutated through a middleware instance' do
+      middleware = described_class.new(->(env) { env })
 
-    it 'allows no status codes by default' do
-      expect(described_class::DEFAULT_OPTIONS[:allowed_statuses]).to be_empty
+      expect { middleware.options[:allowed_statuses] << 404 }.to raise_error(FrozenError)
     end
 
     it 'still raises errors when the default is used' do
