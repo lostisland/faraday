@@ -54,6 +54,45 @@ RSpec.describe Faraday::Response do
     it { expect(loaded.env[:response_headers]).to eq(env[:response_headers]) }
     it { expect(loaded.env[:status]).to eq(env[:status]) }
     it { expect(loaded.env[:url]).to eq(env[:url]) }
+
+    context 'when the response is not finished' do
+      let(:loaded) { Marshal.load(Marshal.dump(Faraday::Response.new)) }
+
+      it { expect(loaded).not_to be_finished }
+      it { expect(loaded.env).to be_nil }
+
+      it 'can still register callbacks and be finished' do
+        called = false
+        loaded.on_complete { called = true }
+        loaded.finish(env)
+
+        expect(called).to be(true)
+        expect(loaded.status).to eq(404)
+      end
+    end
+  end
+
+  describe '#finish' do
+    subject { Faraday::Response.new }
+
+    it 'releases callbacks once they have been called' do
+      subject.on_complete {}
+      expect(subject.instance_variable_get(:@on_complete_callbacks).size).to eq(1)
+
+      subject.finish(env)
+
+      expect(subject.instance_variable_get(:@on_complete_callbacks)).to be_empty
+    end
+
+    it 'calls every callback with the finished env' do
+      received = []
+      subject.on_complete { |e| received << [:first, e] }
+      subject.on_complete { |e| received << [:second, e] }
+
+      subject.finish(env)
+
+      expect(received).to eq([[:first, subject.env], [:second, subject.env]])
+    end
   end
 
   describe '#on_complete' do
