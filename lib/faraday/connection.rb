@@ -496,8 +496,6 @@ module Faraday
 
     # Creates a duplicate of this Faraday::Connection.
     #
-    # @api private
-    #
     # @return [Faraday::Connection]
     def dup
       self.class.new(build_exclusive_url,
