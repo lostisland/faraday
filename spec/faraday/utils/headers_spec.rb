@@ -23,32 +23,46 @@ RSpec.describe Faraday::Utils::Headers do
     it { is_expected.to include('content-type') }
   end
 
-  describe 'KeyMap' do
+  describe 'header name normalization' do
     let(:key_map) { described_class::KeyMap }
+    let(:string_name) { 'X-Faraday-Spec-Uncached' }
+    let(:symbol_name) { :x_faraday_spec_cached }
 
-    it 'does not cache string header names' do
-      name = "X-Uncached-#{SecureRandom.hex(4)}"
-
-      expect(key_map[name]).to eq(name)
-      expect(key_map).not_to have_key(name)
+    around do |example|
+      key_map.delete(string_name)
+      key_map.delete(symbol_name)
+      example.run
+    ensure
+      key_map.delete(string_name)
+      key_map.delete(symbol_name)
     end
 
-    it 'converts and caches symbol header names' do
-      name = :"x_cached_#{SecureRandom.hex(4)}"
+    it 'preserves the original casing of string header names' do
+      headers = described_class.new(string_name => 'value')
 
-      expect(key_map[name]).to match(/\AX-Cached-[0-9a-f]{8}\z/i)
-      expect(key_map).to have_key(name)
+      expect(headers.keys).to eq([string_name])
+      expect(headers['x-faraday-spec-uncached']).to eq('value')
+    end
+
+    it 'does not retain string header names in the global KeyMap' do
+      headers = described_class.new
+      headers[string_name] = 'value'
+
+      expect(key_map).not_to have_key(string_name)
+    end
+
+    it 'converts symbol header names' do
+      headers = described_class.new
+      headers[symbol_name] = 'value'
+
+      expect(headers.keys).to eq(['X-Faraday-Spec-Cached'])
     end
 
     it 'keeps using the special-cased names' do
-      expect(key_map[:etag]).to eq('ETag')
-    end
+      headers = described_class.new
+      headers[:etag] = 'abc'
 
-    it 'preserves the original casing of string header names in Headers' do
-      headers = described_class.new('X-Mixed-Case' => 'value')
-
-      expect(headers.keys).to eq(['X-Mixed-Case'])
-      expect(headers['x-mixed-case']).to eq('value')
+      expect(headers.keys).to eq(['ETag'])
     end
   end
 
