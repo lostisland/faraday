@@ -6,6 +6,39 @@ RSpec.describe Faraday::Options do
     options c: SubOptions
   end
 
+  describe '.memoized' do
+    let(:calls) { [] }
+
+    def options_returning(value)
+      computed = calls
+      Faraday::Options.new(:flag) do
+        memoized(:flag) do
+          computed << :flag
+          value
+        end
+      end.new
+    end
+
+    [true, 'computed', false].each do |value|
+      it "computes #{value.inspect} only once" do
+        options = options_returning(value)
+
+        expect(options.flag).to eq(value)
+        expect(options.flag).to eq(value)
+        expect(options[:flag]).to eq(value)
+        expect(calls.size).to eq(1)
+      end
+    end
+
+    it 'does not recompute an explicitly set false value' do
+      options = options_returning('computed')
+      options.flag = false
+
+      expect(options.flag).to be(false)
+      expect(calls).to be_empty
+    end
+  end
+
   describe '#merge' do
     it 'merges options with hashes' do
       options = ParentOptions.new(1)
