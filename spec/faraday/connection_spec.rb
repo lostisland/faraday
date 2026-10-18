@@ -119,6 +119,15 @@ RSpec.describe Faraday::Connection do
       it { expect(subject.headers['Authorization']).to eq('Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==') }
     end
 
+    context 'with basic_auth in url containing literal plus signs' do
+      let(:url) { 'http://Ala+ddin:open+sesame%2B@httpbingo.org/fish' }
+
+      it 'does not decode plus signs as spaces' do
+        expected = Faraday::Utils.basic_header_from('Ala+ddin', 'open+sesame+')
+        expect(subject.headers['Authorization']).to eq(expected)
+      end
+    end
+
     context 'with custom headers' do
       let(:options) { { headers: { user_agent: 'Faraday' } } }
 
@@ -692,6 +701,34 @@ RSpec.describe Faraday::Connection do
       it { expect(conn.params.key?('b')).to be_falsey }
       it { expect(subject.options[:timeout]).to eq(5) }
       it { expect(conn.options[:open_timeout]).to be_nil }
+    end
+
+    context 'with a manually set proxy' do
+      it 'preserves the proxy over env http_proxy' do
+        with_env 'http_proxy' => 'http://env-proxy.com' do
+          conn.proxy = 'http://manual-proxy.com'
+
+          expect(subject.proxy.host).to eq('manual-proxy.com')
+          expect(subject.proxy_for_request(url).host).to eq('manual-proxy.com')
+        end
+      end
+
+      it 'preserves an explicitly disabled proxy' do
+        with_env 'http_proxy' => 'http://env-proxy.com' do
+          conn.proxy = nil
+
+          expect(subject.proxy).to be_nil
+          expect(subject.proxy_for_request(url)).to be_nil
+        end
+      end
+    end
+
+    context 'without a manually set proxy' do
+      it 'uses env http_proxy' do
+        with_env 'http_proxy' => 'http://env-proxy.com' do
+          expect(subject.proxy_for_request(url).host).to eq('env-proxy.com')
+        end
+      end
     end
 
     context 'after a request' do
