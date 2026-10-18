@@ -1,77 +1,61 @@
 #!/bin/bash
-# Run Faraday integration tests using act (GitHub Actions locally)
+# Run Faraday integration tests locally with Docker.
 #
-# This script runs the integration tests workflow exactly as it runs in CI,
-# using service containers for httpbin and other dependencies.
+# This starts the service containers declared in
+# .github/workflows/integration-tests.yml on a private network and runs the
+# specs in a ruby container next to them, like the workflow does. (act cannot
+# be used because it doesn't support the `command` key of service containers.)
+#
+# Usage: bin/integration-tests [rspec arguments, default: spec/integration]
+# Keep the service definitions below in sync with the workflow.
 
-set -e
+set -euo pipefail
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+cd "$(dirname "$0")/.."
 
-echo "Faraday Integration Tests Runner"
-echo "================================="
-echo
-
-# Check if act is installed
-if ! command -v act &> /dev/null; then
-  echo -e "${YELLOW}act is not installed${NC}"
-  echo
-  echo "act is required to run integration tests locally."
-  echo "See: https://github.com/nektos/act"
-  echo
-
-  # Check if Homebrew is available (macOS/Linux)
-  if command -v brew &> /dev/null; then
-    echo -e "${YELLOW}Would you like to install act via Homebrew? (y/n)${NC}"
-    read -r response
-    if [[ "$response" =~ ^[Yy]$ ]]; then
-      echo "Installing act..."
-      brew install act
-      echo -e "${GREEN}✓ act installed successfully${NC}"
-      echo
-    else
-      echo "Please install act manually:"
-      echo "  macOS: brew install act"
-      echo "  Linux: See https://github.com/nektos/act#installation"
-      exit 1
-    fi
-  else
-    echo -e "${RED}Homebrew not found.${NC}"
-    echo "Please install act manually: https://github.com/nektos/act#installation"
-    exit 1
-  fi
+if ! command -v docker &> /dev/null; then
+  echo "Docker is required to run the integration tests: https://docs.docker.com/get-docker/"
+  exit 1
 fi
 
-echo "Running integration tests with act..."
-echo
+network="faraday-integration-$$"
+services=(httpbin proxy auth-proxy)
 
-# Run act with recommended settings for Apple Silicon
-# - Use catthehacker/ubuntu:act-latest for better compatibility
-# - Force linux/amd64 architecture (M-series chip compatibility)
-act -j integration \
-  -W .github/workflows/integration-tests.yml \
-  -P ubuntu-latest=catthehacker/ubuntu:act-latest \
-  --container-architecture linux/amd64 \
-  "$@"
+cleanup() {
+  for service in "${services[@]}"; do
+    docker rm -f "$service-$$" > /dev/null 2>&1 || true
+  done
+  docker network rm "$network" > /dev/null 2>&1 || true
+}
+trap cleanup EXIT
 
-exit_code=$?
+start() {
+  local name=$1
+  shift
+  docker run -d --rm --name "$name-$$" --network "$network" --network-alias "$name" "$@" > /dev/null
+}
 
-if [ $exit_code -eq 0 ]; then
-  echo
-  echo -e "${GREEN}✓ Integration tests passed!${NC}"
-else
-  echo
-  echo -e "${RED}✗ Integration tests failed${NC}"
-  echo
-  echo "To run specific tests:"
-  echo "  HTTPBIN_URL=http://localhost bundle exec rspec spec/integration/options/request_options_integration_spec.rb"
-  echo
-  echo "To start httpbin manually:"
-  echo "  docker run --rm -p 80:80 kennethreitz/httpbin"
-fi
+echo "Starting service containers..."
+docker network create "$network" > /dev/null
+start httpbin kennethreitz/httpbin:latest
+start proxy mitmproxy/mitmproxy:12 mitmdump --set 'ignore_hosts=.*'
+start auth-proxy mitmproxy/mitmproxy:12 mitmdump --set 'ignore_hosts=.*' --set 'proxyauth=user:p@ss word'
 
-exit $exit_code
+echo "Running integration tests..."
+docker run --rm --network "$network" \
+  -v "$PWD":/work -w /work \
+  -e COVERAGE=false \
+  -e HTTPBIN_URL=http://httpbin \
+  -e PROXY_URL=http://proxy:8080 \
+  -e AUTH_PROXY_URL=http://auth-proxy:8080 \
+  ruby:3.4 bash -c '
+    set -e
+    export BUNDLE_PATH=/tmp/bundle
+    bundle install --quiet
+    # The services need a moment to start up (httpbin and mitmdump are Python apps)
+    retry="--retry 30 --retry-delay 2 --retry-connrefused"
+    curl -sf $retry http://httpbin/get > /dev/null
+    curl -sf $retry --proxy http://proxy:8080 http://httpbin/get > /dev/null
+    curl -sf $retry --proxy http://auth-proxy:8080 --proxy-user "user:p@ss word" http://httpbin/get > /dev/null
+    exec bundle exec rspec "${@:-spec/integration}" --format documentation
+  ' bash "$@"

@@ -34,11 +34,67 @@ our GitHub Actions Workflow to block your contribution.
 
 ```bash
 # Run unit tests and check code coverage
-$ bundle exec rspec
+# (this excludes the integration tests, which need service containers)
+$ bundle exec rake
 
 # Check code style
 $ bundle exec rubocop
 ```
+
+
+### Integration Tests
+
+The specs in `spec/integration/` exercise Faraday's options classes (`RequestOptions`, `SSLOptions`,
+`ProxyOptions`, `ConnectionOptions` and `Env`) with real HTTP requests, so that refactorings of the
+options can be checked for backward compatibility. They are not part of `bundle exec rake`, and run in
+their own [GitHub Actions workflow](workflows/integration-tests.yml) on every pull request.
+
+The workflow runs inside a `ruby` container next to a few service containers, which are reachable by name:
+
+| Service      | URL                    | Used for                                         |
+|--------------|------------------------|--------------------------------------------------|
+| `httpbin`    | `http://httpbin`       | Echo, delay, status and streaming endpoints       |
+| `proxy`      | `http://proxy:8080`    | Forward proxy (mitmproxy)                         |
+| `auth-proxy` | `http://auth-proxy:8080` | Forward proxy requiring the `user` / `p@ss word` credentials |
+
+A service container cannot be built from the repository, so what needs per-run configuration runs in
+the rspec process instead: `spec/support/integration/` generates a throwaway CA and certificates in
+memory (`TestPKI`) and serves HTTPS with them (`TLSServer`). Never commit certificates or keys.
+
+The URLs can be overridden with the `HTTPBIN_URL`, `PROXY_URL` and `AUTH_PROXY_URL` environment variables.
+
+#### Running them locally
+
+The simplest way is `bin/integration-tests` (which needs Docker). It starts the same service containers as the
+workflow on a private network, runs the specs in a `ruby` container next to them and cleans up afterwards.
+It accepts rspec arguments, e.g. `bin/integration-tests spec/integration/options/env_integration_spec.rb`.
+
+```bash
+$ bin/integration-tests
+```
+
+[act](https://github.com/nektos/act) can't run the workflow because it doesn't support the `command` key of service containers.
+
+The specs that only need httpbin (everything except `proxy_options_integration_spec.rb`) can also run
+directly against a local httpbin:
+
+```bash
+$ docker run --rm -p 8099:80 kennethreitz/httpbin
+$ HTTPBIN_URL=http://localhost:8099 COVERAGE=false bundle exec rspec spec/integration
+```
+
+`COVERAGE=false` keeps SimpleCov from enforcing the coverage thresholds, which make no sense for a subset of specs.
+
+#### Adding integration tests
+
+1. Add a `spec/integration/options/<name>_integration_spec.rb` file with `type: :integration`
+   (files in `spec/integration/` are tagged automatically, which also disables WebMock for them).
+2. Use the helpers from `spec/support/integration_helper.rb`, e.g. `httpbin_connection(options)`.
+3. Test behavior through real requests and assert on what the server saw (httpbin echoes the request),
+   not on Faraday internals. Each example must be independent of the others.
+4. If a scenario needs a server that can't be an off-the-shelf service container, add a small helper
+   under `spec/support/integration/` and start/stop it from the spec (see `ssl_options_integration_spec.rb`).
+5. If you add or change a service container, update the readiness checks in the workflow as well.
 
 
 ### New Features
