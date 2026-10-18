@@ -20,7 +20,7 @@ module Faraday
       }.freeze
       # rubocop:enable Naming/ConstantName
 
-      DEFAULT_OPTIONS = { include_request: true, allowed_statuses: [] }.freeze
+      DEFAULT_OPTIONS = { include_request: true, allowed_statuses: [].freeze }.freeze
 
       def on_complete(env)
         return if Array(options[:allowed_statuses]).include?(env[:status])
