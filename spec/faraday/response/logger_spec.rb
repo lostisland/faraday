@@ -27,6 +27,7 @@ RSpec.describe Faraday::Response::Logger do
         stubs.get('/filtered_params') { [200, { 'Content-Type' => 'text/html' }, 'params response'] }
         stubs.get('/filtered_url') { [200, { 'Content-Type' => 'text/html' }, 'url response'] }
         stubs.get('/connection_failed') { raise Faraday::ConnectionFailed, 'Failed to open TCP connection' }
+        stubs.get('/filtered_error') { raise Faraday::ConnectionFailed, 'Failed to open TCP connection, password=hunter2' }
       end
     end
   end
@@ -264,6 +265,12 @@ RSpec.describe Faraday::Response::Logger do
     it 'logs error message' do
       expect { conn.get '/connection_failed' }.to raise_error(Faraday::ConnectionFailed)
       expect(string_io.string).to match(%(Failed to open TCP connection))
+    end
+
+    it 'applies filters to the error message' do
+      expect { conn.get '/filtered_error' }.to raise_error(Faraday::ConnectionFailed)
+      expect(string_io.string).to include('password=[HIDDEN]')
+      expect(string_io.string).not_to include('hunter2')
     end
   end
 
