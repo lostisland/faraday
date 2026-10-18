@@ -781,6 +781,27 @@ RSpec.describe Faraday::Connection do
     end
   end
 
+  describe '#support_parallel?' do
+    let(:parallel_adapter) do
+      Class.new(Faraday::Adapter) { self.supports_parallel = true }
+    end
+
+    it 'checks the connection adapter when called without arguments' do
+      conn = Faraday.new { |f| f.adapter parallel_adapter }
+      expect(conn.support_parallel?).to be(true)
+    end
+
+    it 'returns false without arguments when the connection adapter is not parallel-capable' do
+      conn = Faraday.new { |f| f.adapter :test }
+      expect(conn.support_parallel?).to be(false)
+    end
+
+    it 'checks the given adapter class' do
+      expect(conn.support_parallel?(parallel_adapter)).to be(true)
+      expect(conn.support_parallel?(Faraday::Adapter::Test)).to be(false)
+    end
+  end
+
   describe '#respond_to?' do
     it { expect(Faraday.respond_to?(:get)).to be_truthy }
     it { expect(Faraday.respond_to?(:post)).to be_truthy }
