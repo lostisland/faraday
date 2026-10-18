@@ -23,6 +23,35 @@ RSpec.describe Faraday::Utils::Headers do
     it { is_expected.to include('content-type') }
   end
 
+  describe 'KeyMap' do
+    let(:key_map) { described_class::KeyMap }
+
+    it 'does not cache string header names' do
+      name = "X-Uncached-#{SecureRandom.hex(4)}"
+
+      expect(key_map[name]).to eq(name)
+      expect(key_map).not_to have_key(name)
+    end
+
+    it 'converts and caches symbol header names' do
+      name = :"x_cached_#{SecureRandom.hex(4)}"
+
+      expect(key_map[name]).to match(/\AX-Cached-[0-9a-f]{8}\z/i)
+      expect(key_map).to have_key(name)
+    end
+
+    it 'keeps using the special-cased names' do
+      expect(key_map[:etag]).to eq('ETag')
+    end
+
+    it 'preserves the original casing of string header names in Headers' do
+      headers = described_class.new('X-Mixed-Case' => 'value')
+
+      expect(headers.keys).to eq(['X-Mixed-Case'])
+      expect(headers['x-mixed-case']).to eq('value')
+    end
+  end
+
   describe '#fetch' do
     before { subject['Content-Type'] = 'application/json' }
 
