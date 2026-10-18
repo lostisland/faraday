@@ -162,7 +162,7 @@ module Faraday
       end
 
       if depth.positive? && !hash.empty? && hash.keys.all? { |k| k =~ /^\d+$/ }
-        hash.sort.map(&:last)
+        hash.sort_by { |key, _| key.to_i }.map(&:last)
       else
         hash
       end

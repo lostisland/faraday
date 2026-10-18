@@ -310,6 +310,40 @@ RSpec.describe Faraday::Options do
         it 'needs a default if key is missing' do
           expect { subject.fetch(:sub_a) }.to raise_error(Faraday::Options.fetch_error_class)
         end
+
+        it 'keeps the installed default on repeated fetches' do
+          expect(subject.fetch(:sub_a, 1)).to eq(1)
+          expect(subject.fetch(:sub_a, 2)).to eq(1)
+        end
+
+        it 'reads the current value after a default is replaced' do
+          subject.fetch(:sub_a, 1)
+          subject.sub_a = 3
+
+          expect(subject.fetch(:sub_a, 2)).to eq(3)
+        end
+
+        it 'installs a new default after deletion or clearing' do
+          subject.fetch(:sub_a, 1)
+          subject.delete(:sub_a)
+          expect(subject.fetch(:sub_a, 2)).to eq(2)
+
+          subject.clear
+          expect(subject.fetch(:sub_a, 3)).to eq(3)
+        end
+
+        it 'preserves a false value on later fetches' do
+          subject.fetch(:sub_a, false)
+
+          expect(subject.fetch(:sub_a, true) { :unused }).to be(false)
+        end
+
+        it 'uses string keys and evaluates a block only for an empty value' do
+          expect(subject.fetch('sub_a') { |key| "#{key} default" }).to eq('sub_a default')
+          subject.sub_a = 'changed'
+
+          expect(subject.fetch('sub_a') { |key| raise "unexpected default for #{key}" }).to eq('changed')
+        end
       end
 
       context 'when the fetched key has a value' do
