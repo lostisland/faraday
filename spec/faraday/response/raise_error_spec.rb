@@ -264,6 +264,27 @@ RSpec.describe Faraday::Response::RaiseError do
     end
   end
 
+  describe 'DEFAULT_OPTIONS: allowed_statuses' do
+    it 'is frozen so it cannot be mutated across connections' do
+      expect(described_class::DEFAULT_OPTIONS[:allowed_statuses]).to be_frozen
+    end
+
+    it 'allows no status codes by default' do
+      expect(described_class::DEFAULT_OPTIONS[:allowed_statuses]).to be_empty
+    end
+
+    it 'still raises errors when the default is used' do
+      conn = Faraday.new do |b|
+        b.response :raise_error
+        b.adapter :test do |stub|
+          stub.get('not-found') { [404, {}, 'nope'] }
+        end
+      end
+
+      expect { conn.get('not-found') }.to raise_error(Faraday::ResourceNotFound)
+    end
+  end
+
   describe 'allowing certain status codes' do
     let(:conn) do
       Faraday.new do |b|
