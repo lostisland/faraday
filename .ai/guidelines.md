@@ -26,8 +26,18 @@ These guidelines ensure all AI agents (Copilot, Claude, Cursor, etc.) contribute
 ## Testing
 - All code must be tested with RSpec. Use shared examples for adapters/middleware where applicable (see `spec/support`).
 - When testing middleware, use doubles for `app` and verify correct invocation of hooks.
-- Use HTTP test helpers and stubs, not real network calls.
+- Use HTTP test helpers and stubs, not real network calls (the only exception is `spec/integration/`, see below).
 - Follow the project's test organization and naming conventions.
+- Run the unit tests with `bundle exec rake`: it excludes `spec/integration/`, which needs service containers.
+
+### Integration Tests
+Specs under `spec/integration/` exercise the Options classes (`RequestOptions`, `SSLOptions`, `ProxyOptions`, `ConnectionOptions`, `Env`) with real HTTP requests, to catch behavior changes when the options are refactored (see `docs/options-detach-plan.md`). Details for humans are in `.github/CONTRIBUTING.md`.
+- One file per class in `spec/integration/options/<name>_integration_spec.rb`. Files in `spec/integration/` are automatically tagged `type: :integration`, which includes `Faraday::IntegrationHelpers` and disables WebMock.
+- Run them with `bin/integration-tests [rspec args]` (needs Docker), which starts the same service containers as `.github/workflows/integration-tests.yml`. Specs that only need httpbin can run with `HTTPBIN_URL=... COVERAGE=false bundle exec rspec spec/integration`. `act` cannot run the workflow.
+- Off-the-shelf servers run as **service containers** in the workflow's container job (`httpbin`, and the mitmproxy forward proxies `proxy` and `auth-proxy`), reached by service name through `HTTPBIN_URL`, `PROXY_URL` and `AUTH_PROXY_URL` (defined in `spec/support/integration_helper.rb`). Service containers can't be built from the repository, so avoid scenarios needing custom images. When adding or changing one, also update the readiness checks in the workflow and `bin/integration-tests`.
+- Anything needing per-run configuration is an in-process helper in `spec/support/integration/` (e.g. `TestPKI` and `TLSServer` for TLS and mutual TLS). Start it in `before(:context)` and stop it in `after(:context)`. Do not implement servers we would have to maintain (such as a proxy) when a service container can do the job, and never commit certificates or keys.
+- Assert on what the server saw (httpbin echoes requests; `TLSServer` echoes the client certificate and address), through real requests rather than Faraday internals. Examples must be independent and idempotent, and run within the 30s timeout the helper applies.
+- Unit tests stay in `spec/faraday/`; integration tests complement them and must not replace them.
 
 ## Documentation
 - All new public APIs must be documented with YARD-style comments.
