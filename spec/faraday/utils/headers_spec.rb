@@ -23,6 +23,49 @@ RSpec.describe Faraday::Utils::Headers do
     it { is_expected.to include('content-type') }
   end
 
+  describe 'header name normalization' do
+    let(:key_map) { described_class::KeyMap }
+    let(:string_name) { 'X-Faraday-Spec-Uncached' }
+    let(:symbol_name) { :x_faraday_spec_cached }
+
+    around do |example|
+      key_map.delete(string_name)
+      key_map.delete(symbol_name)
+      example.run
+    ensure
+      key_map.delete(string_name)
+      key_map.delete(symbol_name)
+    end
+
+    it 'preserves the original casing of string header names' do
+      headers = described_class.new(string_name => 'value')
+
+      expect(headers.keys).to eq([string_name])
+      expect(headers['x-faraday-spec-uncached']).to eq('value')
+    end
+
+    it 'does not retain string header names in the global KeyMap' do
+      headers = described_class.new
+      headers[string_name] = 'value'
+
+      expect(key_map).not_to have_key(string_name)
+    end
+
+    it 'converts symbol header names' do
+      headers = described_class.new
+      headers[symbol_name] = 'value'
+
+      expect(headers.keys).to eq(['X-Faraday-Spec-Cached'])
+    end
+
+    it 'keeps using the special-cased names' do
+      headers = described_class.new
+      headers[:etag] = 'abc'
+
+      expect(headers.keys).to eq(['ETag'])
+    end
+  end
+
   describe '#fetch' do
     before { subject['Content-Type'] = 'application/json' }
 
