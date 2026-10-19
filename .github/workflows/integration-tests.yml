@@ -12,10 +12,22 @@ permissions:
 jobs:
   integration:
     runs-on: ubuntu-latest
+    name: integration ${{ matrix.ruby }}
+
+    # Same Ruby versions as the build job of ci.yml. Keep them in sync.
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [ '3.0', '3.1', '3.2', '3.3', '3.4', '4.0' ]
+        experimental: [false]
+        include:
+          - ruby: head
+            experimental: true
 
     # Run job in container for simplified networking with service containers
+    # (there is no official `ruby:head` image, rubylang/ruby:master is the nightly build)
     container:
-      image: ruby:3.4
+      image: ${{ matrix.ruby == 'head' && 'rubylang/ruby:master' || format('ruby:{0}', matrix.ruby) }}
       options: --user root
 
     # Service containers to run alongside the job.
@@ -48,7 +60,7 @@ jobs:
           apt-get install -y --no-install-recommends git
 
       # Install dependencies
-      # Note: ruby:3.4 container already has Ruby and bundler installed
+      # Note: the ruby container already has Ruby and bundler installed
       # We skip ruby/setup-ruby because it requires Node.js (not in ruby image)
       # and is unnecessary when running in a Ruby container
       - name: Install dependencies
@@ -82,6 +94,7 @@ jobs:
           wait_for auth-proxy --proxy http://auth-proxy:8080 --proxy-user 'user:p@ss word' http://httpbin/get
 
       - name: Run integration tests
+        continue-on-error: ${{ matrix.experimental }}
         run: bundle exec rspec spec/integration --format documentation
         env:
           # Service URLs for integration tests

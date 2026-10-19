@@ -6,7 +6,7 @@
 # specs in a ruby container next to them, like the workflow does. (act cannot
 # be used because it doesn't support the `command` key of service containers.)
 #
-# Usage: bin/integration-tests [rspec arguments, default: spec/integration]
+# Usage: [RUBY_VERSION=4.0] bin/integration-tests [rspec arguments, default: spec/integration]
 # Keep the service definitions below in sync with the workflow.
 
 set -euo pipefail
@@ -43,13 +43,16 @@ start auth-proxy mitmproxy/mitmproxy:12 mitmdump --set 'ignore_hosts=.*' --set '
 
 echo "Running integration tests..."
 docker run --rm --network "$network" \
-  -v "$PWD":/work -w /work \
+  -v "$PWD":/src:ro -w /work \
   -e COVERAGE=false \
   -e HTTPBIN_URL=http://httpbin \
   -e PROXY_URL=http://proxy:8080 \
   -e AUTH_PROXY_URL=http://auth-proxy:8080 \
-  ruby:3.4 bash -c '
+  "ruby:${RUBY_VERSION:-4.0}" bash -c '
     set -e
+    # Work on a copy without the host Gemfile.lock, which may need another bundler or Ruby
+    cp -a /src/. /work/
+    rm -f Gemfile.lock
     export BUNDLE_PATH=/tmp/bundle
     bundle install --quiet
     # The services need a moment to start up (httpbin and mitmdump are Python apps)
