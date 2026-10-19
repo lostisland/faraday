@@ -51,7 +51,7 @@ jobs:
         command: mitmdump --set ignore_hosts=.* --set "proxyauth=user:p@ss word"
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       # Container jobs need git installed for checkout to work properly.
       # The official ruby images already have it (and the apt repositories of
