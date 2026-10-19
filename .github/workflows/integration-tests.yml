@@ -55,13 +55,13 @@ jobs:
 
       # Container jobs need git installed for checkout to work properly.
       # The official ruby images already have it (and the apt repositories of
-      # the old ones, e.g. Ruby 3.0, are gone); the nightly image has neither
+      # the old ones, e.g. Ruby 3.0, are gone); the nightly image has neither curl,
       # git nor a compiler for native extensions.
       - name: Install system dependencies
         if: matrix.ruby == 'head'
         run: |
           apt-get update -qq
-          apt-get install -y --no-install-recommends git build-essential
+          apt-get install -y --no-install-recommends git curl ca-certificates build-essential
 
       # Install dependencies
       # Note: the ruby container already has Ruby and bundler installed
