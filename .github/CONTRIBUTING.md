@@ -49,7 +49,7 @@ The specs in `spec/integration/` exercise Faraday's options classes (`RequestOpt
 options can be checked for backward compatibility. They are not part of `bundle exec rake`, and run in
 their own [GitHub Actions workflow](workflows/integration-tests.yml) on every pull request.
 
-The workflow runs inside a `ruby` container next to a few service containers, which are reachable by name:
+The workflow runs on the same Ruby versions as the main CI, each inside a `ruby` container next to a few service containers, which are reachable by name:
 
 | Service      | URL                    | Used for                                         |
 |--------------|------------------------|--------------------------------------------------|
@@ -67,7 +67,7 @@ The URLs can be overridden with the `HTTPBIN_URL`, `PROXY_URL` and `AUTH_PROXY_U
 
 The simplest way is `bin/integration-tests` (which needs Docker). It starts the same service containers as the
 workflow on a private network, runs the specs in a `ruby` container next to them and cleans up afterwards.
-It accepts rspec arguments, e.g. `bin/integration-tests spec/integration/options/env_integration_spec.rb`.
+It accepts rspec arguments, e.g. `bin/integration-tests spec/integration/options/env_integration_spec.rb`, and runs on Ruby 4.0 unless `RUBY_VERSION` is set (e.g. `RUBY_VERSION=3.0 bin/integration-tests`).
 
 ```bash
 $ bin/integration-tests
