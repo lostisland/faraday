@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Faraday::RequestOptions, type: :integration do
+RSpec.describe Faraday::RequestOptions do
   describe 'timeout option' do
     it 'raises TimeoutError when request exceeds timeout' do
       conn = httpbin_connection(request: { timeout: 1 })

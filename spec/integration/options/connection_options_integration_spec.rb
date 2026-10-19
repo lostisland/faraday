@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Faraday::ConnectionOptions, type: :integration do
+RSpec.describe Faraday::ConnectionOptions do
   # Generating RSA keys is slow, so the PKI and HTTPS server are shared by the group.
   before(:context) do
     @pki = Faraday::IntegrationHelpers::TestPKI.new

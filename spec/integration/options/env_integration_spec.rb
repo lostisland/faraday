@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Faraday::Env, type: :integration do
+RSpec.describe Faraday::Env do
   # Middleware that hands the env to a block when the request goes out and when
   # the response comes back.
   def env_middleware(on_request: nil, on_complete: nil)
