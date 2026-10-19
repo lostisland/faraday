@@ -3,7 +3,7 @@
 # The proxies run as service containers (see .github/workflows/integration-tests.yml).
 # Specs check that a request went through a proxy by the address its target saw:
 # httpbin echoes it as `origin`, TLSServer as `remote_ip`.
-RSpec.describe Faraday::ProxyOptions, type: :integration do
+RSpec.describe Faraday::ProxyOptions do
   # Generating RSA keys is slow, so the PKI and HTTPS server are shared by the group.
   # The HTTPS server is addressed by the hostname of the job container, which the
   # proxies can reach. It is not a loopback address either, which matters because

@@ -87,8 +87,9 @@ $ HTTPBIN_URL=http://localhost:8099 COVERAGE=false bundle exec rspec spec/integr
 
 #### Adding integration tests
 
-1. Add a `spec/integration/options/<name>_integration_spec.rb` file with `type: :integration`
-   (files in `spec/integration/` are tagged automatically, which also disables WebMock for them).
+1. Add a `spec/integration/options/<name>_integration_spec.rb` file. Don't add
+   `type: :integration` yourself: files in `spec/integration/` are tagged automatically from their location,
+   which also includes the helpers and disables WebMock for them.
 2. Use the helpers from `spec/support/integration_helper.rb`, e.g. `httpbin_connection(options)`.
 3. Test behavior through real requests and assert on what the server saw (httpbin echoes the request),
    not on Faraday internals. Each example must be independent of the others.
