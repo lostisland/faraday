@@ -300,7 +300,10 @@ module Faraday
       end
     end
 
-    # Determine if this Faraday::Connection can make parallel requests.
+    # Determine if this Faraday::Connection is currently making parallel
+    # requests, i.e. if it is called inside an {#in_parallel} block.
+    # Use {#support_parallel?} to check if the adapter can make parallel
+    # requests at all.
     #
     # @return [Boolean]
     def in_parallel?
@@ -558,7 +561,13 @@ module Faraday
       end
     end
 
-    def support_parallel?(adapter)
+    # Determine if an adapter can make parallel requests.
+    #
+    # @param adapter [Class, nil] the adapter class to check. Defaults to the
+    #                adapter of this Faraday::Connection.
+    #
+    # @return [Boolean]
+    def support_parallel?(adapter = @builder.adapter&.klass)
       adapter.respond_to?(:supports_parallel?) && adapter&.supports_parallel?
     end
   end
