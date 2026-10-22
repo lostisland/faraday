@@ -1,0 +1,112 @@
+name: Integration Tests
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    name: integration ${{ matrix.ruby }}
+
+    # Same Ruby versions as the build job of ci.yml. Keep them in sync.
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [ '3.0', '3.1', '3.2', '3.3', '3.4', '4.0' ]
+        experimental: [false]
+        include:
+          - ruby: head
+            experimental: true
+
+    # Run job in container for simplified networking with service containers
+    # (there is no official `ruby:head` image, rubylang/ruby:master is the nightly build)
+    container:
+      image: ${{ matrix.ruby == 'head' && 'rubylang/ruby:master' || format('ruby:{0}', matrix.ruby) }}
+      options: --user root
+
+    # Service containers to run alongside the job.
+    # The HTTPS server used by the SSLOptions and ProxyOptions specs runs inside
+    # the rspec process (see spec/support/integration/), because its certificates
+    # are generated on each run and service containers start before the checkout.
+    services:
+      httpbin:
+        image: kennethreitz/httpbin:latest
+
+      # Forward proxies for the ProxyOptions specs. ignore_hosts makes mitmdump
+      # tunnel CONNECT requests instead of intercepting TLS, so clients verify
+      # the certificate of the target.
+      proxy:
+        image: mitmproxy/mitmproxy:12
+        command: mitmdump --set ignore_hosts=.*
+
+      # The credentials must match spec/integration/options/proxy_options_integration_spec.rb
+      auth-proxy:
+        image: mitmproxy/mitmproxy:12
+        command: mitmdump --set ignore_hosts=.* --set "proxyauth=user:p@ss word"
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # Container jobs need git installed for checkout to work properly.
+      # The official ruby images already have it (and the apt repositories of
+      # the old ones, e.g. Ruby 3.0, are gone); the nightly image has neither curl,
+      # git nor a compiler for native extensions.
+      - name: Install system dependencies
+        if: matrix.ruby == 'head'
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends git curl ca-certificates build-essential
+
+      # Install dependencies
+      # Note: the ruby container already has Ruby and bundler installed
+      # We skip ruby/setup-ruby because it requires Node.js (not in ruby image)
+      # and is unnecessary when running in a Ruby container
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
+
+      # Verify services are accessible
+      - name: Verify services
+        run: |
+          # Give the services a moment to start up (httpbin and mitmdump are
+          # Python apps, and the images have no health checks)
+          wait_for() {
+            name=$1
+            shift
+            echo "Waiting for $name to be ready..."
+            attempt=1
+            max_attempts=30
+            while [ $attempt -le $max_attempts ]; do
+              if curl -sf "$@" > /dev/null 2>&1; then
+                echo "✓ $name is ready (attempt $attempt/$max_attempts)"
+                return 0
+              fi
+              echo "Attempt $attempt/$max_attempts: $name not ready yet, waiting..."
+              sleep 2
+              attempt=$((attempt + 1))
+            done
+            echo "✗ $name failed to become ready after $max_attempts attempts"
+            return 1
+          }
+          wait_for httpbin http://httpbin/get
+          wait_for proxy --proxy http://proxy:8080 http://httpbin/get
+          wait_for auth-proxy --proxy http://auth-proxy:8080 --proxy-user 'user:p@ss word' http://httpbin/get
+
+      - name: Run integration tests
+        continue-on-error: ${{ matrix.experimental }}
+        run: bundle exec rspec spec/integration --format documentation
+        env:
+          # Service URLs for integration tests
+          # Note: kennethreitz/httpbin runs on port 80 (default HTTP)
+          HTTPBIN_URL: http://httpbin
+          # Note: mitmdump listens on port 8080
+          PROXY_URL: http://proxy:8080
+          AUTH_PROXY_URL: http://auth-proxy:8080
+          # Disable SimpleCov for integration tests
+          # Integration tests exercise real HTTP behavior, not lib/ code coverage
+          COVERAGE: 'false'

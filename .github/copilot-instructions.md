@@ -29,7 +29,7 @@ As GitHub Copilot working on Faraday, you must:
 
 ### Code Quality
 - Follow RuboCop style guide (`.rubocop.yml`)
-- Run tests: `bundle exec rspec`
+- Run tests: `bundle exec rake` (integration specs in `spec/integration/` run separately with `bin/integration-tests`)
 - Check style: `bundle exec rubocop`
 - Use inclusive language (see `.github/CONTRIBUTING.md`)
 
