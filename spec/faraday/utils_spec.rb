@@ -25,6 +25,73 @@ RSpec.describe Faraday::Utils do
       expect(Faraday::Utils.escape(str)).to eq('%2432%2C000.00')
     end
 
+    describe '.escape' do
+      def escape_with_regexp(str, space_encoding = '+')
+        str.to_s.gsub(Faraday::Utils::ESCAPE_RE) do |match|
+          "%#{match.unpack('H2' * match.bytesize).join('%').upcase}"
+        end.gsub(' ', space_encoding)
+      end
+
+      after { Faraday::Utils.default_space_encoding = nil }
+
+      it 'leaves unreserved characters alone' do
+        expect(Faraday::Utils.escape('azAZ09-._~')).to eq('azAZ09-._~')
+      end
+
+      it 'escapes reserved characters with uppercase hex' do
+        expect(Faraday::Utils.escape("!*'();:@&=+$,/?#[]%")).to eq('%21%2A%27%28%29%3B%3A%40%26%3D%2B%24%2C%2F%3F%23%5B%5D%25')
+      end
+
+      it 'escapes every byte like the regexp-based implementation' do
+        (0..255).each do |byte|
+          [[byte].pack('C').force_encoding(Encoding::UTF_8), [byte].pack('C').b].select(&:valid_encoding?).each do |str|
+            expect(Faraday::Utils.escape(str)).to eq(escape_with_regexp(str))
+          end
+        end
+      end
+
+      it 'escapes multibyte characters byte by byte' do
+        expect(Faraday::Utils.escape('café 日本 😀')).to eq('caf%C3%A9+%E6%97%A5%E6%9C%AC+%F0%9F%98%80')
+      end
+
+      it 'escapes strings in other ASCII-compatible encodings by their bytes' do
+        expect(Faraday::Utils.escape('é'.encode(Encoding::ISO_8859_1))).to eq('%E9')
+        expect(Faraday::Utils.escape('日本'.encode(Encoding::Shift_JIS))).to eq('%93%FA%96%7B')
+      end
+
+      it 'keeps the encoding of the given string' do
+        expect(Faraday::Utils.escape('é'.encode(Encoding::ISO_8859_1)).encoding).to eq(Encoding::ISO_8859_1)
+      end
+
+      it 'tells spaces from literal plus signs' do
+        expect(Faraday::Utils.escape(' a+b ')).to eq('+a%2Bb+')
+      end
+
+      it 'honours default_space_encoding' do
+        Faraday::Utils.default_space_encoding = '%20'
+        expect(Faraday::Utils.escape(' a+b ')).to eq('%20a%2Bb%20')
+      end
+
+      it 'converts non-string values with to_s' do
+        expect(Faraday::Utils.escape(nil)).to eq('')
+        expect(Faraday::Utils.escape(:'a b')).to eq('a+b')
+        expect(Faraday::Utils.escape(4.2)).to eq('4.2')
+      end
+
+      it 'returns an empty string for an empty string' do
+        expect(Faraday::Utils.escape('')).to eq('')
+      end
+
+      it 'raises on strings with an invalid byte sequence' do
+        expect { Faraday::Utils.escape((+"caf\xC3").force_encoding(Encoding::UTF_8)) }
+          .to raise_error(ArgumentError, /invalid byte sequence/)
+      end
+
+      it 'raises on strings in an ASCII-incompatible encoding' do
+        expect { Faraday::Utils.escape('a b'.encode(Encoding::UTF_16LE)) }.to raise_error(Encoding::CompatibilityError)
+      end
+    end
+
     it 'parses with default parser' do
       with_default_uri_parser(nil) do
         uri = normalize(url)
