@@ -28,9 +28,17 @@ module Faraday
     ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
 
     def escape(str)
-      str.to_s.gsub(ESCAPE_RE) do |match|
-        "%#{match.unpack('H2' * match.bytesize).join('%').upcase}"
-      end.gsub(' ', default_space_encoding)
+      str = str.to_s
+      # CGI.escape needs a String and works on raw bytes: anything else, including
+      # strings ESCAPE_RE can't scan (and raises on), keeps the regexp path.
+      if str.is_a?(String) && str.valid_encoding? && str.encoding.ascii_compatible?
+        escaped = CGI.escape(str)
+        default_space_encoding == '+' ? escaped : escaped.gsub('+', default_space_encoding)
+      else
+        str.gsub(ESCAPE_RE) do |match|
+          "%#{match.unpack('H2' * match.bytesize).join('%').upcase}"
+        end.gsub(' ', default_space_encoding)
+      end
     end
 
     def unescape(str)

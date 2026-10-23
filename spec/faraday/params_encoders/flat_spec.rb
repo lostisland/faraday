@@ -32,6 +32,11 @@ RSpec.describe Faraday::FlatParamsEncoder do
     expect(subject.encode(params)).to eq('a=')
   end
 
+  it 'escapes spaces, plus signs and unicode in keys and values' do
+    params = { 'q r' => ['a+b', 'c d', nil], 'é' => '' }
+    expect(subject.encode(params)).to eq('q+r=a%2Bb&q+r=c+d&q+r=&%C3%A9=')
+  end
+
   it 'encodes unsorted when asked' do
     params = { b: false, a: true }
     expect(subject.encode(params)).to eq('a=true&b=false')
