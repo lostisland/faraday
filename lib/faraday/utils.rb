@@ -27,11 +27,15 @@ module Faraday
 
     ESCAPE_RE = /[^a-zA-Z0-9 .~_-]/
 
+    # CGI.escape works on raw bytes: it matches ESCAPE_RE only where no multibyte character
+    # hides an ASCII byte (Shift_JIS 'ア' is "\x83A"), unlike ESCAPE_RE it doesn't raise on
+    # invalid bytes, and it returns String subclasses (SafeBuffer) as is when nothing is escaped.
+    CGI_ESCAPE_ENCODINGS = [Encoding::UTF_8, Encoding::US_ASCII, Encoding::BINARY].freeze
+    private_constant :CGI_ESCAPE_ENCODINGS
+
     def escape(str)
       str = str.to_s
-      # CGI.escape needs a String and works on raw bytes: anything else, including
-      # strings ESCAPE_RE can't scan (and raises on), keeps the regexp path.
-      if str.is_a?(String) && str.valid_encoding? && str.encoding.ascii_compatible?
+      if str.instance_of?(String) && CGI_ESCAPE_ENCODINGS.include?(str.encoding) && str.valid_encoding?
         escaped = CGI.escape(str)
         default_space_encoding == '+' ? escaped : escaped.gsub('+', default_space_encoding)
       else
