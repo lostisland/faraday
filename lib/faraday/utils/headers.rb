@@ -84,62 +84,21 @@ module Faraday
         super
       end
 
-      def shift
-        super
-      ensure
-        rebuild_names
-      end
+      def shift = rebuilding_names { super }
+      def compact! = rebuilding_names { super }
+      def rehash = rebuilding_names { super }
 
-      def compact!
-        super
-      ensure
-        rebuild_names
-      end
-
-      def delete_if
-        return enum_for(__method__) unless block_given?
-
-        super
-      ensure
-        rebuild_names
-      end
-
-      def keep_if
-        return enum_for(__method__) unless block_given?
-
-        super
-      ensure
-        rebuild_names
-      end
-
-      def reject!
-        return enum_for(__method__) unless block_given?
-
-        super
-      ensure
-        rebuild_names
-      end
-
-      def select!
-        return enum_for(__method__) unless block_given?
-
-        super
-      ensure
-        rebuild_names
-      end
-
+      # Without a block these return an enumerator that calls back into the
+      # method once iterated, so the index only needs rebuilding in that call.
+      def delete_if = block_given? ? rebuilding_names { super } : super
+      def keep_if = block_given? ? rebuilding_names { super } : super
+      def reject! = block_given? ? rebuilding_names { super } : super
+      def select! = block_given? ? rebuilding_names { super } : super
       alias filter! select!
 
-      def transform_keys!(...)
-        super
-      ensure
-        rebuild_names
-      end
-
-      def rehash
-        super
-      ensure
-        rebuild_names
+      # A mapping hash is a valid alternative to a block.
+      def transform_keys!(*args, &block)
+        args.empty? && !block ? super : rebuilding_names { super }
       end
 
       def dig(key, *rest)
@@ -200,6 +159,14 @@ module Faraday
       attr_reader :names
 
       private
+
+      # Runs the block, then rebuilds the name index even if the block raised
+      # or exited early, as the underlying Hash may already be partially mutated.
+      def rebuilding_names
+        yield
+      ensure
+        rebuild_names
+      end
 
       def rebuild_names
         @names = each_key.to_h { |key| [KeyMap[key].downcase, key] }
