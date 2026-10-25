@@ -119,6 +119,15 @@ RSpec.describe Faraday::Connection do
       it { expect(subject.headers['Authorization']).to eq('Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==') }
     end
 
+    context 'with basic_auth in url containing literal plus signs' do
+      let(:url) { 'http://Ala+ddin:open+sesame%2B@httpbingo.org/fish' }
+
+      it 'does not decode plus signs as spaces' do
+        expected = Faraday::Utils.basic_header_from('Ala+ddin', 'open+sesame+')
+        expect(subject.headers['Authorization']).to eq(expected)
+      end
+    end
+
     context 'with custom headers' do
       let(:options) { { headers: { user_agent: 'Faraday' } } }
 
@@ -153,6 +162,26 @@ RSpec.describe Faraday::Connection do
 
       it { expect(conn.builder.handlers.size).to eq(0) }
       it { expect(conn.path_prefix).to eq('/omnom') }
+    end
+
+    context 'with a frozen URI param' do
+      let(:frozen_uri) { URI('http://httpbingo.org/api').freeze }
+      let(:conn) { Faraday::Connection.new(frozen_uri) }
+
+      it { expect { conn }.not_to raise_error }
+      it { expect(conn.host).to eq('httpbingo.org') }
+      it { expect(conn.path_prefix).to eq('/api') }
+      it { expect(frozen_uri).to be_frozen }
+    end
+
+    context 'with a non-frozen URI param' do
+      let(:uri) { URI('http://httpbingo.org') }
+      let(:conn) { Faraday::Connection.new(uri) }
+
+      it "does not mutate the caller's URI object" do
+        conn
+        expect(uri.path).to eq('')
+      end
     end
   end
 
@@ -692,6 +721,84 @@ RSpec.describe Faraday::Connection do
       it { expect(conn.params.key?('b')).to be_falsey }
       it { expect(subject.options[:timeout]).to eq(5) }
       it { expect(conn.options[:open_timeout]).to be_nil }
+    end
+
+    context 'with a manually set proxy' do
+      it 'preserves the proxy over env http_proxy' do
+        with_env 'http_proxy' => 'http://env-proxy.com' do
+          conn.proxy = 'http://manual-proxy.com'
+
+          expect(subject.proxy.host).to eq('manual-proxy.com')
+          expect(subject.proxy_for_request(url).host).to eq('manual-proxy.com')
+        end
+      end
+
+      it 'preserves an explicitly disabled proxy' do
+        with_env 'http_proxy' => 'http://env-proxy.com' do
+          conn.proxy = nil
+
+          expect(subject.proxy).to be_nil
+          expect(subject.proxy_for_request(url)).to be_nil
+        end
+      end
+    end
+
+    context 'without a manually set proxy' do
+      it 'uses env http_proxy' do
+        with_env 'http_proxy' => 'http://env-proxy.com' do
+          expect(subject.proxy_for_request(url).host).to eq('env-proxy.com')
+        end
+      end
+    end
+
+    context 'after a request' do
+      let(:conn) do
+        Faraday::Connection.new('http://example.com') do |builder|
+          builder.adapter :test do |stub|
+            stub.get('/') { |_env| [200, {}, 'ok'] }
+          end
+        end
+      end
+
+      it 'rebuilds the stack so middleware added on the duplicate runs' do
+        conn.get('/')
+        calls = []
+        middleware = Class.new(Faraday::Middleware) do
+          define_method(:on_request) { |_env| calls << :ran }
+        end
+
+        duplicate = conn.dup
+        expect(duplicate.builder.locked?).to be_falsey
+        duplicate.use(middleware)
+        expect(duplicate.builder.app).not_to equal(conn.builder.app)
+
+        duplicate.get('/')
+        expect(calls).to eq([:ran])
+
+        conn.get('/')
+        expect(calls).to eq([:ran])
+      end
+    end
+  end
+
+  describe '#support_parallel?' do
+    let(:parallel_adapter) do
+      Class.new(Faraday::Adapter) { self.supports_parallel = true }
+    end
+
+    it 'checks the connection adapter when called without arguments' do
+      conn = Faraday.new { |f| f.adapter parallel_adapter }
+      expect(conn.support_parallel?).to be(true)
+    end
+
+    it 'returns false without arguments when the connection adapter is not parallel-capable' do
+      conn = Faraday.new { |f| f.adapter :test }
+      expect(conn.support_parallel?).to be(false)
+    end
+
+    it 'checks the given adapter class' do
+      expect(conn.support_parallel?(parallel_adapter)).to be(true)
+      expect(conn.support_parallel?(Faraday::Adapter::Test)).to be(false)
     end
   end
 

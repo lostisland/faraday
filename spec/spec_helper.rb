@@ -21,12 +21,24 @@ require 'coveralls'
 require 'webmock/rspec'
 WebMock.disable_net_connect!(allow_localhost: true)
 
-SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, Coveralls::SimpleCov::Formatter]
+# Allow disabling coverage for integration tests
+unless ENV['COVERAGE'] == 'false'
+  SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, Coveralls::SimpleCov::Formatter]
 
-SimpleCov.start do
-  add_filter '/spec/'
-  minimum_coverage 84
-  minimum_coverage_by_file 26
+  SimpleCov.start do
+    minimum_coverage 84
+
+    # SimpleCov 1.0 first, then older.
+    if SimpleCov.respond_to?(:skip)
+      skip '/spec/'
+      skip '/tmp/'
+      coverage(:line) { minimum 26, per: :file }
+    else
+      add_filter '/spec/'
+      add_filter '/tmp/'
+      minimum_coverage_by_file 26
+    end
+  end
 end
 
 require 'faraday'

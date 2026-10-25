@@ -21,12 +21,14 @@ Gem::Specification.new do |spec|
   # always fix its required version to the next MINOR version.
   # This way, we can release minor versions of the adapter with "breaking" changes for older versions of Faraday
   # and then bump the version requirement on the next compatible version of faraday.
-  spec.add_dependency 'faraday-net_http', '>= 2.0', '< 3.5'
+  spec.add_dependency 'faraday-net_http', '>= 2.0', '< 3.6'
   spec.add_dependency 'json'
   spec.add_dependency 'logger'
 
-  # Includes `examples` and `spec` to allow external adapter gems to run Faraday unit and integration tests
-  spec.files = Dir['CHANGELOG.md', '{examples,lib,spec}/**/*', 'LICENSE.md', 'Rakefile', 'README.md']
+  # Includes `examples` and the adapter specs (`spec/external_adapters`, `spec/support`)
+  # so that external adapter gems can run Faraday's shared adapter examples
+  spec.files = Dir['CHANGELOG.md', '{examples,lib,spec/external_adapters,spec/support}/**/*',
+                   'LICENSE.md', 'Rakefile', 'README.md']
   spec.require_paths = %w[lib spec/external_adapters]
   spec.metadata = {
     'homepage_uri' => 'https://lostisland.github.io/faraday',
