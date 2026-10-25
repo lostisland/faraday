@@ -25,8 +25,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'json'
   spec.add_dependency 'logger'
 
-  # Includes `examples` and `spec` to allow external adapter gems to run Faraday unit and integration tests
-  spec.files = Dir['CHANGELOG.md', '{examples,lib,spec}/**/*', 'LICENSE.md', 'Rakefile', 'README.md']
+  # Includes `examples` and the adapter specs (`spec/external_adapters`, `spec/support`)
+  # so that external adapter gems can run Faraday's shared adapter examples
+  spec.files = Dir['CHANGELOG.md', '{examples,lib,spec/external_adapters,spec/support}/**/*',
+                   'LICENSE.md', 'Rakefile', 'README.md']
   spec.require_paths = %w[lib spec/external_adapters]
   spec.metadata = {
     'homepage_uri' => 'https://lostisland.github.io/faraday',
