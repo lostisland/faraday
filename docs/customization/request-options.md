@@ -2,6 +2,7 @@
 
 Request options can be provided to the connection constructor or set on a per-request basis.
 All these options are optional.
+Not every adapter supports all of them: check your adapter's documentation (e.g. [Net::HTTP][net_http]).
 
 | Option            | Type              | Default                                                        | Description                                                             |
 |-------------------|-------------------|----------------------------------------------------------------|-------------------------------------------------------------------------|
@@ -37,3 +38,4 @@ end
 
 [ProxyOptions]: /customization/proxy-options.md
 [Streaming]: /advanced/streaming-responses.md
+[net_http]: /adapters/net-http.md
