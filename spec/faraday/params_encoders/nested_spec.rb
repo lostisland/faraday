@@ -145,6 +145,13 @@ RSpec.describe Faraday::NestedParamsEncoder do
     Faraday::NestedParamsEncoder.sort_params = true
   end
 
+  it 'escapes spaces, plus signs and unicode in nested keys and values' do
+    params = { 'q r' => { 'café' => ['a+b', 'c d', nil], 'x' => '' }, '%' => '100%' }
+    expect(subject.encode(params)).to eq(
+      '%25=100%25&q+r%5Bcaf%C3%A9%5D%5B%5D=a%2Bb&q+r%5Bcaf%C3%A9%5D%5B%5D=c+d&q+r%5Bcaf%C3%A9%5D%5B%5D&q+r%5Bx%5D='
+    )
+  end
+
   it 'encodes arrays indices when asked' do
     params = { a: [0, 1, 2] }
     expect(subject.encode(params)).to eq('a%5B%5D=0&a%5B%5D=1&a%5B%5D=2')
