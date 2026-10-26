@@ -210,7 +210,7 @@ module Faraday
     #
     # @overload options(url, params = nil, headers = nil)
     #   Makes an OPTIONS HTTP request to the given URL.
-    #   @param url [String, URI, nil] String base URL to sue as a prefix for all requests.
+    #   @param url [String, URI, nil] String base URL to use as a prefix for all requests.
     #   @param params [Hash, nil] Hash of URI query unencoded key/value pairs.
     #   @param headers [Hash, nil] unencoded HTTP header key/value pairs.
     #
@@ -300,7 +300,10 @@ module Faraday
       end
     end
 
-    # Determine if this Faraday::Connection can make parallel requests.
+    # Determine if this Faraday::Connection is currently making parallel
+    # requests, i.e. if it is called inside an {#in_parallel} block.
+    # Use {#support_parallel?} to check if the adapter can make parallel
+    # requests at all.
     #
     # @return [Boolean]
     def in_parallel?
@@ -315,13 +318,13 @@ module Faraday
     # @yield a block to execute multiple requests.
     # @return [void]
     def in_parallel(manager = nil, &block)
-      @parallel_manager = manager || default_parallel_manager do
-        warn 'Warning: `in_parallel` called but no parallel-capable adapter ' \
-             'on Faraday stack'
-        warn caller[2, 10].join("\n")
+      previous_manager = @parallel_manager
+      @parallel_manager = manager || previous_manager || default_parallel_manager do
+        warn('Warning: `in_parallel` called but no parallel-capable adapter ' \
+             'on Faraday stack', caller[2, 10].join("\n"))
         nil
       end
-      return yield unless @parallel_manager
+      return yield unless @parallel_manager && !@parallel_manager.equal?(previous_manager)
 
       if @parallel_manager.respond_to?(:execute)
         # Execute is the new method that is responsible for executing the block.
@@ -332,7 +335,7 @@ module Faraday
         @parallel_manager.run
       end
     ensure
-      @parallel_manager = nil
+      @parallel_manager = previous_manager
     end
 
     # Sets the Hash proxy options.
@@ -362,7 +365,7 @@ module Faraday
     #
     #   conn.get("nigiri?page=2") # accesses https://httpbingo.org/api/nigiri
     def url_prefix=(url, encoder = nil)
-      uri = @url_prefix = Utils.URI(url)
+      uri = @url_prefix = Utils.URI(url.to_s)
       self.path_prefix = uri.path
 
       params.merge_query(uri.query, encoder)
@@ -445,7 +448,7 @@ module Faraday
         req.options.proxy = proxy_for_request(url)
         req.url(url)                if url
         req.headers.update(headers) if headers
-        req.body = body             if body
+        req.body = body             unless body.nil?
         yield(req) if block_given?
       end
 
@@ -496,8 +499,6 @@ module Faraday
 
     # Creates a duplicate of this Faraday::Connection.
     #
-    # @api private
-    #
     # @return [Faraday::Connection]
     def dup
       self.class.new(build_exclusive_url,
@@ -505,7 +506,7 @@ module Faraday
                      params: params.dup,
                      builder: builder.dup,
                      ssl: ssl.dup,
-                     request: options.dup)
+                     request: options.dup).tap { |copy| copy.proxy = proxy if @manual_proxy }
     end
 
     # Yields username and password extracted from a URI if they both exist.
@@ -519,7 +520,7 @@ module Faraday
     def with_uri_credentials(uri)
       return unless uri.user && uri.password
 
-      yield(Utils.unescape(uri.user), Utils.unescape(uri.password))
+      yield(URI::DEFAULT_PARSER.unescape(uri.user), URI::DEFAULT_PARSER.unescape(uri.password))
     end
 
     def proxy_from_env(url)
@@ -532,7 +533,7 @@ module Faraday
         uri = if uri.host.nil?
                 find_default_proxy
               else
-                URI.parse("#{uri.scheme}://#{uri.host}").find_proxy
+                URI.parse(uri.to_s).find_proxy
               end
       when URI
         uri = url.find_proxy
@@ -560,7 +561,13 @@ module Faraday
       end
     end
 
-    def support_parallel?(adapter)
+    # Determine if an adapter can make parallel requests.
+    #
+    # @param adapter [Class, nil] the adapter class to check. Defaults to the
+    #                adapter of this Faraday::Connection.
+    #
+    # @return [Boolean]
+    def support_parallel?(adapter = @builder.adapter&.klass)
       adapter.respond_to?(:supports_parallel?) && adapter&.supports_parallel?
     end
   end

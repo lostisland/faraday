@@ -1,0 +1,64 @@
+#!/bin/bash
+# Run Faraday integration tests locally with Docker.
+#
+# This starts the service containers declared in
+# .github/workflows/integration-tests.yml on a private network and runs the
+# specs in a ruby container next to them, like the workflow does. (act cannot
+# be used because it doesn't support the `command` key of service containers.)
+#
+# Usage: [RUBY_VERSION=4.0] bin/integration-tests [rspec arguments, default: spec/integration]
+# Keep the service definitions below in sync with the workflow.
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if ! command -v docker &> /dev/null; then
+  echo "Docker is required to run the integration tests: https://docs.docker.com/get-docker/"
+  exit 1
+fi
+
+network="faraday-integration-$$"
+services=(httpbin proxy auth-proxy)
+
+cleanup() {
+  for service in "${services[@]}"; do
+    docker rm -f "$service-$$" > /dev/null 2>&1 || true
+  done
+  docker network rm "$network" > /dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+start() {
+  local name=$1
+  shift
+  docker run -d --rm --name "$name-$$" --network "$network" --network-alias "$name" "$@" > /dev/null
+}
+
+echo "Starting service containers..."
+docker network create "$network" > /dev/null
+start httpbin kennethreitz/httpbin:latest
+start proxy mitmproxy/mitmproxy:12 mitmdump --set 'ignore_hosts=.*'
+start auth-proxy mitmproxy/mitmproxy:12 mitmdump --set 'ignore_hosts=.*' --set 'proxyauth=user:p@ss word'
+
+echo "Running integration tests..."
+docker run --rm --network "$network" \
+  -v "$PWD":/src:ro -w /work \
+  -e COVERAGE=false \
+  -e HTTPBIN_URL=http://httpbin \
+  -e PROXY_URL=http://proxy:8080 \
+  -e AUTH_PROXY_URL=http://auth-proxy:8080 \
+  "ruby:${RUBY_VERSION:-4.0}" bash -c '
+    set -e
+    # Work on a copy without the host Gemfile.lock, which may need another bundler or Ruby
+    cp -a /src/. /work/
+    rm -f Gemfile.lock
+    export BUNDLE_PATH=/tmp/bundle
+    bundle install --quiet
+    # The services need a moment to start up (httpbin and mitmdump are Python apps)
+    retry="--retry 30 --retry-delay 2 --retry-connrefused"
+    curl -sf $retry http://httpbin/get > /dev/null
+    curl -sf $retry --proxy http://proxy:8080 http://httpbin/get > /dev/null
+    curl -sf $retry --proxy http://auth-proxy:8080 --proxy-user "user:p@ss word" http://httpbin/get > /dev/null
+    exec bundle exec rspec "${@:-spec/integration}" --format documentation
+  ' bash "$@"

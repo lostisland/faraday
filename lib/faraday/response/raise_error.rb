@@ -20,7 +20,13 @@ module Faraday
       }.freeze
       # rubocop:enable Naming/ConstantName
 
-      DEFAULT_OPTIONS = { include_request: true, allowed_statuses: [] }.freeze
+      DEFAULT_OPTIONS = { include_request: true, allowed_statuses: [].freeze }.freeze
+
+      def on_request(env)
+        # Announce the opt-out on the shared Env so that errors raised by other
+        # middlewares (e.g. ParsingError from the Json middleware) honor it too.
+        env[:include_request] = false unless options[:include_request]
+      end
 
       def on_complete(env)
         return if Array(options[:allowed_statuses]).include?(env[:status])
