@@ -10,6 +10,5 @@
 # Dependabot keeps release/Gemfile.lock up to date (see .github/dependabot.yml).
 source 'https://rubygems.org'
 
-# The Rakefile loads both libraries before defining Bundler::GemHelper's release task.
+# The Rakefile skips loading RSpec when FARADAY_RELEASE is set, so Rake is all that's needed.
 gem 'rake', '~> 13.4'
-gem 'rspec', '~> 3.13'

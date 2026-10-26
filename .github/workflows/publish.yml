@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: release/Gemfile
+      FARADAY_RELEASE: 'true'
 
     permissions:
       contents: write
