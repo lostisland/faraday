@@ -88,3 +88,10 @@ end
 
 In this example, a `Faraday::UnauthorizedError` exception is raised for the `/protected-url` request, while the
 `/wrong-url` request does not raise an error because the status code `404` is in the `allowed_statuses` array.
+
+### Excluding request information from exceptions
+
+When `include_request` is set to `false`, request information is omitted not only from the errors raised by this
+middleware, but also from errors raised for the same request by other middlewares (such as `Faraday::ParsingError`
+from the `json` middleware) and from errors initialized with the request's `Faraday::Env`. Response information
+(status, headers, body) is still included, and logging middlewares are not affected by this option.

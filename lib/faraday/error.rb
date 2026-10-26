@@ -70,7 +70,7 @@ module Faraday
     # to `super`. See NilStatusError.
     def exc_msg_and_response!(exc, response = nil)
       if @response.nil? && @wrapped_exception.nil?
-        @wrapped_exception, msg, @response = exc_msg_and_response(exc, response)
+        @wrapped_exception, msg, @response = exc_msg_and_response(exc, omit_request_data(response))
         return msg
       end
 
@@ -85,13 +85,40 @@ module Faraday
       when Hash
         [nil, build_error_message_from_hash(exc), exc]
       when Faraday::Env
-        [nil, build_error_message_from_env(exc), exc]
+        sanitized = omit_request_data(exc)
+        message =
+          if sanitized.equal?(exc)
+            build_error_message_from_env(exc)
+          else
+            build_error_message_from_hash(sanitized)
+          end
+        [nil, message, sanitized]
       else
         [nil, exc.to_s, response]
       end
     end
 
     private
+
+    # When the RaiseError middleware opted this request out of request data
+    # (`include_request: false`), it marks the Env. Replace env-carrying
+    # responses (the Response object raised by the Json middleware, or an Env
+    # passed directly) with a request-less hash so that errors raised by other
+    # middlewares (e.g. ParsingError) cannot expose request headers and body.
+    # The body reads the explicit `response_body` member because `Env#body`
+    # aliases to the request body while the status is nil.
+    def omit_request_data(response)
+      env =
+        case response
+        when Faraday::Response
+          response.env if response.finished?
+        when Faraday::Env
+          response
+        end
+      return response unless env.is_a?(Faraday::Env) && env[:include_request] == false
+
+      { status: env.status, headers: env.response_headers, body: env.response_body }
+    end
 
     def build_error_message_from_hash(hash)
       # Be defensive with external Hash objects - they might be missing keys
