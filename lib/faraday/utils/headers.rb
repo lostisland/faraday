@@ -38,13 +38,11 @@ module Faraday
 
       # symbol -> string mapper + cache
       KeyMap = Hash.new do |map, key|
-        value = if key.respond_to?(:to_str)
-                  key
-                else
-                  key.to_s.split('_') # user_agent: %w(user agent)
-                     .each(&:capitalize!) # => %w(User Agent)
-                     .join('-') # => "User-Agent"
-                end
+        next key if key.respond_to?(:to_str)
+
+        value = key.to_s.split('_') # user_agent: %w(user agent)
+                   .each(&:capitalize!) # => %w(User Agent)
+                   .join('-') # => "User-Agent"
         keymap_mutex.synchronize { map[key] = value }
       end
       KeyMap[:etag] = 'ETag'
@@ -62,6 +60,8 @@ module Faraday
         super
       end
 
+      alias store []=
+
       def fetch(key, ...)
         key = KeyMap[key]
         key = @names.fetch(key.downcase, key)
@@ -75,6 +75,28 @@ module Faraday
 
         @names.delete key.downcase
         super
+      end
+
+      def clear
+        @names.clear
+        super
+      end
+
+      def shift = rebuilding_names { super }
+      def compact! = rebuilding_names { super }
+      def rehash = rebuilding_names { super }
+
+      # Without a block these return an enumerator that calls back into the
+      # method once iterated, so the index only needs rebuilding in that call.
+      def delete_if = block_given? ? rebuilding_names { super } : super
+      def keep_if = block_given? ? rebuilding_names { super } : super
+      def reject! = block_given? ? rebuilding_names { super } : super
+      def select! = block_given? ? rebuilding_names { super } : super
+      alias filter! select!
+
+      # A mapping hash is a valid alternative to a block.
+      def transform_keys!(*args, &block)
+        args.empty? && !block ? super : rebuilding_names { super }
       end
 
       def dig(key, *rest)
@@ -135,6 +157,18 @@ module Faraday
       attr_reader :names
 
       private
+
+      # Runs the block, then rebuilds the name index even if the block raised
+      # or exited early, as the underlying Hash may already be partially mutated.
+      def rebuilding_names
+        yield
+      ensure
+        rebuild_names
+      end
+
+      def rebuild_names
+        @names = each_key.to_h { |key| [KeyMap[key].downcase, key] }
+      end
 
       # Join multiple values with a comma.
       def add_parsed(key, value)

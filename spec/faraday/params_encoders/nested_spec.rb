@@ -18,6 +18,20 @@ RSpec.describe Faraday::NestedParamsEncoder do
     expect(subject.decode(query)).to eq(expected)
   end
 
+  it 'decodes arrays with ten or more indices in numeric order' do
+    query    = (0..11).map { |i| "a[#{i}]=v#{i}" }.join('&')
+    expected = { 'a' => (0..11).map { |i| "v#{i}" } }
+    expect(subject.decode(query)).to eq(expected)
+  end
+
+  it 'keeps array order when round-tripping with array indices' do
+    Faraday::NestedParamsEncoder.array_indices = true
+    params = { 'a' => (1..12).to_a.map(&:to_s) }
+    expect(subject.decode(subject.encode(params))).to eq(params)
+  ensure
+    Faraday::NestedParamsEncoder.array_indices = false
+  end
+
   it 'decodes hashes' do
     query    = 'a[b1]=one&a[b2]=two&a[b][c]=foo'
     expected = { 'a' => { 'b1' => 'one', 'b2' => 'two', 'b' => { 'c' => 'foo' } } }
@@ -129,6 +143,13 @@ RSpec.describe Faraday::NestedParamsEncoder do
     Faraday::NestedParamsEncoder.sort_params = false
     expect(subject.encode(params)).to eq('b=false&a=true')
     Faraday::NestedParamsEncoder.sort_params = true
+  end
+
+  it 'escapes spaces, plus signs and unicode in nested keys and values' do
+    params = { 'q r' => { 'café' => ['a+b', 'c d', nil], 'x' => '' }, '%' => '100%' }
+    expect(subject.encode(params)).to eq(
+      '%25=100%25&q+r%5Bcaf%C3%A9%5D%5B%5D=a%2Bb&q+r%5Bcaf%C3%A9%5D%5B%5D=c+d&q+r%5Bcaf%C3%A9%5D%5B%5D&q+r%5Bx%5D='
+    )
   end
 
   it 'encodes arrays indices when asked' do

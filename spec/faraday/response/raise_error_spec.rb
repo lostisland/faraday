@@ -264,6 +264,25 @@ RSpec.describe Faraday::Response::RaiseError do
     end
   end
 
+  describe 'default allowed_statuses' do
+    it 'cannot be mutated through a middleware instance' do
+      middleware = described_class.new(->(env) { env })
+
+      expect { middleware.options[:allowed_statuses] << 404 }.to raise_error(FrozenError)
+    end
+
+    it 'still raises errors when the default is used' do
+      conn = Faraday.new do |b|
+        b.response :raise_error
+        b.adapter :test do |stub|
+          stub.get('not-found') { [404, {}, 'nope'] }
+        end
+      end
+
+      expect { conn.get('not-found') }.to raise_error(Faraday::ResourceNotFound)
+    end
+  end
+
   describe 'allowing certain status codes' do
     let(:conn) do
       Faraday.new do |b|
@@ -281,6 +300,76 @@ RSpec.describe Faraday::Response::RaiseError do
 
     it 'does not raise an error for allowed status codes' do
       expect { conn.get('not-found') }.not_to raise_error
+    end
+  end
+
+  describe 'errors raised by other middlewares' do
+    let(:conn) do
+      Faraday.new do |b|
+        b.response :json
+        b.response :raise_error, **middleware_options
+        b.adapter :test do |stub|
+          stub.get('invalid-json') { [200, { 'Content-Type' => 'application/json' }, 'not-json'] }
+        end
+      end
+    end
+    let(:middleware_options) { {} }
+
+    subject(:perform_request) do
+      conn.get('invalid-json') do |req|
+        req.headers['Authorization'] = 'Basic 123'
+      end
+    end
+
+    it 'includes request info in the ParsingError' do
+      expect { perform_request }.to raise_error(Faraday::ParsingError) do |ex|
+        expect(ex.response.env.request_headers['Authorization']).to eq('Basic 123')
+      end
+    end
+
+    context 'when include_request: false' do
+      let(:middleware_options) { { include_request: false } }
+
+      it 'does not include request info in the ParsingError' do
+        expect { perform_request }.to raise_error(Faraday::ParsingError) do |ex|
+          expect(ex.response.keys).to contain_exactly(:status, :headers, :body)
+          expect(ex.response[:status]).to eq(200)
+          expect(ex.response[:headers]['Content-Type']).to include('json')
+          expect(ex.response[:body]).to eq('not-json')
+          expect(ex.response.inspect).not_to include('Basic 123')
+          expect(ex.inspect).not_to include('Basic 123')
+        end
+      end
+
+      context 'and when the response has no status' do
+        subject(:perform_request) do
+          conn.post('invalid-json') do |req|
+            req.headers['Authorization'] = 'Basic 123'
+            req.body = 'REQUEST-SECRET'
+          end
+        end
+
+        let(:conn) do
+          # RaiseError must be registered before Json so that Json raises the
+          # ParsingError for the nil-status response.
+          Faraday.new do |b|
+            b.response :raise_error, include_request: false
+            b.response :json
+            b.adapter :test do |stub|
+              stub.post('invalid-json') { [nil, { 'Content-Type' => 'application/json' }, 'not-json'] }
+            end
+          end
+        end
+
+        it 'does not include request info in the ParsingError either' do
+          expect { perform_request }.to raise_error(Faraday::ParsingError) do |ex|
+            expect(ex.response.keys).to contain_exactly(:status, :headers, :body)
+            expect(ex.response[:body]).to be_nil
+            expect(ex.response.inspect).not_to include('REQUEST-SECRET')
+            expect(ex.inspect).not_to include('REQUEST-SECRET')
+          end
+        end
+      end
     end
   end
 end

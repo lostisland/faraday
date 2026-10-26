@@ -76,4 +76,10 @@ RSpec.describe Faraday::ProxyOptions do
     expect(proxy.password).to eq('pw d')
     expect(proxy[:password]).to eq('pw d')
   end
+
+  it 'preserves literal plus signs in userinfo' do
+    proxy = Faraday::ProxyOptions.from 'http://a+b:pw+d%2B@example.org'
+    expect(proxy.user).to eq('a+b')
+    expect(proxy.password).to eq('pw+d+')
+  end
 end

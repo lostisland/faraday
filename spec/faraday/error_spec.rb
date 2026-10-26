@@ -90,6 +90,49 @@ RSpec.describe Faraday::Error do
       it { expect(subject.response_body).to eq(body) }
     end
 
+    context 'with exception and a Faraday::Env marked include_request: false' do
+      let(:exception) { RuntimeError.new('test') }
+      let(:response) do
+        env = Faraday::Env.from(
+          status: 200,
+          request_headers: { 'Authorization' => 'Bearer SECRET' },
+          response_headers: { 'Content-Type' => 'application/json' },
+          response_body: 'ok'
+        )
+        env[:include_request] = false
+        env
+      end
+
+      it 'replaces the response with a request-less hash' do
+        expect(subject.response.keys).to contain_exactly(:status, :headers, :body)
+        expect(subject.response_status).to eq(200)
+        expect(subject.response_body).to eq('ok')
+        expect(subject.inspect).not_to include('SECRET')
+      end
+    end
+
+    context 'with a Faraday::Env marked include_request: false as exception' do
+      let(:exception) do
+        env = Faraday::Env.from(
+          method: :get,
+          url: URI('https://example.com/secret?api_key=SECRET'),
+          request_headers: { 'Authorization' => 'Bearer SECRET' },
+          status: 200,
+          response_headers: { 'Content-Type' => 'application/json' },
+          response_body: 'ok'
+        )
+        env[:include_request] = false
+        env
+      end
+
+      it 'replaces the response with a request-less hash and message without the url' do
+        expect(subject.response.keys).to contain_exactly(:status, :headers, :body)
+        expect(subject.response_status).to eq(200)
+        expect(subject.message).to eq('the server responded with status 200 - method and url are not available due to include_request: false on Faraday::Response::RaiseError middleware')
+        expect(subject.inspect).not_to include('SECRET')
+      end
+    end
+
     context 'with hash missing status key' do
       let(:exception) { { body: 'error body' } }
 
