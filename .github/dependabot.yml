@@ -4,6 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+  # Locked dependencies of the publish workflow, see release/Gemfile
+  - package-ecosystem: "bundler"
+    directory: "/release"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
