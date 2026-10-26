@@ -9,7 +9,7 @@ jobs:
     name: Publish to Rubygems
     runs-on: ubuntu-latest
     env:
-      BUNDLE_GEMFILE: Gemfile.release
+      BUNDLE_GEMFILE: release/Gemfile
 
     permissions:
       contents: write

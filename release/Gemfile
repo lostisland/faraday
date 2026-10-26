@@ -1,0 +1,15 @@
+# frozen_string_literal: true
+
+# Minimal dependency set used by the publish workflow (BUNDLE_GEMFILE=release/Gemfile),
+# so the OIDC-authorized release job doesn't resolve the full development toolchain.
+#
+# This deliberately doesn't use `gemspec`: that would record Faraday's own version in the
+# lockfile and make it stale on every version bump. `rake build` and `rake release` read
+# the gemspec directly, and its runtime dependencies aren't needed to build the gem.
+#
+# Dependabot keeps release/Gemfile.lock up to date (see .github/dependabot.yml).
+source 'https://rubygems.org'
+
+# The Rakefile loads both libraries before defining Bundler::GemHelper's release task.
+gem 'rake', '~> 13.4'
+gem 'rspec', '~> 3.13'
