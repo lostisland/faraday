@@ -1,6 +1,7 @@
 # SSL Options
 
 Faraday supports a number of SSL options, which can be provided while initializing the connection.
+Not every adapter supports all of them: check your adapter's documentation (e.g. [Net::HTTP][net_http]).
 
 | Option             | Type                                   | Default | Description                                                                                                                        |
 |--------------------|----------------------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------|
@@ -29,7 +30,9 @@ ssl_options = {
   min_version: :TLS1_2
 }
 
-conn = Faraday.new(ssl: options) do |faraday|
+conn = Faraday.new(ssl: ssl_options) do |faraday|
   # ...
 end
 ```
+
+[net_http]: /adapters/net-http.md
