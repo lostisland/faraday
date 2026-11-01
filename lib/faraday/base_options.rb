@@ -4,14 +4,22 @@ module Faraday
   # Abstract base class for Options-like classes.
   #
   # Provides common functionality for nested coercion, deep merging, and duplication.
-  # Subclasses must define:
-  # - +MEMBERS+: Array of attribute names (symbols)
-  # - +COERCIONS+: Hash mapping attribute names to coercion classes
+  # Subclasses define:
+  # - +MEMBERS+: Array of attribute names (symbols). Each member needs a public
+  #   reader and writer (e.g. +attr_accessor+), which are the only way
+  #   attributes are read and written, so subclasses can override them.
+  # - +COERCIONS+ (optional): Hash mapping attribute names to either a Class
+  #   (coerced with +Class.from(value)+) or a Proc (coerced with +proc.call(value)+).
+  #   +nil+ values are never coerced.
+  #
+  # Keys can be Symbols or Strings. Assigning an unknown key raises
+  # +NoMethodError+, like {Options} does. +nil+ values are skipped by
+  # {#initialize}, {#update} and {#merge!} so they never overwrite an existing
+  # value, while +false+ does. {#to_hash} skips +nil+ values too.
   #
   # @example Creating a subclass
   #   class MyOptions < Faraday::BaseOptions
   #     MEMBERS = [:timeout, :open_timeout].freeze
-  #     COERCIONS = {}.freeze
   #
   #     attr_accessor :timeout, :open_timeout
   #   end
@@ -22,7 +30,7 @@ module Faraday
   # @example With nested coercion
   #   class ProxyOptions < Faraday::BaseOptions
   #     MEMBERS = [:uri].freeze
-  #     COERCIONS = { uri: URI }.freeze
+  #     COERCIONS = { uri: ->(value) { Faraday::Utils.URI(value) } }.freeze
   #
   #     attr_accessor :uri
   #   end
@@ -31,15 +39,16 @@ module Faraday
   class BaseOptions
     include OptionsLike
 
-    # Subclasses must define:
-    # - MEMBERS: Array of attribute names (symbols)
-    # - COERCIONS: Hash mapping attribute names to coercion classes
+    MEMBERS = [].freeze
+    COERCIONS = {}.freeze
 
     class << self
       # Create new instance from hash or existing instance.
       #
-      # @param value [nil, Hash, BaseOptions] the value to convert
-      # @return [BaseOptions] a new instance or the value itself if already correct type
+      # @param value [nil, Hash, OptionsLike, #to_hash] the value to convert
+      # @return [BaseOptions] the value itself if it is already an instance of
+      #   this class, a new instance otherwise
+      # @raise [ArgumentError] if the value is not supported
       #
       # @example
       #   MyOptions.from(nil) # => empty MyOptions instance
@@ -49,6 +58,7 @@ module Faraday
       def from(value)
         return value if value.is_a?(self)
         return new if value.nil?
+        raise ArgumentError, "unsupported options: #{value.class}" unless value.respond_to?(:to_hash)
 
         new(value)
       end
@@ -56,45 +66,29 @@ module Faraday
 
     # Initialize a new instance with the given options.
     #
-    # @param options_hash [Hash, #to_hash, nil] options to initialize with as positional arg
-    # @param options [Hash] options to initialize with as keyword args
-    # @return [BaseOptions] self
+    # @param options [Hash, #to_hash, nil] options to initialize with. Keyword
+    #   arguments are passed as a Hash.
+    # @raise [NoMethodError] if a key is not a member
     #
     # @example
     #   options = MyOptions.new(timeout: 10, open_timeout: 5)
-    #   options = MyOptions.new({ timeout: 10 })
-    def initialize(options_hash = nil, **options)
-      # Merge positional and keyword arguments
-      if options_hash
-        options_hash = options_hash.to_hash if options_hash.respond_to?(:to_hash)
-        options = options_hash.merge(options)
-      end
-
-      self.class::MEMBERS.each do |key|
-        value = options[key] || options[key.to_s]
-        value = coerce(key, value)
-        instance_variable_set(:"@#{key}", value)
-      end
+    #   options = MyOptions.new({ 'timeout' => 10 })
+    def initialize(options = nil)
+      update(options) if options
     end
 
     # Update this instance with values from another hash/instance.
     #
     # @param obj [Hash, #to_hash] the values to update with
     # @return [BaseOptions] self
+    # @raise [NoMethodError] if a key is not a member
     #
     # @example
     #   options = MyOptions.new(timeout: 10)
     #   options.update(timeout: 20, open_timeout: 5)
     #   options.timeout # => 20
     def update(obj)
-      obj = obj.to_hash if obj.respond_to?(:to_hash)
-      obj.each do |key, value|
-        key = key.to_sym
-        if self.class::MEMBERS.include?(key)
-          value = coerce(key, value)
-          instance_variable_set(:"@#{key}", value)
-        end
-      end
+      each_option(obj) { |key, value| write(key, value) }
       self
     end
 
@@ -114,20 +108,23 @@ module Faraday
       deep_dup.merge!(obj)
     end
 
-    # Destructive merge using {Utils.deep_merge!}.
+    # Destructive merge.
+    #
+    # Like {#update}, but Hash and {OptionsLike} values are deep-merged into
+    # the existing Hash or {OptionsLike} value of the same member, see
+    # {Utils.deep_merge}. Nested values of the receiver are replaced, not mutated.
     #
     # @param obj [Hash, #to_hash] the values to merge
     # @return [BaseOptions] self
+    # @raise [NoMethodError] if a key is not a member
     #
     # @example
     #   options = MyOptions.new(timeout: 10)
     #   options.merge!(timeout: 20)
     #   options.timeout # => 20
     def merge!(obj)
-      obj = obj.to_hash if obj.respond_to?(:to_hash)
-      hash = to_hash
-      Utils.deep_merge!(hash, obj)
-      update(hash)
+      each_option(obj) { |key, value| write(key, merge_value(public_send(key), value)) }
+      self
     end
 
     # Create a deep duplicate of this instance.
@@ -140,15 +137,13 @@ module Faraday
     #   copy.timeout = 20
     #   original.timeout # => 10 (unchanged)
     def deep_dup
-      self.class.new(
-        self.class::MEMBERS.each_with_object({}) do |key, hash|
-          value = instance_variable_get(:"@#{key}")
-          hash[key] = Utils.deep_dup(value)
-        end
-      )
+      self.class.new(Utils.deep_dup(to_hash))
     end
 
     # Convert to a hash.
+    #
+    # Members that are +nil+ are skipped, and nested {OptionsLike} values are
+    # converted to hashes too.
     #
     # @return [Hash] hash representation with symbol keys
     #
@@ -157,7 +152,8 @@ module Faraday
     #   options.to_hash # => { timeout: 10 }
     def to_hash
       self.class::MEMBERS.each_with_object({}) do |key, hash|
-        hash[key] = instance_variable_get(:"@#{key}")
+        value = public_send(key)
+        hash[key] = value.is_a?(OptionsLike) ? value.to_hash : value unless value.nil?
       end
     end
 
@@ -167,25 +163,45 @@ module Faraday
     #
     # @example
     #   options = MyOptions.new(timeout: 10)
-    #   options.inspect # => "#<MyOptions {:timeout=>10}>"
+    #   options.inspect # => "#<MyOptions timeout=10>"
     def inspect
-      "#<#{self.class} #{to_hash.inspect}>"
+      pairs = to_hash.map { |key, value| "#{key}=#{value.inspect}" }
+      "#<#{self.class} #{pairs.empty? ? '(empty)' : pairs.join(', ')}>"
     end
 
     private
 
+    # Yields each non-nil pair of +obj+ with a Symbol key.
+    def each_option(obj)
+      obj = obj.to_hash if obj.respond_to?(:to_hash)
+      obj.each do |key, value|
+        key = key.to_sym
+        unless self.class::MEMBERS.include?(key)
+          raise NoMethodError.new("unknown option #{key.inspect} for #{self.class}", :"#{key}=", receiver: self)
+        end
+
+        yield key, value unless value.nil?
+      end
+    end
+
+    def write(key, value)
+      public_send(:"#{key}=", coerce(key, value))
+    end
+
+    def merge_value(current, value)
+      mergeable = (current.is_a?(Hash) || current.is_a?(OptionsLike)) &&
+                  (value.is_a?(Hash) || value.is_a?(OptionsLike))
+      mergeable ? Utils.deep_merge(current, value.to_hash) : value
+    end
+
     # Coerce a value based on the COERCIONS configuration.
-    #
-    # @param key [Symbol] the attribute name
-    # @param value [Object] the value to coerce
-    # @return [Object] the coerced value or original if no coercion defined
     def coerce(key, value)
       coercion = self.class::COERCIONS[key]
-      return value unless coercion
-      return value if value.nil?
-      return value if value.is_a?(coercion)
-
-      coercion.from(value)
+      case coercion
+      when Class then coercion.from(value)
+      when Proc then coercion.call(value)
+      else value
+      end
     end
   end
 end

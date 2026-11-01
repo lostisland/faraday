@@ -26,6 +26,9 @@ Metrics/BlockLength:
 Metrics/ModuleLength:
   Exclude:
     - lib/faraday/options/env.rb
+Performance/RedundantMerge: # false positives: BaseOptions#merge! is not Hash#merge!
+  Exclude:
+    - spec/faraday/options/base_options_spec.rb
 Style/Documentation:
   Exclude:
     - 'spec/**/*'

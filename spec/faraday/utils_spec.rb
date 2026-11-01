@@ -138,6 +138,7 @@ RSpec.describe Faraday::Utils do
 
   describe '.deep_merge!' do
     let(:connection_options) { Faraday::ConnectionOptions.new }
+    let(:legacy_class) { Faraday::Options.new(:name, :nested) { options nested: Faraday::SSLOptions } }
     let(:url) do
       {
         url: 'http://example.com/abc',
@@ -198,10 +199,6 @@ RSpec.describe Faraday::Utils do
         expect(deep_merge.ssl.to_h).to eq(ssl)
       end
     end
-  end
-
-  describe '.deep_merge!' do
-    let(:legacy_class) { Faraday::Options.new(:name, :nested) { options nested: Faraday::SSLOptions } }
 
     it 'deep merges nested hashes' do
       target = { a: { b: 1, c: 2 }, d: 1 }
@@ -252,6 +249,91 @@ RSpec.describe Faraday::Utils do
     end
   end
 
+  describe '.deep_merge! with BaseOptions' do
+    let(:child_class) do
+      Class.new(Faraday::BaseOptions) do
+        const_set(:MEMBERS, %i[a b].freeze)
+        attr_accessor :a, :b
+      end
+    end
+    let(:parent_class) do
+      child = child_class
+      Class.new(Faraday::BaseOptions) do
+        const_set(:MEMBERS, %i[child name headers].freeze)
+        const_set(:COERCIONS, { child: child }.freeze)
+        attr_accessor :child, :name, :headers
+      end
+    end
+
+    it 'merges into a BaseOptions target and returns it' do
+      target = parent_class.new(name: 'a', child: { a: 1 })
+      result = described_class.deep_merge!(target, name: 'b', child: { b: 2 })
+
+      expect(result).to equal(target)
+      expect(target.name).to eq('b')
+      expect(target.child.to_hash).to eq(a: 1, b: 2)
+    end
+
+    it 'does not overwrite BaseOptions values with nil' do
+      target = parent_class.new(name: 'a')
+      described_class.deep_merge!(target, name: nil)
+
+      expect(target.name).to eq('a')
+    end
+
+    it 'deep merges a hash into a nested BaseOptions' do
+      target = { child: child_class.new(a: 1) }
+      described_class.deep_merge!(target, child: { b: 2 })
+
+      expect(target[:child]).to be_a(child_class)
+      expect(target[:child].to_hash).to eq(a: 1, b: 2)
+    end
+
+    it 'does not mutate a nested BaseOptions of the target' do
+      child = child_class.new(a: 1)
+      described_class.deep_merge!({ child: child }, child: { a: 2 })
+
+      expect(child.a).to eq(1)
+    end
+
+    it 'deep merges a hash into a BaseOptions nested in a legacy Options' do
+      legacy_class = Faraday::Options.new(:child)
+      target = legacy_class.new(child_class.new(a: 1))
+      described_class.deep_merge!(target, child: { b: 2 })
+
+      expect(target.child).to be_a(child_class)
+      expect(target.child.to_hash).to eq(a: 1, b: 2)
+    end
+
+    it 'deep merges a hash into a legacy Options nested in a BaseOptions' do
+      klass = Class.new(Faraday::BaseOptions) do
+        const_set(:MEMBERS, [:ssl].freeze)
+        const_set(:COERCIONS, { ssl: Faraday::SSLOptions }.freeze)
+        attr_accessor :ssl
+      end
+      target = klass.new(ssl: { ca_file: 'ca.pem' })
+      described_class.deep_merge!(target, ssl: { verify: false })
+
+      expect(target.ssl).to be_a(Faraday::SSLOptions)
+      expect(target.ssl.ca_file).to eq('ca.pem')
+      expect(target.ssl.verify).to be(false)
+    end
+
+    it 'merges string keys into nested options' do
+      target = parent_class.new(child: { a: 1 })
+      described_class.deep_merge!(target, 'child' => { 'a' => 2 })
+
+      expect(target.to_hash).to eq(child: { a: 2 })
+    end
+
+    it 'deep merges hash members' do
+      target = parent_class.new(headers: { a: 1, b: { c: 2 } })
+      described_class.deep_merge!(target, headers: { b: { d: 3 } })
+
+      expect(target.headers).to eq(a: 1, b: { c: 2, d: 3 })
+    end
+  end
+
   describe '.deep_merge' do
     it 'does not mutate a hash source' do
       source = { a: { b: 1 } }
@@ -271,6 +353,142 @@ RSpec.describe Faraday::Utils do
       expect(result.request.timeout).to eq(1)
       expect(result.request.open_timeout).to eq(2)
       expect(source.request.open_timeout).to be_nil
+    end
+  end
+
+  describe '.deep_merge with BaseOptions' do
+    let(:child_class) do
+      Class.new(Faraday::BaseOptions) do
+        const_set(:MEMBERS, %i[a b].freeze)
+        attr_accessor :a, :b
+      end
+    end
+    let(:parent_class) do
+      child = child_class
+      Class.new(Faraday::BaseOptions) do
+        const_set(:MEMBERS, %i[child headers].freeze)
+        const_set(:COERCIONS, { child: child }.freeze)
+        attr_accessor :child, :headers
+      end
+    end
+
+    it 'returns a merged copy of a BaseOptions source' do
+      source = parent_class.new(child: { a: 1 })
+      result = described_class.deep_merge(source, child: { b: 2 })
+
+      expect(result).to be_a(parent_class)
+      expect(result).not_to equal(source)
+      expect(result.child.to_hash).to eq(a: 1, b: 2)
+      expect(source.child.to_hash).to eq(a: 1)
+    end
+
+    it 'does not share nested objects with the source' do
+      source = parent_class.new(child: { a: 1 }, headers: { x: { y: 1 } })
+      result = described_class.deep_merge(source, {})
+
+      result.child.a = 2
+      result.headers[:x][:y] = 2
+
+      expect(source.child.a).to eq(1)
+      expect(source.headers).to eq(x: { y: 1 })
+    end
+
+    it 'does not overwrite values with nil' do
+      source = parent_class.new(child: { a: 1 })
+      result = described_class.deep_merge(source, child: { a: nil })
+
+      expect(result.child.a).to eq(1)
+    end
+
+    it 'deep merges a BaseOptions nested in a hash' do
+      source = { child: child_class.new(a: 1) }
+      result = described_class.deep_merge(source, child: { b: 2 })
+
+      expect(result[:child].to_hash).to eq(a: 1, b: 2)
+      expect(source[:child].to_hash).to eq(a: 1)
+    end
+  end
+
+  describe '.deep_dup' do
+    let(:options_class) do
+      Class.new(Faraday::BaseOptions) do
+        const_set(:MEMBERS, [:value].freeze)
+        attr_accessor :value
+      end
+    end
+
+    it 'duplicates hashes recursively' do
+      original = { a: { b: [1, { c: 2 }] } }
+      copy = described_class.deep_dup(original)
+
+      expect(copy).to eq(original)
+      expect(copy).not_to equal(original)
+      expect(copy[:a]).not_to equal(original[:a])
+      expect(copy[:a][:b]).not_to equal(original[:a][:b])
+      expect(copy[:a][:b][1]).not_to equal(original[:a][:b][1])
+    end
+
+    it 'duplicates arrays recursively' do
+      original = [{ a: 1 }, [2]]
+      copy = described_class.deep_dup(original)
+
+      copy[0][:a] = 3
+      copy[1] << 4
+      expect(original).to eq([{ a: 1 }, [2]])
+    end
+
+    it 'keeps the class of hash subclasses' do
+      original = Faraday::Utils::Headers.new('Content-Type' => 'text/plain')
+      copy = described_class.deep_dup(original)
+
+      expect(copy).to be_a(Faraday::Utils::Headers)
+      expect(copy['content-type']).to eq('text/plain')
+      expect(copy).not_to equal(original)
+    end
+
+    it 'deep dups BaseOptions' do
+      original = options_class.new(value: { a: [1] })
+      copy = described_class.deep_dup(original)
+
+      expect(copy).to be_a(options_class)
+      expect(copy).not_to equal(original)
+      expect(copy.value).not_to equal(original.value)
+      expect(copy.value).to eq(a: [1])
+    end
+
+    it 'deep dups legacy Options' do
+      original = Faraday::RequestOptions.new
+      original.timeout = 1
+      copy = described_class.deep_dup(original)
+
+      expect(copy).to be_a(Faraday::RequestOptions)
+      expect(copy).not_to equal(original)
+      expect(copy.timeout).to eq(1)
+    end
+
+    it 'deep dups options nested in hashes and arrays' do
+      options = options_class.new(value: 1)
+      copy = described_class.deep_dup(a: [options])
+
+      expect(copy[:a].first).not_to equal(options)
+      expect(copy[:a].first.value).to eq(1)
+    end
+
+    it 'leaves other objects as they are' do
+      proc = -> {}
+      objects = ['string', :symbol, 1, 1.5, nil, true, false, proc, Object, Object.new, $stdout, 1..2]
+
+      objects.each do |object|
+        expect(described_class.deep_dup(object)).to equal(object)
+      end
+    end
+
+    it 'does not dup objects nested in hashes' do
+      proc = -> {}
+      copy = described_class.deep_dup(callback: proc, name: 'name')
+
+      expect(copy[:callback]).to equal(proc)
+      expect(copy[:name]).to eq('name')
     end
   end
 end

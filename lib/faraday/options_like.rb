@@ -3,20 +3,13 @@
 module Faraday
   # Marker module for Options-like objects.
   #
-  # This module enables duck-typed interoperability between legacy {Options}
-  # and new {BaseOptions} classes. It provides a stable interface for:
-  # - Integration with {Utils.deep_merge!}
-  # - Type checking in option coercion logic
-  # - Uniform handling of option objects across the codebase
+  # It is included by the legacy {Options} (a Struct) and by {BaseOptions}, so
+  # code can treat both uniformly, e.g. {Utils.deep_merge!} and {Utils.deep_dup}
+  # recurse into any OptionsLike value. Including classes are expected to
+  # respond to +to_hash+ and +deep_dup+.
   #
-  # @example Including in custom options classes
-  #   class MyOptions
-  #     include Faraday::OptionsLike
-  #
-  #     def to_hash
-  #       { key: value }
-  #     end
-  #   end
+  # Utils deep merges objects that include this module with +[]+, +[]=+ and +dup+
+  # (like {Options}), or that inherit from {BaseOptions}.
   #
   # @see BaseOptions
   # @see Options
