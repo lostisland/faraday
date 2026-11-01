@@ -37,7 +37,7 @@ options.cache.class # => CacheOptions
 
 ## Behavior
 
-* `MyOptions.from(value)` returns `value` if it is already a `MyOptions`, a new empty instance for `nil`, and a new instance
+* `MyOptions.from(value)` returns a deep copy of `value` if it is already a `MyOptions` (the caller's object is never shared), a new empty instance for `nil`, and a new instance
   built from a `Hash`, another `OptionsLike` or anything that responds to `to_hash`. Other values raise `ArgumentError`.
 * `new` accepts a single optional hash, so `MyOptions.new(timeout: 5)` works too.
 * Attributes are only read and written through their public readers and writers, so a subclass can override them.

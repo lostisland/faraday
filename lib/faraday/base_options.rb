@@ -46,17 +46,17 @@ module Faraday
       # Create new instance from hash or existing instance.
       #
       # @param value [nil, Hash, OptionsLike, #to_hash] the value to convert
-      # @return [BaseOptions] the value itself if it is already an instance of
-      #   this class, a new instance otherwise
+      # @return [BaseOptions] a new instance, a deep copy if the value is
+      #   already an instance of this class, so the caller's object is never shared
       # @raise [ArgumentError] if the value is not supported
       #
       # @example
       #   MyOptions.from(nil) # => empty MyOptions instance
       #   MyOptions.from(timeout: 10) # => MyOptions with timeout=10
       #   existing = MyOptions.new(timeout: 10)
-      #   MyOptions.from(existing) # => returns existing (same instance)
+      #   MyOptions.from(existing) # => deep copy of existing
       def from(value)
-        return value if value.is_a?(self)
+        return value.deep_dup if value.is_a?(self)
         return new if value.nil?
         raise ArgumentError, "unsupported options: #{value.class}" unless value.respond_to?(:to_hash)
 

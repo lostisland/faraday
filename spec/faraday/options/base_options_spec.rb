@@ -47,9 +47,14 @@ RSpec.describe Faraday::BaseOptions do
       expect(result.timeout).to be_nil
     end
 
-    it 'returns the same instance if already an instance' do
-      original = simple_options_class.new(timeout: 10)
-      expect(simple_options_class.from(original)).to equal(original)
+    it 'returns a deep copy if already an instance' do
+      original = parent_options_class.new(nested: { value: 'a' }, headers: { a: { b: 1 } })
+      result = parent_options_class.from(original)
+
+      expect(result).not_to equal(original)
+      expect(result.to_hash).to eq(original.to_hash)
+      expect(result.nested).not_to equal(original.nested)
+      expect(result.headers[:a]).not_to equal(original.headers[:a])
     end
 
     it 'builds a new instance from a hash' do
@@ -514,9 +519,12 @@ RSpec.describe Faraday::BaseOptions do
       expect(options.nested.value).to eq('test')
     end
 
-    it 'does not coerce a value that is already of the correct type' do
+    it 'copies a value that is already of the correct type' do
       nested = nested_options_class.new(value: 'test')
-      expect(parent_options_class.new(nested: nested).nested).to equal(nested)
+      result = parent_options_class.new(nested: nested).nested
+
+      expect(result).not_to equal(nested)
+      expect(result.value).to eq('test')
     end
 
     it 'calls from on Class coercions' do
