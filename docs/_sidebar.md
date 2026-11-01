@@ -9,6 +9,7 @@
   * [Request Options](customization/request-options.md)
   * [SSL Options](customization/ssl-options.md)
   * [Proxy Options](customization/proxy-options.md)
+  * [Custom Options Classes](customization/custom-options.md)
 * Middleware
   * [Overview](middleware/index.md)
   * [Included](middleware/included/index.md)

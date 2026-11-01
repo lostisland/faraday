@@ -39,6 +39,13 @@ Specs under `spec/integration/` exercise the Options classes (`RequestOptions`, 
 - Assert on what the server saw (httpbin echoes requests; `TLSServer` echoes the client certificate and address), through real requests rather than Faraday internals. Examples must be independent and idempotent, and run within the 30s timeout the helper applies.
 - Unit tests stay in `spec/faraday/`; integration tests complement them and must not replace them.
 
+## Options Classes
+- New options classes inherit from `Faraday::BaseOptions` (see `docs/customization/custom-options.md` and `docs/options-detach-plan.md`). Do not subclass the legacy `Faraday::Options` (a Struct) for new code.
+- Define `MEMBERS` (symbols, each with a public reader and writer) and optionally `COERCIONS` (`Class` => `.from(value)`, `Proc` => `.call(value)`). `BaseOptions` reads and writes members only through the public accessors, so overrides are honored.
+- `nil` values never overwrite (`new`, `update`, `merge!`), `false` does. Keys may be strings or symbols. Unknown keys raise `NoMethodError`, like `Faraday::Options`.
+- `merge!` deep-merges nested hashes and options; `merge`/`deep_dup` share no nested objects with the original. An attribute holding an options object needs a `COERCIONS` entry to stay one through `to_hash`.
+- `Faraday::Options` and `BaseOptions` both include the marker module `Faraday::OptionsLike`. In `Faraday::Utils`, check `OptionsLike`, never `Options`.
+
 ## Documentation
 - All new public APIs must be documented with YARD-style comments.
 - Update README, changelog, or docs/ as needed for significant features or user-facing changes.
