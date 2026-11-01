@@ -1,34 +1,28 @@
 # frozen_string_literal: true
 
 RSpec.describe Faraday::BaseOptions do
-  # Test subclasses to validate BaseOptions behavior
-  # Using Test prefix to avoid conflicts with existing classes
-  module TestClasses
-    class SimpleOptions < Faraday::BaseOptions
-      MEMBERS = %i[timeout open_timeout].freeze
-      COERCIONS = {}.freeze
-
-      attr_accessor :timeout, :open_timeout
-    end
-
-    class NestedOptions < Faraday::BaseOptions
-      MEMBERS = [:value].freeze
-      COERCIONS = {}.freeze
-
+  let(:nested_options_class) do
+    Class.new(described_class) do
+      const_set(:MEMBERS, [:value].freeze)
+      const_set(:COERCIONS, {}.freeze)
       attr_accessor :value
     end
-
-    class ParentOptions < Faraday::BaseOptions
-      MEMBERS = %i[name count nested].freeze
-      COERCIONS = { nested: NestedOptions }.freeze
-
+  end
+  let(:simple_options_class) do
+    Class.new(described_class) do
+      const_set(:MEMBERS, %i[timeout open_timeout].freeze)
+      const_set(:COERCIONS, {}.freeze)
+      attr_accessor :timeout, :open_timeout
+    end
+  end
+  let(:parent_options_class) do
+    nested = nested_options_class
+    Class.new(described_class) do
+      const_set(:MEMBERS, %i[name count nested].freeze)
+      const_set(:COERCIONS, { nested: nested }.freeze)
       attr_accessor :name, :count, :nested
     end
   end
-
-  let(:simple_options_class) { TestClasses::SimpleOptions }
-  let(:nested_options_class) { TestClasses::NestedOptions }
-  let(:parent_options_class) { TestClasses::ParentOptions }
 
   describe 'OptionsLike inclusion' do
     it 'includes OptionsLike module' do
@@ -180,9 +174,7 @@ RSpec.describe Faraday::BaseOptions do
     it 'uses Utils.deep_merge! for nested structures' do
       nested = nested_options_class.new(value: 'a')
       options = parent_options_class.new(name: 'test', nested: nested)
-      # rubocop:disable Performance/RedundantMerge
-      options.merge!(nested: { value: 'b' })
-      # rubocop:enable Performance/RedundantMerge
+      options.merge!(nested: { value: 'b' }) # rubocop:disable Performance/RedundantMerge
 
       expect(options.nested).to be_a(nested_options_class)
       expect(options.nested.value).to eq('b')
@@ -280,10 +272,11 @@ RSpec.describe Faraday::BaseOptions do
 
   describe '#inspect' do
     it 'returns human-readable representation' do
+      stub_const('SimpleOptions', simple_options_class)
       options = simple_options_class.new(timeout: 10, open_timeout: 5)
       result = options.inspect
 
-      expect(result).to match(/^#<.*SimpleOptions/)
+      expect(result).to match(/^#<SimpleOptions/)
       expect(result).to include('timeout')
       expect(result).to include('10')
     end
