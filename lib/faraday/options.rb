@@ -4,6 +4,8 @@ module Faraday
   # Subclasses Struct with some special helpers for converting from a Hash to
   # a Struct.
   class Options < Struct
+    include OptionsLike
+
     # Public
     def self.from(value)
       value ? new.update(value) : new

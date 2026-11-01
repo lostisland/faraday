@@ -113,8 +113,7 @@ module Faraday
     def deep_merge!(target, hash)
       hash.each do |key, value|
         target_value = target[key]
-        mergeable = value.is_a?(Hash) &&
-                    (target_value.is_a?(Hash) || target_value.is_a?(Options) || target_value.is_a?(OptionsLike))
+        mergeable = value.is_a?(Hash) && (target_value.is_a?(Hash) || target_value.is_a?(OptionsLike))
         target[key] = mergeable ? deep_merge(target_value, value) : value
       end
       target

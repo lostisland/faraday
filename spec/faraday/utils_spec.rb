@@ -199,4 +199,78 @@ RSpec.describe Faraday::Utils do
       end
     end
   end
+
+  describe '.deep_merge!' do
+    let(:legacy_class) { Faraday::Options.new(:name, :nested) { options nested: Faraday::SSLOptions } }
+
+    it 'deep merges nested hashes' do
+      target = { a: { b: 1, c: 2 }, d: 1 }
+      result = described_class.deep_merge!(target, a: { c: 3, e: 4 }, f: 5)
+
+      expect(result).to equal(target)
+      expect(target).to eq(a: { b: 1, c: 3, e: 4 }, d: 1, f: 5)
+    end
+
+    it 'replaces a nested hash when the target value is not mergeable' do
+      target = { a: 1 }
+      described_class.deep_merge!(target, a: { b: 1 })
+
+      expect(target).to eq(a: { b: 1 })
+    end
+
+    it 'deep merges a hash into a nested legacy Options' do
+      target = { ssl: Faraday::SSLOptions.from(ca_file: 'ca_file.pem') }
+      described_class.deep_merge!(target, ssl: { verify_hostname: false })
+
+      expect(target[:ssl]).to be_a(Faraday::SSLOptions)
+      expect(target[:ssl].ca_file).to eq('ca_file.pem')
+      expect(target[:ssl].verify_hostname).to be(false)
+    end
+
+    it 'does not mutate a nested legacy Options of the target' do
+      ssl = Faraday::SSLOptions.new(true)
+      described_class.deep_merge!({ ssl: ssl }, ssl: { verify: false })
+
+      expect(ssl.verify).to be(true)
+    end
+
+    it 'replaces a legacy Options with a non-hash value' do
+      target = { ssl: Faraday::SSLOptions.new(true) }
+      described_class.deep_merge!(target, ssl: nil)
+
+      expect(target[:ssl]).to be_nil
+    end
+
+    it 'merges into a legacy Options target' do
+      target = legacy_class.new('a', Faraday::SSLOptions.from(ca_file: 'ca.pem'))
+      result = described_class.deep_merge!(target, name: 'b', nested: { verify: false })
+
+      expect(result).to equal(target)
+      expect(target.name).to eq('b')
+      expect(target.nested.verify).to be(false)
+      expect(target.nested.ca_file).to eq('ca.pem')
+    end
+  end
+
+  describe '.deep_merge' do
+    it 'does not mutate a hash source' do
+      source = { a: { b: 1 } }
+      result = described_class.deep_merge(source, a: { c: 2 })
+
+      expect(result).to eq(a: { b: 1, c: 2 })
+      expect(source).to eq(a: { b: 1 })
+    end
+
+    it 'does not mutate a legacy Options source' do
+      source = Faraday::ConnectionOptions.new
+      source.request = Faraday::RequestOptions.new
+      source.request.timeout = 1
+      result = described_class.deep_merge(source, request: { open_timeout: 2 })
+
+      expect(result).to be_a(Faraday::ConnectionOptions)
+      expect(result.request.timeout).to eq(1)
+      expect(result.request.open_timeout).to eq(2)
+      expect(source.request.open_timeout).to be_nil
+    end
+  end
 end
