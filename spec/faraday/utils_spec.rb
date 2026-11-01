@@ -225,14 +225,14 @@ RSpec.describe Faraday::Utils do
     end
 
     it 'does not mutate a nested legacy Options of the target' do
-      ssl = Faraday::SSLOptions.new(true)
+      ssl = Faraday::SSLOptions.new(verify: true)
       described_class.deep_merge!({ ssl: ssl }, ssl: { verify: false })
 
       expect(ssl.verify).to be(true)
     end
 
     it 'replaces a legacy Options with a non-hash value' do
-      target = { ssl: Faraday::SSLOptions.new(true) }
+      target = { ssl: Faraday::SSLOptions.new(verify: true) }
       described_class.deep_merge!(target, ssl: nil)
 
       expect(target[:ssl]).to be_nil
