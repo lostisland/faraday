@@ -6,6 +6,18 @@ RSpec.describe Faraday::Options do
     options c: SubOptions
   end
 
+  describe 'OptionsLike' do
+    it 'is included by Faraday::Options and its subclasses' do
+      expect(Faraday::Options.ancestors).to include(Faraday::OptionsLike)
+      expect(ParentOptions.new).to be_a(Faraday::OptionsLike)
+      expect(Faraday::ConnectionOptions.new).to be_a(Faraday::OptionsLike)
+    end
+
+    it 'is not a BaseOptions' do
+      expect(ParentOptions.new).not_to be_a(Faraday::BaseOptions)
+    end
+  end
+
   describe '.memoized' do
     let(:calls) { [] }
 
