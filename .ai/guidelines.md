@@ -44,6 +44,7 @@ Specs under `spec/integration/` exercise the Options classes (`RequestOptions`, 
 - Define `MEMBERS` (symbols, each with a public reader and writer) and optionally `COERCIONS` (`Class` => `.from(value)`, `Proc` => `.call(value)`). `BaseOptions` reads and writes members only through the public accessors, so overrides are honored.
 - `nil` values never overwrite (`new`, `update`, `merge!`), `false` does. Keys may be strings or symbols. Unknown keys raise `NoMethodError`, like `Faraday::Options`.
 - `merge!` deep-merges nested hashes and options; `merge`/`deep_dup` share no nested objects with the original. An attribute holding an options object needs a `COERCIONS` entry to stay one through `to_hash`.
+- Classes converted from `Faraday::Options` (`ProxyOptions`, `RequestOptions`, `SSLOptions`) include `Faraday::StructCompat`, which keeps the whole Struct-style API with the legacy semantics (`[]`, `[]=`, `fetch`, `key?`, `to_h`, `each`, `==`, positional `new`...), because adapters read e.g. `env[:request][:proxy][:uri]` and official adapters support every 2.x release. It is slated for removal in 3.0: new classes must not include it, and new code should use accessors.
 - `Faraday::Options` and `BaseOptions` both include the marker module `Faraday::OptionsLike`. In `Faraday::Utils`, check `OptionsLike`, never `Options`.
 
 ## Documentation
