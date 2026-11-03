@@ -20,7 +20,7 @@ module Faraday
   # - Struct-style construction: +new(true)+ sets the first member, and
   #   +new(nil)+, +from(false)+ build an empty instance;
   # - {#to_hash} keeps nested options as they are, and {#inspect} skips +false+;
-  # - Hash values are copied (shallowly) when assigned, {.from} and {#deep_dup}
+  # - Hash values are copied (shallowly) when assigned, {ClassMethods.from} and {#deep_dup}
   #   of an instance share nested options, and {#merge!} only merges members
   #   coerced with a Class (replacing every other value);
   # - +is_a?(Faraday::Options)+ and +Faraday::Options === options+ hold;
