@@ -334,6 +334,31 @@ RSpec.describe Faraday::Utils do
     end
   end
 
+  describe '.deep_merge! with options converted from Options' do
+    it 'overwrites the members with nil, like the legacy Options' do
+      target = Faraday::SSLOptions.new(verify: true, ca_file: 'ca.pem')
+      described_class.deep_merge!(target, verify: nil)
+
+      expect(target.verify).to be_nil
+      expect(target.ca_file).to eq('ca.pem')
+    end
+
+    it 'overwrites the members with nil when merging into a copy' do
+      request = Faraday::RequestOptions.new(timeout: 5)
+      merged = described_class.deep_merge(request, timeout: nil)
+
+      expect(merged.timeout).to be_nil
+      expect(request.timeout).to eq(5)
+    end
+
+    it 'overwrites nested members with nil in the connection options' do
+      conn = Faraday.new(ssl: { verify: nil }, request: { timeout: nil })
+
+      expect(conn.ssl.verify).to be_nil
+      expect(conn.options.timeout).to be_nil
+    end
+  end
+
   describe '.deep_merge' do
     it 'does not mutate a hash source' do
       source = { a: { b: 1 } }
