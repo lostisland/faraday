@@ -17,6 +17,26 @@ RSpec.describe Faraday::Response do
   it { expect(subject.headers['Content-Type']).to eq('text/plain') }
   it { expect(subject['content-type']).to eq('text/plain') }
 
+  describe '#body' do
+    context 'when a nil-status response has distinct request and response bodies' do
+      let(:env) { Faraday::Env.from(status: nil, request_body: 'request', response_body: 'response') }
+
+      it { expect(subject.body).to eq('response') }
+    end
+
+    context 'when the explicit response body is false' do
+      let(:env) { Faraday::Env.from(status: nil, request_body: 'request', response_body: false) }
+
+      it { expect(subject.body).to be(false) }
+    end
+
+    context 'when a nil-status response only has the legacy Env body' do
+      let(:env) { Faraday::Env.from(status: nil, body: 'legacy-body') }
+
+      it { expect(subject.body).to eq('legacy-body') }
+    end
+  end
+
   describe '#apply_request' do
     before { subject.apply_request(body: 'a=b', method: :post) }
 

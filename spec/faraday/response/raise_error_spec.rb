@@ -309,35 +309,52 @@ RSpec.describe Faraday::Response::RaiseError do
         b.response :json
         b.response :raise_error, **middleware_options
         b.adapter :test do |stub|
-          stub.get('invalid-json') { [200, { 'Content-Type' => 'application/json' }, 'not-json'] }
+          stub.post('invalid-json') { [200, { 'Content-Type' => 'application/json' }, 'not-json'] }
         end
       end
     end
     let(:middleware_options) { {} }
 
     subject(:perform_request) do
-      conn.get('invalid-json') do |req|
+      conn.post('invalid-json') do |req|
         req.headers['Authorization'] = 'Basic 123'
+        req.body = 'REQUEST-SECRET'
       end
     end
 
     it 'includes request info in the ParsingError' do
       expect { perform_request }.to raise_error(Faraday::ParsingError) do |ex|
         expect(ex.response.env.request_headers['Authorization']).to eq('Basic 123')
+        expect(ex.response.env.request_body).to eq('REQUEST-SECRET')
       end
     end
 
     context 'when include_request: false' do
       let(:middleware_options) { { include_request: false } }
 
-      it 'does not include request info in the ParsingError' do
+      it 'preserves the Response API without including request info in the ParsingError' do
         expect { perform_request }.to raise_error(Faraday::ParsingError) do |ex|
-          expect(ex.response.keys).to contain_exactly(:status, :headers, :body)
-          expect(ex.response[:status]).to eq(200)
-          expect(ex.response[:headers]['Content-Type']).to include('json')
-          expect(ex.response[:body]).to eq('not-json')
+          completed_env = nil
+
+          expect(ex.response).to be_a(Faraday::Response)
+          expect(ex.response.on_complete { |env| completed_env = env }).to equal(ex.response)
+          expect(completed_env).to be_a(Faraday::Env)
+          expect(ex.response.status).to eq(200)
+          expect(ex.response.headers['Content-Type']).to include('json')
+          expect(ex.response.body).to eq('not-json')
+          expect(completed_env.status).to eq(200)
+          expect(completed_env.response_headers['Content-Type']).to include('json')
+          expect(completed_env.response_body).to eq('not-json')
+          expect(completed_env.method).to be_nil
+          expect(completed_env.url).to be_nil
+          expect(completed_env.request_headers).to be_nil
+          expect(completed_env.request_body).to be_nil
+          expect(completed_env[:include_request]).to be_nil
+          expect(completed_env.response).to be_nil
           expect(ex.response.inspect).not_to include('Basic 123')
+          expect(ex.response.inspect).not_to include('REQUEST-SECRET')
           expect(ex.inspect).not_to include('Basic 123')
+          expect(ex.inspect).not_to include('REQUEST-SECRET')
         end
       end
 
@@ -363,8 +380,10 @@ RSpec.describe Faraday::Response::RaiseError do
 
         it 'does not include request info in the ParsingError either' do
           expect { perform_request }.to raise_error(Faraday::ParsingError) do |ex|
-            expect(ex.response.keys).to contain_exactly(:status, :headers, :body)
-            expect(ex.response[:body]).to be_nil
+            expect(ex.response).to be_a(Faraday::Response)
+            expect(ex.response_body).to be_nil
+            expect(ex.response.env.response_body).to be_nil
+            expect(ex.response.env.request_body).to be_nil
             expect(ex.response.inspect).not_to include('REQUEST-SECRET')
             expect(ex.inspect).not_to include('REQUEST-SECRET')
           end

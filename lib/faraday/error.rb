@@ -90,7 +90,7 @@ module Faraday
           if sanitized.equal?(exc)
             build_error_message_from_env(exc)
           else
-            build_error_message_from_hash(sanitized)
+            fallback_error_message(exc.status)
           end
         [nil, message, sanitized]
       else
@@ -101,10 +101,9 @@ module Faraday
     private
 
     # When the RaiseError middleware opted this request out of request data
-    # (`include_request: false`), it marks the Env. Replace env-carrying
-    # responses (the Response object raised by the Json middleware, or an Env
-    # passed directly) with a request-less hash so that errors raised by other
-    # middlewares (e.g. ParsingError) cannot expose request headers and body.
+    # (`include_request: false`), it marks the Env. Build a fresh Response from
+    # response fields alone to preserve APIs such as `on_complete` without
+    # retaining request fields or custom members from the original Env.
     # The body reads the explicit `response_body` member because `Env#body`
     # aliases to the request body while the status is nil.
     def omit_request_data(response)
@@ -117,7 +116,11 @@ module Faraday
         end
       return response unless env.is_a?(Faraday::Env) && env[:include_request] == false
 
-      { status: env.status, headers: env.response_headers, body: env.response_body }
+      Faraday::Response.new(
+        status: env.status,
+        response_headers: env.response_headers,
+        response_body: env.response_body
+      )
     end
 
     def build_error_message_from_hash(hash)
