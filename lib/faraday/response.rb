@@ -29,8 +29,13 @@ module Faraday
 
     def_delegator :headers, :[]
 
+    # Statusless middleware may write response bodies through `Env#body`; keep
+    # that representation working while preferring an explicit response body.
     def body
-      finished? ? env.body : nil
+      return unless finished?
+      return env.response_body unless env.response_body.nil?
+
+      env.body
     end
 
     def url
