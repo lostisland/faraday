@@ -112,13 +112,15 @@ module Faraday
     # Recursive hash update
     #
     # Hash and {OptionsLike} values of +target+ are merged with Hash values of
-    # +hash+, anything else is replaced. A {BaseOptions} target merges itself.
+    # +hash+, anything else is replaced. A {BaseOptions} target merges itself,
+    # unless it includes {StructCompat}: like the legacy {Options}, it is
+    # updated key by key, so +nil+ values are written too.
     #
     # @param target [Hash, Options, BaseOptions] the object to update
     # @param hash [Hash] the values to merge in
     # @return [Hash, Options, BaseOptions] +target+
     def deep_merge!(target, hash)
-      return target.merge!(hash) if target.is_a?(BaseOptions)
+      return target.merge!(hash) if target.is_a?(BaseOptions) && !target.is_a?(StructCompat)
 
       hash.each do |key, value|
         target_value = target[key]
@@ -153,7 +155,7 @@ module Faraday
     # A {BaseOptions} +source+ is deeply duplicated, so the result shares no
     # nested objects with it. Other sources are duplicated shallowly.
     def deep_merge(source, hash)
-      source.is_a?(BaseOptions) ? source.merge(hash) : deep_merge!(source.dup, hash)
+      source.is_a?(BaseOptions) && !source.is_a?(StructCompat) ? source.merge(hash) : deep_merge!(source.dup, hash)
     end
 
     def sort_query_params(query)

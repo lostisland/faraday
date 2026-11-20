@@ -6,6 +6,9 @@ module Faraday
   class Options < Struct
     include OptionsLike
 
+    # Options converted to BaseOptions still match, see StructCompat.
+    singleton_class.prepend(StructCompat::OptionsMatcher)
+
     # Public
     def self.from(value)
       value ? new.update(value) : new

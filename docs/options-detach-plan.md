@@ -160,7 +160,7 @@ end
   - Tests: BaseOptions unit tests; deep_merge! tests for OptionsLike
   - Docs: brief section on OptionsLike/BaseOptions
   - Research: grep for is_a?(Options) checks and update where needed
-- [ ] Convert ProxyOptions to BaseOptions (preserve behavior; drop Struct ergonomics)
+- [ ] Convert ProxyOptions to BaseOptions (preserve behavior; the Struct-style API is kept through 2.x by `Faraday::StructCompat`, removal in 3.0)
   - Files: lib/faraday/options/proxy_options.rb
   - Tests: string/URI coercion, empty string => nil (via RequestOptions#proxy=), user/password derivation
   - Research: find ProxyOptions usages and delegators (scheme/host/port/path)
