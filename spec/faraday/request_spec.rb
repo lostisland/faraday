@@ -114,6 +114,8 @@ RSpec.describe Faraday::Request do
   end
 
   it 'supports marshal serialization' do
-    expect(Marshal.load(Marshal.dump(subject))).to eq(subject)
+    copy = Marshal.load(Marshal.dump(subject))
+    expect(copy.to_h.except(:options)).to eq(subject.to_h.except(:options))
+    expect(copy.options.to_hash).to eq(subject.options.to_hash)
   end
 end
