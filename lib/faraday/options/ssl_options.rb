@@ -3,8 +3,8 @@
 module Faraday
   # SSL-related options.
   #
-  # Besides the accessors, it keeps the Struct-style API it had when it was an
-  # {Options} (+[]+, +[]=+, +fetch+, +key?+...), which adapters rely on, e.g.
+  # Besides the accessors, it keeps the Struct-style reads it had when it was an
+  # {Options} (+[]+, +fetch+, +key?+), which adapters rely on, e.g.
   # +env[:ssl].fetch(:verify, true)+, see {StructCompat}.
   class SSLOptions < BaseOptions
     include StructCompat

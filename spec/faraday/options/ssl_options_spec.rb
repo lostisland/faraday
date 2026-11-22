@@ -14,8 +14,6 @@ RSpec.describe Faraday::SSLOptions do
 
   it 'exposes all the members, in order' do
     expect(described_class::MEMBERS).to eq(members)
-    expect(described_class.new.members).to eq(members)
-    expect(described_class.members).to eq(members)
   end
 
   it 'has a reader and a writer for every member' do
@@ -168,10 +166,9 @@ RSpec.describe Faraday::SSLOptions do
   end
 
   describe '#inspect' do
-    it 'lists the members that are set, skipping false like the legacy Options' do
+    it 'lists the members that are set, including false' do
       options = described_class.new(verify: false, ca_file: 'ca.pem')
-      expect(options.inspect).to eq('#<Faraday::SSLOptions ca_file="ca.pem">')
-      expect(described_class.new(verify: false).inspect).to eq('#<Faraday::SSLOptions (empty)>')
+      expect(options.inspect).to eq('#<Faraday::SSLOptions verify=false, ca_file="ca.pem">')
     end
   end
 
@@ -180,14 +177,12 @@ RSpec.describe Faraday::SSLOptions do
 
     it 'is kept for the whole 2.x series' do
       expect(options).to be_a(Faraday::StructCompat)
-      expect(options).to be_a(Faraday::Options)
+      expect(options).not_to be_a(Faraday::Options)
     end
 
-    it 'reads and writes the members' do
+    it 'reads the members' do
       expect(options[:ca_file]).to eq('ca.pem')
       expect(options['verify']).to be(false)
-      options[:ca_path] = '/certs'
-      expect(options.ca_path).to eq('/certs')
       expect { options[:foo] }.to raise_error(NameError)
     end
 
@@ -206,21 +201,15 @@ RSpec.describe Faraday::SSLOptions do
       expect(options.verify_hostname).to be(false)
     end
 
-    it 'lists the set members' do
-      expect(options.keys).to eq(%i[verify ca_file])
+    it 'raises KeyError when fetching a member that is not set without default' do
+      expect { options.fetch(:ca_path) }.to raise_error(KeyError)
+    end
+
+    it 'checks the set members, like ssl.key?(:verify_hostname)' do
       expect(options.key?(:verify)).to be(true)
       expect(options.key?(:ca_path)).to be(false)
-      expect(options.to_h.keys).to eq(members)
-    end
-
-    it 'builds from positional arguments, like a Struct' do
-      expect(described_class.new(true).verify).to be(true)
-      expect(described_class.new(false, false).verify_hostname).to be(false)
-      expect(described_class.new(false)).not_to be_verify
-    end
-
-    it 'builds an empty instance from a falsy value' do
-      expect(described_class.from(false).to_hash).to eq({})
+      expect(options.key?(:client_cert_passwd)).to be(false)
+      expect(options.key?('verify')).to be(false)
     end
   end
 

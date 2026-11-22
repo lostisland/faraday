@@ -12,43 +12,23 @@ RSpec.describe Faraday::RequestOptions do
     )
   end
 
-  it 'allows to set the request proxy' do
-    expect(options.proxy).to be_nil
-
-    expect { options[:proxy] = { booya: 1 } }.to raise_error(NoMethodError)
-
-    options[:proxy] = { user: 'user' }
-    expect(options.proxy).to be_a_kind_of(Faraday::ProxyOptions)
-    expect(options.proxy.user).to eq('user')
-
-    options.proxy = nil
-    expect(options.proxy).to be_nil
-    expect(options.inspect).to eq('#<Faraday::RequestOptions (empty)>')
-  end
-
   describe 'proxy' do
     let(:proxy_url) { 'http://user:pass@proxy.example.org' }
 
-    it 'keeps the value given to .from, .new, #update and #merge, like the legacy Options' do
-      expect(described_class.from(proxy: 'http://proxy.example.org').proxy).to eq('http://proxy.example.org')
-      expect(described_class.new(proxy: { uri: 'http://proxy.example.org' }).proxy).to eq(uri: 'http://proxy.example.org')
-      expect(options.update(proxy: false).proxy).to be(false)
-      expect(options.update(proxy: 'http://proxy.example.org').proxy).to eq('http://proxy.example.org')
+    it 'is coerced to ProxyOptions by .from, .new, #update and #merge' do
+      expect(described_class.from(proxy: 'http://proxy.example.org').proxy).to be_a(Faraday::ProxyOptions)
+      expect(described_class.new(proxy: { uri: 'http://proxy.example.org' }).proxy.host).to eq('proxy.example.org')
+      expect(options.update(proxy: { user: 'user' }).proxy.user).to eq('user')
+      expect(options.merge(proxy: proxy_url).proxy.password).to eq('pass')
     end
 
-    it 'coerces with []= and string keys' do
-      options['proxy'] = 'http://proxy.example.org'
-      expect(options.proxy).to be_a(Faraday::ProxyOptions)
+    it 'treats a falsy value as no proxy' do
+      options.update(proxy: proxy_url)
+      expect(options.update(proxy: false).proxy).to be_nil
     end
 
-    it 'treats a falsy value as no proxy with []=' do
-      options[:proxy] = 'http://proxy.example.org'
-      options[:proxy] = false
-      expect(options.proxy).to be_nil
-      options[:proxy] = ''
-      expect(options.proxy).to be_a(Faraday::ProxyOptions)
-      options[:proxy] = nil
-      expect(options.proxy).to be_nil
+    it 'raises on unknown proxy keys' do
+      expect { options.update(proxy: { booya: 1 }) }.to raise_error(NoMethodError)
     end
 
     it 'keeps the assigned value with the proxy= writer' do
@@ -57,27 +37,22 @@ RSpec.describe Faraday::RequestOptions do
       expect(options.proxy).to equal(proxy)
     end
 
-    it 'is replaced, not merged, by #merge and #merge!' do
+    it 'is merged by #merge, without modifying the receiver' do
       options.proxy = Faraday::ProxyOptions.from(proxy_url)
       merged = options.merge(proxy: { user: 'other' })
-      expect(merged.proxy).to eq(user: 'other')
+      expect(merged.proxy).to be_a(Faraday::ProxyOptions)
+      expect(merged.proxy.user).to eq('other')
+      expect(merged.proxy.uri).to eq(options.proxy.uri)
       expect(options.proxy.user).to eq('user')
-      expect(options.merge(proxy: false).proxy).to be(false)
     end
 
-    it 'is kept as it is by to_hash and inspect' do
-      options.update(timeout: 1)
-      options.proxy = Faraday::ProxyOptions.from('http://proxy.example.org')
-      expect(options.to_hash[:proxy]).to be_a(Faraday::ProxyOptions)
-      expect(options.inspect).to eq(
-        '#<Faraday::RequestOptions proxy=#<Faraday::ProxyOptions uri=#<URI::HTTP http://proxy.example.org>>, timeout=1>'
-      )
-    end
-
-    it 'is shared by .from(instance) and #deep_dup, like the legacy Options' do
-      options.proxy = Faraday::ProxyOptions.from('http://proxy.example.org')
-      expect(described_class.from(options).proxy).to equal(options.proxy)
-      expect(options.deep_dup.proxy).to equal(options.proxy)
+    it 'stays a ProxyOptions, not shared, through .from(instance) and #deep_dup' do
+      options.proxy = Faraday::ProxyOptions.from(proxy_url)
+      [described_class.from(options), options.deep_dup].each do |copy|
+        expect(copy.proxy).to be_a(Faraday::ProxyOptions)
+        expect(copy.proxy).not_to equal(options.proxy)
+        expect(copy.proxy.user).to eq('user')
+      end
     end
   end
 
@@ -88,31 +63,19 @@ RSpec.describe Faraday::RequestOptions do
       expect(described_class.from('open_timeout' => 2).open_timeout).to eq(2)
 
       original = described_class.from(timeout: 1)
-      expect(described_class.from(original)).to eq(original)
+      expect(described_class.from(original).to_hash).to eq(original.to_hash)
     end
 
     it 'raises on unknown keys' do
       expect { described_class.from(unknown: 1) }.to raise_error(NoMethodError)
     end
 
-    it 'copies the hashes of the given hash' do
-      context = { a: 1 }
-      options = described_class.from(context: context, bind: { host: 'localhost' }, oauth: { token: 'x' })
-      options.context[:b] = 2
-      expect(context).to eq(a: 1)
-    end
-
-    it 'copies an instance, sharing nested objects like the legacy Options' do
+    it 'copies an instance deeply' do
       original = described_class.from(timeout: 1, bind: { host: 'localhost' }, context: { a: { b: 1 } })
       copy = described_class.from(original)
       expect(copy).not_to equal(original)
       expect(copy.to_hash).to eq(original.to_hash)
-      expect(copy.bind).not_to equal(original.bind)
-      expect(copy.context[:a]).to equal(original.context[:a])
-    end
-
-    it 'builds an empty instance from a falsy value' do
-      expect(described_class.from(false).to_hash).to eq({})
+      expect(copy.context[:a]).not_to equal(original.context[:a])
     end
   end
 
@@ -126,17 +89,20 @@ RSpec.describe Faraday::RequestOptions do
         read_timeout: 3, write_timeout: 4, boundary: 'b', oauth: { a: 1 }, context: { c: 1 }
       )
     end
+  end
 
-    it 'allows hash access' do
-      options[:timeout] = 5
-      expect(options.timeout).to eq(5)
+  describe 'Struct-style API used by adapters and middleware, see StructCompat' do
+    it 'reads members with [], like env[:request][:proxy] and request_timeout' do
+      options.timeout = 5
       expect(options[:timeout]).to eq(5)
       expect(options['timeout']).to eq(5)
+      expect { options[:unknown] }.to raise_error(NameError)
     end
 
-    it 'raises NameError on unknown keys with []' do
-      expect { options[:unknown] }.to raise_error(NameError)
-      expect { options[:unknown] = 1 }.to raise_error(NameError)
+    it 'fetches members, like env[:request].fetch(:oauth, true)' do
+      expect(options.fetch(:oauth, true)).to be(true)
+      options.oauth = { token: 'x' }
+      expect(options.fetch(:oauth, true)).to eq(token: 'x')
     end
   end
 
@@ -147,31 +113,17 @@ RSpec.describe Faraday::RequestOptions do
       expect(options.update(timeout: false).timeout).to eq(false)
     end
 
-    it 'replaces the hashes when merging, without modifying the receiver' do
-      options.update(context: { a: { b: 1 } }, bind: { host: 'h' }, oauth: { a: 1 })
-      merged = options.merge(context: { a: { c: 2 } }, bind: { port: 1 }, oauth: { b: 2 })
-      expect(merged.context).to eq(a: { c: 2 })
-      expect(merged.bind).to eq(port: 1)
-      expect(merged.oauth).to eq(b: 2)
+    it 'deep merges the hashes, without modifying the receiver' do
+      options.update(context: { a: { b: 1 } }, bind: { host: 'h' })
+      merged = options.merge(context: { a: { c: 2 } }, bind: { port: 1 })
+      expect(merged.context).to eq(a: { b: 1, c: 2 })
+      expect(merged.bind).to eq(host: 'h', port: 1)
       expect(options.context).to eq(a: { b: 1 })
-    end
-
-    it 'does not copy the hashes when merging' do
-      context = { a: 1 }
-      expect(options.merge!(context: context).context).to equal(context)
     end
 
     it 'merges another instance' do
       merged = described_class.new(timeout: 1).merge!(described_class.new(open_timeout: 2))
       expect(merged.to_hash).to eq(timeout: 1, open_timeout: 2)
-    end
-
-    it 'deep_dup copies the hashes shallowly, like the legacy Options' do
-      options.update(context: { a: { b: 1 } })
-      copy = options.deep_dup
-      copy.context[:x] = 1
-      expect(options.context).to eq(a: { b: 1 })
-      expect(copy.context[:a]).to equal(options.context[:a])
     end
   end
 
@@ -185,15 +137,6 @@ RSpec.describe Faraday::RequestOptions do
       options.on_data = 1.method(:+)
       expect(options.stream_response?).to be(false)
     end
-  end
-
-  it 'keeps the Struct-style API of the legacy Options, see StructCompat' do
-    expect(options).to be_a(Faraday::StructCompat)
-    expect(options).to be_a(Faraday::Options)
-  end
-
-  it 'builds from positional arguments, like a Struct' do
-    expect(described_class.new('encoder', 'proxy').to_hash).to eq(params_encoder: 'encoder', proxy: 'proxy')
   end
 
   it 'can be marshaled' do

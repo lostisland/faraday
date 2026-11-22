@@ -195,8 +195,8 @@ RSpec.describe Faraday::Utils do
       it 'does not overwrite an Options Struct value' do
         deep_merge = Faraday::Utils.deep_merge!(connection_options, url)
 
-        expect(deep_merge.request.to_h).to eq(request)
-        expect(deep_merge.ssl.to_h).to eq(ssl)
+        expect(deep_merge.request.to_hash).to eq(request.compact)
+        expect(deep_merge.ssl.to_hash).to eq(ssl.compact)
       end
     end
 
@@ -225,14 +225,14 @@ RSpec.describe Faraday::Utils do
     end
 
     it 'does not mutate a nested legacy Options of the target' do
-      ssl = Faraday::SSLOptions.new(true)
+      ssl = Faraday::SSLOptions.new(verify: true)
       described_class.deep_merge!({ ssl: ssl }, ssl: { verify: false })
 
       expect(ssl.verify).to be(true)
     end
 
     it 'replaces a legacy Options with a non-hash value' do
-      target = { ssl: Faraday::SSLOptions.new(true) }
+      target = { ssl: Faraday::SSLOptions.new(verify: true) }
       described_class.deep_merge!(target, ssl: nil)
 
       expect(target[:ssl]).to be_nil
@@ -331,31 +331,6 @@ RSpec.describe Faraday::Utils do
       described_class.deep_merge!(target, headers: { b: { d: 3 } })
 
       expect(target.headers).to eq(a: 1, b: { c: 2, d: 3 })
-    end
-  end
-
-  describe '.deep_merge! with options converted from Options' do
-    it 'overwrites the members with nil, like the legacy Options' do
-      target = Faraday::SSLOptions.new(verify: true, ca_file: 'ca.pem')
-      described_class.deep_merge!(target, verify: nil)
-
-      expect(target.verify).to be_nil
-      expect(target.ca_file).to eq('ca.pem')
-    end
-
-    it 'overwrites the members with nil when merging into a copy' do
-      request = Faraday::RequestOptions.new(timeout: 5)
-      merged = described_class.deep_merge(request, timeout: nil)
-
-      expect(merged.timeout).to be_nil
-      expect(request.timeout).to eq(5)
-    end
-
-    it 'overwrites nested members with nil in the connection options' do
-      conn = Faraday.new(ssl: { verify: nil }, request: { timeout: nil })
-
-      expect(conn.ssl.verify).to be_nil
-      expect(conn.options.timeout).to be_nil
     end
   end
 

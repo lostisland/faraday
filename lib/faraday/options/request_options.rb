@@ -10,12 +10,15 @@ module Faraday
       boundary oauth context on_data
     ].freeze
 
+    # A falsy proxy means no proxy, like the legacy +[]=+ did.
+    COERCIONS = { proxy: ->(value) { value ? ProxyOptions.from(value) : nil } }.freeze
+
     # @return [Object] the params encoder used to serialize the request params
     attr_accessor :params_encoder
 
-    # @return [ProxyOptions] proxy options for this request. Only {#[]=}
-    #   coerces the value to {ProxyOptions} (or +nil+ if it is falsy), the
-    #   other writers keep it as it is, like the legacy {Options}.
+    # @return [ProxyOptions, nil] proxy options for this request. {.from},
+    #   {#update} and {#merge} coerce the value to {ProxyOptions} (+nil+ if it
+    #   is falsy), the +proxy=+ writer does not.
     attr_accessor :proxy
 
     # @return [Hash] the local host and port to bind the connection to
@@ -46,20 +49,6 @@ module Faraday
 
     # @return [Proc] callback invoked with each chunk when streaming the response
     attr_accessor :on_data
-
-    # Writes a member, like a Hash. +:proxy+ is coerced to {ProxyOptions} (or
-    # +nil+ if falsy), other values are not coerced.
-    #
-    # @param key [Symbol, String] the member name
-    # @param value [Object] the value to set
-    # @raise [NameError] if the key is not a member
-    def []=(key, value)
-      if key && key.to_sym == :proxy
-        super(key, value ? ProxyOptions.from(value) : nil)
-      else
-        super
-      end
-    end
 
     def stream_response?
       on_data.is_a?(Proc)

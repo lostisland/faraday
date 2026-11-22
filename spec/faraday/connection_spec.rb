@@ -712,7 +712,7 @@ RSpec.describe Faraday::Connection do
       before do
         subject.headers['content-length'] = 12
         subject.params['b'] = '2'
-        subject.options[:open_timeout] = 10
+        subject.options.open_timeout = 10
       end
 
       it { expect(subject.builder.handlers.size).to eq(1) }

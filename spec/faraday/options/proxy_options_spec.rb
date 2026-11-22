@@ -73,7 +73,7 @@ RSpec.describe Faraday::ProxyOptions do
     expect(described_class.superclass).to eq(Faraday::BaseOptions)
     expect(described_class.new).to be_a(Faraday::OptionsLike)
     expect(described_class.new).to be_a(Faraday::StructCompat)
-    expect(described_class.new).to be_a(Faraday::Options)
+    expect(described_class.new).not_to be_a(Faraday::Options)
     expect(described_class::MEMBERS).to eq(%i[uri user password])
   end
 
@@ -193,45 +193,21 @@ RSpec.describe Faraday::ProxyOptions do
     end
   end
 
-  describe 'Struct-style API, see StructCompat' do
-    it 'builds from positional arguments, like a Struct' do
-      uri = URI('http://example.org')
-      expect(described_class.new(uri, 'u', 'p').to_hash).to eq(uri: uri, user: 'u', password: 'p')
-    end
-
-    it 'to_h includes nil members' do
-      expect(described_class.new.to_h).to eq(uri: nil, user: nil, password: nil)
-    end
-
-    it 'compares members for equality' do
-      expect(described_class.from('http://example.org')).to eq(described_class.from('http://example.org'))
-      expect(described_class.from('http://example.org')).not_to eq(described_class.from('http://other.org'))
-    end
-
-    it 'exposes the derived user and password through the Struct-style readers' do
-      options = described_class.from('http://u:p@example.org')
-      expect(options.values).to eq([URI('http://u:p@example.org'), 'u', 'p'])
-      expect(options.fetch(:user)).to eq('u')
-      expect(options.key?(:password)).to be(true)
-    end
-  end
-
-  describe 'hash access' do
+  describe 'Struct-style API used by adapters, see StructCompat' do
     subject(:options) { described_class.from('http://user:pass@example.org') }
 
-    it 'reads members by symbol or string' do
+    it 'reads members by symbol or string, like proxy[:uri] and proxy[:user]' do
       expect(options[:uri]).to eq(URI('http://user:pass@example.org'))
       expect(options['user']).to eq('user')
-    end
-
-    it 'writes members' do
-      options[:user] = 'other'
-      expect(options.user).to eq('other')
+      expect(options[:password]).to eq('pass')
     end
 
     it 'raises on unknown keys' do
       expect { options[:host] }.to raise_error(NameError)
-      expect { options[:host] = 'x' }.to raise_error(NameError)
+    end
+
+    it 'does not write members with []=' do
+      expect(options).not_to respond_to(:[]=)
     end
   end
 
