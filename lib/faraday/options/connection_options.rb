@@ -5,21 +5,24 @@ module Faraday
   # connection object.
   #
   # The +request+, +ssl+ and +proxy+ values are coerced by {.from}, {#update}
-  # and {#merge}. A falsy value means "not set", like the legacy Struct did:
-  # +request+ and +ssl+ then return new default instances, and +proxy+ is +nil+.
-  # The writers keep the assigned value as it is.
+  # and {#merge}. +false+ means "not set" for these members, like the legacy
+  # Struct did: {.from}, {#update} and {#merge} skip it and keep the current
+  # value. The writers keep the assigned value as it is.
+  #
+  # The +request+, +ssl+ and +builder_class+ readers assign a default when no
+  # value is set, so {#to_hash} always includes them.
   class ConnectionOptions < BaseOptions
     MEMBERS = %i[
       request proxy ssl builder url parallel_manager params headers builder_class
     ].freeze
 
     COERCIONS = {
-      request: ->(value) { value ? RequestOptions.from(value) : nil },
-      proxy: ->(value) { value ? ProxyOptions.from(value) : nil },
-      ssl: ->(value) { value ? SSLOptions.from(value) : nil }
+      request: RequestOptions,
+      proxy: ProxyOptions,
+      ssl: SSLOptions
     }.freeze
 
-    # @return [ProxyOptions] proxy options for the connection
+    # @return [ProxyOptions, nil] proxy options for the connection
     attr_accessor :proxy
 
     # @return [RackBuilder] the middleware stack builder for the connection
@@ -63,6 +66,13 @@ module Faraday
     # @return [RackBuilder]
     def new_builder(block)
       builder_class.new(&block)
+    end
+
+    private
+
+    # Skips +false+ for the coerced members, see the class documentation.
+    def write(key, value)
+      super unless value == false && COERCIONS.key?(key)
     end
   end
 end

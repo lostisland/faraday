@@ -27,9 +27,14 @@ RSpec.describe Faraday::ConnectionOptions do
       expect(options.merge(request: { open_timeout: 2 }).request.open_timeout).to eq(2)
     end
 
-    it 'treat a falsy value as not set' do
+    it 'skip false and keep the current value' do
       expect(described_class.from(request: false, ssl: false).ssl).to be_a(Faraday::SSLOptions)
-      expect(options.update(request: { timeout: 5 }).update(request: false).request.timeout).to be_nil
+      options.update(request: { timeout: 5 }, ssl: { verify: false })
+      options.update(request: false)
+      options.merge!(ssl: false, proxy: false)
+
+      expect(options.request.timeout).to eq(5)
+      expect(options.ssl.verify).to be(false)
     end
 
     it 'are deep-merged by #merge, without modifying the receiver' do
@@ -51,8 +56,10 @@ RSpec.describe Faraday::ConnectionOptions do
       expect(options.update(proxy: { uri: 'http://proxy.example.org' }).proxy).to be_a(Faraday::ProxyOptions)
     end
 
-    it 'treats a falsy value as no proxy' do
+    it 'skips false and keeps the current value' do
       expect(described_class.from(proxy: false).proxy).to be_nil
+      options.update(proxy: 'http://proxy.example.org')
+      expect(options.update(proxy: false).proxy.host).to eq('proxy.example.org')
     end
 
     it 'stays a ProxyOptions through .from(instance)' do
@@ -99,6 +106,12 @@ RSpec.describe Faraday::ConnectionOptions do
 
       expect(builder).to be_a(builder_class)
       expect(builder.handlers).to eq([Faraday::Request::UrlEncoded])
+    end
+  end
+
+  describe '#to_hash' do
+    it 'includes the defaults of request, ssl and builder_class' do
+      expect(options.to_hash).to eq(request: {}, ssl: {}, builder_class: Faraday::RackBuilder)
     end
   end
 
