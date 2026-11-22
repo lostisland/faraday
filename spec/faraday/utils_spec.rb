@@ -343,7 +343,7 @@ RSpec.describe Faraday::Utils do
       expect(source).to eq(a: { b: 1 })
     end
 
-    it 'does not mutate a legacy Options source' do
+    it 'does not mutate a ConnectionOptions source' do
       source = Faraday::ConnectionOptions.new
       source.request = Faraday::RequestOptions.new
       source.request.timeout = 1
