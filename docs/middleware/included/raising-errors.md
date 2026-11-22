@@ -95,3 +95,7 @@ When `include_request` is set to `false`, request information is omitted not onl
 middleware, but also from errors raised for the same request by other middlewares (such as `Faraday::ParsingError`
 from the `json` middleware) and from errors initialized with the request's `Faraday::Env`. Response information
 (status, headers, body) is still included, and logging middlewares are not affected by this option.
+
+When sanitizing errors initialized with a `Faraday::Response` or `Faraday::Env`, `Faraday::Error#response` is a new
+`Faraday::Response`. Its Env contains only the response status, headers, and body, so APIs such as `on_complete` remain
+available without retaining request fields or custom members from the original Env.

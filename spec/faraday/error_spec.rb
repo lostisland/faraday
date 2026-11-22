@@ -96,18 +96,51 @@ RSpec.describe Faraday::Error do
         env = Faraday::Env.from(
           status: 200,
           request_headers: { 'Authorization' => 'Bearer SECRET' },
+          request_body: 'REQUEST-SECRET',
           response_headers: { 'Content-Type' => 'application/json' },
           response_body: 'ok'
         )
         env[:include_request] = false
+        env[:custom_secret] = 'CUSTOM-SECRET'
         env
       end
 
-      it 'replaces the response with a request-less hash' do
-        expect(subject.response.keys).to contain_exactly(:status, :headers, :body)
+      it 'replaces the response with a request-less Response' do
+        sanitized_response = subject.response
+
+        expect(sanitized_response).to be_a(Faraday::Response)
+        expect(sanitized_response.env).not_to equal(response)
         expect(subject.response_status).to eq(200)
+        expect(subject.response_headers).to eq('Content-Type' => 'application/json')
         expect(subject.response_body).to eq('ok')
+        expect(sanitized_response.env.request_headers).to be_nil
+        expect(sanitized_response.env.request_body).to be_nil
+        expect(sanitized_response.env.url).to be_nil
+        expect(sanitized_response.env[:custom_secret]).to be_nil
+        expect(sanitized_response.env.response).to be_nil
         expect(subject.inspect).not_to include('SECRET')
+      end
+    end
+
+    context 'with exception and a nil-status Faraday::Response marked include_request: false' do
+      let(:exception) { RuntimeError.new('test') }
+      let(:response) do
+        env = Faraday::Env.from(
+          status: nil,
+          request_body: 'REQUEST-SECRET',
+          response_body: 'RESPONSE-BODY'
+        )
+        env[:include_request] = false
+        Faraday::Response.new(env)
+      end
+
+      it 'preserves the response body without retaining the request body' do
+        expect(subject.response).to be_a(Faraday::Response)
+        expect(subject.response.body).to eq('RESPONSE-BODY')
+        expect(subject.response_body).to eq('RESPONSE-BODY')
+        expect(subject.response.env.response_body).to eq('RESPONSE-BODY')
+        expect(subject.response.env.request_body).to be_nil
+        expect(subject.inspect).not_to include('REQUEST-SECRET')
       end
     end
 
@@ -117,17 +150,28 @@ RSpec.describe Faraday::Error do
           method: :get,
           url: URI('https://example.com/secret?api_key=SECRET'),
           request_headers: { 'Authorization' => 'Bearer SECRET' },
+          request_body: 'REQUEST-SECRET',
           status: 200,
           response_headers: { 'Content-Type' => 'application/json' },
           response_body: 'ok'
         )
         env[:include_request] = false
+        env[:custom_secret] = 'CUSTOM-SECRET'
         env
       end
 
-      it 'replaces the response with a request-less hash and message without the url' do
-        expect(subject.response.keys).to contain_exactly(:status, :headers, :body)
+      it 'replaces the response with a request-less Response and message without the url' do
+        sanitized_response = subject.response
+
+        expect(sanitized_response).to be_a(Faraday::Response)
+        expect(sanitized_response.env).not_to equal(exception)
         expect(subject.response_status).to eq(200)
+        expect(subject.response_body).to eq('ok')
+        expect(sanitized_response.env.method).to be_nil
+        expect(sanitized_response.env.url).to be_nil
+        expect(sanitized_response.env.request_headers).to be_nil
+        expect(sanitized_response.env.request_body).to be_nil
+        expect(sanitized_response.env[:custom_secret]).to be_nil
         expect(subject.message).to eq('the server responded with status 200 - method and url are not available due to include_request: false on Faraday::Response::RaiseError middleware')
         expect(subject.inspect).not_to include('SECRET')
       end
