@@ -172,7 +172,7 @@ end
   - Files: lib/faraday/options/ssl_options.rb
   - Tests: coercion, deep_dup, to_hash, lazy cert_store
   - Research: adapter interactions with SSLOptions
-- [ ] Convert ConnectionOptions to BaseOptions (coerce request/ssl; default builder_class)
+- [ ] Convert ConnectionOptions to BaseOptions (coerce request/ssl/proxy, a falsy value means not set; default builder_class; no `Faraday::StructCompat`, because no adapter or middleware uses `ConnectionOptions` or `Faraday.default_connection_options`)
   - Files: lib/faraday/options/connection_options.rb, lib/faraday.rb
   - Tests: Faraday.new/default_connection_options, deep_merge!, builder behavior
   - Research: usages of members/values/[]; migrate to explicit access

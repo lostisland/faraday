@@ -155,7 +155,7 @@ RSpec.describe Faraday::Utils do
       expect(deep_merge.headers).to eq('Mime-Version' => '1.0', user_agent: 'My Agent 1.0')
     end
 
-    context 'when a target hash has an Options Struct value' do
+    context 'when the target has nested options values' do
       let(:request) do
         {
           params_encoder: nil,
@@ -192,7 +192,7 @@ RSpec.describe Faraday::Utils do
         }
       end
 
-      it 'does not overwrite an Options Struct value' do
+      it 'deep merges into the nested options values' do
         deep_merge = Faraday::Utils.deep_merge!(connection_options, url)
 
         expect(deep_merge.request.to_hash).to eq(request.compact)
@@ -344,6 +344,18 @@ RSpec.describe Faraday::Utils do
     end
 
     it 'does not mutate a legacy Options source' do
+      legacy_class = Faraday::Options.new(:name, :nested)
+      source = legacy_class.new('a', { b: 1 })
+      result = described_class.deep_merge(source, nested: { c: 2 }, name: 'b')
+
+      expect(result).to be_a(legacy_class)
+      expect(result.name).to eq('b')
+      expect(result.nested).to eq(b: 1, c: 2)
+      expect(source.name).to eq('a')
+      expect(source.nested).to eq(b: 1)
+    end
+
+    it 'does not mutate a ConnectionOptions source' do
       source = Faraday::ConnectionOptions.new
       source.request = Faraday::RequestOptions.new
       source.request.timeout = 1
