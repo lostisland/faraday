@@ -1,149 +1,206 @@
 # frozen_string_literal: true
 
 module Faraday
-  # @!parse
-  #   # @!attribute method
-  #   #   @return [Symbol] HTTP method (`:get`, `:post`)
-  #   #
-  #   # @!attribute body
-  #   #   @return [String] The request body that will eventually be converted to a
-  #   #   string.
-  #   #
-  #   # @!attribute url
-  #   #   @return [URI] URI instance for the current request.
-  #   #
-  #   # @!attribute request
-  #   #   @return [Hash] options for configuring the request.
-  #   #   Options for configuring the request.
-  #   #
-  #   #   - `:timeout`       - time limit for the entire request (Integer in
-  #   #                        seconds)
-  #   #   - `:open_timeout`  - time limit for just the connection phase (e.g.
-  #   #                        handshake) (Integer in seconds)
-  #   #   - `:read_timeout`  - time limit for the first response byte received from
-  #   #                        the server (Integer in seconds)
-  #   #   - `:write_timeout` - time limit for the client to send the request to the
-  #   #                        server (Integer in seconds)
-  #   #   - `:on_data`       - Proc for streaming
-  #   #   - `:proxy`         - Hash of proxy options
-  #   #       - `:uri`         - Proxy server URI
-  #   #       - `:user`        - Proxy server username
-  #   #       - `:password`    - Proxy server password
-  #   #
-  #   # @!attribute request_headers
-  #   #   @return [Hash] HTTP Headers to be sent to the server.
-  #   #
-  #   # @!attribute ssl
-  #   #   @return [Hash] options for configuring SSL requests
-  #   #
-  #   # @!attribute parallel_manager
-  #   #   @return [Object] sent if the connection is in parallel mode
-  #   #
-  #   # @!attribute params
-  #   #   @return [Hash]
-  #   #
-  #   # @!attribute response
-  #   #   @return [Response]
-  #   #
-  #   # @!attribute response_headers
-  #   #   @return [Hash] HTTP headers from the server
-  #   #
-  #   # @!attribute status
-  #   #   @return [Integer] HTTP response status code
-  #   #
-  #   # @!attribute reason_phrase
-  #   #   @return [String]
-  #   class Env < Options; end
-  Env = Options.new(:method, :request_body, :url, :request,
-                    :request_headers, :ssl, :parallel_manager, :params,
-                    :response, :response_headers, :status,
-                    :reason_phrase, :response_body) do
-    const_set(:ContentLength, 'Content-Length')
-    const_set(:StatusesWithoutBody, Set.new([204, 304]))
-    const_set(:SuccessfulStatuses, 200..299)
-
-    # A Set of HTTP verbs that typically send a body.  If no body is set for
-    # these requests, the Content-Length header is set to 0.
-    const_set(:MethodsWithBodies, Set.new(Faraday::METHODS_WITH_BODY.map(&:to_sym)))
-
-    options request: RequestOptions,
-            request_headers: Utils::Headers, response_headers: Utils::Headers
-
+  # Env holds the state of one request and its response while it goes through
+  # the middleware stack.
+  #
+  # Middleware reads and writes it with the accessors or with {#[]} and
+  # {#[]=}. Keys that are not members are kept as custom members, see
+  # {#custom_members}.
+  #
+  # The +body+ key means the request body until the response has a status,
+  # and the response body after that, see {#body}. {#[]}, {#[]=} and
+  # {#delete} accept it as the Symbol +:body+ only, like the legacy Struct:
+  # the String +'body'+ is a custom member there. {.new}, {.from}, {#update},
+  # {#merge} and {#merge!} accept both.
+  #
+  # {.new}, {.from}, {#update}, {#merge} and {#merge!} coerce +request+ to
+  # {RequestOptions}, +ssl+ to {SSLOptions}, and +request_headers+ and
+  # +response_headers+ to {Utils::Headers}. +false+ means "not set" for these
+  # members: they skip it and keep the current value. They store a copy of
+  # other Hash values, and {#merge} and {#merge!} replace them instead of
+  # merging them. The writers and {#[]=} keep the assigned value as it is.
+  class Env < BaseOptions
     extend Forwardable
+
+    MEMBERS = %i[
+      method request_body url request request_headers ssl parallel_manager
+      params response response_headers status reason_phrase response_body
+    ].freeze
+
+    COERCIONS = {
+      request: RequestOptions,
+      request_headers: Utils::Headers,
+      response_headers: Utils::Headers,
+      ssl: SSLOptions
+    }.freeze
+
+    # The names are public API, so they keep the CamelCase of the legacy Struct.
+    ContentLength = 'Content-Length' # rubocop:disable Naming/ConstantName
+    StatusesWithoutBody = Set.new([204, 304])
+    SuccessfulStatuses = (200..299) # rubocop:disable Naming/ConstantName
+
+    # A Set of HTTP verbs that typically send a body. If no body is set for
+    # these requests, the Content-Length header is set to 0.
+    MethodsWithBodies = Set.new(Faraday::METHODS_WITH_BODY.map(&:to_sym))
+
+    # @return [Symbol] HTTP method (+:get+, +:post+)
+    attr_accessor :method
+
+    # @return [String, Hash] the request body, which middleware eventually
+    #   converts to a String
+    attr_accessor :request_body
+
+    # @return [URI] URI instance for the current request
+    attr_accessor :url
+
+    # @return [RequestOptions] options for configuring the request
+    attr_accessor :request
+
+    # @return [Utils::Headers] HTTP headers to be sent to the server
+    attr_accessor :request_headers
+
+    # @return [SSLOptions] options for configuring SSL requests
+    attr_accessor :ssl
+
+    # @return [Object] set if the connection is in parallel mode
+    attr_accessor :parallel_manager
+
+    # @return [Hash] the request params
+    attr_accessor :params
+
+    # @return [Response] the response, once the adapter has made one
+    attr_accessor :response
+
+    # @return [Utils::Headers] HTTP headers from the server
+    attr_accessor :response_headers
+
+    # @return [Integer] HTTP response status code
+    attr_accessor :status
+
+    # @return [String] the reason phrase of the response status
+    attr_accessor :reason_phrase
+
+    # @return [Object] the response body
+    attr_accessor :response_body
 
     def_delegators :request, :params_encoder
 
-    # Build a new Env from given value. Respects and updates `custom_members`.
+    # Builds a new Env from a Hash or from another Env.
     #
-    # @param value [Object] a value fitting Option.from(v).
-    # @return [Env] from given value
+    # A copy of an Env gets new {RequestOptions}, {SSLOptions}, headers and
+    # Hash values, and the same custom members. Other values, such as the
+    # bodies and the URL, are shared with the original.
+    #
+    # @param value [nil, Hash, Env] the values of the new Env
+    # @return [Env]
     def self.from(value)
-      env = super
-      if value.respond_to?(:custom_members)
-        env.custom_members.update(value.custom_members)
-      end
+      return super unless value.is_a?(Env)
+
+      env = new(value.to_hash)
+      env.custom_members.update(value.custom_members)
       env
     end
 
-    # @param key [Object]
-    def [](key)
-      return self[current_body] if key == :body
-
-      if in_member_set?(key)
-        super
-      else
-        custom_members[key]
-      end
+    # Builds the Env of a request. The request options, the request headers
+    # and the SSL options of the connection are used as they are, not copied.
+    #
+    # @param request [Request]
+    # @param url [URI] the full URL of the request
+    # @param connection [Connection]
+    # @return [Env]
+    # @api private
+    def self.for_request(request, url, connection)
+      env = new
+      env.method = request.http_method
+      env.request_body = request.body
+      env.url = url
+      env.request = request.options
+      env.request_headers = request.headers
+      env.ssl = connection.ssl
+      env.parallel_manager = connection.parallel_manager
+      env
     end
 
-    # @param key [Object]
-    # @param value [Object]
-    def []=(key, value)
-      if key == :body
-        super(current_body, value)
-        return
-      end
+    # @param key [Object] a member, +:body+ or a custom member
+    # @return [Object] the value, or +nil+ if a custom member is not set
+    def [](key)
+      member = member_for(key)
+      member ? public_send(member) : custom_members[key]
+    end
 
-      if in_member_set?(key)
-        super
+    # @param key [Object] a member, +:body+ or a custom member
+    # @param value [Object] the value, which is not coerced
+    def []=(key, value)
+      member = member_for(key)
+      if member
+        public_send(:"#{member}=", value)
       else
         custom_members[key] = value
       end
     end
 
-    def current_body
-      !!status ? :response_body : :request_body
+    # Unsets a member or removes a custom member.
+    #
+    # @param key [Object] a member, +:body+ or a custom member
+    # @return [Object] the value before the deletion
+    def delete(key)
+      member = member_for(key)
+      return custom_members.delete(key) unless member
+
+      value = public_send(member)
+      public_send(:"#{member}=", nil)
+      value
     end
 
+    # Reads +key+, then calls +dig+ on the value with the other keys.
+    #
+    # @example
+    #   env.dig(:response_headers, 'Content-Type')
+    def dig(key, *keys)
+      value = self[key]
+      keys.empty? || value.nil? ? value : value.dig(*keys)
+    end
+
+    # @return [Symbol] +:response_body+ if the response has a status,
+    #   +:request_body+ otherwise
+    def current_body
+      status ? :response_body : :request_body
+    end
+
+    # @return [Object] the request body, or the response body once the
+    #   response has a status
     def body
       self[:body]
     end
 
+    # Sets the request body, or the response body once the response has a
+    # status.
     def body=(value)
       self[:body] = value
     end
 
     # @return [Boolean] true if status is in the set of {SuccessfulStatuses}.
     def success?
-      Env::SuccessfulStatuses.include?(status)
+      SuccessfulStatuses.include?(status)
     end
 
     # @return [Boolean] true if there's no body yet, and the method is in the
-    # set of {Env::MethodsWithBodies}.
+    #   set of {MethodsWithBodies}.
     def needs_body?
-      !body && Env::MethodsWithBodies.include?(method)
+      !body && MethodsWithBodies.include?(method)
     end
 
     # Sets content length to zero and the body to the empty string.
     def clear_body
-      request_headers[Env::ContentLength] = '0'
+      request_headers[ContentLength] = '0'
       self.body = +''
     end
 
     # @return [Boolean] true if the status isn't in the set of
-    # {Env::StatusesWithoutBody}.
+    #   {StatusesWithoutBody}.
     def parse_body?
-      !Env::StatusesWithoutBody.include?(status)
+      !StatusesWithoutBody.include?(status)
     end
 
     # @return [Boolean] true if there is a parallel_manager
@@ -151,21 +208,16 @@ module Faraday
       !!parallel_manager
     end
 
-    def inspect
-      attrs = [nil]
-      members.each do |mem|
-        if (value = send(mem))
-          attrs << "@#{mem}=#{value.inspect}"
-        end
-      end
-      attrs << "@custom=#{custom_members.inspect}" unless custom_members.empty?
-      %(#<#{self.class}#{attrs.join(' ')}>)
-    end
-
+    # @return [Boolean] true if the request options have an +on_data+ callback
     def stream_response?
       request.stream_response?
     end
 
+    # Calls the +on_data+ callback of the request options with each chunk
+    # that the block yields, and once with an empty chunk if there is none.
+    #
+    # @yield [chunk_handler] the block that reads the response
+    # @return [Object] the value of the block
     def stream_response(&block)
       size = 0
       yielded = false
@@ -180,25 +232,85 @@ module Faraday
       block_result
     end
 
-    # @private
+    # The values of the keys that are not members, set with {#[]=}.
+    #
+    # @return [Hash]
     def custom_members
       @custom_members ||= {}
     end
 
-    # @private
-    if members.first.is_a?(Symbol)
-      def in_member_set?(key)
-        self.class.member_set.include?(key.to_sym)
-      end
-    else
-      def in_member_set?(key)
-        self.class.member_set.include?(key.to_s)
+    # Members only, nested options objects stay objects, like the legacy
+    # Struct. Custom members are not included.
+    #
+    # @return [Hash]
+    def to_hash
+      MEMBERS.each_with_object({}) do |key, hash|
+        value = public_send(key)
+        hash[key] = value unless value.nil?
       end
     end
 
-    # @private
-    def self.member_set
-      @member_set ||= Set.new(members)
+    # Like {#merge}, but changes the receiver. Only the coerced members are
+    # deep-merged, other values are replaced, like the legacy Struct did.
+    #
+    # @param obj [Hash, #to_hash] the values to merge
+    # @return [Env] self
+    def merge!(obj)
+      each_option(obj) do |key, value|
+        write(key, COERCIONS.key?(key) ? merge_value(public_send(key), value) : value)
+      end
+      self
+    end
+
+    # @return [Env] a deep copy, with a deep copy of the custom members
+    def deep_dup
+      copy = super
+      copy.custom_members.update(Utils.deep_dup(custom_members))
+      copy
+    end
+
+    def inspect
+      attrs = [nil]
+      MEMBERS.each do |member|
+        if (value = public_send(member))
+          attrs << "@#{member}=#{value.inspect}"
+        end
+      end
+      attrs << "@custom=#{custom_members.inspect}" unless custom_members.empty?
+      %(#<#{self.class}#{attrs.join(' ')}>)
+    end
+
+    private
+
+    # Returns the member for +key+, +nil+ for a custom member. The +:body+
+    # key is the current body.
+    def member_for(key)
+      return current_body if key == :body
+      return unless key.is_a?(Symbol) || key.is_a?(String)
+
+      member = key.to_sym
+      member if MEMBERS.include?(member)
+    end
+
+    # Accepts the +body+ key, see {#current_body}. The current body is read
+    # for each key, so a +status+ before +body+ makes it the response body.
+    def each_option(obj, &block)
+      obj = obj.to_hash if obj.respond_to?(:to_hash)
+      obj.each do |key, value|
+        if key.to_s == 'body'
+          yield current_body, value unless value.nil?
+        else
+          super({ key => value }, &block)
+        end
+      end
+    end
+
+    # Skips +false+ for the coerced members and copies other Hash values, see
+    # the class documentation.
+    def write(key, value)
+      return if value == false && COERCIONS.key?(key)
+
+      super(key, value.is_a?(Hash) && !COERCIONS.key?(key) ? value.dup : value)
     end
   end
 end
