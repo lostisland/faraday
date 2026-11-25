@@ -40,6 +40,7 @@ Specs under `spec/integration/` exercise the Options classes (`RequestOptions`, 
 - Unit tests stay in `spec/faraday/`; integration tests complement them and must not replace them.
 
 ## Options Classes
+- Faraday's options classes are `ConnectionOptions`, `RequestOptions`, `SSLOptions`, `ProxyOptions` (configuration) and `Env` (the state of one request, passed through the middleware stack). All of them inherit from `Faraday::BaseOptions`; the legacy `Faraday::Options` (a Struct) is kept only for third-party subclasses.
 - New options classes inherit from `Faraday::BaseOptions` (see `docs/customization/custom-options.md` and `docs/options-detach-plan.md`). Do not subclass the legacy `Faraday::Options` (a Struct) for new code.
 - Define `MEMBERS` (symbols, each with a public reader and writer) and optionally `COERCIONS` (`Class` => `.from(value)`, `Proc` => `.call(value)`). `BaseOptions` reads and writes members only through the public accessors, so overrides are honored.
 - `nil` values never overwrite (`new`, `update`, `merge!`), `false` does. Keys may be strings or symbols. Unknown keys raise `NoMethodError`, like `Faraday::Options`.

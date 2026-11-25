@@ -33,6 +33,41 @@ available after the request has been performed (i.e. in the `on_complete` callba
 | `:reason_phrase`    | `String`                   |        :x:         | :heavy_check_mark: | The response reason phrase. |
 | `:response_body`    | `String`                   |        :x:         | :heavy_check_mark: | The response body.          |
 
+## Reading and writing properties
+
+Middleware can use the readers and writers (`env.status`, `env.url = ...`) or the hash-like `[]` and `[]=`:
+
+```ruby
+env[:status]                              # same as env.status
+env[:request_headers]['X-Trace'] = 'abc'
+env[:body] = 'payload'                    # the request body before the response, the response body after
+```
+
+Keys that are not properties are kept as custom members.
+Use them to pass data between middleware:
+
+```ruby
+env[:trace_id] = 'abc-123'
+env[:trace_id]       # => "abc-123"
+env[:missing]        # => nil
+env.custom_members   # => { trace_id: "abc-123" }
+```
+
+A custom member keeps its key as given, so `env[:trace_id]` and `env['trace_id']` are two different members.
+
+The `env` object also supports these methods:
+
+| Method                    | Description                                                                                   |
+|---------------------------|-----------------------------------------------------------------------------------------------|
+| `#delete(key)`            | Unsets a property or removes a custom member, and returns its value.                          |
+| `#dig(key, *keys)`        | Reads `key`, then calls `dig` on its value, e.g. `env.dig(:response_headers, 'Content-Type')`. |
+| `#update(hash)`           | Sets the properties in `hash`. Unknown keys raise `NoMethodError`.                            |
+| `#to_hash`                | Returns the properties that are set, without the custom members.                              |
+| `Faraday::Env.from(hash)` | Builds an `env` from a `Hash` or from another `env`, e.g. in middleware tests.               |
+
+`update` and `from` convert a `Hash` under `:request`, `:ssl`, `:request_headers` or `:response_headers`
+to the type listed above. `[]=` and the writers store the value as it is.
+
 ## Helpers
 
 The `env` object also provides some helper methods to make it easier to work with the properties.
