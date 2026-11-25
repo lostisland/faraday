@@ -72,10 +72,10 @@ Other decoders can be used by specifying `decoder` parser option for the middlew
 require 'oj'
 
 Faraday.new(...) do |f|
-  f.response :json, parser_options: { decoder: Oj }
+  f.response :json, parser_options: { decoder: [Oj, :safe_load] }
 end
 
 Faraday.new(...) do |f|
-  f.response :json, parser_options: { decoder: [Oj, :load] }
+  f.response :json, parser_options: { decoder: [Oj, :strict_load] }
 end
 ```
