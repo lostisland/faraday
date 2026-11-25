@@ -195,6 +195,14 @@ RSpec.describe Faraday::SSLOptions do
       expect(klass.new(ca_file: 'ca.pem')[:ca_file]).to eq('overridden')
     end
 
+    it 'writes members with []=, like conn.ssl[:verify] = false' do
+      options[:verify] = true
+      options['ca_file'] = 'other.pem'
+      expect(options.verify?).to be(true)
+      expect(options.ca_file).to eq('other.pem')
+      expect { options[:foo] = 1 }.to raise_error(NameError)
+    end
+
     it 'fetches members the way adapters do' do
       expect(options.fetch(:verify, true)).to be(false)
       expect(options.fetch(:verify_hostname, false)).to be(false)

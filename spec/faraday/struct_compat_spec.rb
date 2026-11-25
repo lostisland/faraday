@@ -33,6 +33,27 @@ RSpec.describe Faraday::StructCompat do
     end
   end
 
+  describe '#[]=' do
+    it 'writes members with symbol or string keys, through the writers' do
+      options[:a] = 1
+      options['b'] = 'set'
+      expect(options.a).to eq(1)
+      expect(options.b).to eq('set')
+    end
+
+    it 'assigns nil and false, unlike update' do
+      options[:a] = 1
+      options[:a] = nil
+      expect(options.a).to be_nil
+      options[:a] = false
+      expect(options.a).to be(false)
+    end
+
+    it 'raises NameError on unknown keys' do
+      expect { options[:c] = 1 }.to raise_error(NameError, "no member 'c' in struct")
+    end
+  end
+
   describe '#fetch' do
     it 'returns a set member, even false' do
       expect(options.fetch(:a, true)).to be(false)
