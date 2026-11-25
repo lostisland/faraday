@@ -176,8 +176,8 @@ end
   - Files: lib/faraday/options/connection_options.rb, lib/faraday.rb
   - Tests: Faraday.new/default_connection_options, deep_merge!, builder behavior
   - Research: usages of members/values/[]; migrate to explicit access
-- [ ] Convert Env (last; preserve middleware hash-like API)
-  - Files: lib/faraday/options/env.rb
+- [ ] Convert Env (last; preserve middleware hash-like API: `[]`/`[]=` with custom members and the `body` key, `delete`, `dig`, `update`, `to_hash`, `dup`; coerce request/ssl/headers, a falsy value means not set; no `Faraday::StructCompat`)
+  - Files: lib/faraday/options/env.rb, lib/faraday/rack_builder.rb, lib/faraday/request.rb
   - Tests: env and middleware integration
   - Research: env[:key] usages; avoid breaking third-party middleware
 - [ ] Optional: Deprecate Options.memoized macro (new classes don't use it)

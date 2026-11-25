@@ -213,9 +213,7 @@ module Faraday
         request.options.params_encoder
       )
 
-      Env.new(request.http_method, request.body, exclusive_url,
-              request.options, request.headers, connection.ssl,
-              connection.parallel_manager)
+      Env.for_request(request, exclusive_url, connection)
     end
 
     private
