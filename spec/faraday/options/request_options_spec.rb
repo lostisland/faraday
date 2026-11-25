@@ -99,6 +99,22 @@ RSpec.describe Faraday::RequestOptions do
       expect { options[:unknown] }.to raise_error(NameError)
     end
 
+    it 'writes members with []=, like conn.options[:timeout] = 5' do
+      options[:timeout] = 5
+      options['open_timeout'] = 2
+      expect(options.timeout).to eq(5)
+      expect(options.open_timeout).to eq(2)
+      expect { options[:unknown] = 1 }.to raise_error(NameError)
+    end
+
+    it 'coerces the proxy written with []=, like the legacy RequestOptions' do
+      options[:proxy] = 'http://proxy.example.org'
+      expect(options.proxy).to be_a(Faraday::ProxyOptions)
+      expect(options.proxy.uri).to eq(URI('http://proxy.example.org'))
+      options[:proxy] = false
+      expect(options.proxy).to be_nil
+    end
+
     it 'fetches members, like env[:request].fetch(:oauth, true)' do
       expect(options.fetch(:oauth, true)).to be(true)
       options.oauth = { token: 'x' }

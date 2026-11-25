@@ -4,11 +4,11 @@ module Faraday
   # The part of the Struct-style API of the legacy {Options} that adapters and
   # middleware still use on the {BaseOptions} subclasses converted from it
   # ({ProxyOptions}, {RequestOptions}, {SSLOptions}), e.g.
-  # +env[:request][:proxy][:uri]+, +env[:ssl].fetch(:verify, true)+ or
-  # +ssl.key?(:verify_hostname)+.
+  # +env[:request][:proxy][:uri]+, +env[:ssl].fetch(:verify, true)+,
+  # +ssl.key?(:verify_hostname)+ or +conn.options[:timeout] = 5+.
   #
   # Official adapters support every Faraday 2.x, so it is kept for the whole
-  # 2.x series. Reads go through the public accessors of the members.
+  # 2.x series. Reads and writes go through the public accessors of the members.
   #
   # @deprecated Slated for removal in Faraday 3.0, use the accessors of the
   #   options instead. There is no runtime warning yet.
@@ -22,6 +22,19 @@ module Faraday
     # @raise [NameError] if +key+ is not a member
     def [](key)
       public_send(member_for(key))
+    end
+
+    # Sets a member, like +conn.options[:timeout] = 5+ or
+    # +conn.ssl[:verify] = false+. The value is coerced like {BaseOptions#update}
+    # does (e.g. a +proxy+ Hash or String becomes {ProxyOptions}), but +nil+ is
+    # assigned instead of skipped, like the legacy Struct.
+    #
+    # @param key [Symbol, String] a member
+    # @param value [Object] the new value
+    # @raise [NameError] if +key+ is not a member
+    def []=(key, value)
+      member = member_for(key)
+      public_send(:"#{member}=", value.nil? ? nil : coerce(member, value))
     end
 
     # Returns the value of a member. A member that is not set (+nil+) is set to
