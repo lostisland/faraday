@@ -119,11 +119,11 @@ module Faraday
     end
 
     def prepare_context(context, subkey, is_array, last_subkey)
+      if context.is_a?(Array) && !subkey.empty?
+        context = match_context(context, subkey, is_array: is_array)
+      end
       if !last_subkey || is_array
         context = new_context(subkey, is_array, context)
-      end
-      if context.is_a?(Array) && !is_array
-        context = match_context(context, subkey)
       end
       context
     end
@@ -138,8 +138,10 @@ module Faraday
       context[subkey] ||= value_type.new
     end
 
-    def match_context(context, subkey)
-      context << {} if !context.last.is_a?(Hash) || context.last.key?(subkey)
+    def match_context(context, subkey, is_array: false)
+      start_new_entry = !context.last.is_a?(Hash) ||
+                        (context.last.key?(subkey) && !is_array)
+      context << {} if start_new_entry
       context.last
     end
 
