@@ -9,14 +9,17 @@ module Faraday
   # {#custom_members}.
   #
   # The +body+ key means the request body until the response has a status,
-  # and the response body after that, see {#body}. {.from}, {#update},
-  # {#merge} and {#[]} accept it too.
+  # and the response body after that, see {#body}. {#[]}, {#[]=} and
+  # {#delete} accept it as the Symbol +:body+ only, like the legacy Struct:
+  # the String +'body'+ is a custom member there. {.new}, {.from}, {#update},
+  # {#merge} and {#merge!} accept both.
   #
-  # {.from}, {#update} and {#merge} coerce +request+ to {RequestOptions},
-  # +ssl+ to {SSLOptions}, and +request_headers+ and +response_headers+ to
-  # {Utils::Headers}. +false+ means "not set" for these members: they skip it
-  # and keep the current value. The writers and {#[]=} keep the assigned value
-  # as it is.
+  # {.new}, {.from}, {#update}, {#merge} and {#merge!} coerce +request+ to
+  # {RequestOptions}, +ssl+ to {SSLOptions}, and +request_headers+ and
+  # +response_headers+ to {Utils::Headers}. +false+ means "not set" for these
+  # members: they skip it and keep the current value. They store a copy of
+  # other Hash values, and {#merge} and {#merge!} replace them instead of
+  # merging them. The writers and {#[]=} keep the assigned value as it is.
   class Env < BaseOptions
     extend Forwardable
 
@@ -86,15 +89,15 @@ module Faraday
     # Builds a new Env from a Hash or from another Env.
     #
     # A copy of an Env gets new {RequestOptions}, {SSLOptions}, headers and
-    # Hash values, and the same custom members. Other values are shared with
-    # the original.
+    # Hash values, and the same custom members. Other values, such as the
+    # bodies and the URL, are shared with the original.
     #
     # @param value [nil, Hash, Env] the values of the new Env
     # @return [Env]
     def self.from(value)
       return super unless value.is_a?(Env)
 
-      env = new(value.to_hash.transform_values { |v| v.is_a?(Hash) ? v.dup : v })
+      env = new(value.to_hash)
       env.custom_members.update(value.custom_members)
       env
     end
@@ -119,14 +122,14 @@ module Faraday
       env
     end
 
-    # @param key [Symbol, String] a member, +:body+ or a custom member
+    # @param key [Object] a member, +:body+ or a custom member
     # @return [Object] the value, or +nil+ if a custom member is not set
     def [](key)
       member = member_for(key)
       member ? public_send(member) : custom_members[key]
     end
 
-    # @param key [Symbol, String] a member, +:body+ or a custom member
+    # @param key [Object] a member, +:body+ or a custom member
     # @param value [Object] the value, which is not coerced
     def []=(key, value)
       member = member_for(key)
@@ -139,7 +142,7 @@ module Faraday
 
     # Unsets a member or removes a custom member.
     #
-    # @param key [Symbol, String] a member, +:body+ or a custom member
+    # @param key [Object] a member, +:body+ or a custom member
     # @return [Object] the value before the deletion
     def delete(key)
       member = member_for(key)
@@ -247,6 +250,18 @@ module Faraday
       end
     end
 
+    # Like {#merge}, but changes the receiver. Only the coerced members are
+    # deep-merged, other values are replaced, like the legacy Struct did.
+    #
+    # @param obj [Hash, #to_hash] the values to merge
+    # @return [Env] self
+    def merge!(obj)
+      each_option(obj) do |key, value|
+        write(key, COERCIONS.key?(key) ? merge_value(public_send(key), value) : value)
+      end
+      self
+    end
+
     # @return [Env] a deep copy, with a deep copy of the custom members
     def deep_dup
       copy = super
@@ -290,9 +305,12 @@ module Faraday
       end
     end
 
-    # Skips +false+ for the coerced members, see the class documentation.
+    # Skips +false+ for the coerced members and copies other Hash values, see
+    # the class documentation.
     def write(key, value)
-      super unless value == false && COERCIONS.key?(key)
+      return if value == false && COERCIONS.key?(key)
+
+      super(key, value.is_a?(Hash) && !COERCIONS.key?(key) ? value.dup : value)
     end
   end
 end

@@ -145,6 +145,45 @@ RSpec.describe Faraday::Env do
     end
   end
 
+  describe '#update' do
+    it 'stores a copy of Hash values' do
+      params = { a: 1 }
+      env.update(params: params, request_body: { b: 2 })
+      params[:c] = 3
+
+      expect(env.params).to eq(a: 1)
+      expect(env.request_body).to eq(b: 2)
+    end
+  end
+
+  describe '#merge!' do
+    it 'deep-merges the coerced members and replaces other Hash values' do
+      env.update(request: { timeout: 5 }, request_headers: { 'X-A' => '1' }, params: { a: 1 },
+                 request_body: { b: 1 })
+      env.merge!(request: { open_timeout: 2 }, request_headers: { 'X-B' => '2' }, params: { c: 3 },
+                 body: { d: 4 })
+
+      expect(env.request.timeout).to eq(5)
+      expect(env.request.open_timeout).to eq(2)
+      expect(env.request_headers).to eq('X-A' => '1', 'X-B' => '2')
+      expect(env.params).to eq(c: 3)
+      expect(env.request_body).to eq(d: 4)
+    end
+  end
+
+  describe '#dup' do
+    it 'lets the copy unset members without changing the original' do
+      env.update(status: 301, response_headers: { 'Location' => '/new' })
+      copy = env.dup
+
+      copy.delete(:status)
+      copy.delete(:response_headers)
+
+      expect(env.status).to eq(301)
+      expect(env.response_headers).to eq('Location' => '/new')
+    end
+  end
+
   describe '#delete' do
     it 'unsets members, the body and custom members, and returns the value' do
       env.update(status: 200, response_body: 'body', request_body: 'request')
@@ -276,7 +315,7 @@ RSpec.describe Faraday::Env do
       env.update(method: :get, status: 200)
       env[:custom] = 1
 
-      expect(env.inspect).to eq('#<Faraday::Env @method=:get @status=200 @custom={custom: 1}>')
+      expect(env.inspect).to eq("#<Faraday::Env @method=:get @status=200 @custom=#{{ custom: 1 }.inspect}>")
     end
   end
 
