@@ -39,7 +39,10 @@ module Faraday
   class BaseOptions
     include OptionsLike
 
+    # The attribute names, in order. Subclasses override it.
     MEMBERS = [].freeze
+
+    # The coercion of each attribute that has one. Subclasses can override it.
     COERCIONS = {}.freeze
 
     class << self

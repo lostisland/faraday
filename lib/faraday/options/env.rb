@@ -269,6 +269,8 @@ module Faraday
       copy
     end
 
+    # @return [String] the set members and the custom members, like the
+    #   legacy Struct
     def inspect
       attrs = [nil]
       MEMBERS.each do |member|
