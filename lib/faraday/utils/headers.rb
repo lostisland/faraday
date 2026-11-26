@@ -106,7 +106,7 @@ module Faraday
       end
 
       def include?(key)
-        @names.include? key.downcase
+        @names.include? KeyMap[key].downcase
       end
 
       alias has_key? include?

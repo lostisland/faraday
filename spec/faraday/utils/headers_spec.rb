@@ -23,6 +23,34 @@ RSpec.describe Faraday::Utils::Headers do
     it { is_expected.to include('content-type') }
   end
 
+  describe 'looking up a header with a symbol' do
+    subject(:headers) { described_class.new('Content-Type' => 'application/json', 'X-Nil' => nil) }
+
+    it 'finds it like #[] and #fetch do' do
+      expect(headers[:content_type]).to eq('application/json')
+      expect(headers.fetch(:content_type)).to eq('application/json')
+      expect(headers).to include(:content_type)
+    end
+
+    it 'finds it with each alias of #include?' do
+      expect(headers.key?(:content_type)).to be(true)
+      expect(headers.member?(:content_type)).to be(true)
+      expect(headers.has_key?(:content_type)).to be(true) # rubocop:disable Style/PreferredHashMethods
+    end
+
+    it 'finds a header whose value is nil' do
+      expect(headers.key?(:x_nil)).to be(true)
+    end
+
+    it 'does not find a header that is not set' do
+      expect(headers.key?(:x_missing)).to be(false)
+    end
+
+    it 'does not raise for a key that is neither a string nor a symbol' do
+      expect(headers.key?(1)).to be(false)
+    end
+  end
+
   describe 'Hash mutators keeping the name index in sync' do
     subject(:headers) { described_class.new('X-Keep' => '1', 'X-Drop' => '2', 'X-Nil' => nil) }
 
