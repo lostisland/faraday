@@ -174,6 +174,17 @@ module Faraday
       self.class::MEMBERS.all? { |key| public_send(key).nil? }
     end
 
+    # Every member and its value, +nil+ included, like +to_h+ of the legacy
+    # {Options} Structs. Nested options stay objects. {#to_hash} leaves out
+    # +nil+ values and converts nested options to hashes.
+    #
+    # @yield [key, value] optional, returns the pair to use, like +Hash#to_h+
+    # @return [Hash] a Hash with symbol keys
+    def to_h(&block)
+      hash = self.class::MEMBERS.to_h { |key| [key, public_send(key)] }
+      block ? hash.to_h(&block) : hash
+    end
+
     # Inspect the instance.
     #
     # @return [String] human-readable representation

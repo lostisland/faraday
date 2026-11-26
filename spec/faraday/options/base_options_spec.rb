@@ -526,6 +526,22 @@ RSpec.describe Faraday::BaseOptions do
     end
   end
 
+  describe '#to_h' do
+    it 'returns every member, nil included, like Struct#to_h' do
+      expect(simple_options_class.new(timeout: 5).to_h).to eq(timeout: 5, open_timeout: nil)
+    end
+
+    it 'keeps nested options as objects' do
+      options = parent_options_class.new(nested: { value: 1 })
+      expect(options.to_h[:nested]).to be_a(nested_options_class)
+    end
+
+    it 'maps the pairs with a block, like Hash#to_h' do
+      hash = simple_options_class.new(timeout: 5).to_h { |key, value| [key.to_s, value] }
+      expect(hash).to eq('timeout' => 5, 'open_timeout' => nil)
+    end
+  end
+
   describe '#inspect' do
     it 'lists the members that are set' do
       stub_const('SimpleOptions', simple_options_class)
