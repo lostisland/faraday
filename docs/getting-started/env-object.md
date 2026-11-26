@@ -77,7 +77,7 @@ The `env` object also provides some helper methods to make it easier to work wit
 | `#body`/`#current_body` | Returns the request or response body, based on the presence of `#status`.                        |
 | `#success?`             | Returns `true` if the response status is in the 2xx range.                                       |
 | `#needs_body?`          | Returns `true` if there's no body yet, and the method is in the set of `Env::MethodsWithBodies`. |
-| `#clear_body`           | Clears the body, if it's present. That includes resetting the `Content-Length` header.           |
+| `#clear_body`           | Sets the body to the empty string. Adapters decide whether to send a `Content-Length` header.    |
 | `#parse_body?`          | Returns `true` unless the status indicates otherwise (e.g. 204, 304).                            |
 | `#parallel?`            | Returns `true` if a parallel manager is available.                                               |
 | `#stream_response?`     | Returns `true` if the `on_data` streaming callback has been provided.                            |
