@@ -218,6 +218,19 @@ RSpec.describe Faraday::Env do
     end
   end
 
+  describe '#to_h' do
+    it 'returns every member, nil included, like ruby_llm reads env.to_h' do
+      env = described_class.from(request_body: 'prompt', request_headers: {})
+      expect(env.to_h.values_at(:request_body, :request_headers, :status)).to eq(['prompt', {}, nil])
+    end
+
+    it 'leaves out custom members, like the legacy Struct' do
+      env = described_class.new
+      env[:custom] = 1
+      expect(env.to_h).not_to have_key(:custom)
+    end
+  end
+
   describe '#deep_dup and #merge' do
     it 'copy the custom members' do
       env[:list] = [1]

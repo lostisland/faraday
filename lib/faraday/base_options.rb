@@ -43,6 +43,17 @@ module Faraday
     COERCIONS = {}.freeze
 
     class << self
+      # The member names, like +members+ of the legacy {Options} Structs.
+      # Gems use it to check what this Faraday version supports, e.g.
+      # +Faraday::SSLOptions.members.include?(:verify_hostname)+.
+      #
+      # @deprecated Slated for removal in Faraday 3.0, use +MEMBERS+, or
+      #   +method_defined?+ to check for a member. There is no runtime warning yet.
+      # @return [Array<Symbol>] a new Array, so the caller can change it
+      def members
+        self::MEMBERS.dup
+      end
+
       # Create new instance from hash or existing instance.
       #
       # @param value [nil, Hash, OptionsLike, #to_hash] the value to convert
@@ -155,6 +166,29 @@ module Faraday
         value = public_send(key)
         hash[key] = value.is_a?(OptionsLike) ? value.to_hash : value unless value.nil?
       end
+    end
+
+    # Whether no member is set, like +empty?+ of the legacy {Options}
+    # Structs, e.g. +conn.ssl.empty?+. A member set to +false+ counts as set.
+    #
+    # @deprecated Slated for removal in Faraday 3.0, use +to_hash.empty?+
+    #   instead. There is no runtime warning yet.
+    # @return [Boolean] true if every member is +nil+
+    def empty?
+      self.class::MEMBERS.all? { |key| public_send(key).nil? }
+    end
+
+    # Every member and its value, +nil+ included, like +to_h+ of the legacy
+    # {Options} Structs. Nested options stay objects. {#to_hash} leaves out
+    # +nil+ values and converts nested options to hashes.
+    #
+    # @deprecated Slated for removal in Faraday 3.0, use {#to_hash} instead.
+    #   There is no runtime warning yet.
+    # @yield [key, value] optional, returns the pair to use, like +Hash#to_h+
+    # @return [Hash] a Hash with symbol keys
+    def to_h(&block)
+      hash = self.class::MEMBERS.to_h { |key| [key, public_send(key)] }
+      block ? hash.to_h(&block) : hash
     end
 
     # Inspect the instance.
