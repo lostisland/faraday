@@ -295,6 +295,7 @@ RSpec.describe Faraday::Adapter::Test do
       described_class::Stubs.new(strict_mode: true) do |stubs|
         stubs.get('/strict?a=12&b=xy', 'Authorization' => 'Bearer m_ck', 'X-C' => 'hello') { [200, {}, 'a'] }
         stubs.get('/with_user_agent?a=12&b=xy', authorization: 'Bearer m_ck', 'User-Agent' => 'My Agent') { [200, {}, 'a'] }
+        stubs.get('/mixed_case?a=12&b=xy', 'content-type' => 'application/json') { [200, {}, 'a'] }
       end
     end
 
@@ -308,6 +309,18 @@ RSpec.describe Faraday::Adapter::Test do
       subject(:request) { connection.get('/with_user_agent', { a: '12', b: 'xy' }, { authorization: 'Bearer m_ck', 'User-Agent' => 'My Agent' }) }
 
       it { expect(request.status).to eq 200 }
+    end
+
+    context 'when a stub header name differs in case from the request header' do
+      subject(:request) { connection.get('/mixed_case', { a: '12', b: 'xy' }, { 'Content-Type' => 'application/json' }) }
+
+      it { expect(request.status).to eq 200 }
+    end
+
+    context 'when a stub header name differs in case and the value differs' do
+      subject(:request) { connection.get('/mixed_case', { a: '12', b: 'xy' }, { 'Content-Type' => 'text/plain' }) }
+
+      it { expect { request }.to raise_error described_class::Stubs::NotFound }
     end
 
     shared_examples 'raise NotFound when params do not satisfy the strict check' do |params|

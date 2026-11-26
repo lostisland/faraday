@@ -239,12 +239,19 @@ module Faraday
               #       Users would not want to set Faraday's User-Agent explicitly.
               hs[:user_agent] ||= Connection::USER_AGENT
             end
-            return Set.new(headers_with_user_agent) == Set.new(request_headers)
+            return header_set(headers_with_user_agent) == header_set(request_headers)
           end
 
           headers.keys.all? do |key|
             request_headers[key] == headers[key]
           end
+        end
+
+        # Header names are case-insensitive, so compare them lowercased rather
+        # than making the spelling of a stub depend on the spelling the request
+        # middleware happened to use. Values stay case-sensitive.
+        def header_set(values)
+          Set.new(values.map { |key, value| [key.to_s.downcase, value] })
         end
 
         def body_match?(request_body)
