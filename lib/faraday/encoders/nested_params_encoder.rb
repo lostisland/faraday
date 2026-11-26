@@ -109,6 +109,7 @@ module Faraday
       validate_params_depth!(subkeys.length)
 
       subkeys.each_with_index do |subkey, i|
+        context = array_entry(context, subkeys[i..]) if context.is_a?(Array)
         is_array = subkey =~ /[\[\]]+\Z/
         subkey = Regexp.last_match.pre_match if is_array
         last_subkey = i == subkeys.length - 1
@@ -121,9 +122,6 @@ module Faraday
     def prepare_context(context, subkey, is_array, last_subkey)
       if !last_subkey || is_array
         context = new_context(subkey, is_array, context)
-      end
-      if context.is_a?(Array) && !is_array
-        context = match_context(context, subkey)
       end
       context
     end
@@ -138,9 +136,25 @@ module Faraday
       context[subkey] ||= value_type.new
     end
 
-    def match_context(context, subkey)
-      context << {} if !context.last.is_a?(Hash) || context.last.key?(subkey)
-      context.last
+    # Returns the hash in the array that the remaining subkeys go into.
+    # Like Rack::Utils.parse_nested_query, this is the last element of the
+    # array if it is a hash that does not yet hold the full path of the
+    # remaining subkeys. Otherwise the subkeys start a new hash.
+    def array_entry(array, subkeys)
+      array << {} unless array.last.is_a?(Hash) && !key_path?(array.last, subkeys)
+      array.last
+    end
+
+    # A path that goes through an array never matches, because the array
+    # takes one more value instead, as in Rack.
+    def key_path?(hash, subkeys)
+      return false if subkeys.any? { |subkey| subkey.end_with?('[]') }
+
+      subkeys.all? do |subkey|
+        found = hash.is_a?(Hash) && hash.key?(subkey)
+        hash = hash[subkey] if found
+        found
+      end
     end
 
     def add_to_context(is_array, context, value, subkey)
