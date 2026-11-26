@@ -43,6 +43,15 @@ module Faraday
     COERCIONS = {}.freeze
 
     class << self
+      # The member names, like +members+ of the legacy {Options} Structs.
+      # Gems use it to check what this Faraday version supports, e.g.
+      # +Faraday::SSLOptions.members.include?(:verify_hostname)+.
+      #
+      # @return [Array<Symbol>] a new Array, so the caller can change it
+      def members
+        self::MEMBERS.dup
+      end
+
       # Create new instance from hash or existing instance.
       #
       # @param value [nil, Hash, OptionsLike, #to_hash] the value to convert

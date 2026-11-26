@@ -16,6 +16,11 @@ RSpec.describe Faraday::SSLOptions do
     expect(described_class::MEMBERS).to eq(members)
   end
 
+  it 'lists the members on the class, like elastic-transport checks for verify_hostname' do
+    expect(described_class.members).to eq(members)
+    expect(described_class.members.include?(:verify_hostname)).to be(true)
+  end
+
   it 'has a reader and a writer for every member' do
     options = described_class.new
     members.each_with_index do |member, index|

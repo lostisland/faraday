@@ -40,6 +40,24 @@ RSpec.describe Faraday::BaseOptions do
     end
   end
 
+  describe '.members' do
+    it 'returns the members, like Struct.members' do
+      expect(simple_options_class.members).to eq(%i[timeout open_timeout])
+    end
+
+    it 'returns a copy the caller can change' do
+      simple_options_class.members << :other
+      expect(simple_options_class.members).to eq(%i[timeout open_timeout])
+    end
+
+    it 'is available on every options class converted from a Struct' do
+      [Faraday::Env, Faraday::ConnectionOptions, Faraday::RequestOptions, Faraday::SSLOptions,
+       Faraday::ProxyOptions].each do |klass|
+        expect(klass.members).to eq(klass::MEMBERS)
+      end
+    end
+  end
+
   describe '.from' do
     it 'returns a new instance for nil' do
       result = simple_options_class.from(nil)
