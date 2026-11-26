@@ -246,6 +246,17 @@ RSpec.describe Faraday::Utils::Headers do
     end
   end
 
+  describe '#equivalent?' do
+    subject(:headers) { described_class.new('Content-Type' => 'application/json', 'X-Id' => 'a') }
+
+    it { is_expected.to be_equivalent('content-type' => 'application/json', 'x-id' => 'a') }
+    it { is_expected.to be_equivalent(described_class.new('CONTENT-TYPE' => 'application/json', 'X-ID' => 'a')) }
+    it { is_expected.to be_equivalent('Content-Type': 'application/json', x_id: 'a') }
+    it { is_expected.not_to be_equivalent('Content-Type' => 'Application/JSON', 'X-Id' => 'a') }
+    it { is_expected.not_to be_equivalent('Content-Type' => 'application/json') }
+    it { is_expected.not_to be_equivalent('Content-Type' => 'application/json', 'X-Id' => 'a', 'X-Other' => 'b') }
+  end
+
   describe '#fetch' do
     before { subject['Content-Type'] = 'application/json' }
 

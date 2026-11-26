@@ -113,6 +113,18 @@ module Faraday
       alias member? include?
       alias key? include?
 
+      # Compares header names case-insensitively, as HTTP does, and header
+      # values exactly. Plain Hash keys, including symbols such as
+      # +:content_type+, are normalized the same way as when they are set.
+      #
+      # @param other [Hash] the headers to compare with
+      # @return [Boolean] true if both hold the same header names, ignoring
+      #   case, with equal values
+      def equivalent?(other)
+        other = self.class.from(other) unless other.is_a?(Headers)
+        size == other.size && all? { |key, value| other.include?(key) && other[key] == value }
+      end
+
       def merge!(other)
         other.each { |k, v| self[k] = v }
         self

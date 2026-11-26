@@ -295,6 +295,8 @@ RSpec.describe Faraday::Adapter::Test do
       described_class::Stubs.new(strict_mode: true) do |stubs|
         stubs.get('/strict?a=12&b=xy', 'Authorization' => 'Bearer m_ck', 'X-C' => 'hello') { [200, {}, 'a'] }
         stubs.get('/with_user_agent?a=12&b=xy', authorization: 'Bearer m_ck', 'User-Agent' => 'My Agent') { [200, {}, 'a'] }
+        stubs.get('/mixed_case?a=12&b=xy', 'content-type' => 'application/json') { [200, {}, 'a'] }
+        stubs.get('/symbol_key?a=12&b=xy', 'Content-Type': 'application/json') { [200, {}, 'a'] }
       end
     end
 
@@ -306,6 +308,24 @@ RSpec.describe Faraday::Adapter::Test do
 
     context 'when params and headers are exactly set with a custom user agent' do
       subject(:request) { connection.get('/with_user_agent', { a: '12', b: 'xy' }, { authorization: 'Bearer m_ck', 'User-Agent' => 'My Agent' }) }
+
+      it { expect(request.status).to eq 200 }
+    end
+
+    context 'when a stub header name differs in case from the request header' do
+      subject(:request) { connection.get('/mixed_case', { a: '12', b: 'xy' }, { 'Content-Type' => 'application/json' }) }
+
+      it { expect(request.status).to eq 200 }
+    end
+
+    context 'when a stub header name differs in case and the value differs' do
+      subject(:request) { connection.get('/mixed_case', { a: '12', b: 'xy' }, { 'Content-Type' => 'text/plain' }) }
+
+      it { expect { request }.to raise_error described_class::Stubs::NotFound }
+    end
+
+    context 'when a stub header name is a symbol with a dash' do
+      subject(:request) { connection.get('/symbol_key', { a: '12', b: 'xy' }, { 'Content-Type' => 'application/json' }) }
 
       it { expect(request.status).to eq 200 }
     end
@@ -379,6 +399,7 @@ RSpec.describe Faraday::Adapter::Test do
         described_class::Stubs.new do |stubs|
           stubs.post('/no_check') { [200, {}, 'ok'] }
           stubs.post('/with_string', 'abc') { [200, {}, 'ok'] }
+          stubs.post('/with_hash', { name: 'Wakamoto', tags: [1, 2] }) { [200, {}, 'ok'] }
           stubs.post(
             '/with_proc',
             ->(request_body) { JSON.parse(request_body, symbolize_names: true) == { x: '!', a: [{ m: [{ a: true }], n: 123 }] } },
@@ -407,6 +428,52 @@ RSpec.describe Faraday::Adapter::Test do
         end
 
         it { expect(with_proc.status).to eq 200 }
+      end
+
+      context 'when trying with hash body stubs and an equal hash body' do
+        subject(:with_hash) { connection.post('/with_hash', { name: 'Wakamoto', tags: [1, 2] }) }
+
+        it { expect(with_hash.status).to eq 200 }
+      end
+
+      context 'when trying with hash body stubs and an equal JSON body' do
+        subject(:with_hash) { connection.post('/with_hash', '{"tags":[1,2],"name":"Wakamoto"}') }
+
+        it { expect(with_hash.status).to eq 200 }
+      end
+
+      context 'when trying with hash body stubs and a different JSON body' do
+        subject(:with_hash) { connection.post('/with_hash', '{"name":"Wakamoto","tags":[2,1]}') }
+
+        it { expect { with_hash }.to raise_error described_class::Stubs::NotFound }
+      end
+
+      context 'when trying with hash body stubs and a body that is not JSON' do
+        subject(:with_hash) { connection.post('/with_hash', 'name=Wakamoto') }
+
+        it { expect { with_hash }.to raise_error described_class::Stubs::NotFound }
+      end
+    end
+
+    describe 'with the JSON request middleware' do
+      let(:stubs) do
+        described_class::Stubs.new(strict_mode: true) do |stubs|
+          stubs.post('/api/push', {}, 'Content-Type': 'application/json') { [200, {}, 'ok'] }
+        end
+      end
+
+      let(:connection) do
+        Faraday.new do |builder|
+          builder.request :json
+          builder.adapter :test, stubs
+        end
+      end
+
+      it 'matches a hash body stub and a symbol header stub' do
+        response = connection.post('/api/push') { |req| req.body = {} }
+
+        expect(response.status).to eq 200
+        expect { stubs.verify_stubbed_calls }.not_to raise_error
       end
     end
   end
