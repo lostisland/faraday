@@ -206,8 +206,11 @@ RSpec.describe Faraday::ProxyOptions do
       expect { options[:host] }.to raise_error(NameError)
     end
 
-    it 'does not write members with []=' do
-      expect(options).not_to respond_to(:[]=)
+    it 'writes members with []=, coercing the uri' do
+      options[:user] = 'other'
+      options['uri'] = 'http://proxy.example.org:8080'
+      expect(options.user).to eq('other')
+      expect(options.uri).to eq(URI('http://proxy.example.org:8080'))
     end
   end
 

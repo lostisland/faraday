@@ -146,6 +146,22 @@ RSpec.describe Faraday::Connection do
       it { expect(subject.ssl.verify_hostname?).to be_falsey }
     end
 
+    context 'with request and ssl options set with []= in the block' do
+      let(:conn) do
+        Faraday::Connection.new do |faraday|
+          faraday.options[:timeout] = 5
+          faraday.options[:open_timeout] = 2
+          faraday.ssl[:verify] = false
+        end
+      end
+
+      it 'keeps them, like Faraday 2.15 did' do
+        expect(conn.options.timeout).to eq(5)
+        expect(conn.options.open_timeout).to eq(2)
+        expect(conn.ssl.verify?).to be(false)
+      end
+    end
+
     context 'with empty block' do
       let(:conn) { Faraday::Connection.new {} }
 
