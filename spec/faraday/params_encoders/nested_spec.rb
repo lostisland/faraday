@@ -66,6 +66,11 @@ RSpec.describe Faraday::NestedParamsEncoder do
     expect(subject.decode(subject.encode(params))).to eq(params)
   end
 
+  it 'decodes what it encodes for a hash with several keys nested in an array' do
+    params = { 'a' => [{ 'b' => { 'c' => 'd', 'e' => %w[f g] } }, { 'b' => { 'c' => 'h' } }] }
+    expect(subject.decode(subject.encode(params))).to eq(params)
+  end
+
   it 'decodes nested array mixed types' do
     query    = 'a[][one]=1&a[]=2&a[]=&a[]'
     expected = Rack::Utils.parse_nested_query(query)

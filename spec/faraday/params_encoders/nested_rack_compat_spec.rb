@@ -19,6 +19,9 @@ RSpec.describe Faraday::NestedParamsEncoder, '.decode compared with Rack' do
     'a[][b][]=x&a[][c]=y',
     'a[][b][]=x&a[][c]=y&a[][b][]=z',
     'a[][b][c]=d&a[][e]=f',
+    'a[][b][c]=d&a[][b][e]=f',
+    'a[][b][c][]=1&a[][b][c][]=2',
+    'a[][b][c][]=1&a[][b][d]=2',
     'a[][b][][c]=d&a[][b][][c]=e',
     'a[][b][][c]=d&a[][b][][e]=f',
     # Scalars mixed with nested hashes in one array
@@ -31,22 +34,13 @@ RSpec.describe Faraday::NestedParamsEncoder, '.decode compared with Rack' do
     'a[][b][c]=&a[][b][c]',
     # One key used with two different types
     'a[][b][c]=d&a[][b][]=x',
+    'a[][b][]=x&a[][b][c]=d',
     'a[][b][c]=d&a[][b]=1',
     'a[]=x&a[b]=y',
     # Other shapes
     'a[][0]=x',
     'a[][b]c=1'
   ].freeze
-
-  # Faraday decodes these differently from Rack, but it should not. Each one
-  # runs as a pending example, so it fails as soon as Faraday matches Rack.
-  # Then move the query to rack_compatible_queries.
-  known_rack_mismatches = {
-    'a[][b][]=x&a[][b][c]=d' => 'Faraday starts a new element, but Rack raises',
-    'a[][b][c]=d&a[][b][e]=f' => 'Faraday splits the hash under b into two elements',
-    'a[][b][c][]=1&a[][b][c][]=2' => 'Faraday splits the array under c into two elements',
-    'a[][b][c][]=1&a[][b][d]=2' => 'Faraday splits the hash under b into two elements'
-  }.freeze
 
   # Faraday decodes these differently from Rack on purpose. Other specs in
   # nested_spec.rb explain each rule. These pin Faraday's result.
@@ -76,13 +70,6 @@ RSpec.describe Faraday::NestedParamsEncoder, '.decode compared with Rack' do
 
   rack_compatible_queries.each do |query|
     it "decodes #{query} like Rack" do
-      expect(faraday_outcome(query)).to eq(rack_outcome(query))
-    end
-  end
-
-  known_rack_mismatches.each do |query, reason|
-    it "decodes #{query} like Rack" do
-      pending reason
       expect(faraday_outcome(query)).to eq(rack_outcome(query))
     end
   end
