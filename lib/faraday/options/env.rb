@@ -40,8 +40,7 @@ module Faraday
     StatusesWithoutBody = Set.new([204, 304])
     SuccessfulStatuses = (200..299) # rubocop:disable Naming/ConstantName
 
-    # A Set of HTTP verbs that typically send a body. If no body is set for
-    # these requests, the Content-Length header is set to 0.
+    # A Set of HTTP verbs that typically send a body.
     MethodsWithBodies = Set.new(Faraday::METHODS_WITH_BODY.map(&:to_sym))
 
     # @return [Symbol] HTTP method (+:get+, +:post+)
@@ -191,9 +190,8 @@ module Faraday
       !body && MethodsWithBodies.include?(method)
     end
 
-    # Sets content length to zero and the body to the empty string.
+    # Sets the body to the empty string.
     def clear_body
-      request_headers[ContentLength] = '0'
       self.body = +''
     end
 

@@ -147,7 +147,7 @@ RSpec.describe Faraday::Env do
 
       response = conn.post('/post')
 
-      expect(response.env.request_headers['Content-Length']).to eq('0')
+      expect(response.env.request_headers['Content-Length']).to be_nil
       expect(json(response)['data']).to eq('')
     end
   end

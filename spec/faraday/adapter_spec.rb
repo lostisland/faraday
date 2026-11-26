@@ -4,6 +4,19 @@ RSpec.describe Faraday::Adapter do
   let(:adapter) { Faraday::Adapter.new }
   let(:request) { {} }
 
+  describe '#call' do
+    Faraday::METHODS_WITH_BODY.each do |http_method|
+      it "clears a missing #{http_method} body without setting content length" do
+        env = Faraday::Env.from(method: http_method.to_sym, request_headers: {})
+
+        adapter.call(env)
+
+        expect(env.request_body).to eq('')
+        expect(env.request_headers['Content-Length']).to be_nil
+      end
+    end
+  end
+
   context '#request_timeout' do
     it 'gets :read timeout' do
       expect(timeout(:read)).to eq(nil)

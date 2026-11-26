@@ -283,7 +283,7 @@ RSpec.describe Faraday::Env do
       env.clear_body
 
       expect(env.request_body).to eq('')
-      expect(env.request_headers['Content-Length']).to eq('0')
+      expect(env.request_headers['Content-Length']).to be_nil
       expect(env.needs_body?).to be(false)
     end
 
