@@ -166,6 +166,14 @@ module Faraday
       end
     end
 
+    # Whether no member is set, like +empty?+ of the legacy {Options}
+    # Structs, e.g. +conn.ssl.empty?+. A member set to +false+ counts as set.
+    #
+    # @return [Boolean] true if every member is +nil+
+    def empty?
+      self.class::MEMBERS.all? { |key| public_send(key).nil? }
+    end
+
     # Inspect the instance.
     #
     # @return [String] human-readable representation

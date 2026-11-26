@@ -509,6 +509,23 @@ RSpec.describe Faraday::BaseOptions do
     end
   end
 
+  describe '#empty?' do
+    it 'is true when no member is set, like the legacy Struct' do
+      expect(simple_options_class.new).to be_empty
+    end
+
+    it 'is false when a member is set, even to false' do
+      expect(simple_options_class.new(timeout: 5)).not_to be_empty
+      expect(simple_options_class.new(timeout: false)).not_to be_empty
+    end
+
+    it 'is true again when the members are set back to nil' do
+      options = simple_options_class.new(timeout: 5)
+      options.timeout = nil
+      expect(options).to be_empty
+    end
+  end
+
   describe '#inspect' do
     it 'lists the members that are set' do
       stub_const('SimpleOptions', simple_options_class)
