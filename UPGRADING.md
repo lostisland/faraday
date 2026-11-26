@@ -12,15 +12,16 @@ Code that uses these classes like a `Struct` can break, so test your application
 These calls work as before:
 
 * `Faraday.new(url, request: { timeout: 5 }, ssl: { verify: false })` and `Faraday.default_connection_options`
-* `conn.options.timeout = 5` and `req.options.timeout = 5`
+* `conn.options.timeout = 5`, `req.options.timeout = 5`, `conn.options[:timeout] = 5` and `conn.ssl[:verify] = false`
 * `env[:url]`, `env[:body] = ...`, `env[:custom_key] = ...` and the other `env` methods that middleware uses
   (see [The Env Object](https://lostisland.github.io/faraday/#/getting-started/env-object))
 * `env[:ssl].fetch(:verify, true)`, `env[:request][:timeout]` and `ssl.key?(:verify)`
+* `options.to_h`, `options.empty?` and `Faraday::SSLOptions.members`
 
 You are affected if your code does one of these with an options object or an `env`:
 
-* writes a value with `[]=` (except on `env`, where it still works)
-* reads values with `each`, `to_h`, `members`, `keys` or `dig` (except `env.dig`)
+* writes a value with `[]=` on `ConnectionOptions`
+* reads values with `each`, `keys`, `values` or `dig` (except `env.dig`), or calls `members` on an object
 * compares two objects with `==`
 * creates one with positional arguments
 * checks `is_a?(Faraday::Options)` or `is_a?(Struct)`
@@ -29,10 +30,10 @@ You are affected if your code does one of these with an options object or an `en
 
 | Before                                    | After                                              |
 |-------------------------------------------|----------------------------------------------------|
-| `options[:timeout] = 5`                   | `options.timeout = 5`                              |
-| `options.to_h`                            | `options.to_hash` (it leaves out `nil` values)     |
+| `conn_options[:timeout] = 5`              | `conn_options.timeout = 5`                         |
 | `options.each { \|key, value\| ... }`       | `options.to_hash.each { \|key, value\| ... }`        |
 | `options.members`                         | `options.class::MEMBERS`                           |
+| `options.values`                          | `options.to_hash.values`                           |
 | `options.dig(:proxy, :uri)`               | `options.proxy&.uri`                               |
 | `options.delete(:timeout)`                | `options.timeout = nil`                            |
 | `options == other`                        | `options.to_hash == other.to_hash`                 |
@@ -45,9 +46,16 @@ This also applies to `Faraday::Request#==`.
 
 #### Deprecated, to be removed in Faraday 3.0
 
-* `[]`, `fetch` and `key?` on `RequestOptions`, `SSLOptions` and `ProxyOptions`. Use the readers instead:
-  `options.timeout` for `options[:timeout]`, and `options.verify.nil? ? true : options.verify` for `options.fetch(:verify, true)`.
+* `[]`, `[]=`, `fetch` and `key?` on `RequestOptions`, `SSLOptions` and `ProxyOptions`. Use the readers and writers instead:
+  `options.timeout` for `options[:timeout]`, `options.timeout = 5` for `options[:timeout] = 5`, and
+  `options.verify.nil? ? true : options.verify` for `options.fetch(:verify, true)`.
   `Env` keeps its own `[]` and `[]=`, which are not deprecated.
+* `to_h` on every options class and on `Env`. Use `to_hash`, which leaves out `nil` values and converts nested
+  options objects to Hashes (except in `Env`). `to_h` keeps the old result: every member, `nil` included.
+  `Env#to_h` leaves out custom members.
+* `empty?` on every options class. Use `options.to_hash.empty?`.
+* `members` on the options classes, such as `Faraday::SSLOptions.members`. Use `Faraday::SSLOptions::MEMBERS`, or
+  `Faraday::SSLOptions.method_defined?(:verify_hostname)` to check for a member.
 * `Faraday::Options.memoized`. Write the reader yourself.
 
 There is no runtime warning yet.

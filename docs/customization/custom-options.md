@@ -64,9 +64,13 @@ options.to_hash # => { timeout: 5, cache: { ttl: 30 } }
 
 ## Struct-style access
 
-`BaseOptions` has no `Struct` API: no `[]`, `[]=`, `each`, `to_h`, `members` or value-based `==`.
-Use the readers and writers instead. `RequestOptions`, `SSLOptions` and `ProxyOptions` still answer `[]`, `fetch` and
-`key?` through `Faraday::StructCompat`, because adapters call them (for example `env[:ssl].fetch(:verify, true)`).
+`BaseOptions` has no `Struct` API: no `[]`, `[]=`, `each`, `keys`, `dig` or value-based `==`.
+Use the readers and writers instead. `RequestOptions`, `SSLOptions` and `ProxyOptions` still answer `[]`, `[]=`, `fetch`
+and `key?` through `Faraday::StructCompat`, because adapters and other gems call them (for example
+`env[:ssl].fetch(:verify, true)` or `conn.options[:timeout] = 5`).
 `StructCompat` is deprecated and will be removed in Faraday 3.0, so new classes must not include it.
+
+For the same reason, every `BaseOptions` class keeps `to_h`, `empty?` and the class method `members`.
+They are deprecated too: use `to_hash`, `to_hash.empty?` and `MEMBERS` in new code.
 
 `Faraday::Env` keeps its own hash-like API, because middleware relies on it. See [The Env Object](/getting-started/env-object.md).
