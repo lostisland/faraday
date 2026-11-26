@@ -180,6 +180,6 @@ end
   - Files: lib/faraday/options/env.rb, lib/faraday/rack_builder.rb, lib/faraday/request.rb
   - Tests: env and middleware integration
   - Research: env[:key] usages; avoid breaking third-party middleware
-- [ ] Optional: Deprecate Options.memoized macro (new classes don't use it)
+- [ ] Optional: Deprecate Options.memoized macro (new classes don't use it; decided in #1654: YARD `@deprecated` only, removal in 3.0, no runtime warning)
   - Files: lib/faraday/options.rb
   - Tests/Docs: deprecation notice and changelog entry

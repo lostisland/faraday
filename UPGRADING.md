@@ -1,3 +1,84 @@
+## Faraday 2.16
+
+### Options classes are no longer Structs
+
+`ConnectionOptions`, `RequestOptions`, `SSLOptions`, `ProxyOptions` and `Env` now inherit from `Faraday::BaseOptions`.
+Before, they inherited from `Faraday::Options`, which is a `Struct`.
+The adapters and middleware listed in [awesome-faraday](https://github.com/lostisland/awesome-faraday) work unchanged.
+Code that uses these classes like a `Struct` can break, so test your application with `2.16.0.beta1` first.
+
+#### Am I affected?
+
+These calls work as before:
+
+* `Faraday.new(url, request: { timeout: 5 }, ssl: { verify: false })` and `Faraday.default_connection_options`
+* `conn.options.timeout = 5`, `req.options.timeout = 5`, `conn.options[:timeout] = 5` and `conn.ssl[:verify] = false`
+* `env[:url]`, `env[:body] = ...`, `env[:custom_key] = ...` and the other `env` methods that middleware uses
+  (see [The Env Object](https://lostisland.github.io/faraday/#/getting-started/env-object))
+* `env[:ssl].fetch(:verify, true)`, `env[:request][:timeout]` and `ssl.key?(:verify)`
+* `options.to_h`, `options.empty?` and `Faraday::SSLOptions.members`
+
+You are affected if your code does one of these with an options object or an `env`:
+
+* writes a value with `[]=` on `ConnectionOptions`
+* reads values with `each`, `keys`, `values` or `dig` (except `env.dig`), or calls `members` on an object
+* compares two objects with `==`
+* creates one with positional arguments
+* checks `is_a?(Faraday::Options)` or `is_a?(Struct)`
+
+#### Replacing the removed methods
+
+| Before                                    | After                                              |
+|-------------------------------------------|----------------------------------------------------|
+| `conn_options[:timeout] = 5`              | `conn_options.timeout = 5`                         |
+| `options.each { \|key, value\| ... }`       | `options.to_hash.each { \|key, value\| ... }`        |
+| `options.members`                         | `options.class::MEMBERS`                           |
+| `options.values`                          | `options.to_hash.values`                           |
+| `options.dig(:proxy, :uri)`               | `options.proxy&.uri`                               |
+| `options.delete(:timeout)`                | `options.timeout = nil`                            |
+| `options == other`                        | `options.to_hash == other.to_hash`                 |
+| `Faraday::SSLOptions.new(true)`           | `Faraday::SSLOptions.new(verify: true)`            |
+| `Faraday::Env.new(:get, body, url, ...)`  | `Faraday::Env.from(method: :get, body: body, url: url, ...)` |
+| `value.is_a?(Faraday::Options)`           | `value.is_a?(Faraday::OptionsLike)`                |
+
+`==` now compares identity, so two options objects with the same values are no longer equal.
+This also applies to `Faraday::Request#==`.
+
+#### Deprecated, to be removed in Faraday 3.0
+
+* `[]`, `[]=`, `fetch` and `key?` on `RequestOptions`, `SSLOptions` and `ProxyOptions`. Use the readers and writers instead:
+  `options.timeout` for `options[:timeout]`, `options.timeout = 5` for `options[:timeout] = 5`, and
+  `options.verify.nil? ? true : options.verify` for `options.fetch(:verify, true)`.
+  `Env` keeps its own `[]` and `[]=`, which are not deprecated.
+* `to_h` on every options class and on `Env`. Use `to_hash`, which leaves out `nil` values and converts nested
+  options objects to Hashes (except in `Env`). `to_h` keeps the old result: every member, `nil` included.
+  `Env#to_h` leaves out custom members.
+* `empty?` on every options class. Use `options.to_hash.empty?`.
+* `members` on the options classes, such as `Faraday::SSLOptions.members`. Use `Faraday::SSLOptions::MEMBERS`, or
+  `Faraday::SSLOptions.method_defined?(:verify_hostname)` to check for a member.
+* `Faraday::Options.memoized`. Write the reader yourself.
+
+There is no runtime warning yet.
+
+#### Other changes in behaviour
+
+* `nil` no longer overwrites a value. For example, `Faraday.new(url, headers: nil)` keeps the headers from
+  `Faraday.default_connection_options`. `false` still overwrites a value, except where it means "not set":
+  `request`, `ssl` and `proxy` in `ConnectionOptions`, and `request`, `ssl` and the headers in `Env`.
+* `.from(options)`, `#merge` and `#deep_dup` return deep copies, which share no Hash or options object with the original.
+  `#merge` and `#merge!` also deep-merge Hash values, such as `RequestOptions#context`.
+  `Env` is the exception: `Env.from(env)` shares the bodies and the URL, and `Env#merge!` deep-merges only
+  `request`, `ssl` and the headers.
+* More values are converted to options objects: `proxy` in `ConnectionOptions` and `RequestOptions` becomes a
+  `ProxyOptions`, `ProxyOptions#uri` becomes a `URI`, and `ssl` in `Env` becomes an `SSLOptions`.
+* `to_hash` converts nested options objects to Hashes, except in `Env`.
+* `inspect` shows members that are `false`.
+
+#### Your own options classes
+
+Subclasses of `Faraday::Options` work as before. To write a new options class, or to move an existing one off
+`Struct`, see [Custom Options Classes](https://lostisland.github.io/faraday/#/customization/custom-options).
+
 ## Faraday 2.0
 
 ### Adapters have moved!

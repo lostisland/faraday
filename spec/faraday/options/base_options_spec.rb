@@ -40,6 +40,24 @@ RSpec.describe Faraday::BaseOptions do
     end
   end
 
+  describe '.members' do
+    it 'returns the members, like Struct.members' do
+      expect(simple_options_class.members).to eq(%i[timeout open_timeout])
+    end
+
+    it 'returns a copy the caller can change' do
+      simple_options_class.members << :other
+      expect(simple_options_class.members).to eq(%i[timeout open_timeout])
+    end
+
+    it 'is available on every options class converted from a Struct' do
+      [Faraday::Env, Faraday::ConnectionOptions, Faraday::RequestOptions, Faraday::SSLOptions,
+       Faraday::ProxyOptions].each do |klass|
+        expect(klass.members).to eq(klass::MEMBERS)
+      end
+    end
+  end
+
   describe '.from' do
     it 'returns a new instance for nil' do
       result = simple_options_class.from(nil)
@@ -488,6 +506,39 @@ RSpec.describe Faraday::BaseOptions do
       end
 
       expect(klass.new.to_hash).to eq(timeout: 99)
+    end
+  end
+
+  describe '#empty?' do
+    it 'is true when no member is set, like the legacy Struct' do
+      expect(simple_options_class.new).to be_empty
+    end
+
+    it 'is false when a member is set, even to false' do
+      expect(simple_options_class.new(timeout: 5)).not_to be_empty
+      expect(simple_options_class.new(timeout: false)).not_to be_empty
+    end
+
+    it 'is true again when the members are set back to nil' do
+      options = simple_options_class.new(timeout: 5)
+      options.timeout = nil
+      expect(options).to be_empty
+    end
+  end
+
+  describe '#to_h' do
+    it 'returns every member, nil included, like Struct#to_h' do
+      expect(simple_options_class.new(timeout: 5).to_h).to eq(timeout: 5, open_timeout: nil)
+    end
+
+    it 'keeps nested options as objects' do
+      options = parent_options_class.new(nested: { value: 1 })
+      expect(options.to_h[:nested]).to be_a(nested_options_class)
+    end
+
+    it 'maps the pairs with a block, like Hash#to_h' do
+      hash = simple_options_class.new(timeout: 5).to_h { |key, value| [key.to_s, value] }
+      expect(hash).to eq('timeout' => 5, 'open_timeout' => nil)
     end
   end
 

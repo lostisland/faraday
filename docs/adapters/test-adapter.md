@@ -57,11 +57,14 @@ initialized. This is useful for testing.
 stubs.get('/uni') { |env| [ 200, {}, 'urchin' ]}
 ```
 
-You can also stub the request body with a string or a proc.
+You can also stub the request body with a string, a hash or a proc.
+A hash (or array) also matches a request body that the `:json` request
+middleware encoded, when the decoded JSON is equal to it.
 It would be useful to pass a proc if it's OK only to check the parts of the request body are passed.
 
 ```ruby
 stubs.post('/kohada', 'where=sea&temperature=24') { |env| [ 200, {}, 'spotted gizzard shad' ]}
+stubs.post('/maguro', { name: 'Wakamoto' }) { |env| [200, {}, 'tuna'] }
 stubs.post('/anago', -> (request_body) { JSON.parse(request_body).slice('name') == { 'name' => 'Wakamoto' } }) { |env| [200, {}, 'conger eel'] }
 ```
 
@@ -83,6 +86,8 @@ conn.get('/ikura', { nori: 'true' }, { 'X-Soy-Sauce' => '5ml' } )
 If there are other parameters or headers included, the Faraday Test adapter
 will raise `Faraday::Test::Stubs::NotFound`. It also raises the error
 if the specified parameters (`nori`) or headers (`X-Soy-Sauce`) are omitted.
+Header names are compared case-insensitively, so `'x-soy-sauce'` matches too,
+but header values must match exactly.
 
 You can also enable `strict_mode` after initializing the connection.
 In this case, all requests, including ones that have been already stubbed,

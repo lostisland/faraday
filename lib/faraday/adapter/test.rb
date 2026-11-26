@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'json'
 require 'timeout'
 
 module Faraday
@@ -239,7 +240,7 @@ module Faraday
               #       Users would not want to set Faraday's User-Agent explicitly.
               hs[:user_agent] ||= Connection::USER_AGENT
             end
-            return Set.new(headers_with_user_agent) == Set.new(request_headers)
+            return headers_with_user_agent.equivalent?(request_headers)
           end
 
           headers.keys.all? do |key|
@@ -247,15 +248,33 @@ module Faraday
           end
         end
 
+        # @param request_body [Object] the body the adapter received
+        # @return [Boolean] true if the stub has no body, or its body matches
         def body_match?(request_body)
           return true if body.to_s.empty?
 
           case body
           when Proc
             body.call(request_body)
+          when Hash, Array
+            request_body == body || json_body_match?(request_body)
           else
             request_body == body
           end
+        end
+
+        # The JSON request middleware encodes a Hash or Array body before the
+        # adapter sees it, so compare the decoded request body with the stub
+        # body, which is round-tripped through JSON to turn its keys into strings.
+        #
+        # @param request_body [Object] the body the adapter received
+        # @return [Boolean] true if request_body is JSON equal to the stub body
+        def json_body_match?(request_body)
+          return false unless request_body.is_a?(String)
+
+          JSON.parse(request_body) == JSON.parse(JSON.generate(body))
+        rescue JSON::ParserError
+          false
         end
 
         def to_s

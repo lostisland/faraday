@@ -169,6 +169,14 @@ module Faraday
       @attribute_options ||= {}
     end
 
+    # Defines a reader for +key+ that assigns the block value when the member
+    # is not set.
+    #
+    # @deprecated Slated for removal in Faraday 3.0. Faraday's own options
+    #   classes no longer use it: subclass {BaseOptions} and write the reader,
+    #   like {ConnectionOptions#ssl}. There is no runtime warning.
+    # @param key [Symbol, String] the member
+    # @yield the default value, evaluated on the instance
     def self.memoized(key, &block)
       unless block
         raise ArgumentError, '#memoized must be called with a block'
