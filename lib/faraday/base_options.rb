@@ -76,6 +76,15 @@ module Faraday
 
         new(value)
       end
+
+      # The writer method of each member. Memoized because building it with
+      # interpolation allocates a String on every write.
+      #
+      # @api private
+      # @return [Hash{Symbol => Symbol}] member name to writer method name
+      def writer_symbols
+        @writer_symbols ||= self::MEMBERS.to_h { |key| [key, :"#{key}="] }.freeze
+      end
     end
 
     # Initialize a new instance with the given options.
@@ -151,7 +160,12 @@ module Faraday
     #   copy.timeout = 20
     #   original.timeout # => 10 (unchanged)
     def deep_dup
-      self.class.new(Utils.deep_dup(to_hash))
+      copy = self.class.new
+      self.class::MEMBERS.each do |key|
+        value = public_send(key)
+        copy.send(:write, key, Utils.deep_dup(value)) unless value.nil?
+      end
+      copy
     end
 
     # Convert to a hash.
@@ -222,7 +236,7 @@ module Faraday
     end
 
     def write(key, value)
-      public_send(:"#{key}=", coerce(key, value))
+      public_send(self.class.writer_symbols[key], coerce(key, value))
     end
 
     def merge_value(current, value)

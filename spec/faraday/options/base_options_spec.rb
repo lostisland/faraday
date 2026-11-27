@@ -471,6 +471,26 @@ RSpec.describe Faraday::BaseOptions do
       expect(options.timeout[2][:key]).to eq('value')
     end
 
+    it 'allocates fewer objects than the hash round-trip it replaces' do
+      skip 'GC allocation statistics are unavailable' unless GC.stat.key?(:total_allocated_objects)
+
+      options = parent_options_class.new(name: 'test', nested: { value: 'a' }, headers: { a: { b: 1 } }, count: 1)
+      roundtrip = -> { parent_options_class.new(Faraday::Utils.deep_dup(options.to_hash)) }
+      direct = -> { options.deep_dup }
+      roundtrip.call
+      direct.call
+
+      before = GC.stat[:total_allocated_objects]
+      20.times { roundtrip.call }
+      roundtrip_allocations = GC.stat[:total_allocated_objects] - before
+
+      before = GC.stat[:total_allocated_objects]
+      20.times { direct.call }
+      direct_allocations = GC.stat[:total_allocated_objects] - before
+
+      expect(direct_allocations).to be < roundtrip_allocations
+    end
+
     it 'uses the public readers' do
       klass = Class.new(simple_options_class) do
         def timeout

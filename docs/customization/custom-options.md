@@ -50,8 +50,8 @@ options.cache.class # => CacheOptions
   Other values are replaced. Nested options objects are replaced by a merged copy rather than mutated.
 * `merge` and `deep_dup` copy hashes, arrays and nested options recursively, so the result shares none of them with the
   original. Any other object (strings, procs, IO objects and so on) is kept as is.
-* `to_hash` skips `nil` attributes and converts nested options to hashes. Because `deep_dup` and `merge` go through
-  `to_hash`, an attribute holding an options object needs a matching entry in `COERCIONS` to stay an options object.
+* `to_hash` skips `nil` attributes and converts nested options to hashes. When building options from such a hash,
+  an attribute holding an options object needs a matching entry in `COERCIONS` to become an options object again.
 
 ```ruby
 options.merge(cache: { store: :memory }).to_hash
