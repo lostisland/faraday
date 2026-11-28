@@ -440,6 +440,19 @@ RSpec.describe Faraday::BaseOptions do
       expect(simple_options_class.new(timeout: false).deep_dup.timeout).to be(false)
     end
 
+    it 'duplicates an options class with a member named method' do
+      klass = Class.new(described_class) do
+        const_set(:MEMBERS, [:method].freeze)
+        attr_accessor :method
+      end
+      options = klass.new(method: :get)
+
+      duped = options.deep_dup
+
+      expect(duped).not_to equal(options)
+      expect(duped.method).to eq(:get)
+    end
+
     it 'deeply duplicates nested options' do
       nested = nested_options_class.new(value: 'original')
       options = parent_options_class.new(name: 'test', nested: nested)

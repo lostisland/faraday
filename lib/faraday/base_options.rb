@@ -161,7 +161,7 @@ module Faraday
     #   original.timeout # => 10 (unchanged)
     def deep_dup
       standard_hooks = self.class.instance_method(:initialize).owner == BaseOptions &&
-                       method(:to_hash).owner == BaseOptions &&
+                       ::Kernel.instance_method(:method).bind_call(self, :to_hash).owner == BaseOptions &&
                        self.class.method(:new).owner == Class
       return self.class.new(Utils.deep_dup(to_hash)) unless standard_hooks
 
