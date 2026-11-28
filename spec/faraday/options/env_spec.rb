@@ -243,6 +243,32 @@ RSpec.describe Faraday::Env do
       expect(merged.status).to eq(200)
       expect(env.status).to be_nil
     end
+
+    it 'deep-duplicates an Env with its method member set' do
+      env.update(method: :post, request: { timeout: 5 }, params: { q: 'faraday' })
+
+      copy = env.deep_dup
+
+      expect(copy).not_to equal(env)
+      expect(copy.method).to eq(:post)
+      expect(copy.request.timeout).to eq(5)
+      expect(copy.request).not_to equal(env.request)
+      expect(copy.params).to eq(q: 'faraday')
+      expect(copy.params).not_to equal(env.params)
+    end
+
+    it 'uses a singleton to_hash override when deep-duplicating an Env' do
+      env.update(method: :post, status: 201)
+
+      def env.to_hash
+        { method: :get }
+      end
+
+      copy = env.deep_dup
+
+      expect(copy.method).to eq(:get)
+      expect(copy.status).to be_nil
+    end
   end
 
   describe '.for_request' do
