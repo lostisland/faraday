@@ -42,7 +42,8 @@ options.cache.class # => CacheOptions
 * `MyOptions.from(value)` returns a deep copy of `value` if it is already a `MyOptions` (the caller's object is never shared), a new empty instance for `nil`, and a new instance
   built from a `Hash`, another `OptionsLike` or anything that responds to `to_hash`. Other values raise `ArgumentError`.
 * `new` accepts a single optional hash, so `MyOptions.new(timeout: 5)` works too.
-* Attributes are only read and written through their public readers and writers, so a subclass can override them.
+* `new`, `update`, `merge!` and `to_hash` read and write attributes only through their public readers and writers,
+  so a subclass can override them. `deep_dup` copies the instance variables instead, see below.
 * Keys can be symbols or strings, and are normalized to symbols. A key that is not in `MEMBERS` raises `NoMethodError`,
   like it does for `Faraday::Options`.
 * `nil` values are skipped by `new`, `update` and `merge!`, so they never overwrite an existing value. `false` does.
@@ -50,8 +51,12 @@ options.cache.class # => CacheOptions
   Other values are replaced. Nested options objects are replaced by a merged copy rather than mutated.
 * `merge` and `deep_dup` copy hashes, arrays and nested options recursively, so the result shares none of them with the
   original. Any other object (strings, procs, IO objects and so on) is kept as is.
-* `to_hash` skips `nil` attributes and converts nested options to hashes. Because `deep_dup` and `merge` go through
-  `to_hash`, an attribute holding an options object needs a matching entry in `COERCIONS` to stay an options object.
+* `deep_dup` works like `dup`: it copies the instance variables without calling the readers, writers or `initialize`,
+  then replaces the instance variable of each member (`@timeout` for `timeout`) with a deep copy.
+  Other instance variables stay shared with the original. A class that keeps other mutable state, or keeps its values
+  somewhere else than in `@<member>`, copies them in `initialize_copy`, as for any Ruby object.
+* `to_hash` skips `nil` attributes and converts nested options to hashes. When options are built from such a hash,
+  an attribute holding an options object needs a matching entry in `COERCIONS` to become an options object again.
 
 ```ruby
 options.merge(cache: { store: :memory }).to_hash

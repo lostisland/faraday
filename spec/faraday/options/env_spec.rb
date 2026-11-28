@@ -243,6 +243,14 @@ RSpec.describe Faraday::Env do
       expect(merged.status).to eq(200)
       expect(env.status).to be_nil
     end
+
+    it 'do not share the custom members with the original' do
+      env[:list] = [1]
+      copy = env.deep_dup
+      copy[:other] = 2
+
+      expect(env[:other]).to be_nil
+    end
   end
 
   describe '.for_request' do

@@ -6,8 +6,10 @@ module Faraday
   # Provides common functionality for nested coercion, deep merging, and duplication.
   # Subclasses define:
   # - +MEMBERS+: Array of attribute names (symbols). Each member needs a public
-  #   reader and writer (e.g. +attr_accessor+), which are the only way
-  #   attributes are read and written, so subclasses can override them.
+  #   reader and writer (e.g. +attr_accessor+). {#update}, {#merge!} and
+  #   {#to_hash} read and write attributes only through them, so subclasses can
+  #   override them. {#deep_dup} copies the instance variables instead, like
+  #   +dup+, see there.
   # - +COERCIONS+ (optional): Hash mapping attribute names to either a Class
   #   (coerced with +Class.from(value)+) or a Proc (coerced with +proc.call(value)+).
   #   +nil+ values are never coerced.
@@ -76,6 +78,24 @@ module Faraday
 
         new(value)
       end
+
+      # The writer of each member, e.g. +{ timeout: :timeout= }+. Built once
+      # per class, because building the name on each write allocates a String.
+      #
+      # @api private
+      # @return [Hash{Symbol => Symbol}]
+      def member_writers
+        @member_writers ||= self::MEMBERS.to_h { |key| [key, :"#{key}="] }.freeze
+      end
+
+      # The instance variable of each member, e.g. +[:@timeout]+, see
+      # {#deep_dup}.
+      #
+      # @api private
+      # @return [Array<Symbol>]
+      def member_ivars
+        @member_ivars ||= self::MEMBERS.map { |key| :"@#{key}" }.freeze
+      end
     end
 
     # Initialize a new instance with the given options.
@@ -143,6 +163,13 @@ module Faraday
 
     # Create a deep duplicate of this instance.
     #
+    # The copy is made with +dup+, then the instance variable of each member
+    # (+@timeout+ for +timeout+) is replaced with a deep copy, see
+    # {Utils.deep_dup}. The readers and writers are not called. Other
+    # instance variables are copied by +dup+ and stay shared with the
+    # original, so a subclass that keeps other mutable state copies it in
+    # +initialize_copy+, as for any Ruby object.
+    #
     # @return [BaseOptions] a new instance with deeply duplicated values
     #
     # @example
@@ -151,7 +178,9 @@ module Faraday
     #   copy.timeout = 20
     #   original.timeout # => 10 (unchanged)
     def deep_dup
-      self.class.new(Utils.deep_dup(to_hash))
+      copy = dup
+      copy.send(:deep_copy_members)
+      copy
     end
 
     # Convert to a hash.
@@ -222,7 +251,15 @@ module Faraday
     end
 
     def write(key, value)
-      public_send(:"#{key}=", coerce(key, value))
+      public_send(self.class.member_writers.fetch(key) { :"#{key}=" }, coerce(key, value))
+    end
+
+    # Replaces the value of each member with a deep copy, see {#deep_dup}.
+    def deep_copy_members
+      self.class.member_ivars.each do |ivar|
+        value = instance_variable_get(ivar)
+        instance_variable_set(ivar, Utils.deep_dup(value)) unless value.nil?
+      end
     end
 
     def merge_value(current, value)
