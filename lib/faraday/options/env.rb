@@ -260,13 +260,6 @@ module Faraday
       self
     end
 
-    # @return [Env] a deep copy, with a deep copy of the custom members
-    def deep_dup
-      copy = super
-      copy.custom_members.update(Utils.deep_dup(custom_members))
-      copy
-    end
-
     # @return [String] the set members and the custom members, like the
     #   legacy Struct
     def inspect
@@ -303,6 +296,12 @@ module Faraday
           super({ key => value }, &block)
         end
       end
+    end
+
+    # Copies the custom members too, see {BaseOptions#deep_dup}.
+    def deep_copy_members
+      super
+      @custom_members = Utils.deep_dup(@custom_members) if @custom_members
     end
 
     # Skips +false+ for the coerced members and copies other Hash values, see

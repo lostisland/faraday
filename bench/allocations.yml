@@ -1,0 +1,14 @@
+---
+ruby: '4.0'
+allocations:
+  Faraday.new: 55
+  Faraday.new(url): 111
+  Faraday.new(url:, headers:, request:, ssl:): 121
+  Faraday.new with middleware block: 127
+  conn.get: 78
+  conn.post with JSON middleware: 89
+  RequestOptions#merge: 3
+  ConnectionOptions.from(options): 4
+  Env.from(hash): 14
+  Utils.build_nested_query: 45
+  Utils.parse_nested_query: 82

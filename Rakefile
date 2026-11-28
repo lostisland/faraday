@@ -15,4 +15,28 @@ unless ENV['FARADAY_RELEASE']
   end
 
   task default: :spec
+
+  namespace :bench do
+    desc 'Fail if a hot path allocates more objects than bench/allocations.yml says'
+    task :allocations do
+      ruby '-Ilib bench/allocations.rb'
+    end
+
+    namespace :allocations do
+      desc 'Write the allocation counts of this checkout to bench/allocations.yml'
+      task :update do
+        ruby '-Ilib bench/allocations.rb --update'
+      end
+    end
+
+    desc 'Compare the speed of this checkout with a git ref (default: origin/main)'
+    task :compare, [:ref] do |_task, args|
+      ref = args[:ref] || 'origin/main'
+      base = File.join('tmp', 'bench', ref.tr('/', '-'))
+      rm_rf base
+      mkdir_p base
+      sh "git archive #{ref} lib | tar -x -C #{base}"
+      ruby "bench/compare.rb #{base}/lib lib"
+    end
+  end
 end

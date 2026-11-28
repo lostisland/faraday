@@ -471,14 +471,49 @@ RSpec.describe Faraday::BaseOptions do
       expect(options.timeout[2][:key]).to eq('value')
     end
 
-    it 'uses the public readers' do
+    it 'copies the instance variables without calling the readers' do
       klass = Class.new(simple_options_class) do
         def timeout
-          super || 99
+          @timeout ||= 99
         end
       end
+      options = klass.new
 
-      expect(klass.new.deep_dup.timeout).to eq(99)
+      duped = options.deep_dup
+
+      expect(options.instance_variables).to be_empty
+      expect(duped.instance_variables).to be_empty
+    end
+
+    it 'shares the instance variables that are not members, like dup' do
+      klass = Class.new(simple_options_class) do
+        attr_accessor :cache
+      end
+      options = klass.new(timeout: { a: 1 })
+      options.cache = { b: 2 }
+
+      duped = options.deep_dup
+
+      expect(duped.timeout).not_to equal(options.timeout)
+      expect(duped.cache).to equal(options.cache)
+    end
+
+    it 'calls initialize_copy, so subclasses can copy other state' do
+      klass = Class.new(simple_options_class) do
+        attr_accessor :cache
+
+        def initialize_copy(source)
+          super
+          @cache = source.cache.dup
+        end
+      end
+      options = klass.new
+      options.cache = { b: 2 }
+
+      duped = options.deep_dup
+
+      expect(duped.cache).to eq(b: 2)
+      expect(duped.cache).not_to equal(options.cache)
     end
   end
 
