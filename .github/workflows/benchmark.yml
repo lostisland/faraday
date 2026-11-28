@@ -1,0 +1,34 @@
+name: Benchmark
+
+# Compares the speed of a pull request with its base branch, see bench/compare.rb.
+# Timings on shared runners are noisy, so this job only warns: the allocation
+# budgets in the CI workflow are the check that fails.
+on:
+  pull_request:
+    paths:
+      - 'lib/**'
+      - 'bench/**'
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # the base commit is needed for git archive
+
+      - name: Setup Ruby 4.0
+        uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18 # v1.343.0
+        with:
+          ruby-version: '4.0'
+          bundler-cache: true
+
+      - name: Compare with the base branch
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: bundle exec rake "bench:compare[$BASE_SHA]"

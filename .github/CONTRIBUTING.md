@@ -42,6 +42,26 @@ $ bundle exec rubocop
 ```
 
 
+### Performance Checks
+
+The [CI workflow](workflows/ci.yml) counts the objects that each hot path in `bench/cases.rb` allocates
+per call. It fails if a count is above the baseline in `bench/allocations.yml`:
+
+```bash
+# Check the allocation counts (on the Ruby version recorded in bench/allocations.yml)
+$ bundle exec rake bench:allocations
+
+# After an intended increase (or a decrease), record the new counts and commit the file
+$ bundle exec rake bench:allocations:update
+
+# Compare the speed of your checkout with main, or with any git ref
+$ bundle exec rake 'bench:compare[origin/main]'
+```
+
+The [Benchmark workflow](workflows/benchmark.yml) runs `bench:compare` on pull requests that change `lib/`,
+and shows the result in the job summary. Timings on shared runners are noisy, so it only warns.
+
+
 ### Integration Tests
 
 The specs in `spec/integration/` exercise Faraday's options classes (`RequestOptions`, `SSLOptions`,
