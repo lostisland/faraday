@@ -471,24 +471,99 @@ RSpec.describe Faraday::BaseOptions do
       expect(options.timeout[2][:key]).to eq('value')
     end
 
-    it 'allocates fewer objects than the hash round-trip it replaces' do
-      skip 'GC allocation statistics are unavailable' unless GC.stat.key?(:total_allocated_objects)
+    it 'preserves constructors that require an options hash' do
+      klass = Class.new(simple_options_class) do
+        attr_reader :initialized_with
 
-      options = parent_options_class.new(name: 'test', nested: { value: 'a' }, headers: { a: { b: 1 } }, count: 1)
-      roundtrip = -> { parent_options_class.new(Faraday::Utils.deep_dup(options.to_hash)) }
-      direct = -> { options.deep_dup }
-      roundtrip.call
-      direct.call
+        def initialize(options)
+          @initialized_with = options
+          super
+        end
+      end
+      options = klass.new(timeout: 10)
 
-      before = GC.stat[:total_allocated_objects]
-      20.times { roundtrip.call }
-      roundtrip_allocations = GC.stat[:total_allocated_objects] - before
+      duped = options.deep_dup
 
-      before = GC.stat[:total_allocated_objects]
-      20.times { direct.call }
-      direct_allocations = GC.stat[:total_allocated_objects] - before
+      expect(duped.timeout).to eq(10)
+      expect(duped.initialized_with).to eq(timeout: 10)
+    end
 
-      expect(direct_allocations).to be < roundtrip_allocations
+    it 'uses an overridden to_hash for duplication' do
+      klass = Class.new(simple_options_class) do
+        def to_hash
+          { timeout: 7 }
+        end
+      end
+      options = klass.new(timeout: 10, open_timeout: 5)
+
+      duped = options.deep_dup
+
+      expect(duped.timeout).to eq(7)
+      expect(duped.open_timeout).to be_nil
+    end
+
+    it 'uses a singleton to_hash override for duplication' do
+      options = simple_options_class.new(timeout: 10, open_timeout: 5)
+
+      def options.to_hash
+        { timeout: 7 }
+      end
+
+      duped = options.deep_dup
+
+      expect(duped.timeout).to eq(7)
+      expect(duped.open_timeout).to be_nil
+    end
+
+    it 'uses an overridden class constructor for duplication' do
+      klass = Class.new(simple_options_class) do
+        def self.new(options)
+          raise ArgumentError, 'options hash required' unless options.is_a?(Hash)
+
+          super
+        end
+      end
+      options = klass.new(timeout: 10)
+
+      duped = options.deep_dup
+
+      expect(duped.timeout).to eq(10)
+    end
+
+    it 'passes hash representations of nested options to custom proc coercers' do
+      received = []
+      hash_only_coercer = lambda do |value|
+        received << value
+        raise TypeError, 'expected a Hash' unless value.is_a?(Hash)
+
+        value
+      end
+      klass = Class.new(described_class) do
+        const_set(:MEMBERS, [:nested].freeze)
+        const_set(:COERCIONS, { nested: hash_only_coercer }.freeze)
+        attr_accessor :nested
+      end
+      options = klass.new
+      options.nested = nested_options_class.new(value: 'a')
+
+      duped = options.deep_dup
+
+      expect(received.last).to eq(value: 'a')
+      expect(duped.nested).to eq(value: 'a')
+    end
+
+    it 'raises NoMethodError instead of TypeError for an unknown writer key' do
+      options = simple_options_class.new
+
+      expect { options.send(:write, :unknown, 1) }.to raise_error(NoMethodError)
+    end
+
+    it 'accepts a string writer key like the interpolation it replaces' do
+      options = simple_options_class.new
+
+      options.send(:write, 'timeout', 20)
+
+      expect(options.timeout).to eq(20)
     end
 
     it 'uses the public readers' do

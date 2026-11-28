@@ -160,10 +160,18 @@ module Faraday
     #   copy.timeout = 20
     #   original.timeout # => 10 (unchanged)
     def deep_dup
+      standard_hooks = self.class.instance_method(:initialize).owner == BaseOptions &&
+                       method(:to_hash).owner == BaseOptions &&
+                       self.class.method(:new).owner == Class
+      return self.class.new(Utils.deep_dup(to_hash)) unless standard_hooks
+
       copy = self.class.new
       self.class::MEMBERS.each do |key|
         value = public_send(key)
-        copy.send(:write, key, Utils.deep_dup(value)) unless value.nil?
+        next if value.nil?
+
+        value = value.to_hash if value.is_a?(OptionsLike)
+        copy.send(:write, key, Utils.deep_dup(value))
       end
       copy
     end
@@ -236,7 +244,8 @@ module Faraday
     end
 
     def write(key, value)
-      public_send(self.class.writer_symbols[key], coerce(key, value))
+      writer = self.class.writer_symbols[key.to_sym] if key.respond_to?(:to_sym)
+      public_send(writer || :"#{key}=", coerce(key, value))
     end
 
     def merge_value(current, value)
